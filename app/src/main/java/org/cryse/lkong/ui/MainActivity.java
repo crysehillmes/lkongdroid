@@ -57,6 +57,18 @@ public class MainActivity extends AbstractThemeableActivity
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        mNavigation.detachMainActivity();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mNavigation.attachMainActivity(this);
+    }
+
+    @Override
     public void onInitialNavigationDrawerItems() {
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
