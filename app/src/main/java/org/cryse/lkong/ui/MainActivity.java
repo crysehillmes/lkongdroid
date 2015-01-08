@@ -39,6 +39,7 @@ public class MainActivity extends AbstractThemeableActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        injectThis();
         Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

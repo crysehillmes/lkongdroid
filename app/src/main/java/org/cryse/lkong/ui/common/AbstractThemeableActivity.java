@@ -20,7 +20,6 @@ public abstract class AbstractThemeableActivity extends AbstractActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        injectThis();
         mTheme = getAppTheme();
         setTheme(mTheme);
         super.onCreate(savedInstanceState);

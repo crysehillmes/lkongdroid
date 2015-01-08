@@ -26,7 +26,6 @@ public abstract class AbstractActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectThis();
         mLUtils = LUtils.getInstance(this);
     }
 
