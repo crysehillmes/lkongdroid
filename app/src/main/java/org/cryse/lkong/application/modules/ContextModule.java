@@ -5,7 +5,7 @@ import android.content.Context;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
-import org.cryse.lkong.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 
 import javax.inject.Singleton;
 
@@ -15,8 +15,11 @@ import dagger.Provides;
 @Module
 public class ContextModule {
     Application mApplicationContext;
-    public ContextModule(Application application) {
+    AndroidNavigation mNavigation;
+
+    public ContextModule(Application application, AndroidNavigation navigation) {
         this.mApplicationContext = application;
+        this.mNavigation = navigation;
     }
 
     @Provides
@@ -33,6 +36,6 @@ public class ContextModule {
 
     @Provides
     public AndroidNavigation provideAndroidNavigation() {
-        return new AndroidNavigation(mApplicationContext);
+        return mNavigation;
     }
 }
