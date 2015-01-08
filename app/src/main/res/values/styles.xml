@@ -11,6 +11,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme_navigation_drawer_bg">@color/theme_navigation_drawer_bg_light</item>
     </style>
 
     <style name="FrameworkRoot.Dark" parent="Theme.AppCompat.NoActionBar" />
@@ -24,5 +25,6 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme_navigation_drawer_bg">@color/theme_navigation_drawer_bg_dark</item>
     </style>
 </resources>
