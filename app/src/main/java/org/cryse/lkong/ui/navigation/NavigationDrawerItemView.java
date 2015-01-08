@@ -1,4 +1,4 @@
-package org.cryse.lkong.navigation;
+package org.cryse.lkong.ui.navigation;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -85,22 +85,21 @@ public class NavigationDrawerItemView extends RelativeLayout {
 
     public void bindTo(NavigationDrawerItem item, int position) {
         this.mPosition = position;
-        if (item.isMainItem()) {
-            itemTitleTV.setText(item.getItemName());
-            itemIconIV.setImageDrawable(getIcon(item.getItemIcon()));
-            itemIconIV.setVisibility(View.VISIBLE);
-        } else {
-            itemTitleTV.setText(item.getItemName());
+
+        itemTitleTV.setText(item.getItemName());
+        if(item.getItemIcon() != 0) {
             itemIconIV.setImageDrawable(getIcon(item.getItemIcon()));
             itemIconIV.setVisibility(View.VISIBLE);
         }
 
         if(item.isSelected()) {
-            itemIconIV.getDrawable().setColorFilter(selectionColor, PorterDuff.Mode.SRC_IN);
             itemTitleTV.setTextColor(selectionColor);
+            if(item.getItemIcon() != 0)
+                itemIconIV.getDrawable().setColorFilter(selectionColor, PorterDuff.Mode.SRC_IN);
         } else {
-            itemIconIV.getDrawable().setColorFilter(iconDefaultColor, PorterDuff.Mode.SRC_IN);
             itemTitleTV.setTextColor(textViewDefalutColor);
+            if(item.getItemIcon() != 0)
+                itemIconIV.getDrawable().setColorFilter(iconDefaultColor, PorterDuff.Mode.SRC_IN);
         }
 
     }

@@ -17,13 +17,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
+import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
+import org.cryse.lkong.ui.navigation.NavigationType;
 import org.cryse.utils.ColorUtils;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -54,7 +59,12 @@ public class NavigationDrawerFragment extends AbstractFragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+
+    private View mRootView;
+
+    @InjectView(R.id.navigation_drawer_listview)
+    ListView mDrawerListView;
+    private NavigationDrawerAdapter mDrawerAdapter;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -72,14 +82,6 @@ public class NavigationDrawerFragment extends AbstractFragment {
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
-
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -92,30 +94,44 @@ public class NavigationDrawerFragment extends AbstractFragment {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
+
+        if (savedInstanceState != null) {
+            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            mFromSavedInstanceState = true;
+            // Select the last selected item.
+            selectItem(mCurrentSelectedPosition, true);
+        } else {
+            // Select the default item (0).
+            selectItem(mCurrentSelectedPosition, false);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
+        mRootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
+        ButterKnife.inject(this, mRootView);
+
+        initNavigationDrawer();
+        setUpNavigationItems();
+        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        return mRootView;
+    }
+
+    private void initNavigationDrawer() {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                selectItem(position, false);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+        mDrawerAdapter = new NavigationDrawerAdapter(getActivity());
+        mDrawerListView.setAdapter(mDrawerAdapter);
+    }
+
+    private NavigationDrawerAdapter getNavigationAdapter() {
+        return mDrawerAdapter;
     }
 
     public boolean isDrawerOpen() {
@@ -196,16 +212,22 @@ public class NavigationDrawerFragment extends AbstractFragment {
         mDrawerLayout.setStatusBarBackgroundColor(ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimaryDark));
     }
 
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
+    private void selectItem(int position, boolean fromSavedInstance) {
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
+            NavigationDrawerItem item = getNavigationAdapter().getItem(position);
+            if(item.isMainItem()) {
+                getNavigationAdapter().getItem(mCurrentSelectedPosition).setSelected(false);
+                item.setSelected(true);
+
+                mCurrentSelectedPosition = position;
+            }
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onNavigationDrawerItemSelected(position, fromSavedInstance);
         }
     }
 
@@ -278,6 +300,36 @@ public class NavigationDrawerFragment extends AbstractFragment {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
+    private void setUpNavigationItems() {
+        getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
+                        getString(R.string.drawer_item_forum_list),
+                        NavigationType.FRAGMENT_FORUM_LIST,
+                        R.drawable.ic_drawer_forum_list,
+                        true,
+                        true
+                )
+        );
+        getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
+                        getString(R.string.drawer_item_favorites),
+                        NavigationType.FRAGMENT_FAVORITES,
+                        R.drawable.ic_drawer_favorites,
+                        true,
+                        true
+                )
+        );
+        getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
+                        getString(R.string.drawer_item_settings),
+                        NavigationType.ACTIVITY_SETTINGS,
+                        R.drawable.ic_drawer_settings,
+                        false,
+                        false
+                )
+        );
+    }
+
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
@@ -285,6 +337,6 @@ public class NavigationDrawerFragment extends AbstractFragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(int position, boolean fromSavedInstance);
     }
 }

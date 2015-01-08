@@ -15,7 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 
 import javax.inject.Inject;
@@ -61,7 +61,8 @@ public class MainActivity extends AbstractThemeableActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(int position, boolean fromSavedInstance) {
+        if(fromSavedInstance) return;
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()

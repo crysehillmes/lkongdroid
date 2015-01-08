@@ -1,4 +1,4 @@
-package org.cryse.lkong.navigation;
+package org.cryse.lkong.ui.navigation;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,19 +8,18 @@ import android.view.ViewGroup;
 import org.cryse.lkong.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class NavigationDrawerAdapter extends BindableAdapter<NavigationDrawerItem> {
 
-    private List<NavigationDrawerItem> items = Collections.emptyList();
+    private List<NavigationDrawerItem> items = new ArrayList<NavigationDrawerItem>();
 
     public NavigationDrawerAdapter(Context context) {
         super(context);
     }
 
-    public void replaceWith(List<NavigationDrawerItem> items) {
-        this.items = new ArrayList<NavigationDrawerItem>(items);
+    public void addItem(NavigationDrawerItem items) {
+        this.items.add(items);
         notifyDataSetChanged();
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.cryse.novelreader.util.navidrawer.NavigationDrawerItemView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.cryse.lkong.ui.navigation.NavigationDrawerItemView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/itemRR"
     android:layout_width="match_parent"
     android:layout_height="48dp"
@@ -21,4 +21,4 @@
         android:textSize="@dimen/text_size_subhead"
         android:textColor="?attr/theme_navigation_drawer_text_color"/>
 
-</org.cryse.novelreader.util.navidrawer.NavigationDrawerItemView>
+</org.cryse.lkong.ui.navigation.NavigationDrawerItemView>

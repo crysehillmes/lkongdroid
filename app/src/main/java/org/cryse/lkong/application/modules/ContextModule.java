@@ -5,7 +5,7 @@ import android.content.Context;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
-import org.cryse.lkong.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 
 import javax.inject.Singleton;
 

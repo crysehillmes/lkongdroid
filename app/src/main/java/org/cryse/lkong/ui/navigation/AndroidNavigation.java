@@ -1,4 +1,4 @@
-package org.cryse.lkong.navigation;
+package org.cryse.lkong.ui.navigation;
 
 
 import android.content.Context;

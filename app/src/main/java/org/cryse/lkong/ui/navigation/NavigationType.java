@@ -1,10 +1,9 @@
-package org.cryse.lkong.navigation;
+package org.cryse.lkong.ui.navigation;
 
 public enum NavigationType{
-    NOVEL_CATEGORY_FRAGMENT(0),
-    NOVEL_RANK_FRAGMENT(1),
-    NOVEL_SETTINGS_ACTIVITY(2),
-    NOVEL_BOOKSHELF_FRAGMENT(3);
+    ACTIVITY_SETTINGS(0),
+    FRAGMENT_FORUM_LIST(1),
+    FRAGMENT_FAVORITES(2);
     int navigationType;
 
     private NavigationType(int naviType) {
