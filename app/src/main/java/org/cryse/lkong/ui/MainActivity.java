@@ -1,11 +1,11 @@
 package org.cryse.lkong.ui;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,10 +14,18 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+
+import javax.inject.Inject;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AbstractThemeableActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    @Inject
+    AndroidNavigation mNavigation;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -31,11 +39,12 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -45,9 +54,15 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void injectThis() {
+        Log.d("MainActivity", "injectThis");
+        LKongApplication.get(this).mainActivityComponent().inject(this);
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();

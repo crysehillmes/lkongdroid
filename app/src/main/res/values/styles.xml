@@ -1,8 +1,28 @@
 <resources>
+    <style name="FrameworkRoot.Light" parent="Theme.AppCompat.Light.NoActionBar" />
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="LKongDroidTheme.Light" parent="FrameworkRoot.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="actionBarInsetStart">@dimen/keyline_2_minus_16dp</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
+    <style name="FrameworkRoot.Dark" parent="Theme.AppCompat.NoActionBar" />
+    <!-- Base application theme. -->
+    <style name="LKongDroidTheme.Dark" parent="FrameworkRoot.Dark">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="actionBarInsetStart">@dimen/keyline_2_minus_16dp</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
 </resources>
