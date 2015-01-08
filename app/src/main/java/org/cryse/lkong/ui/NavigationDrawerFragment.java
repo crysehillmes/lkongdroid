@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -10,22 +11,18 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
-import org.cryse.lkong.ui.navigation.NavigationType;
 import org.cryse.utils.ColorUtils;
 
 import butterknife.ButterKnife;
@@ -61,8 +58,6 @@ public class NavigationDrawerFragment extends AbstractFragment {
 
     private DrawerLayout mDrawerLayout;
 
-    private View mRootView;
-
     @InjectView(R.id.navigation_drawer_listview)
     ListView mDrawerListView;
     private NavigationDrawerAdapter mDrawerAdapter;
@@ -72,17 +67,24 @@ public class NavigationDrawerFragment extends AbstractFragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+
+    /**
+     * Used to post delay navigation action to improve UX
+     */
+    private Handler mHandler = new Handler();
+    private Runnable mPendingRunnable = null;
+
     public NavigationDrawerFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("NavigationDrawerFragment", "onCreate()");
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        mHandler = new Handler();
     }
 
     @Override
@@ -93,9 +95,7 @@ public class NavigationDrawerFragment extends AbstractFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d("NavigationDrawerFragment", "onActivityCreated()");
         // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
 
         initNavigationDrawer();
         setUpNavigationItems();
@@ -104,30 +104,25 @@ public class NavigationDrawerFragment extends AbstractFragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
             // Select the last selected item.
-            selectItem(mCurrentSelectedPosition, true);
+            selectItem(mCurrentSelectedPosition, true, false);
         } else {
             // Select the default item (0).
-            selectItem(mCurrentSelectedPosition, false);
+            selectItem(mCurrentSelectedPosition, false, false);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("NavigationDrawerFragment", "onCreateView()");
-        mRootView = inflater.inflate(
+        View rootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
-        ButterKnife.inject(this, mRootView);
-        return mRootView;
+        ButterKnife.inject(this, rootView);
+        return rootView;
     }
 
     private void initNavigationDrawer() {
-        Log.d("NavigationDrawerFragment", "initNavigationDrawer()");
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position, false);
-            }
+        mDrawerListView.setOnItemClickListener((parent, view, position, id) -> {
+            selectItem(position, false, true);
         });
         mDrawerAdapter = new NavigationDrawerAdapter(getActivity());
         mDrawerListView.setAdapter(mDrawerAdapter);
@@ -138,13 +133,19 @@ public class NavigationDrawerFragment extends AbstractFragment {
     }
 
     private void setUpNavigationItems() {
-        Log.d("NavigationDrawerFragment", "setUpNavigationItems()");
         if(mCallbacks != null)
             mCallbacks.onInitialNavigationDrawerItems();
     }
 
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
+    }
+
+    public void toggleDrawer() {
+        if(isDrawerOpen())
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        else if(mDrawerLayout != null && !mDrawerLayout.isDrawerOpen(mFragmentContainerView))
+            mDrawerLayout.openDrawer(mFragmentContainerView);
     }
 
     /**
@@ -181,6 +182,11 @@ public class NavigationDrawerFragment extends AbstractFragment {
                 }
                 getActivity().invalidateOptionsMenu();
                 //getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                // If mPendingRunnable is not null, then add to the message queue
+                if (mPendingRunnable != null) {
+                    mHandler.post(mPendingRunnable);
+                    mPendingRunnable = null;
+                }
             }
 
             @Override
@@ -210,18 +216,13 @@ public class NavigationDrawerFragment extends AbstractFragment {
         }
 
         // Defer code dependent on restoration of previous instance state.
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mDrawerToggle.syncState();
-            }
-        });
+        mDrawerLayout.post(mDrawerToggle::syncState);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.setStatusBarBackgroundColor(ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimaryDark));
     }
 
-    private void selectItem(int position, boolean fromSavedInstance) {
+    private void selectItem(int position, boolean fromSavedInstance, boolean waitForDrawerClose) {
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
             NavigationDrawerItem item = getNavigationAdapter().getItem(position);
@@ -232,11 +233,14 @@ public class NavigationDrawerFragment extends AbstractFragment {
                 mCurrentSelectedPosition = position;
             }
         }
+        if (mCallbacks != null) {
+            if(waitForDrawerClose)
+                mPendingRunnable = () -> mCallbacks.onNavigationDrawerItemSelected(position, fromSavedInstance);
+            else
+                mCallbacks.onNavigationDrawerItemSelected(position, fromSavedInstance);
+        }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position, fromSavedInstance);
         }
     }
 
@@ -273,10 +277,10 @@ public class NavigationDrawerFragment extends AbstractFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
-        if (mDrawerLayout != null && isDrawerOpen()) {
+        /*if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
-        }
+        }*/
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -285,12 +289,6 @@ public class NavigationDrawerFragment extends AbstractFragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -298,11 +296,11 @@ public class NavigationDrawerFragment extends AbstractFragment {
      * Per the navigation drawer design guidelines, updates the action bar to show the global app
      * 'context', rather than just what's in the current screen.
      */
-    private void showGlobalContextActionBar() {
+    /*private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.app_name);
-    }
+    }*/
 
     private ActionBar getActionBar() {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();

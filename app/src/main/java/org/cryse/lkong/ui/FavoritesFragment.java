@@ -1,18 +1,19 @@
 package org.cryse.lkong.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.ui.common.AbstractFragment;
+import org.cryse.lkong.ui.common.MainActivityFragment;
 
 import butterknife.ButterKnife;
 
-public class FavoritesFragment extends AbstractFragment {
+public class FavoritesFragment extends MainActivityFragment {
     public static FavoritesFragment newInstance(Bundle args) {
         FavoritesFragment fragment = new FavoritesFragment();
         if(args != null)
@@ -39,13 +40,23 @@ public class FavoritesFragment extends AbstractFragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_favorites, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public String getFragmentTitle() {
+        return getString(R.string.drawer_item_favorites);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Activity activity = getActivity();
-        if(activity instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity)activity;
-            mainActivity.onSectionAttached(getString(R.string.drawer_item_favorites));
-        }
     }
 }
