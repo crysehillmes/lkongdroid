@@ -12,6 +12,9 @@
         <item name="android:windowActionModeOverlay">true</item>
         <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="theme_navigation_drawer_bg">@color/theme_navigation_drawer_bg_light</item>
+        <item name="theme_navigation_drawer_top_drawable">@drawable/drawer_top_image_light</item>
+        <item name="theme_navigation_drawer_text_color">@android:color/black</item>
+        <item name="theme_navigation_drawer_icon_color">@android:color/darker_gray</item>
     </style>
 
     <style name="FrameworkRoot.Dark" parent="Theme.AppCompat.NoActionBar" />
@@ -26,5 +29,8 @@
         <item name="android:windowActionModeOverlay">true</item>
         <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="theme_navigation_drawer_bg">@color/theme_navigation_drawer_bg_dark</item>
+        <item name="theme_navigation_drawer_top_drawable">@drawable/drawer_top_image_dark</item>
+        <item name="theme_navigation_drawer_text_color">@android:color/white</item>
+        <item name="theme_navigation_drawer_icon_color">@android:color/white</item>
     </style>
 </resources>
