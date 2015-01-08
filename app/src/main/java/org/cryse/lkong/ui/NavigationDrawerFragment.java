@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,7 +78,7 @@ public class NavigationDrawerFragment extends AbstractFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("NavigationDrawerFragment", "onCreate()");
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -92,8 +93,12 @@ public class NavigationDrawerFragment extends AbstractFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("NavigationDrawerFragment", "onActivityCreated()");
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
+
+        initNavigationDrawer();
+        setUpNavigationItems();
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -109,17 +114,15 @@ public class NavigationDrawerFragment extends AbstractFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("NavigationDrawerFragment", "onCreateView()");
         mRootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, mRootView);
-
-        initNavigationDrawer();
-        setUpNavigationItems();
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mRootView;
     }
 
     private void initNavigationDrawer() {
+        Log.d("NavigationDrawerFragment", "initNavigationDrawer()");
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,8 +133,14 @@ public class NavigationDrawerFragment extends AbstractFragment {
         mDrawerListView.setAdapter(mDrawerAdapter);
     }
 
-    private NavigationDrawerAdapter getNavigationAdapter() {
+    public NavigationDrawerAdapter getNavigationAdapter() {
         return mDrawerAdapter;
+    }
+
+    private void setUpNavigationItems() {
+        Log.d("NavigationDrawerFragment", "setUpNavigationItems()");
+        if(mCallbacks != null)
+            mCallbacks.onInitialNavigationDrawerItems();
     }
 
     public boolean isDrawerOpen() {
@@ -292,7 +301,6 @@ public class NavigationDrawerFragment extends AbstractFragment {
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setTitle(R.string.app_name);
     }
 
@@ -300,40 +308,14 @@ public class NavigationDrawerFragment extends AbstractFragment {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
-    private void setUpNavigationItems() {
-        getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_forum_list),
-                        NavigationType.FRAGMENT_FORUM_LIST,
-                        R.drawable.ic_drawer_forum_list,
-                        true,
-                        true
-                )
-        );
-        getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_favorites),
-                        NavigationType.FRAGMENT_FAVORITES,
-                        R.drawable.ic_drawer_favorites,
-                        true,
-                        true
-                )
-        );
-        getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_settings),
-                        NavigationType.ACTIVITY_SETTINGS,
-                        R.drawable.ic_drawer_settings,
-                        false,
-                        false
-                )
-        );
-    }
-
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
     public static interface NavigationDrawerCallbacks {
+        /**
+         * Called when navigation drawer need to initial items.
+         */
+        void onInitialNavigationDrawerItems();
         /**
          * Called when an item in the navigation drawer is selected.
          */
