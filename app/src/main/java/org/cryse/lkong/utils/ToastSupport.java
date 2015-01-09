@@ -6,5 +6,5 @@ public interface ToastSupport {
     public static final int TOAST_CONFIRM = 2;
 
 
-    public void showToast(String text, int toastType);
+    public void showToast(int text_value, int toastType);
 }

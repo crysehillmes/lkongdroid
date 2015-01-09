@@ -1,7 +1,7 @@
 package org.cryse.lkong.logic;
 
 import org.cryse.lkong.logic.restservice.LKongRestService;
-import org.cryse.lkong.logic.restservice.model.UserConfigInfo;
+import org.cryse.lkong.logic.restservice.model.UserInfo;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,7 +28,7 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserConfigInfo> getUserConfigInfo() {
+    public Observable<UserInfo> getUserConfigInfo() {
         return Observable.create(subscriber -> {
             try {
                 subscriber.onNext(mLKongRestService.getUserConfigInfo());

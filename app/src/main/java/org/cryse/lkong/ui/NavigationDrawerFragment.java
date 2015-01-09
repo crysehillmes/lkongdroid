@@ -22,10 +22,17 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.logic.restservice.model.UserInfo;
+import org.cryse.lkong.presenter.UserInfoPresenter;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
+import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.view.UserInfoView;
 import org.cryse.utils.ColorUtils;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -35,7 +42,7 @@ import butterknife.InjectView;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends AbstractFragment {
+public class NavigationDrawerFragment extends AbstractFragment implements UserInfoView {
 
     /**
      * Remember the position of the selected item.
@@ -69,6 +76,9 @@ public class NavigationDrawerFragment extends AbstractFragment {
     private NavigationDrawerAdapter mDrawerAdapter;
     private View mFragmentContainerView;
 
+    @Inject
+    UserInfoPresenter mUserInfoPresenter;
+
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -86,6 +96,7 @@ public class NavigationDrawerFragment extends AbstractFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        injectThis();
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -95,7 +106,7 @@ public class NavigationDrawerFragment extends AbstractFragment {
 
     @Override
     protected void injectThis() {
-
+        LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
     }
 
     @Override
@@ -255,6 +266,30 @@ public class NavigationDrawerFragment extends AbstractFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getUserInfo();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getUserInfoPresenter().bindView(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getUserInfoPresenter().unbindView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getUserInfoPresenter().destroy();
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -314,6 +349,40 @@ public class NavigationDrawerFragment extends AbstractFragment {
 
     private ActionBar getActionBar() {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
+    }
+
+    @Override
+    public void showUserInfo(UserInfo userConfigInfo) {
+        if(userConfigInfo != null) {
+            //Log.d("NavigationDrawerFragment::showUserInfo()", String.format("Uid: %s, UserName: %s", userConfigInfo.getUid(), userConfigInfo.getUsername()));
+        }
+    }
+
+    @Override
+    public void setLoading(Boolean value) {
+
+    }
+
+    @Override
+    public Boolean isLoading() {
+        return null;
+    }
+
+    @Override
+    public void showToast(int text_value, int toastType) {
+        if(text_value == UserInfoPresenter.TOAST_FAILURE_USER_INFO) {
+            ToastProxy.showToast(getActivity(), getString(R.string.toast_failure_get_user_info), toastType);
+        }
+    }
+
+    public void getUserInfo() {
+        // Get from local first
+        // Get from web if failed.
+        getUserInfoPresenter().getUserInfo();
+    }
+
+    public UserInfoPresenter getUserInfoPresenter() {
+        return mUserInfoPresenter;
     }
 
     /**

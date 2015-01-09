@@ -71,7 +71,7 @@ public class SignInPresenter implements BasePresenter<SignInView> {
         }
 
         @Override
-        public void showToast(String text, int toastType) {
+        public void showToast(int text, int toastType) {
 
         }
     }

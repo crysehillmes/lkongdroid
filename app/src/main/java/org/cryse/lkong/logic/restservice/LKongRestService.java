@@ -4,14 +4,17 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
+import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.ForumNameList;
-import org.cryse.lkong.logic.restservice.model.UserConfigInfo;
+import org.cryse.lkong.logic.restservice.model.UserInfo;
 import org.cryse.lkong.utils.PersistentCookieStore;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
@@ -26,7 +29,7 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 
 public class LKongRestService {
-
+    public static final String LOG_TAG = LKongRestService.class.getName();
     public static final String LKONG_DOMAIN_URL = "http://lkong.cn";
     public static final String LKONG_INDEX_URL = LKONG_DOMAIN_URL + "/index.php";
     OkHttpClient okHttpClient;
@@ -63,19 +66,22 @@ public class LKongRestService {
         return jsonObject.getBoolean("success");
     }
 
-    public UserConfigInfo getUserConfigInfo() throws Exception {
+    public UserInfo getUserConfigInfo() throws Exception {
+        checkSignInStatus();
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=login")
+                .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        return gson.fromJson(responseString, UserConfigInfo.class);
+        Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+        return customGson.fromJson(responseString, UserInfo.class);
     }
 
     public ForumNameList getForumList() throws Exception {
+        checkSignInStatus();
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(LKONG_INDEX_URL + "?mod=ajax&action=forumlist")
@@ -88,8 +94,8 @@ public class LKongRestService {
     }
 
     public static final int STATUS_NOT_SIGNEDIN = 0;
-    public static final int STATUS_EXPIRED = 0;
-    public static final int STATUS_SIGNEDIN = 0;
+    public static final int STATUS_EXPIRED = 1;
+    public static final int STATUS_SIGNEDIN = 2;
 
     public int isSignedIn() {
         String auth = null;
@@ -127,5 +133,16 @@ public class LKongRestService {
 
     private String getStringFromGzipResponse(Response response) throws Exception {
         return decompress(response.body().bytes());
+    }
+
+    private void checkSignInStatus() {
+        switch (isSignedIn()) {
+            case STATUS_NOT_SIGNEDIN:
+                throw new NeedSignInException();
+            case STATUS_EXPIRED:
+                throw new SignInExpiredException();
+            case STATUS_SIGNEDIN:
+                break;
+        }
     }
 }

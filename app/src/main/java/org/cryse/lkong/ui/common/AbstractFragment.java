@@ -13,7 +13,6 @@ public abstract class AbstractFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectThis();
     }
 
     protected List<Runnable> getDeferredUiOperations() {

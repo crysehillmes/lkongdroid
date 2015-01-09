@@ -79,6 +79,12 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getPresenter().destroy();
+    }
+
+    @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
     }
@@ -102,7 +108,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     }
 
     @Override
-    public void showToast(String text, int toastType) {
+    public void showToast(int text, int toastType) {
 
     }
 
