@@ -7,4 +7,48 @@
     <color name="theme_navigation_drawer_bg_dark">#222222</color>
 
     <color name="gray">#666666</color>
+
+
+    <color name="black_54_percent">#8A000000</color>
+    <color name="black_87_percent">#DE000000</color>
+
+    <color name="text_color_primary">#DE000000</color><!-- 87% transparency-->
+    <color name="text_color_secondary">#8A000000</color><!-- 54% transparency-->
+    <color name="text_color_tint">#42000000</color><!-- 26% transparency-->
+    <color name="text_color_divider">#1F000000</color><!-- 12% transparency-->
+
+    <color name="text_color_display4">@color/black_54_percent</color><!-- 54% -->
+    <color name="text_color_display3">@color/black_54_percent</color><!-- 54% -->
+    <color name="text_color_display2">@color/black_54_percent</color><!-- 54% -->
+    <color name="text_color_display1">@color/black_54_percent</color><!-- 54% -->
+    <color name="text_color_headline">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_title">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_subhead">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_body2">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_body1">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_caption">@color/black_54_percent</color><!-- 54% -->
+    <color name="text_color_menu">@color/black_87_percent</color><!-- 87% -->
+    <color name="text_color_button">@color/black_87_percent</color><!-- 87% -->
+
+    <color name="white_54_percent">#8AFFFFFF</color>
+    <color name="white_87_percent">#DEFFFFFF</color>
+
+    <color name="text_color_primary_dark">#DEFFFFFF</color><!-- 87% transparency-->
+    <color name="text_color_secondary_dark">#8AFFFFFF</color><!-- 54% transparency-->
+    <color name="text_color_night_read">#66FFFFFF</color><!-- 40% transparency-->
+    <color name="text_color_tint_dark">#42FFFFFF</color><!-- 26% transparency-->
+    <color name="text_color_divider_dark">#1FFFFFFF</color><!-- 12% transparency-->
+
+    <color name="text_color_display4_dark">@color/white_54_percent</color><!-- 54% -->
+    <color name="text_color_display3_dark">@color/white_54_percent</color><!-- 54% -->
+    <color name="text_color_display2_dark">@color/white_54_percent</color><!-- 54% -->
+    <color name="text_color_display1_dark">@color/white_54_percent</color><!-- 54% -->
+    <color name="text_color_headline_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_title_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_subhead_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_body2_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_body1_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_caption_dark">@color/white_54_percent</color><!-- 54% -->
+    <color name="text_color_menu_dark">@color/white_87_percent</color><!-- 87% -->
+    <color name="text_color_button_dark">@color/white_87_percent</color><!-- 87% -->
 </resources>

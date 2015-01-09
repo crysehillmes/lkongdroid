@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import org.cryse.lkong.R;
@@ -60,6 +62,10 @@ public class NavigationDrawerFragment extends AbstractFragment {
 
     @InjectView(R.id.navigation_drawer_listview)
     ListView mDrawerListView;
+
+    @InjectView(R.id.left_drawer_account_container)
+    FrameLayout mAccountContainer;
+
     private NavigationDrawerAdapter mDrawerAdapter;
     private View mFragmentContainerView;
 
@@ -117,6 +123,10 @@ public class NavigationDrawerFragment extends AbstractFragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, rootView);
+        mAccountContainer.setOnClickListener(view -> {
+            Intent intent = new Intent(getActivity(), SignInActivity.class);
+            startActivity(intent);
+        });
         return rootView;
     }
 

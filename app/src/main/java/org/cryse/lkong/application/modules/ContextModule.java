@@ -22,6 +22,7 @@ public class ContextModule {
         this.mNavigation = navigation;
     }
 
+    @Singleton
     @Provides
     @ApplicationContext
     public Context provideApplicationContext() {
