@@ -1,13 +1,13 @@
 package org.cryse.lkong.logic.restservice.model;
 
-public class ForumListItem {
+public class LKForumListItem {
     private long fid;
     private String name;
 
-    public ForumListItem() {
+    public LKForumListItem() {
     }
 
-    public ForumListItem(long fid, String name) {
+    public LKForumListItem(long fid, String name) {
         this.fid = fid;
         this.name = name;
     }

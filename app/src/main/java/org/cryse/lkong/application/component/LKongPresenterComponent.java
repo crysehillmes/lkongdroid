@@ -3,6 +3,7 @@ package org.cryse.lkong.application.component;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
+import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.NavigationDrawerFragment;
 import org.cryse.lkong.ui.SignInActivity;
 
@@ -15,4 +16,5 @@ import dagger.Component;
 public interface LKongPresenterComponent {
     void inject(SignInActivity activity);
     void inject(NavigationDrawerFragment fragment);
+    void inject(ForumListFragment fragment);
 }

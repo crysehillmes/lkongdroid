@@ -32,6 +32,7 @@ import org.cryse.lkong.presenter.UserInfoPresenter;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
+import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.UserInfoView;
 import org.cryse.utils.ColorUtils;
@@ -384,7 +385,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
                         .placeholder(R.drawable.ic_default_avatar)
                         .into(mAccountAvatarImageView);
             }
-            String secondInfoText = String.format(getString(R.string.account_threads_posts_summary_format, userInfo.getThreads(), userInfo.getPosts()));
+            String secondInfoText = String.format(getString(R.string.format_account_threads_posts_summary, userInfo.getThreads(), userInfo.getPosts()));
             mAccountEmailTextView.setText(secondInfoText);
         }
     }
@@ -401,9 +402,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
 
     @Override
     public void showToast(int text_value, int toastType) {
-        if(text_value == UserInfoPresenter.TOAST_FAILURE_USER_INFO) {
-            ToastProxy.showToast(getActivity(), getString(R.string.toast_failure_get_user_info), toastType);
-        }
+        ToastProxy.showToast(getActivity(), getString(ToastErrorConstant.errorCodeToStringRes(text_value)), toastType);
     }
 
     public void getUserInfo() {

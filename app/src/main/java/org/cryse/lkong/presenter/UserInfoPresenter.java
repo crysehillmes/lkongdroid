@@ -4,6 +4,7 @@ import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.logic.restservice.model.UserInfo;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.UserInfoView;
 
@@ -16,7 +17,6 @@ import timber.log.Timber;
 
 public class UserInfoPresenter implements BasePresenter<UserInfoView> {
     public static final String LOG_TAG = UserInfoPresenter.class.getName();
-    public static final int TOAST_FAILURE_USER_INFO = 19;
 
     LKongForumService lKongForumService;
 
@@ -41,7 +41,7 @@ public class UserInfoPresenter implements BasePresenter<UserInfoView> {
                         },
                         error -> {
                             mView.showUserInfo(null);
-                            mView.showToast(TOAST_FAILURE_USER_INFO, ToastSupport.TOAST_ALERT);
+                            mView.showToast(ToastErrorConstant.TOAST_FAILURE_USER_INFO, ToastSupport.TOAST_ALERT);
                             Timber.d(error, "getUserInfo() failed",  LOG_TAG);
                         },
                         () -> {
