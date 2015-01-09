@@ -18,8 +18,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -43,7 +47,7 @@ import butterknife.InjectView;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends AbstractFragment implements UserInfoView {
-
+    public static final String LOG_TAG = NavigationDrawerFragment.class.getName();
     /**
      * Remember the position of the selected item.
      */
@@ -71,7 +75,15 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     ListView mDrawerListView;
 
     @InjectView(R.id.left_drawer_account_container)
-    FrameLayout mAccountContainer;
+    RelativeLayout mAccountContainer;
+
+
+    @InjectView(R.id.account_imageview_avatar)
+    ImageView mAccountAvatarImageView;
+    @InjectView(R.id.account_textview_username)
+    TextView mAccountUserNameTextView;
+    @InjectView(R.id.account_textview_email)
+    TextView mAccountEmailTextView;
 
     private NavigationDrawerAdapter mDrawerAdapter;
     private View mFragmentContainerView;
@@ -134,9 +146,13 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
         View rootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, rootView);
-        mAccountContainer.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), SignInActivity.class);
-            startActivity(intent);
+        mAccountAvatarImageView.setOnClickListener(view -> {
+            if(!getUserInfoPresenter().isSignedIn()) {
+                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                startActivity(intent);
+            } else {
+                // TODO: Go to profile view
+            }
         });
         return rootView;
     }
@@ -352,9 +368,24 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     }
 
     @Override
-    public void showUserInfo(UserInfo userConfigInfo) {
-        if(userConfigInfo != null) {
-            //Log.d("NavigationDrawerFragment::showUserInfo()", String.format("Uid: %s, UserName: %s", userConfigInfo.getUid(), userConfigInfo.getUsername()));
+    public void showUserInfo(UserInfo userInfo) {
+        if(userInfo != null) {
+            mAccountUserNameTextView.setText(userInfo.getUsername());
+            String uid = Long.toString(userInfo.getUid());
+            if(uid.length() >= 6) {
+                String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",
+                        uid.substring(0,2),
+                        uid.substring(2,4),
+                        uid.substring(4,6)
+                );
+                Picasso.with(getActivity())
+                        .load(avatarUrl)
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(mAccountAvatarImageView);
+            }
+            String secondInfoText = String.format(getString(R.string.account_threads_posts_summary_format, userInfo.getThreads(), userInfo.getPosts()));
+            mAccountEmailTextView.setText(secondInfoText);
         }
     }
 

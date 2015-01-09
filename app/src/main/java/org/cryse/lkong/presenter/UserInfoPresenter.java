@@ -1,6 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.logic.restservice.model.UserInfo;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.ToastSupport;
@@ -41,11 +42,17 @@ public class UserInfoPresenter implements BasePresenter<UserInfoView> {
                         error -> {
                             mView.showUserInfo(null);
                             mView.showToast(TOAST_FAILURE_USER_INFO, ToastSupport.TOAST_ALERT);
-                            Timber.d("getUserInfo() failed", error, LOG_TAG);
+                            Timber.d(error, "getUserInfo() failed",  LOG_TAG);
                         },
                         () -> {
                             // getUserInfo finished.
                         });
+    }
+
+    public boolean isSignedIn() {
+        if(lKongForumService.isSignedIn() == LKongRestService.STATUS_SIGNEDIN)
+            return true;
+        return false;
     }
 
     @Override

@@ -14,6 +14,9 @@ public class UserInfo {
     private int fansnum;
     private int followuidnum;
 
+    private String blacklists;
+    private String customstatus;
+
     private int digestposts;
     private int extcredits1;
     private int extcredits2;
@@ -113,6 +116,22 @@ public class UserInfo {
 
     public void setFollowuidnum(int followuidnum) {
         this.followuidnum = followuidnum;
+    }
+
+    public String getBlacklists() {
+        return blacklists;
+    }
+
+    public void setBlacklists(String blacklists) {
+        this.blacklists = blacklists;
+    }
+
+    public String getCustomstatus() {
+        return customstatus;
+    }
+
+    public void setCustomstatus(String customstatus) {
+        this.customstatus = customstatus;
     }
 
     public int getDigestposts() {
