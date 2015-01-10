@@ -1,4 +1,4 @@
-package org.cryse.lkong.model.converter;
+package org.cryse.lkong.model;
 
 public class ForumModel {
     private long fid;

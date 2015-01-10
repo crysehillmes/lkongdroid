@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumListPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;

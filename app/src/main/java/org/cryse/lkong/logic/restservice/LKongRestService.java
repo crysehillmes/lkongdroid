@@ -16,8 +16,10 @@ import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
-import org.cryse.lkong.logic.restservice.model.UserInfo;
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.UserInfoModel;
+import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.PersistentCookieStore;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
@@ -73,7 +75,7 @@ public class LKongRestService {
         return jsonObject.getBoolean("success");
     }
 
-    public UserInfo getUserConfigInfo() throws Exception {
+    public UserInfoModel getUserConfigInfo() throws Exception {
         checkSignInStatus();
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
@@ -84,7 +86,9 @@ public class LKongRestService {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
         Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-        return customGson.fromJson(responseString, UserInfo.class);
+        LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
+        UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
+        return userInfoModel;
     }
 
     public List<ForumModel> getForumList() throws Exception {

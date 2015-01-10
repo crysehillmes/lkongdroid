@@ -27,7 +27,7 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.logic.restservice.model.UserInfo;
+import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.presenter.UserInfoPresenter;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
@@ -369,9 +369,9 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     }
 
     @Override
-    public void showUserInfo(UserInfo userInfo) {
+    public void showUserInfo(UserInfoModel userInfo) {
         if(userInfo != null) {
-            mAccountUserNameTextView.setText(userInfo.getUsername());
+            mAccountUserNameTextView.setText(userInfo.getUserName());
             String uid = Long.toString(userInfo.getUid());
             if(uid.length() >= 6) {
                 String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",

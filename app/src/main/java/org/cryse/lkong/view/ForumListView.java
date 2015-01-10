@@ -1,6 +1,6 @@
 package org.cryse.lkong.view;
 
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.model.ForumModel;
 
 import java.util.List;
 

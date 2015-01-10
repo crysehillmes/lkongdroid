@@ -1,8 +1,8 @@
 package org.cryse.lkong.logic;
 
 import org.cryse.lkong.logic.restservice.LKongRestService;
-import org.cryse.lkong.logic.restservice.model.UserInfo;
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.UserInfoModel;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserInfo> getUserConfigInfo() {
+    public Observable<UserInfoModel> getUserConfigInfo() {
         return Observable.create(subscriber -> {
             try {
                 subscriber.onNext(mLKongRestService.getUserConfigInfo());
@@ -56,6 +56,4 @@ public class LKongForumService {
     public int isSignedIn() {
         return mLKongRestService.isSignedIn();
     }
-
-
 }

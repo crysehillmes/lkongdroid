@@ -1,7 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastSupport;

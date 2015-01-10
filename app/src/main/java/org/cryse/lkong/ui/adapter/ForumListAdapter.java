@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.model.converter.ForumModel;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;

@@ -2,7 +2,7 @@ package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.restservice.LKongRestService;
-import org.cryse.lkong.logic.restservice.model.UserInfo;
+import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastSupport;
@@ -73,7 +73,7 @@ public class UserInfoPresenter implements BasePresenter<UserInfoView> {
     private class EmptyUserInfoView implements UserInfoView {
 
         @Override
-        public void showUserInfo(UserInfo userConfigInfo) {
+        public void showUserInfo(UserInfoModel userConfigInfo) {
 
         }
 

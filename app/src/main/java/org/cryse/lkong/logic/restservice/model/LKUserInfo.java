@@ -2,7 +2,7 @@ package org.cryse.lkong.logic.restservice.model;
 
 import java.util.Date;
 
-public class UserInfo {
+public class LKUserInfo {
     private int email;
     private int gender;
     private int invite;
