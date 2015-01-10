@@ -1,5 +1,7 @@
 package org.cryse.lkong.presenter;
 
+import com.snappydb.SnappydbException;
+
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -7,6 +9,7 @@ import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.ForumListView;
 
+import java.net.ConnectException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,7 +45,6 @@ public class ForumListPresenter implements BasePresenter<ForumListView> {
                         },
                         error -> {
                             mView.setLoading(false);
-                            mView.showForumList(null);
                             mView.showToast(ToastErrorConstant.TOAST_FAILURE_FORUM_LIST, ToastSupport.TOAST_ALERT);
                             Timber.d(error, "ForumListPresenter::getForumList() on", LOG_TAG);
                         },
