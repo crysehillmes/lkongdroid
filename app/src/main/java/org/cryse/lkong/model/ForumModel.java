@@ -1,6 +1,8 @@
 package org.cryse.lkong.model;
 
-public class ForumModel {
+import java.io.Serializable;
+
+public class ForumModel implements Serializable {
     private long fid;
     private String name;
     private String icon;
