@@ -1,8 +1,9 @@
 package org.cryse.lkong.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class UserInfoModel {
+public class UserInfoModel implements Serializable {
     private int email;
     private int gender;
     private int phoneNum;

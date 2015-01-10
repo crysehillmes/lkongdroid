@@ -38,8 +38,6 @@ public class ForumListPresenter implements BasePresenter<ForumListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d(String.format("ForumListPresenter::showForumList() mView instanceof EmptyForumListView = %s", mView instanceof EmptyForumListView), LOG_TAG);
-                            Timber.d(String.format("ForumListPresenter::showForumList() result.size() = %d", result.size()), LOG_TAG);
                             mView.showForumList(result);
                         },
                         error -> {

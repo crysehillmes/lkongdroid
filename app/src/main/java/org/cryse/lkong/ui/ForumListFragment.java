@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
 public class ForumListFragment extends MainActivityFragment implements ForumListView{
     private static final String LOG_TAG = ForumListFragment.class.getName();
@@ -131,9 +130,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     @Override
     public void showForumList(List<ForumModel> forumList) {
         if(forumList == null) return;
-        Timber.d(String.format("ForumListFragment::showForumList() forumList.size() = %d", forumList.size()), LOG_TAG);
         mListAdapter.replaceWith(forumList);
-        Timber.d(String.format("ForumListFragment::showForumList() mListAdapter.getItemCount() = %d", mListAdapter.getItemCount()), LOG_TAG);
     }
 
     @Override
