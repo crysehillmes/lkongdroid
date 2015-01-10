@@ -5,6 +5,7 @@ import com.snappydb.SnappydbException;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.UserInfoModel;
 
 import java.util.List;
@@ -84,6 +85,18 @@ public class LKongForumService {
                     clearCachedForumList();
                 else
                     subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start);
+                subscriber.onNext(forumModelList);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
             }
         });
     }

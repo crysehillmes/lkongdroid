@@ -1,7 +1,7 @@
 package org.cryse.lkong.logic.restservice.model;
 
 public class LKForumInfo {
-    private int fid;
+    private long fid;
     private String name;
     private String description;
     private String status;
@@ -12,11 +12,11 @@ public class LKForumInfo {
     private String blackboard;
     private String[] moderators;
 
-    public int getFid() {
+    public long getFid() {
         return fid;
     }
 
-    public void setFid(int fid) {
+    public void setFid(long fid) {
         this.fid = fid;
     }
 
