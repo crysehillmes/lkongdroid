@@ -3,6 +3,7 @@ package org.cryse.widget.recyclerview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,7 @@ public class SuperRecyclerView extends FrameLayout {
     protected int     mMoreProgressId;
     protected int     mColumnsCount;
     protected RecyclerView.LayoutManager mLayoutManager;
+    protected RecyclerView.ItemAnimator mItemAnimator;
     protected RecyclerView.OnScrollListener mOnScrollListener;
 
     protected OnMoreListener mOnMoreListener;
@@ -139,6 +141,9 @@ public class SuperRecyclerView extends FrameLayout {
         if (mRecyclerView !=null) {
             if(mLayoutManager == null)
                 mLayoutManager = getDefaultLayoutManager();
+            if(mItemAnimator == null)
+                mItemAnimator = new DefaultItemAnimator();
+            mRecyclerView.setItemAnimator(mItemAnimator);
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setClipToPadding(mClipToPadding);
 
@@ -427,6 +432,14 @@ public class SuperRecyclerView extends FrameLayout {
 
     public void setLayoutManager(RecyclerView.LayoutManager manager) {
         mLayoutManager = manager;
+        if(mRecyclerView != null)
+            mRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+    public void setItemAnimator(RecyclerView.ItemAnimator itemAnimator) {
+        mItemAnimator = itemAnimator;
+        if(mRecyclerView != null)
+            mRecyclerView.setItemAnimator(mItemAnimator);
     }
 
     public interface OnMoreListener {
