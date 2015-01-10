@@ -40,8 +40,6 @@ public class UserAccountDao {
                 "'" + COLUMN_IDENTITY_COOKIE + "' TEXT);"); // 6: identityCookie
     }
 
-
-    private static final String SQL_INSERT = "SELECT * FROM " + "TABLE_NAME";
     public long insert(UserAccountModel userAccount) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID, userAccount.getUserId());
@@ -82,7 +80,7 @@ public class UserAccountDao {
         );
     }
 
-    private static final String QUERY_ALL = "SELECT * FROM " + "TABLE_NAME";
+    private static final String QUERY_ALL = "SELECT * FROM " + TABLE_NAME +";";
 
     public List<UserAccountModel> loadAll() {
         List<UserAccountModel> accounts = new ArrayList<UserAccountModel>();
@@ -91,8 +89,8 @@ public class UserAccountDao {
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            UserAccountModel comment = readEntity(cursor, 0);
-            accounts.add(comment);
+            UserAccountModel userAccount = readEntity(cursor, 0);
+            accounts.add(userAccount);
             cursor.moveToNext();
         }
         // make sure to close the cursor
