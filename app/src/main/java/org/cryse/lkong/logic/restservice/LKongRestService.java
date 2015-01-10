@@ -146,7 +146,6 @@ public class LKongRestService {
     public int isSignedIn() {
         String auth = null;
         String dzsbhey = null;
-        String identity = null;
         for(HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
             if(cookie.getName().compareToIgnoreCase("auth") == 0) {
                 // auth cookie pair
@@ -156,13 +155,9 @@ public class LKongRestService {
                 // dzsbhey cookie pair
                 if(cookie.hasExpired()) return STATUS_EXPIRED;
                 dzsbhey = cookie.getValue();
-            } else if (cookie.getName().compareToIgnoreCase("identity") == 0) {
-                // identity cookie pair
-                if(cookie.hasExpired()) return STATUS_EXPIRED;
-                identity = cookie.getValue();
             }
         }
-        if(!TextUtils.isEmpty(auth) && !TextUtils.isEmpty(dzsbhey) && !TextUtils.isEmpty(identity))
+        if(!TextUtils.isEmpty(auth) && !TextUtils.isEmpty(dzsbhey))
             return STATUS_SIGNEDIN;
         else
             return STATUS_NOT_SIGNEDIN;
