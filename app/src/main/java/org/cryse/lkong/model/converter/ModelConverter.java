@@ -29,6 +29,7 @@ public class ModelConverter {
         userInfoModel.setUid(lkUserInfo.getUid());
         userInfoModel.setUserName(lkUserInfo.getUsername());
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
+        userInfoModel.setUserIcon(uidToAvatarUrl(lkUserInfo.getUid()));
         return userInfoModel;
     }
 

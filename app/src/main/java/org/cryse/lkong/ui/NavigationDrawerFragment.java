@@ -372,19 +372,11 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     public void showUserInfo(UserInfoModel userInfo) {
         if(userInfo != null) {
             mAccountUserNameTextView.setText(userInfo.getUserName());
-            String uid = Long.toString(userInfo.getUid());
-            if(uid.length() >= 6) {
-                String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",
-                        uid.substring(0,2),
-                        uid.substring(2,4),
-                        uid.substring(4,6)
-                );
-                Picasso.with(getActivity())
-                        .load(avatarUrl)
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
-                        .into(mAccountAvatarImageView);
-            }
+            Picasso.with(getActivity())
+                    .load(userInfo.getUserIcon())
+                    .error(R.drawable.ic_default_avatar)
+                    .placeholder(R.drawable.ic_default_avatar)
+                    .into(mAccountAvatarImageView);
             String secondInfoText = String.format(getString(R.string.format_account_threads_posts_summary, userInfo.getThreads(), userInfo.getPosts()));
             mAccountEmailTextView.setText(secondInfoText);
         }
@@ -406,8 +398,6 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     }
 
     public void getUserInfo() {
-        // Get from local first
-        // Get from web if failed.
         getUserInfoPresenter().getUserInfo();
     }
 

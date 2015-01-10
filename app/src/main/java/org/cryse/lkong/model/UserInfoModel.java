@@ -9,6 +9,7 @@ public class UserInfoModel implements Serializable {
     private int phoneNum;
     private Date regDate;
     private long uid;
+    private String userIcon;
     private long me;
     private String userName;
     private int fansCount;
@@ -57,6 +58,14 @@ public class UserInfoModel implements Serializable {
 
     public void setUid(long uid) {
         this.uid = uid;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
+    }
+
+    public void setUserIcon(String userIcon) {
+        this.userIcon = userIcon;
     }
 
     public long getMe() {
