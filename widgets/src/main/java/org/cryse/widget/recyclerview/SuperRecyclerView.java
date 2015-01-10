@@ -183,8 +183,8 @@ public class SuperRecyclerView extends FrameLayout {
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             private void checkEmptyState() {
                 mProgress.setVisibility(View.GONE);
-                isLoadingMore = false;
-                mPtrLayout.setRefreshing(false);
+                // isLoadingMore = false;
+                // mPtrLayout.setRefreshing(false);
                 if (mRecyclerView.getAdapter().getItemCount() == 0 && mEmptyId != 0) {
                     mEmpty.setVisibility(View.VISIBLE);
                 } else if (mEmptyId != 0) {
