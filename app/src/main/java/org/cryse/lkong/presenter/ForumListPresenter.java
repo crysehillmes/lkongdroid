@@ -44,14 +44,13 @@ public class ForumListPresenter implements BasePresenter<ForumListView> {
                             mView.showForumList(result);
                         },
                         error -> {
+                            Timber.d(error, "ForumListPresenter::getForumList() onError()", LOG_TAG);
                             mView.setLoading(false);
                             mView.showToast(ToastErrorConstant.TOAST_FAILURE_FORUM_LIST, ToastSupport.TOAST_ALERT);
-                            Timber.d(error, "ForumListPresenter::getForumList() on", LOG_TAG);
                         },
                         () -> {
+                            Timber.d("ForumListPresenter::getForumList() onComplete()", LOG_TAG);
                             mView.setLoading(false);
-                            // getForumList() finished.
-                            Timber.d("ForumListPresenter::getForumList() finished", LOG_TAG);
                         });
     }
 

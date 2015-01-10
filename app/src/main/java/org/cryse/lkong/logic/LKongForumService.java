@@ -52,7 +52,6 @@ public class LKongForumService {
                 } else {
                     if(mLKongDatabase.isCachedUserInfo()) {
                         subscriber.onNext(mLKongDatabase.getCachedUserInfo());
-                        Timber.d("LKongForumService::getUserConfigInfo() from database.", LOG_TAG);
                     }
                     UserInfoModel userInfoModel = mLKongRestService.getUserConfigInfo();
                     if(userInfoModel != null)
@@ -74,7 +73,6 @@ public class LKongForumService {
             try {
                 if(mLKongDatabase.isCachedForumList()) {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
-                    Timber.d("LKongForumService::getForumList() from database.", LOG_TAG);
                 }
                 List<ForumModel> forumModelList = mLKongRestService.getForumList();
                 if(forumModelList != null)

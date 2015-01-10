@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +20,7 @@ import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.ForumListView;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ForumListFragment extends MainActivityFragment implements ForumListView{
+public class ForumListFragment extends MainActivityFragment implements ForumListView {
     private static final String LOG_TAG = ForumListFragment.class.getName();
     @InjectView(R.id.fragment_forum_list_recyclerview)
-    RecyclerView mRecyclerView;
+    SuperRecyclerView mRecyclerView;
 
     ForumListAdapter mListAdapter;
 
@@ -90,7 +90,6 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().getForumList();
     }
 
     @Override
@@ -117,6 +116,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getPresenter().getForumList();
     }
 
     private void initRecyclerView() {
@@ -125,6 +125,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mListAdapter = new ForumListAdapter(getActivity(), mForumList);
         mRecyclerView.setAdapter(mListAdapter);
+        mRecyclerView.setRefreshListener(() -> getPresenter().getForumList());
     }
 
     @Override
@@ -135,12 +136,16 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
 
     @Override
     public void setLoading(Boolean value) {
-
+        if(value) {
+            mRecyclerView.getSwipeToRefresh().setRefreshing(true);
+        } else {
+            mRecyclerView.getSwipeToRefresh().setRefreshing(false);
+        }
     }
 
     @Override
     public Boolean isLoading() {
-        return null;
+        return mRecyclerView.getSwipeToRefresh().isRefreshing();
     }
 
     @Override
