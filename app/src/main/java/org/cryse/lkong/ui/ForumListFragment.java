@@ -132,8 +132,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     public void showForumList(List<ForumModel> forumList) {
         if(forumList == null) return;
         Timber.d(String.format("ForumListFragment::showForumList() forumList.size() = %d", forumList.size()), LOG_TAG);
-        mListAdapter.clear();
-        mListAdapter.addAll(forumList);
+        mListAdapter.replaceWith(forumList);
         Timber.d(String.format("ForumListFragment::showForumList() mListAdapter.getItemCount() = %d", mListAdapter.getItemCount()), LOG_TAG);
     }
 

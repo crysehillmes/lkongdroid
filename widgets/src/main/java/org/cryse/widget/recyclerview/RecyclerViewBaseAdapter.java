@@ -3,10 +3,9 @@ package org.cryse.widget.recyclerview;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 
+import java.util.Collection;
 import java.util.List;
 
 public abstract class RecyclerViewBaseAdapter<T extends RecyclerViewHolder, S> extends RecyclerView.Adapter<T> {
@@ -21,11 +20,11 @@ public abstract class RecyclerViewBaseAdapter<T extends RecyclerViewHolder, S> e
         this.mItemList = items;
     }
 
-    public void addAll(List<S> items) {
+    public void addAll(Collection<S> items) {
         addAll(LAST_POSITION, items);
     }
 
-    public void addAll(int position, List<S> items) {
+    public void addAll(int position, Collection<S> items) {
         position = position == LAST_POSITION ? getItemCount() : position;
         mItemList.addAll(position, items);
 
@@ -50,6 +49,22 @@ public abstract class RecyclerViewBaseAdapter<T extends RecyclerViewHolder, S> e
             mItemList.remove(position);
             notifyItemRemoved(position);
         }
+    }
+
+    public void removeRange(int position, int count) {
+        mItemList.subList(position, position + count).clear();
+        notifyItemRangeRemoved(position, position + count - 1);
+    }
+
+    public void replaceWith(Collection<S> items) {
+        int newCount = items.size();
+        int oldCount = items.size();
+        int delCount = oldCount - newCount;
+        mItemList.clear();
+        mItemList.addAll(items);
+        if(delCount > 0)
+            notifyItemRangeRemoved(newCount, delCount);
+        notifyItemRangeChanged(0, newCount);
     }
 
     public void clear() {
