@@ -1,5 +1,7 @@
 package org.cryse.lkong.logic;
 
+import com.snappydb.SnappydbException;
+
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
@@ -53,12 +55,16 @@ public class LKongForumService {
                         Timber.d("LKongForumService::getUserConfigInfo() from database.", LOG_TAG);
                     }
                     UserInfoModel userInfoModel = mLKongRestService.getUserConfigInfo();
-                    mLKongDatabase.cacheUserInfo(userInfoModel);
+                    if(userInfoModel != null)
+                        mLKongDatabase.cacheUserInfo(userInfoModel);
                     subscriber.onNext(userInfoModel);
                 }
                 subscriber.onCompleted();
             } catch (Exception e) {
-                subscriber.onError(e);
+                if(e instanceof SnappydbException)
+                    clearCachedUserInfo();
+                else
+                    subscriber.onError(e);
             }
         });
     }
@@ -71,16 +77,36 @@ public class LKongForumService {
                     Timber.d("LKongForumService::getForumList() from database.", LOG_TAG);
                 }
                 List<ForumModel> forumModelList = mLKongRestService.getForumList();
-                mLKongDatabase.cacheForumList(forumModelList);
+                if(forumModelList != null)
+                    mLKongDatabase.cacheForumList(forumModelList);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
-                subscriber.onError(e);
+                if(e instanceof SnappydbException)
+                    clearCachedForumList();
+                else
+                    subscriber.onError(e);
             }
         });
     }
 
     public int isSignedIn() {
         return mLKongRestService.isSignedIn();
+    }
+
+    private void clearCachedForumList() {
+        try {
+            mLKongDatabase.removeCachedForumList();
+        } catch (Exception e) {
+            Timber.e(e, "Error clearCachedForumList()", LOG_TAG);
+        }
+    }
+
+    private void clearCachedUserInfo() {
+        try {
+            mLKongDatabase.removeCachedUserInfo();
+        } catch (Exception e) {
+            Timber.e(e, "Error clearCachedUserInfo()", LOG_TAG);
+        }
     }
 }
