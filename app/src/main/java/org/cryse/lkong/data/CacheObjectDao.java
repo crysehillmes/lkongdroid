@@ -19,6 +19,8 @@ public class CacheObjectDao {
     public static final String COLUMN_CREATE_TIME = "CACHE_OBJECT_CREATE_TIME";
     public static final String COLUMN_EXPIRE_TIME = "CACHE_OBJECT_EXPIRE_TIME";
 
+    public static final String TABLE_PRIMARY_KEY = COLUMN_KEY;
+
 
     @Inject
     public CacheObjectDao(LKongDatabaseHelper helper) {
@@ -29,7 +31,7 @@ public class CacheObjectDao {
     public static void createTableStatement(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'" + TABLE_NAME + "' (" + //
-                "'" + COLUMN_KEY + "' LONG," + // 0: key
+                "'" + COLUMN_KEY + "' LONG PRIMARY KEY," + // 0: key
                 "'" + COLUMN_VALUE + "' TEXT," + // 1: value
                 "'" + COLUMN_CREATE_TIME + "' TEXT," + // 2: createTime
                 "'" + COLUMN_EXPIRE_TIME + "' TEXT);"); // 3: expireTime
@@ -47,12 +49,20 @@ public class CacheObjectDao {
     public int delete(String key) {
         return mDatabase.delete(
                 TABLE_NAME,
-                COLUMN_KEY + " = " + key,
-                null);
+                TABLE_PRIMARY_KEY + " = ?",
+                new String[] { key });
     }
 
-    public void load(CacheObjectModel cacheObject) {
+    public static final String LOAD_QUERY = "SELECT * FROM " + TABLE_NAME + " WHERE "
+            + TABLE_PRIMARY_KEY + " = ?";
+    public CacheObjectModel load(String key) {
 
+        Cursor c = mDatabase.rawQuery(LOAD_QUERY, new String[]{key});
+
+        if (c != null)
+            c.moveToFirst();
+
+        return readEntity(c, 0);
     }
 
     public int update(CacheObjectModel cacheObject) {
@@ -64,8 +74,8 @@ public class CacheObjectDao {
         return mDatabase.update(
                 TABLE_NAME,
                 values,
-                COLUMN_KEY + " = " + cacheObject.getKey(),
-                null
+                TABLE_PRIMARY_KEY + " = ?",
+                new String[] { cacheObject.getKey() }
         );
     }
 

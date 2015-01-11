@@ -31,7 +31,7 @@ public class UserAccountDao {
     public static void createTableStatement(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'" + TABLE_NAME + "' (" + //
-                "'" + COLUMN_USER_ID + "' LONG," + // 0: userId
+                "'" + COLUMN_USER_ID + "' LONG PRIMARY KEY," + // 0: userId
                 "'" + COLUMN_EMAIL + "' TEXT," + // 1: email
                 "'" + COLUMN_USER_NAME + "' TEXT," + // 2: userName
                 "'" + COLUMN_USER_AVATAR + "' TEXT," + // 3: userAvatar
@@ -59,8 +59,16 @@ public class UserAccountDao {
                     null);
     }
 
-    public void load(UserAccountModel userAccount) {
+    public static final String LOAD_QUERY = "SELECT  * FROM " + TABLE_NAME + " WHERE "
+            + COLUMN_USER_ID + " = ?";
+    public UserAccountModel load(long userId) {
 
+        Cursor c = mDatabase.rawQuery(LOAD_QUERY, new String[]{Long.toString(userId)});
+
+        if (c != null)
+            c.moveToFirst();
+
+        return readEntity(c, 0);
     }
 
     public int update(UserAccountModel userAccount) {
@@ -75,8 +83,8 @@ public class UserAccountDao {
         return mDatabase.update(
                 TABLE_NAME,
                 values,
-                COLUMN_USER_ID + " = " + userAccount.getUserId(),
-                null
+                COLUMN_USER_ID + " = ?" ,
+                new String[] { Long.toString(userAccount.getUserId()) }
         );
     }
 
