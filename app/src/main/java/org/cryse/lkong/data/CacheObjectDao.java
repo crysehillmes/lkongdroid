@@ -63,4 +63,21 @@ public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
     public int update(CacheObjectModel entity) {
         return super.update(entity.getKey(), entity);
     }
+
+    public void putCache(String key, String value, Date expireTime) {
+        long ret = this.insert(new CacheObjectModel(key, value, new Date(), expireTime));
+        if(ret == -1)
+            throw new RuntimeException("Cache object insert error.");
+    }
+
+    public String getCache(String key) {
+        CacheObjectModel cacheObject = load(key);
+        if(cacheObject == null) return null;
+        Date nowTime = new Date();
+        if((cacheObject.getExpireTime() != null && nowTime.before(cacheObject.getExpireTime())) || cacheObject.getExpireTime() == null) {
+            return cacheObject.getValue();
+        } else {
+            throw new RuntimeException("Cache expired.");
+        }
+    }
 }

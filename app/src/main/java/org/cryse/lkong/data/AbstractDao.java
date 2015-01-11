@@ -36,8 +36,12 @@ public abstract class AbstractDao<T, K> {
         String LOAD_QUERY = "SELECT * FROM " + mTableName + " WHERE " + mPrimaryKeyColumn + " = ?";
         Cursor c = mDatabase.rawQuery(LOAD_QUERY, new String[]{ key.toString() });
 
-        if (c != null)
-            c.moveToFirst();
+        if (c != null) {
+            if(!c.moveToFirst())
+                return null;
+        } else {
+            return null;
+        }
 
         return readEntity(c, 0);
     }
