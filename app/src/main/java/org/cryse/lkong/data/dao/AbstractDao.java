@@ -18,6 +18,8 @@ public abstract class AbstractDao<T, K> {
     public AbstractDao(LKongDatabaseHelper helper, boolean writable, String tableName, String primaryKeyColumn) {
         this.mSQLiteOpenHelper = helper;
         this.mDatabase = writable ? mSQLiteOpenHelper.getWritableDatabase() : mSQLiteOpenHelper.getReadableDatabase();
+        this.mTableName = tableName;
+        this.mPrimaryKeyColumn = primaryKeyColumn;
     }
 
     public boolean isOpen() {
@@ -30,7 +32,7 @@ public abstract class AbstractDao<T, K> {
 
     public long insert(T entity) {
         ContentValues values = entityToContentValues(entity);
-        return mDatabase.insert(mTableName, null, values);
+        return mDatabase.insertWithOnConflict(mTableName, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public int delete(K key) {

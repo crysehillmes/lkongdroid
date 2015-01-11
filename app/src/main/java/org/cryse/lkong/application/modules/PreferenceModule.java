@@ -6,9 +6,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.ApplicationContext;
+import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.LongPreference;
 import org.cryse.utils.preference.PreferenceConstant;
+import org.cryse.utils.preference.StringPreference;
 
 import javax.inject.Singleton;
 
@@ -32,5 +35,11 @@ public class PreferenceModule {
     @PrefsNightMode
     BooleanPreference provideIsNightMode(SharedPreferences preferences) {
         return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE, PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE);
+    }
+
+    @Provides
+    @PrefsDefaultAccountUid
+    LongPreference provideDefaultAccountUid(SharedPreferences preferences) {
+        return new LongPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID, PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID_VALUE);
     }
 }

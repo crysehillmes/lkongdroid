@@ -36,4 +36,10 @@
             android:imeOptions="actionDone" />
 
     </org.cryse.widget.FloatLabelLayout>
+    <ProgressBar
+        android:id="@+id/progressbar_signin"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="invisible"/>
 </LinearLayout>

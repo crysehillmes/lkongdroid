@@ -32,8 +32,8 @@ public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
         db.execSQL("CREATE TABLE " + constraint + "'" + TABLE_NAME + "' (" + //
                 "'" + COLUMN_KEY + "' LONG PRIMARY KEY," + // 0: key
                 "'" + COLUMN_VALUE + "' TEXT," + // 1: value
-                "'" + COLUMN_CREATE_TIME + "' TEXT," + // 2: createTime
-                "'" + COLUMN_EXPIRE_TIME + "' TEXT);"); // 3: expireTime
+                "'" + COLUMN_CREATE_TIME + "' LONG," + // 2: createTime
+                "'" + COLUMN_EXPIRE_TIME + "' LONG);"); // 3: expireTime
     }
 
     @Override
@@ -41,8 +41,8 @@ public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
         ContentValues values = new ContentValues();
         values.put(COLUMN_KEY, entity.getKey());
         values.put(COLUMN_VALUE, entity.getValue());
-        values.put(COLUMN_CREATE_TIME, entity.getCreateTime().getTime());
-        values.put(COLUMN_EXPIRE_TIME, entity.getExpireTime().getTime());
+        values.put(COLUMN_CREATE_TIME, (entity.getCreateTime() == null) ? null : entity.getCreateTime().getTime());
+        values.put(COLUMN_EXPIRE_TIME, (entity.getExpireTime() == null) ? null : entity.getExpireTime().getTime());
         return values;
     }
 
