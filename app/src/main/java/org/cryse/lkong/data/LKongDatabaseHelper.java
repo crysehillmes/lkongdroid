@@ -15,6 +15,7 @@ public class LKongDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         UserAccountDao.createTableStatement(db, false);
+        CacheObjectDao.createTableStatement(db, false);
     }
 
     @Override

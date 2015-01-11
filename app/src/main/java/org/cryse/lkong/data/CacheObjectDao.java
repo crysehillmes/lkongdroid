@@ -4,16 +4,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
-public class CacheObjectDao {
-    private LKongDatabaseHelper mSQLiteOpenHelper;
-    private SQLiteDatabase mDatabase;
+public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
     public static final String TABLE_NAME = "CACHE_OBJECT";
+
     public static final String COLUMN_KEY = "CACHE_OBJECT_KEY";
     public static final String COLUMN_VALUE = "CACHE_OBJECT_VALUE";
     public static final String COLUMN_CREATE_TIME = "CACHE_OBJECT_CREATE_TIME";
@@ -24,8 +21,7 @@ public class CacheObjectDao {
 
     @Inject
     public CacheObjectDao(LKongDatabaseHelper helper) {
-        this.mSQLiteOpenHelper = helper;
-        this.mDatabase = mSQLiteOpenHelper.getWritableDatabase();
+        super(helper, true, TABLE_NAME, TABLE_PRIMARY_KEY);
     }
 
     public static void createTableStatement(SQLiteDatabase db, boolean ifNotExists) {
@@ -37,64 +33,14 @@ public class CacheObjectDao {
                 "'" + COLUMN_EXPIRE_TIME + "' TEXT);"); // 3: expireTime
     }
 
-    public long insert(CacheObjectModel cacheObject) {
+    @Override
+    public ContentValues entityToContentValues(CacheObjectModel entity) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_KEY, cacheObject.getKey());
-        values.put(COLUMN_VALUE, cacheObject.getValue());
-        values.put(COLUMN_CREATE_TIME, cacheObject.getCreateTime().getTime());
-        values.put(COLUMN_EXPIRE_TIME, cacheObject.getExpireTime().getTime());
-        return mDatabase.insert(TABLE_NAME, null, values);
-    }
-
-    public int delete(String key) {
-        return mDatabase.delete(
-                TABLE_NAME,
-                TABLE_PRIMARY_KEY + " = ?",
-                new String[] { key });
-    }
-
-    public static final String LOAD_QUERY = "SELECT * FROM " + TABLE_NAME + " WHERE "
-            + TABLE_PRIMARY_KEY + " = ?";
-    public CacheObjectModel load(String key) {
-
-        Cursor c = mDatabase.rawQuery(LOAD_QUERY, new String[]{key});
-
-        if (c != null)
-            c.moveToFirst();
-
-        return readEntity(c, 0);
-    }
-
-    public int update(CacheObjectModel cacheObject) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_KEY, cacheObject.getKey());
-        values.put(COLUMN_VALUE, cacheObject.getValue());
-        values.put(COLUMN_CREATE_TIME, cacheObject.getCreateTime().getTime());
-        values.put(COLUMN_EXPIRE_TIME, cacheObject.getExpireTime().getTime());
-        return mDatabase.update(
-                TABLE_NAME,
-                values,
-                TABLE_PRIMARY_KEY + " = ?",
-                new String[] { cacheObject.getKey() }
-        );
-    }
-
-    private static final String QUERY_ALL = "SELECT * FROM " + TABLE_NAME +";";
-
-    public List<CacheObjectModel> loadAll() {
-        List<CacheObjectModel> cacheObjects = new ArrayList<CacheObjectModel>();
-
-        Cursor cursor = mDatabase.rawQuery(QUERY_ALL, new String[]{});
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            CacheObjectModel cacheObject = readEntity(cursor, 0);
-            cacheObjects.add(cacheObject);
-            cursor.moveToNext();
-        }
-        // make sure to close the cursor
-        cursor.close();
-        return cacheObjects;
+        values.put(COLUMN_KEY, entity.getKey());
+        values.put(COLUMN_VALUE, entity.getValue());
+        values.put(COLUMN_CREATE_TIME, entity.getCreateTime().getTime());
+        values.put(COLUMN_EXPIRE_TIME, entity.getExpireTime().getTime());
+        return values;
     }
 
     public CacheObjectModel readEntity(Cursor cursor, int offset) {
@@ -112,5 +58,9 @@ public class CacheObjectDao {
         entity.setValue(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setCreateTime(cursor.isNull(offset + 2) ? null : new Date(cursor.getLong(offset + 2)));
         entity.setExpireTime(cursor.isNull(offset + 3) ? null : new Date(cursor.getLong(offset + 3)));
+    }
+
+    public int update(CacheObjectModel entity) {
+        return super.update(entity.getKey(), entity);
     }
 }
