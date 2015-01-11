@@ -1,7 +1,13 @@
 package org.cryse.lkong.model.converter;
 
+import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
+import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.UserInfoModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
@@ -24,13 +30,32 @@ public class ModelConverter {
         return userInfoModel;
     }
 
+    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList) {
+        List<ForumThreadModel> threadList = new ArrayList<ForumThreadModel>();
+        for(LKForumThreadItem item : lkForumThreadList.getData()) {
+            ForumThreadModel threadModel = new ForumThreadModel();
+            threadModel.setSortKey(item.getSortkey());
+            threadModel.setUserName(item.getUsername());
+            threadModel.setUid(item.getUid());
+            threadModel.setClosed(item.getClosed());
+            threadModel.setDateline(item.getDateline());
+            threadModel.setDigest(item.getDigest());
+            threadModel.setFid(item.getFid());
+            threadModel.setId(item.getId());
+            threadModel.setReplyCount(item.getReplynum());
+            threadModel.setSubject(item.getSubject());
+            threadList.add(threadModel);
+        }
+        return threadList;
+    }
+
     public static String uidToAvatarUrl(long uid) {
         String uidString = String.format("%1$06d", uid);
         String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",
-                uidString.substring(0,2),
-                uidString.substring(2,4),
-                uidString.substring(4,6)
-        );
+                    uidString.substring(0,2),
+                    uidString.substring(2,4),
+                    uidString.substring(4,6)
+            );
         return avatarUrl;
     }
 

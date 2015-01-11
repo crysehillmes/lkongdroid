@@ -5,6 +5,7 @@ import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.SignInResult;
+import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.LKAuthObject;
 
@@ -111,6 +112,18 @@ public class LKongForumService {
                 List<ForumModel> forumModelList = mLKongRestService.getForumList();
                 if (forumModelList != null)
                     mLKongDatabase.cacheForumList(forumModelList);
+                subscriber.onNext(forumModelList);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {

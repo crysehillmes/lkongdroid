@@ -18,9 +18,11 @@ import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
+import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.SignInResult;
+import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
@@ -55,7 +57,8 @@ public class LKongRestService {
         this.cookieManager = new CookieManager(
         );
         this.okHttpClient.setCookieHandler(cookieManager);
-        this.gson = new Gson();
+
+        this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     }
 
     public SignInResult signIn(String email, String password) throws Exception {
@@ -97,8 +100,7 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-        LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
+        LKUserInfo lkUserInfo = gson.fromJson(responseString, LKUserInfo.class);
         UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
         return userInfoModel;
     }
@@ -143,7 +145,7 @@ public class LKongRestService {
             ForumModel forumModel = new ForumModel();
             forumModel.setFid(item.getFid());
             forumModel.setName(item.getName());
-            forumModel.setIcon(getLKForumIconUrl(item.getFid()));
+            forumModel.setIcon(ModelConverter.fidToForumIconUrl(item.getFid()));
 
             try {
                 Request itemInfoRequest = new Request.Builder()
@@ -171,7 +173,23 @@ public class LKongRestService {
         }
         return forumModels;
     }
+    
+    public List<ForumThreadModel> getForumThreadList(long fid, long start) throws Exception {
+        String url = LKONG_INDEX_URL + "?mod=data&sars=forum/" + Long.toString(fid);
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
 
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKForumThreadList lkUserInfo = gson.fromJson(responseString, LKForumThreadList.class);
+        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lkUserInfo);
+        return threadList;
+    }
+    
     private static String decompress(byte[] bytes) throws Exception {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         GZIPInputStream gis = new GZIPInputStream(byteArrayInputStream);
