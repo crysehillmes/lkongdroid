@@ -1,9 +1,6 @@
 package org.cryse.lkong.logic;
 
-import com.snappydb.SnappydbException;
-
 import org.cryse.lkong.data.LKongDatabase;
-import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
@@ -100,10 +97,7 @@ public class LKongForumService {
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
-                if (e instanceof SnappydbException)
-                    clearCachedForumList();
-                else
-                    subscriber.onError(e);
+                subscriber.onError(e);
             }
         });
     }

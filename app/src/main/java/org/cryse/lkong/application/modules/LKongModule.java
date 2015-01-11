@@ -7,7 +7,6 @@ import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabaseHelper;
 import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
-import org.cryse.lkong.data.impl.LKongDatabaseSnappyImpl;
 import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.restservice.LKongRestService;
