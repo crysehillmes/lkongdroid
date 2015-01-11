@@ -3,9 +3,6 @@ package org.cryse.lkong.model.converter;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.UserInfoModel;
 
-/**
- * Created by cryse on 1/10/15.
- */
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
         UserInfoModel userInfoModel = new UserInfoModel();
@@ -22,6 +19,7 @@ public class ModelConverter {
         userInfoModel.setPosts(lkUserInfo.getPosts());
         userInfoModel.setUid(lkUserInfo.getUid());
         userInfoModel.setUserName(lkUserInfo.getUsername());
+        userInfoModel.setUserIcon(uidToAvatarUrl(lkUserInfo.getUid()));
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
         return userInfoModel;
     }

@@ -6,7 +6,7 @@ import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.UserInfoModel;
-import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.LKAuthObject;
 
 import java.util.List;
 
@@ -75,10 +75,15 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<UserAccountEntity>> getAllUserAccounts() {
+    public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
-                subscriber.onNext(mLKongDatabase.getAllUserAccounts());
+                UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject);
+                UserAccountEntity userAccountEntity = mLKongDatabase.getUserAccount(uid);
+                userAccountEntity.setUserName(userInfoModel.getUserName());
+                userAccountEntity.setUserAvatar(userInfoModel.getUserIcon());
+                mLKongDatabase.updateUserAccount(userAccountEntity);
+                subscriber.onNext(userAccountEntity);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
@@ -86,16 +91,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserInfoModel> getUserConfigInfo() {
+    public Observable<List<UserAccountEntity>> getAllUserAccounts() {
         return Observable.create(subscriber -> {
             try {
-                if(mLKongRestService.isSignedIn() != LKongRestService.STATUS_SIGNEDIN) {
-                    subscriber.onNext(null);
-                } else {
-                    UserInfoModel userInfoModel = mLKongRestService.getUserConfigInfo();
-                    updateUserAvatar(userInfoModel);
-                    subscriber.onNext(userInfoModel);
-                }
+                subscriber.onNext(mLKongDatabase.getAllUserAccounts());
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
@@ -118,25 +117,5 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
-    }
-
-    public int isSignedIn() {
-        return mLKongRestService.isSignedIn();
-    }
-
-    public void updateUserAvatar(UserInfoModel userInfo) throws Exception {
-        if(mLKongDatabase.isUserAccountExist(userInfo.getUid())) {
-            UserAccountEntity accountEntity = mLKongDatabase.getUserAccount(userInfo.getUid());
-            accountEntity.setUserAvatar(ModelConverter.uidToAvatarUrl(userInfo.getUid()));
-            mLKongDatabase.updateUserAccount(accountEntity);
-        }
-    }
-
-    private void clearCachedForumList() {
-        try {
-            mLKongDatabase.removeCachedForumList();
-        } catch (Exception e) {
-            Timber.e(e, "Error clearCachedForumList()", LOG_TAG);
-        }
     }
 }

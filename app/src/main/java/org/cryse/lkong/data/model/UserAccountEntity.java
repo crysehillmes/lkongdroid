@@ -1,5 +1,9 @@
 package org.cryse.lkong.data.model;
 
+import android.text.TextUtils;
+
+import org.cryse.lkong.utils.LKAuthObject;
+
 public class UserAccountEntity {
     private long userId;
     private String email;
@@ -8,6 +12,8 @@ public class UserAccountEntity {
     private String authCookie;
     private String dzsbheyCookie;
     private String identityCookie;
+
+    private LKAuthObject authObject;
 
     public UserAccountEntity() {
     }
@@ -20,6 +26,16 @@ public class UserAccountEntity {
         this.authCookie = authCookie;
         this.dzsbheyCookie = dzsbheyCookie;
         this.identityCookie = identityCookie;
+    }
+
+    public LKAuthObject getAuthObject() {
+        if(!TextUtils.isEmpty(authCookie) && !TextUtils.isEmpty(dzsbheyCookie) && !TextUtils.isEmpty(identityCookie)) {
+            if(authObject == null) {
+                authObject = new LKAuthObject(authCookie, dzsbheyCookie, identityCookie);
+            }
+            return authObject;
+        }
+        throw new IllegalStateException("authCookie, dzsbheyCookie, identityCookie must not be null.");
     }
 
     public long getUserId() {

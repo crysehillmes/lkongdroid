@@ -27,27 +27,30 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.model.UserInfoModel;
-import org.cryse.lkong.presenter.UserInfoPresenter;
+import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
+import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.presenter.UserAccountPresenter;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.view.UserInfoView;
+import org.cryse.lkong.view.UserAccountView;
 import org.cryse.utils.ColorUtils;
+import org.cryse.utils.preference.LongPreference;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends AbstractFragment implements UserInfoView {
+public class NavigationDrawerFragment extends AbstractFragment implements UserAccountView {
     public static final String LOG_TAG = NavigationDrawerFragment.class.getName();
     /**
      * Remember the position of the selected item.
@@ -90,12 +93,17 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     private View mFragmentContainerView;
 
     @Inject
-    UserInfoPresenter mUserInfoPresenter;
+    @PrefsDefaultAccountUid
+    LongPreference mDefaultAccountUid;
+
+    @Inject
+    UserAccountPresenter mUserAccountPresenter;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    UserAccountEntity mCurrentAccount;
 
     /**
      * Used to post delay navigation action to improve UX
@@ -148,7 +156,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
                 R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.inject(this, rootView);
         mAccountAvatarImageView.setOnClickListener(view -> {
-            if(!getUserInfoPresenter().isSignedIn()) {
+            if(mCurrentAccount == null) {
                 Intent intent = new Intent(getActivity(), SignInActivity.class);
                 startActivity(intent);
             } else {
@@ -291,19 +299,19 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     @Override
     public void onStart() {
         super.onStart();
-        getUserInfoPresenter().bindView(this);
+        getUserAccountPresenter().bindView(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        getUserInfoPresenter().unbindView();
+        getUserAccountPresenter().unbindView();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getUserInfoPresenter().destroy();
+        getUserAccountPresenter().destroy();
     }
 
     @Override
@@ -369,23 +377,16 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     }
 
     @Override
-    public void showUserInfo(UserInfoModel userInfo) {
-        if(userInfo != null) {
-            mAccountUserNameTextView.setText(userInfo.getUserName());
-            String uid = Long.toString(userInfo.getUid());
-            if(uid.length() >= 6) {
-                String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",
-                        uid.substring(0,2),
-                        uid.substring(2,4),
-                        uid.substring(4,6)
-                );
-                Picasso.with(getActivity())
-                        .load(avatarUrl)
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
-                        .into(mAccountAvatarImageView);
-            }
-            String secondInfoText = String.format(getString(R.string.format_account_threads_posts_summary, userInfo.getThreads(), userInfo.getPosts()));
+    public void showUserAccount(UserAccountEntity userAccount) {
+        if(userAccount != null) {
+            mCurrentAccount = userAccount;
+            mAccountUserNameTextView.setText(userAccount.getUserName());
+            Picasso.with(getActivity())
+                    .load(userAccount.getUserAvatar())
+                    .error(R.drawable.ic_default_avatar)
+                    .placeholder(R.drawable.ic_default_avatar)
+                    .into(mAccountAvatarImageView);
+            String secondInfoText = userAccount.getEmail();
             mAccountEmailTextView.setText(secondInfoText);
         }
     }
@@ -408,11 +409,14 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserIn
     public void getUserInfo() {
         // Get from local first
         // Get from web if failed.
-        getUserInfoPresenter().getUserInfo();
+        long uid = mDefaultAccountUid.get();
+        if(uid >= 0) {
+            getUserAccountPresenter().getUserAccount(uid);
+        }
     }
 
-    public UserInfoPresenter getUserInfoPresenter() {
-        return mUserInfoPresenter;
+    public UserAccountPresenter getUserAccountPresenter() {
+        return mUserAccountPresenter;
     }
 
     /**

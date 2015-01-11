@@ -11,6 +11,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
+import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKForumInfo;
@@ -22,6 +24,7 @@ import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SerializableHttpCookie;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
@@ -84,8 +87,8 @@ public class LKongRestService {
         return signInResult;
     }
 
-    public UserInfoModel getUserConfigInfo() throws Exception {
-        checkSignInStatus();
+    private UserInfoModel getUserConfigInfo() throws Exception {
+        // when call this method, the cookie manager should at least contain auth and dzsbhey cookie
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
@@ -97,6 +100,27 @@ public class LKongRestService {
         Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
         UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
+        return userInfoModel;
+    }
+
+    public UserInfoModel getUserInfo(LKAuthObject authObject) throws Exception {
+        checkSignInStatus(authObject, false);
+        cookieManager.getCookieStore().add(authObject.getAuthURI(), authObject.getAuthHttpCookie());
+        cookieManager.getCookieStore().add(authObject.getDzsbheyURI(), authObject.getDzsbheyHttpCookie());
+        cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
+
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+        LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
+        UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
+        cookieManager.getCookieStore().removeAll();
         return userInfoModel;
     }
 
@@ -148,30 +172,6 @@ public class LKongRestService {
         return forumModels;
     }
 
-    public static final int STATUS_NOT_SIGNEDIN = 0;
-    public static final int STATUS_EXPIRED = 1;
-    public static final int STATUS_SIGNEDIN = 2;
-
-    public int isSignedIn() {
-        String auth = null;
-        String dzsbhey = null;
-        for(HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
-            if(cookie.getName().compareToIgnoreCase("auth") == 0) {
-                // auth cookie pair
-                if(cookie.hasExpired()) return STATUS_EXPIRED;
-                auth = cookie.getValue();
-            } else if (cookie.getName().compareToIgnoreCase("dzsbhey") == 0) {
-                // dzsbhey cookie pair
-                if(cookie.hasExpired()) return STATUS_EXPIRED;
-                dzsbhey = cookie.getValue();
-            }
-        }
-        if(!TextUtils.isEmpty(auth) && !TextUtils.isEmpty(dzsbhey))
-            return STATUS_SIGNEDIN;
-        else
-            return STATUS_NOT_SIGNEDIN;
-    }
-
     private static String decompress(byte[] bytes) throws Exception {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         GZIPInputStream gis = new GZIPInputStream(byteArrayInputStream);
@@ -185,14 +185,20 @@ public class LKongRestService {
         return decompress(response.body().bytes());
     }
 
-    private void checkSignInStatus() {
-        switch (isSignedIn()) {
-            case STATUS_NOT_SIGNEDIN:
-                throw new NeedSignInException();
-            case STATUS_EXPIRED:
+    private void checkSignInStatus(LKAuthObject authObject, boolean checkIdentity) {
+        if(!authObject.isSignedIn()) {
+            if(authObject.hasExpired()) {
                 throw new SignInExpiredException();
-            case STATUS_SIGNEDIN:
-                break;
+            } else {
+                throw new NeedSignInException();
+            }
+        }
+        if(checkIdentity) {
+            if(authObject.hasIdentity()) {
+                throw new IdentityExpiredException();
+            } else {
+                throw new NeedIdentityException();
+            }
         }
     }
 

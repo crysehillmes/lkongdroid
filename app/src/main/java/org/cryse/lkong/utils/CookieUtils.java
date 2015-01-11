@@ -11,12 +11,12 @@ public class CookieUtils {
         return uri.toString() + SP_KEY_DELIMITER + serializableHttpCookie.encode(httpCookie);
     }
 
-    public static URI serializeHttpCookieForURI(String data) {
+    public static URI deserializeHttpCookieForURI(String data) {
         String[] parts = data.split(SP_KEY_DELIMITER, 2);
         return URI.create(parts[0]);
     }
 
-    public static HttpCookie serializeHttpCookieForCookie(String data) {
+    public static HttpCookie deserializeHttpCookieForCookie(String data) {
         String[] parts = data.split(SP_KEY_DELIMITER, 2);
         SerializableHttpCookie serializableHttpCookie = new SerializableHttpCookie();
         return serializableHttpCookie.decode(parts[1]);
