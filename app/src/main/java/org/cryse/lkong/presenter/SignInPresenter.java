@@ -1,6 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.SignInView;
 
@@ -48,17 +49,13 @@ public class SignInPresenter implements BasePresenter<SignInView> {
                             mView.signInComplete(result);
                         },
                         error -> {
-                            mView.signInComplete(false);
+                            mView.signInComplete(null);
                         },
                         () -> {
                         });
     }
 
     private class EmptySignInView implements SignInView {
-        @Override
-        public void signInComplete(boolean isSuccess) {
-
-        }
 
         @Override
         public void setLoading(Boolean value) {
@@ -72,6 +69,11 @@ public class SignInPresenter implements BasePresenter<SignInView> {
 
         @Override
         public void showToast(int text, int toastType) {
+
+        }
+
+        @Override
+        public void signInComplete(SignInResult signInResult) {
 
         }
     }

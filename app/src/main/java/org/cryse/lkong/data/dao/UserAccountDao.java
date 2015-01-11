@@ -1,12 +1,15 @@
-package org.cryse.lkong.data;
+package org.cryse.lkong.data.dao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.cryse.lkong.data.LKongDatabaseHelper;
+import org.cryse.lkong.data.model.UserAccountEntity;
+
 import javax.inject.Inject;
 
-public class UserAccountDao extends AbstractDao<UserAccountModel, Long> {
+public class UserAccountDao extends AbstractDao<UserAccountEntity, Long> {
     public static final String TABLE_NAME = "USER_ACCOUNT_MODEL";
     public static final String COLUMN_USER_ID = "USER_ID";
     public static final String COLUMN_EMAIL = "EMAIL";
@@ -36,7 +39,7 @@ public class UserAccountDao extends AbstractDao<UserAccountModel, Long> {
     }
 
     @Override
-    public ContentValues entityToContentValues(UserAccountModel entity) {
+    public ContentValues entityToContentValues(UserAccountEntity entity) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID, entity.getUserId());
         values.put(COLUMN_EMAIL, entity.getEmail());
@@ -48,8 +51,8 @@ public class UserAccountDao extends AbstractDao<UserAccountModel, Long> {
         return values;
     }
 
-    public UserAccountModel readEntity(Cursor cursor, int offset) {
-        UserAccountModel entity = new UserAccountModel( //
+    public UserAccountEntity readEntity(Cursor cursor, int offset) {
+        UserAccountEntity entity = new UserAccountEntity( //
                 cursor.isNull(offset + 0) ? 0 : cursor.getLong(offset + 0), // userId
                 cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // email
                 cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // userName
@@ -61,7 +64,7 @@ public class UserAccountDao extends AbstractDao<UserAccountModel, Long> {
         return entity;
     }
 
-    public void readEntity(Cursor cursor, UserAccountModel entity, int offset) {
+    public void readEntity(Cursor cursor, UserAccountEntity entity, int offset) {
         entity.setUserId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setEmail(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setUserName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
@@ -71,7 +74,7 @@ public class UserAccountDao extends AbstractDao<UserAccountModel, Long> {
         entity.setIdentityCookie(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
     }
 
-    public int update(UserAccountModel userAccount) {
+    public int update(UserAccountEntity userAccount) {
         return super.update(userAccount.getUserId(), userAccount);
     }
 }

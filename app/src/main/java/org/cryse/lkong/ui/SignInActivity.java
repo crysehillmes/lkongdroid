@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.view.SignInView;
@@ -90,8 +91,8 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     }
 
     @Override
-    public void signInComplete(boolean isSuccess) {
-        if(isSuccess)
+    public void signInComplete(SignInResult signInResult) {
+        if(signInResult.isSuccess())
             Toast.makeText(this, "SignIn successfully.", Toast.LENGTH_SHORT).show();
         else
             Toast.makeText(this, "SignIn failed.", Toast.LENGTH_SHORT).show();

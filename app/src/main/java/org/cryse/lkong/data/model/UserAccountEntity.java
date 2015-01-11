@@ -1,6 +1,6 @@
-package org.cryse.lkong.data;
+package org.cryse.lkong.data.model;
 
-public class UserAccountModel {
+public class UserAccountEntity {
     private long userId;
     private String email;
     private String userName;
@@ -9,10 +9,10 @@ public class UserAccountModel {
     private String dzsbheyCookie;
     private String identityCookie;
 
-    public UserAccountModel() {
+    public UserAccountEntity() {
     }
 
-    public UserAccountModel(long userId, String email, String userName, String userAvatar, String authCookie, String dzsbheyCookie, String identityCookie) {
+    public UserAccountEntity(long userId, String email, String userName, String userAvatar, String authCookie, String dzsbheyCookie, String identityCookie) {
         this.userId = userId;
         this.email = email;
         this.userName = userName;

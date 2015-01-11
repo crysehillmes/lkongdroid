@@ -18,17 +18,19 @@ import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.PersistentCookieStore;
+import org.cryse.lkong.utils.CookieUtils;
+import org.cryse.lkong.utils.SerializableHttpCookie;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.HttpCookie;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -48,14 +50,12 @@ public class LKongRestService {
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
         this.cookieManager = new CookieManager(
-                new PersistentCookieStore(context),
-                CookiePolicy.ACCEPT_ALL
         );
         this.okHttpClient.setCookieHandler(cookieManager);
         this.gson = new Gson();
     }
 
-    public boolean signIn(String email, String password) throws Exception {
+    public SignInResult signIn(String email, String password) throws Exception {
         RequestBody formBody = new FormEncodingBuilder()
                 .add("action", "login")
                 .add("email", email)
@@ -72,7 +72,16 @@ public class LKongRestService {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseBody = getStringFromGzipResponse(response);
         JSONObject jsonObject = new JSONObject(responseBody);
-        return jsonObject.getBoolean("success");
+        boolean success = jsonObject.getBoolean("success");
+        UserInfoModel me = getUserConfigInfo();
+        SignInResult signInResult = new SignInResult();
+
+        signInResult.setSuccess(success);
+        signInResult.setMe(me);
+        readCookies(signInResult);
+        cookieManager.getCookieStore().removeAll();
+
+        return signInResult;
     }
 
     public UserInfoModel getUserConfigInfo() throws Exception {
@@ -195,5 +204,45 @@ public class LKongRestService {
                 fidString.substring(4, 6)
         );
         return iconUrl;
+    }
+
+    private void readCookies(SignInResult signInResult) {
+        URI authURI = null, dzsbheyURI = null, identityURI = null;
+        HttpCookie authHttpCookie = null, dzsbheyHttpCookie = null, identityHttpCookie = null;
+
+        List<URI> uris = cookieManager.getCookieStore().getURIs();
+        for(URI uri : uris) {
+            List<HttpCookie> httpCookies = cookieManager.getCookieStore().get(uri);
+            for(HttpCookie cookie : httpCookies) {
+                if(cookie.getName().compareToIgnoreCase("auth") == 0) {
+                    // auth cookie pair
+                    if(cookie.hasExpired())
+                        continue;
+                    authURI = uri;
+                    authHttpCookie = cookie;
+                } else if (cookie.getName().compareToIgnoreCase("dzsbhey") == 0) {
+                    // dzsbhey cookie pair
+                    if(cookie.hasExpired())
+                        continue;;
+                    dzsbheyURI = uri;
+                    dzsbheyHttpCookie = cookie;
+                } else if (cookie.getName().compareToIgnoreCase("identity") == 0) {
+                    // identity cookie pair
+                    if(cookie.hasExpired())
+                        continue;;
+                    identityURI = uri;
+                    identityHttpCookie = cookie;
+                }
+            }
+        }
+        if(authURI != null && authHttpCookie != null &&
+                dzsbheyURI != null && dzsbheyHttpCookie != null &&
+                identityURI != null && identityHttpCookie != null) {
+            signInResult.setAuthCookie(CookieUtils.serializeHttpCookie(authURI, authHttpCookie));
+            signInResult.setDzsbheyCookie(CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie));
+            signInResult.setDzsbheyCookie(CookieUtils.serializeHttpCookie(identityURI, identityHttpCookie));
+        } else {
+            throw new NeedSignInException("Cookie expired.");
+        }
     }
 }

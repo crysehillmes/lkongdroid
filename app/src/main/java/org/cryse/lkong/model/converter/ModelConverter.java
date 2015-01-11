@@ -25,4 +25,24 @@ public class ModelConverter {
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
         return userInfoModel;
     }
+
+    public static String uidToAvatarUrl(long uid) {
+        String uidString = String.format("%1$06d", uid);
+        String avatarUrl = String.format("http://img.lkong.cn/avatar/000/%s/%s/%s_avatar_middle.jpg",
+                uidString.substring(0,2),
+                uidString.substring(2,4),
+                uidString.substring(4,6)
+        );
+        return avatarUrl;
+    }
+
+    public static String fidToForumIconUrl(long fid) {
+        String fidString = String.format("%1$06d", fid);
+        String iconUrl = String.format("http://img.lkong.cn/forumavatar/000/%s/%s/%s_avatar_middle.jpg",
+                fidString.substring(0, 2),
+                fidString.substring(2, 4),
+                fidString.substring(4, 6)
+        );
+        return iconUrl;
+    }
 }

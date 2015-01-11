@@ -5,7 +5,10 @@ import android.content.Context;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabaseHelper;
+import org.cryse.lkong.data.dao.CacheObjectDao;
+import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.impl.LKongDatabaseSnappyImpl;
+import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 
@@ -24,14 +27,26 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public LKongDatabase provideLKongDatabase(@ApplicationContext Context context) {
-        return new LKongDatabaseSnappyImpl(context);
+    public LKongDatabaseHelper provideLKongDatabaseHelper(@ApplicationContext Context context) {
+        return new LKongDatabaseHelper(context);
     }
 
     @Singleton
     @Provides
-    public LKongDatabaseHelper provideLKongDatabaseHelper(@ApplicationContext Context context) {
-        return new LKongDatabaseHelper(context);
+    public UserAccountDao provideUserAccountDao(LKongDatabaseHelper helper) {
+        return new UserAccountDao(helper);
+    }
+
+    @Singleton
+    @Provides
+    public CacheObjectDao provideCacheObjectDao(LKongDatabaseHelper helper) {
+        return new CacheObjectDao(helper);
+    }
+
+    @Singleton
+    @Provides
+    public LKongDatabase provideLKongDatabase(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao) {
+        return new LKongDatabaseSqliteImpl(cacheObjectDao, userAccountDao);
     }
 
     @Singleton

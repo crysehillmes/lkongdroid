@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.cryse.lkong.data.dao.CacheObjectDao;
+import org.cryse.lkong.data.dao.UserAccountDao;
+
 public class LKongDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "lkong.db";
     public static final int DATABASE_VERSION = 1;

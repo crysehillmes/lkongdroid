@@ -3,9 +3,13 @@ package org.cryse.lkong.logic;
 import com.snappydb.SnappydbException;
 
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.dao.UserAccountDao;
+import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.UserInfoModel;
+import org.cryse.lkong.model.converter.ModelConverter;
 
 import java.util.List;
 
@@ -33,10 +37,33 @@ public class LKongForumService {
         }
     }
 
-    public Observable<Boolean> signIn(String email, String password) {
+    public Observable<SignInResult> signIn(String email, String password) {
         return Observable.create(subscriber -> {
             try {
                 subscriber.onNext(mLKongRestService.signIn(email, password));
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<UserAccountEntity> getUserAccount(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+
+                subscriber.onNext(mLKongDatabase.getUserAccount(uid));
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<List<UserAccountEntity>> getAllUserAccounts() {
+        return Observable.create(subscriber -> {
+            try {
+                subscriber.onNext(mLKongDatabase.getAllUserAccounts());
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
@@ -50,20 +77,13 @@ public class LKongForumService {
                 if(mLKongRestService.isSignedIn() != LKongRestService.STATUS_SIGNEDIN) {
                     subscriber.onNext(null);
                 } else {
-                    if(mLKongDatabase.isCachedUserInfo()) {
-                        subscriber.onNext(mLKongDatabase.getCachedUserInfo());
-                    }
                     UserInfoModel userInfoModel = mLKongRestService.getUserConfigInfo();
-                    if(userInfoModel != null)
-                        mLKongDatabase.cacheUserInfo(userInfoModel);
+                    updateUserAvatar(userInfoModel);
                     subscriber.onNext(userInfoModel);
                 }
                 subscriber.onCompleted();
             } catch (Exception e) {
-                if(e instanceof SnappydbException)
-                    clearCachedUserInfo();
-                else
-                    subscriber.onError(e);
+                subscriber.onError(e);
             }
         });
     }
@@ -71,16 +91,16 @@ public class LKongForumService {
     public Observable<List<ForumModel>> getForumList() {
         return Observable.create(subscriber -> {
             try {
-                if(mLKongDatabase.isCachedForumList()) {
+                if (mLKongDatabase.isCachedForumList()) {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
                 }
                 List<ForumModel> forumModelList = mLKongRestService.getForumList();
-                if(forumModelList != null)
+                if (forumModelList != null)
                     mLKongDatabase.cacheForumList(forumModelList);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
-                if(e instanceof SnappydbException)
+                if (e instanceof SnappydbException)
                     clearCachedForumList();
                 else
                     subscriber.onError(e);
@@ -92,19 +112,19 @@ public class LKongForumService {
         return mLKongRestService.isSignedIn();
     }
 
+    public void updateUserAvatar(UserInfoModel userInfo) throws Exception {
+        if(mLKongDatabase.isUserAccountExist(userInfo.getUid())) {
+            UserAccountEntity accountEntity = mLKongDatabase.getUserAccount(userInfo.getUid());
+            accountEntity.setUserAvatar(ModelConverter.uidToAvatarUrl(userInfo.getUid()));
+            mLKongDatabase.updateUserAccount(accountEntity);
+        }
+    }
+
     private void clearCachedForumList() {
         try {
             mLKongDatabase.removeCachedForumList();
         } catch (Exception e) {
             Timber.e(e, "Error clearCachedForumList()", LOG_TAG);
-        }
-    }
-
-    private void clearCachedUserInfo() {
-        try {
-            mLKongDatabase.removeCachedUserInfo();
-        } catch (Exception e) {
-            Timber.e(e, "Error clearCachedUserInfo()", LOG_TAG);
         }
     }
 }

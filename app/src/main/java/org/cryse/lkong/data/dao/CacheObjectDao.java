@@ -1,14 +1,17 @@
-package org.cryse.lkong.data;
+package org.cryse.lkong.data.dao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.cryse.lkong.data.LKongDatabaseHelper;
+import org.cryse.lkong.data.model.CacheObjectEntity;
+
 import java.util.Date;
 
 import javax.inject.Inject;
 
-public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
+public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
     public static final String TABLE_NAME = "CACHE_OBJECT";
 
     public static final String COLUMN_KEY = "CACHE_OBJECT_KEY";
@@ -34,7 +37,7 @@ public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
     }
 
     @Override
-    public ContentValues entityToContentValues(CacheObjectModel entity) {
+    public ContentValues entityToContentValues(CacheObjectEntity entity) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_KEY, entity.getKey());
         values.put(COLUMN_VALUE, entity.getValue());
@@ -43,8 +46,8 @@ public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
         return values;
     }
 
-    public CacheObjectModel readEntity(Cursor cursor, int offset) {
-        CacheObjectModel entity = new CacheObjectModel( //
+    public CacheObjectEntity readEntity(Cursor cursor, int offset) {
+        CacheObjectEntity entity = new CacheObjectEntity( //
                 cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // key
                 cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // value
                 cursor.isNull(offset + 2) ? null : new Date(cursor.getLong(offset + 2)), // createTime
@@ -53,25 +56,25 @@ public class CacheObjectDao extends AbstractDao<CacheObjectModel, String> {
         return entity;
     }
 
-    public void readEntity(Cursor cursor, CacheObjectModel entity, int offset) {
+    public void readEntity(Cursor cursor, CacheObjectEntity entity, int offset) {
         entity.setKey(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setValue(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setCreateTime(cursor.isNull(offset + 2) ? null : new Date(cursor.getLong(offset + 2)));
         entity.setExpireTime(cursor.isNull(offset + 3) ? null : new Date(cursor.getLong(offset + 3)));
     }
 
-    public int update(CacheObjectModel entity) {
+    public int update(CacheObjectEntity entity) {
         return super.update(entity.getKey(), entity);
     }
 
     public void putCache(String key, String value, Date expireTime) {
-        long ret = this.insert(new CacheObjectModel(key, value, new Date(), expireTime));
+        long ret = this.insert(new CacheObjectEntity(key, value, new Date(), expireTime));
         if(ret == -1)
             throw new RuntimeException("Cache object insert error.");
     }
 
     public String getCache(String key) {
-        CacheObjectModel cacheObject = load(key);
+        CacheObjectEntity cacheObject = load(key);
         if(cacheObject == null) return null;
         Date nowTime = new Date();
         if((cacheObject.getExpireTime() != null && nowTime.before(cacheObject.getExpireTime())) || cacheObject.getExpireTime() == null) {

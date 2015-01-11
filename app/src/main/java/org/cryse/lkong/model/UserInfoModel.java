@@ -11,6 +11,7 @@ public class UserInfoModel implements Serializable {
     private long uid;
     private long me;
     private String userName;
+    private String userIcon;
     private int fansCount;
     private int followCount;
     private String blacklists;
@@ -73,6 +74,14 @@ public class UserInfoModel implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
+    }
+
+    public void setUserIcon(String userIcon) {
+        this.userIcon = userIcon;
     }
 
     public int getFansCount() {

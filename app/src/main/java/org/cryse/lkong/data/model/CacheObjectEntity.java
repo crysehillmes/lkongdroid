@@ -1,17 +1,17 @@
-package org.cryse.lkong.data;
+package org.cryse.lkong.data.model;
 
 import java.util.Date;
 
-public class CacheObjectModel {
+public class CacheObjectEntity {
     private String key;
     private String value;
     private Date createTime;
     private Date expireTime;
 
-    public CacheObjectModel() {
+    public CacheObjectEntity() {
     }
 
-    public CacheObjectModel(String key, String value, Date createTime, Date expireTime) {
+    public CacheObjectEntity(String key, String value, Date createTime, Date expireTime) {
         this.key = key;
         this.value = value;
         this.createTime = createTime;
