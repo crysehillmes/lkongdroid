@@ -6,6 +6,7 @@ import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.NavigationDrawerFragment;
 import org.cryse.lkong.ui.SignInActivity;
+import org.cryse.lkong.ui.ThreadListActivity;
 
 import javax.inject.Singleton;
 
@@ -17,4 +18,5 @@ public interface LKongPresenterComponent {
     void inject(SignInActivity activity);
     void inject(NavigationDrawerFragment fragment);
     void inject(ForumListFragment fragment);
+    void inject(ThreadListActivity activity);
 }

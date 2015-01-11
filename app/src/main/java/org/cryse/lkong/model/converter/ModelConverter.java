@@ -36,6 +36,7 @@ public class ModelConverter {
             ForumThreadModel threadModel = new ForumThreadModel();
             threadModel.setSortKey(item.getSortkey());
             threadModel.setUserName(item.getUsername());
+            threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));
             threadModel.setUid(item.getUid());
             threadModel.setClosed(item.getClosed());
             threadModel.setDateline(item.getDateline());

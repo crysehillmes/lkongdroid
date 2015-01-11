@@ -5,6 +5,7 @@ import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -101,6 +102,17 @@ public abstract class RecyclerViewBaseAdapter<T extends RecyclerViewHolder, S> e
 
     public List<S> getItemList() {
         return mItemList;
+    }
+
+    public ArrayList<S> getItemArrayList() {
+        if(mItemList instanceof ArrayList)
+            return (ArrayList<S>)mItemList;
+        else {
+            ArrayList<S> arrayList = new ArrayList<S>(mItemList.size());
+            arrayList.addAll(mItemList);
+            return arrayList;
+        }
+
     }
 
     public void setOnItemClickListener(RecyclerViewOnItemClickListener listener) {

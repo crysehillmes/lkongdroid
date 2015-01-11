@@ -185,8 +185,10 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        LKForumThreadList lkUserInfo = gson.fromJson(responseString, LKForumThreadList.class);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lkUserInfo);
+        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
+        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         return threadList;
     }
     
