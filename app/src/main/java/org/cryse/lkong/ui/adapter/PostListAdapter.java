@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.htmltextview.HtmlTextView;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -41,7 +41,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
     public void onBindViewHolder(ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         PostModel item = getItem(position);
-        holder.mMessageTextView.setText(Html.fromHtml(item.getMessage()));
+        holder.mMessageTextView.setHtmlFromString(item.getMessage(), false);
         holder.mAuthorTextView.setText(item.getAuthorName());
         holder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
         Picasso.with(getContext())
@@ -58,7 +58,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
         @InjectView(R.id.recyclerview_item_post_textview_dateline)
         TextView mDatelineTextView;
         @InjectView(R.id.recyclerview_item_post_textview_message)
-        TextView mMessageTextView;
+        HtmlTextView mMessageTextView;
         @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)
         ImageView mAuthorAvatarImageView;
 
