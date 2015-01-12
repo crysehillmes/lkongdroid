@@ -25,14 +25,14 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
         this.mLKongForumService = forumService;
     }
 
-    public void loadThreadList(long fid, boolean loadingMore) {
-        loadThreadList(fid, -1, loadingMore);
+    public void loadThreadList(long fid, int listType, boolean loadingMore) {
+        loadThreadList(fid, -1, listType, loadingMore);
     }
 
-    public void loadThreadList(long fid, long start, boolean loadingMore) {
+    public void loadThreadList(long fid, long start, int listType, boolean loadingMore) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadListSubscription);
         setLoadingStatus(loadingMore, true);
-        mLoadThreadListSubscription = mLKongForumService.getForumThread(fid, start)
+        mLoadThreadListSubscription = mLKongForumService.getForumThread(fid, start, listType)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

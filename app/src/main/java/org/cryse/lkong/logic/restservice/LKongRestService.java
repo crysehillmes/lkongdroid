@@ -11,6 +11,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
@@ -174,8 +175,8 @@ public class LKongRestService {
         return forumModels;
     }
     
-    public List<ForumThreadModel> getForumThreadList(long fid, long start) throws Exception {
-        String url = LKONG_INDEX_URL + "?mod=data&sars=forum/" + Long.toString(fid);
+    public List<ForumThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=forum/%d%s", fid, ThreadListType.typeToRequestParam(listType));
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")

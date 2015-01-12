@@ -120,10 +120,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start) {
+    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start);
+                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {

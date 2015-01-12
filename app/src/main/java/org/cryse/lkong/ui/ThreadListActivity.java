@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
@@ -47,7 +48,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     private long mForumId = -1;
     private String mForumName = "";
-
+    private int mCurrentListType = ThreadListType.TYPE_SORT_BY_REPLY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +78,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
-        mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, false));
+        mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                getPresenter().loadThreadList(mForumId, mLastItemSortKey, true);
+                getPresenter().loadThreadList(mForumId, mLastItemSortKey, mCurrentListType, true);
             } else {
                 mThreadCollectionView.setLoadingMore(false);
                 mThreadCollectionView.hideMoreProgress();
@@ -101,7 +102,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().loadThreadList(mForumId, false);
+            getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
     }
 
