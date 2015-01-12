@@ -6,7 +6,7 @@ public class LKPostUser {
     private String adminid;
     private String customstatus;
     private int gender;
-    private Date regdate;
+    private long regdate;
     private long uid;
     private String username;
     private boolean verify;
@@ -39,11 +39,11 @@ public class LKPostUser {
         this.gender = gender;
     }
 
-    public Date getRegdate() {
+    public long getRegdate() {
         return regdate;
     }
 
-    public void setRegdate(Date regdate) {
+    public void setRegdate(long regdate) {
         this.regdate = regdate;
     }
 

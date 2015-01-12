@@ -1,10 +1,13 @@
 package org.cryse.lkong.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 import java.util.List;
 
-public class PostModel {
+public class PostModel implements Parcelable {
     private long fid;
     private long sortKey;
     private Date dateline;
@@ -192,7 +195,7 @@ public class PostModel {
         this.author = author;
     }
 
-    public static class PostAuthor {
+    public static class PostAuthor implements Parcelable {
         private String adminId;
         private String customStatus;
         private int gender;
@@ -309,9 +312,54 @@ public class PostModel {
         public void setRankTitle(String rankTitle) {
             this.rankTitle = rankTitle;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.adminId);
+            dest.writeString(this.customStatus);
+            dest.writeInt(this.gender);
+            dest.writeLong(regDate != null ? regDate.getTime() : -1);
+            dest.writeLong(this.uid);
+            dest.writeString(this.userName);
+            dest.writeByte(verify ? (byte) 1 : (byte) 0);
+            dest.writeString(this.verifyMessage);
+            dest.writeString(this.color);
+            dest.writeString(this.stars);
+            dest.writeString(this.rankTitle);
+        }
+
+        private PostAuthor(Parcel in) {
+            this.adminId = in.readString();
+            this.customStatus = in.readString();
+            this.gender = in.readInt();
+            long tmpRegDate = in.readLong();
+            this.regDate = tmpRegDate == -1 ? null : new Date(tmpRegDate);
+            this.uid = in.readLong();
+            this.userName = in.readString();
+            this.verify = in.readByte() != 0;
+            this.verifyMessage = in.readString();
+            this.color = in.readString();
+            this.stars = in.readString();
+            this.rankTitle = in.readString();
+        }
+
+        public static final Parcelable.Creator<PostAuthor> CREATOR = new Parcelable.Creator<PostAuthor>() {
+            public PostAuthor createFromParcel(Parcel source) {
+                return new PostAuthor(source);
+            }
+
+            public PostAuthor[] newArray(int size) {
+                return new PostAuthor[size];
+            }
+        };
     }
 
-    public static class PostRate {
+    public static class PostRate implements Parcelable {
         private Date dateline;
         private int extCredits;
         private long pid;
@@ -388,5 +436,101 @@ public class PostModel {
         public void setUserName(String userName) {
             this.userName = userName;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeLong(dateline != null ? dateline.getTime() : -1);
+            dest.writeInt(this.extCredits);
+            dest.writeLong(this.pid);
+            dest.writeString(this.reason);
+            dest.writeInt(this.score);
+            dest.writeLong(this.uid);
+            dest.writeString(this.userName);
+        }
+
+        private PostRate(Parcel in) {
+            long tmpDateline = in.readLong();
+            this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
+            this.extCredits = in.readInt();
+            this.pid = in.readLong();
+            this.reason = in.readString();
+            this.score = in.readInt();
+            this.uid = in.readLong();
+            this.userName = in.readString();
+        }
+
+        public static final Parcelable.Creator<PostRate> CREATOR = new Parcelable.Creator<PostRate>() {
+            public PostRate createFromParcel(Parcel source) {
+                return new PostRate(source);
+            }
+
+            public PostRate[] newArray(int size) {
+                return new PostRate[size];
+            }
+        };
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.fid);
+        dest.writeLong(this.sortKey);
+        dest.writeLong(dateline != null ? dateline.getTime() : -1);
+        dest.writeString(this.message);
+        dest.writeString(this.authorName);
+        dest.writeLong(this.authorId);
+        dest.writeByte(isMe ? (byte) 1 : (byte) 0);
+        dest.writeByte(notGroup ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.pid);
+        dest.writeByte(first ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.status);
+        dest.writeString(this.id);
+        dest.writeByte(tsAdmin ? (byte) 1 : (byte) 0);
+        dest.writeByte(isAdmin ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.ordinal);
+        dest.writeLong(this.tid);
+        dest.writeTypedList(rateLog);
+        dest.writeParcelable(this.author, 0);
+    }
+
+    private PostModel(Parcel in) {
+        this.fid = in.readLong();
+        this.sortKey = in.readLong();
+        long tmpDateline = in.readLong();
+        this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
+        this.message = in.readString();
+        this.authorName = in.readString();
+        this.authorId = in.readLong();
+        this.isMe = in.readByte() != 0;
+        this.notGroup = in.readByte() != 0;
+        this.pid = in.readLong();
+        this.first = in.readByte() != 0;
+        this.status = in.readInt();
+        this.id = in.readString();
+        this.tsAdmin = in.readByte() != 0;
+        this.isAdmin = in.readByte() != 0;
+        this.ordinal = in.readInt();
+        this.tid = in.readLong();
+        in.readTypedList(rateLog, PostRate.CREATOR);
+        this.author = in.readParcelable(PostAuthor.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<PostModel> CREATOR = new Parcelable.Creator<PostModel>() {
+        public PostModel createFromParcel(Parcel source) {
+            return new PostModel(source);
+        }
+
+        public PostModel[] newArray(int size) {
+            return new PostModel[size];
+        }
+    };
 }

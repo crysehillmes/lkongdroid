@@ -14,6 +14,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
+import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.DataContract;
@@ -86,6 +87,15 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mThreadCollectionView.setLoadingMore(false);
                 mThreadCollectionView.hideMoreProgress();
             }
+        });
+        mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
+            ForumThreadModel item = mCollectionAdapter.getItem(position);
+            Intent intent = new Intent(this, PostListActivity.class);
+            String idString = item.getId().substring(7);
+            long tid = Long.parseLong(idString);
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+            intent.putExtra(DataContract.BUNDLE_THREAD_SUBJECT, item.getSubject());
+            startActivity(intent);
         });
     }
 

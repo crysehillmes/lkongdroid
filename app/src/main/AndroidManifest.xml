@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".ui.SignInActivity"/>
         <activity android:name=".ui.ThreadListActivity"/>
+        <activity android:name=".ui.PostListActivity"/>
     </application>
 
 </manifest>

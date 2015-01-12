@@ -108,7 +108,7 @@ public class ModelConverter {
                         itemUser.getAdminid(),
                         itemUser.getCustomstatus(),
                         itemUser.getGender(),
-                        itemUser.getRegdate(),
+                        new Date(itemUser.getRegdate()),
                         itemUser.getUid(),
                         itemUser.getUsername(),
                         itemUser.isVerify(),

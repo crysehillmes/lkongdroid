@@ -1,8 +1,11 @@
 package org.cryse.lkong.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class ThreadInfoModel {
+public class ThreadInfoModel implements Parcelable {
     private long fid;
     private long tid;
     private String subject;
@@ -129,4 +132,59 @@ public class ThreadInfoModel {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.fid);
+        dest.writeLong(this.tid);
+        dest.writeString(this.subject);
+        dest.writeInt(this.views);
+        dest.writeInt(this.replies);
+        dest.writeString(this.forumName);
+        dest.writeByte(digest ? (byte) 1 : (byte) 0);
+        dest.writeLong(timeStamp != null ? timeStamp.getTime() : -1);
+        dest.writeValue(this.uid);
+        dest.writeString(this.userName);
+        dest.writeLong(this.authorId);
+        dest.writeString(this.authorName);
+        dest.writeLong(dateline != null ? dateline.getTime() : -1);
+        dest.writeString(this.id);
+    }
+
+    public ThreadInfoModel() {
+    }
+
+    private ThreadInfoModel(Parcel in) {
+        this.fid = in.readLong();
+        this.tid = in.readLong();
+        this.subject = in.readString();
+        this.views = in.readInt();
+        this.replies = in.readInt();
+        this.forumName = in.readString();
+        this.digest = in.readByte() != 0;
+        long tmpTimeStamp = in.readLong();
+        this.timeStamp = tmpTimeStamp == -1 ? null : new Date(tmpTimeStamp);
+        this.uid = (Long) in.readValue(Long.class.getClassLoader());
+        this.userName = in.readString();
+        this.authorId = in.readLong();
+        this.authorName = in.readString();
+        long tmpDateline = in.readLong();
+        this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
+        this.id = in.readString();
+    }
+
+    public static final Parcelable.Creator<ThreadInfoModel> CREATOR = new Parcelable.Creator<ThreadInfoModel>() {
+        public ThreadInfoModel createFromParcel(Parcel source) {
+            return new ThreadInfoModel(source);
+        }
+
+        public ThreadInfoModel[] newArray(int size) {
+            return new ThreadInfoModel[size];
+        }
+    };
 }
