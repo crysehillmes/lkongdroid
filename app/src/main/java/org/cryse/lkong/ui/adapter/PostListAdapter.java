@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -40,14 +41,26 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
     public void onBindViewHolder(ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         PostModel item = getItem(position);
-        holder.mMessageTextView.setText(android.text.Html.fromHtml(item.getMessage()));
-
+        holder.mMessageTextView.setText(Html.fromHtml(item.getMessage()));
+        holder.mAuthorTextView.setText(item.getAuthorName());
+        holder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
+        Picasso.with(getContext())
+                .load(ModelConverter.uidToAvatarUrl(item.getAuthorId()))
+                .error(R.drawable.ic_default_avatar)
+                .placeholder(R.drawable.ic_default_avatar)
+                .into(holder.mAuthorAvatarImageView);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
+        @InjectView(R.id.recyclerview_item_post_textview_author_name)
+        TextView mAuthorTextView;
+        @InjectView(R.id.recyclerview_item_post_textview_dateline)
+        TextView mDatelineTextView;
         @InjectView(R.id.recyclerview_item_post_textview_message)
         TextView mMessageTextView;
+        @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)
+        ImageView mAuthorAvatarImageView;
 
         public ViewHolder(View v) {
             super(v);
