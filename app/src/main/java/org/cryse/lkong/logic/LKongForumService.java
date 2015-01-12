@@ -4,8 +4,10 @@ import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.LKAuthObject;
 
@@ -129,6 +131,30 @@ public class LKongForumService {
             } catch (Exception e) {
                 subscriber.onError(e);
             }
+        });
+    }
+
+    public Observable<ThreadInfoModel> getThreadInfo(long tid) {
+        return Observable.create(subscriber -> {
+            try {
+                ThreadInfoModel threadModel = mLKongRestService.getThreadInfo(tid);
+                subscriber.onNext(threadModel);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<PostModel>> getPostList(long tid, int page) {
+        return Observable.create(subscriber -> {
+           try {
+               List<PostModel> postList = mLKongRestService.getThreadPostList(tid, page);
+               subscriber.onNext(postList);
+               subscriber.onCompleted();
+           } catch (Exception ex) {
+               subscriber.onError(ex);
+           }
         });
     }
 }
