@@ -61,11 +61,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         initRecyclerView();
         Intent intent = getIntent();
-        if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID) && intent.hasExtra(DataContract.BUNDLE_THREAD_SUBJECT)) {
+        if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
             mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, -1);
-            mThreadSubject = intent.getStringExtra(DataContract.BUNDLE_THREAD_SUBJECT);
         }
-        if(mThreadId == -1 || TextUtils.isEmpty(mThreadSubject))
+        if(mThreadId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
         setTitle(mThreadSubject);
 
@@ -85,13 +84,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             mThreadId = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_ID);
-            mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_INFO_OBJECT);
             if(savedInstanceState.containsKey(DataContract.BUNDLE_THREAD_INFO_OBJECT)) {
+                mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mThreadModel = savedInstanceState.getParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mCurrentPage = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE);
                 mPageCount = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_PAGE_COUNT);
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 mCollectionAdapter.addAll(list);
+                setTitle(mThreadSubject);
             }
         } else {
             getPresenter().loadThreadInfo(mThreadId);
@@ -105,8 +105,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(DataContract.BUNDLE_THREAD_ID, mThreadId);
-        outState.putString(DataContract.BUNDLE_THREAD_SUBJECT, mThreadSubject);
         if(mThreadModel != null) {
+            outState.putString(DataContract.BUNDLE_THREAD_SUBJECT, mThreadSubject);
             outState.putParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT, mThreadModel);
             outState.putInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE, mCurrentPage);
             outState.putInt(DataContract.BUNDLE_THREAD_PAGE_COUNT, mPageCount);
@@ -173,6 +173,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
         mThreadModel = threadInfoModel;
+        mThreadSubject = threadInfoModel.getSubject();
+        setTitle(mThreadSubject);
         getPresenter().loadPostList(mThreadId, 1);
     }
 

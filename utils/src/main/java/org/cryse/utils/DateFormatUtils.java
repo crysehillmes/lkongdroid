@@ -16,4 +16,15 @@ public class DateFormatUtils {
             return formatter.format(datetime);
         }
     }
+
+    public static String formatFullDateDividByToday(Date datetime, String todayPrefix) {
+        SimpleDateFormat formatter = null;
+        if(DateUtils.isToday(datetime.getTime())) {
+            formatter = new SimpleDateFormat("HH:mm");
+            return todayPrefix + " " + formatter.format(datetime);
+        } else {
+            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return formatter.format(datetime);
+        }
+    }
 }

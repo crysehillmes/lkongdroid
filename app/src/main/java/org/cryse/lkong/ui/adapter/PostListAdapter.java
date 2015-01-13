@@ -43,7 +43,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
         PostModel item = getItem(position);
         holder.mMessageTextView.setHtmlFromString(item.getMessage(), false);
         holder.mAuthorTextView.setText(item.getAuthorName());
-        holder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
+        holder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(item.getDateline(), mTodayPrefix));
+        holder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, item.getOrdinal()));
         Picasso.with(getContext())
                 .load(ModelConverter.uidToAvatarUrl(item.getAuthorId()))
                 .error(R.drawable.ic_default_avatar)
@@ -57,6 +58,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
         TextView mAuthorTextView;
         @InjectView(R.id.recyclerview_item_post_textview_dateline)
         TextView mDatelineTextView;
+        @InjectView(R.id.recyclerview_item_post_textview_ordinal)
+        TextView mOrdinalTextView;
         @InjectView(R.id.recyclerview_item_post_textview_message)
         HtmlTextView mMessageTextView;
         @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)

@@ -43,8 +43,8 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumListAdapter.V
         holder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));
         Picasso.with(getContext())
                 .load(forumModel.getIcon())
-                .placeholder(new ColorDrawable(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_card_bg_color)))
-                .error(new ColorDrawable(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_card_bg_color)))
+                .placeholder(R.drawable.ic_default_avatar)
+                .error(R.drawable.ic_default_avatar)
                 .into(holder.mForumIconImageView);
     }
 

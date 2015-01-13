@@ -22,6 +22,8 @@
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
     <string name="format_forum_item_threads_todayposts">Threads: %1$d \nToday Posts: %2$d</string>
+
+    <string name="format_post_ordinal">#%1$d</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>

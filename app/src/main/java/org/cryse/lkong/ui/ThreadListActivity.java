@@ -94,7 +94,6 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
             intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
-            intent.putExtra(DataContract.BUNDLE_THREAD_SUBJECT, item.getSubject());
             startActivity(intent);
         });
     }
