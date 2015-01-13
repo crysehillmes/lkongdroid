@@ -123,7 +123,9 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     }
 
     private void initRecyclerView() {
-        UIUtils.setInsets(getActivity(), mRecyclerView, true);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mRecyclerView, true);
+        mRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mListAdapter = new ForumListAdapter(getActivity(), mForumList);

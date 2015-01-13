@@ -71,7 +71,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     }
     private void initRecyclerView() {
-        UIUtils.setInsets(this, mPostCollectionView, true);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView, true);
+        mPostCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+
+
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mItemList);

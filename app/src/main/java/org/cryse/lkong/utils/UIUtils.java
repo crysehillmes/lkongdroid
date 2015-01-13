@@ -112,16 +112,17 @@ public class UIUtils {
             return "\u3000\u3000" + text;
     }
 
-    public static void setInsets(Activity context, View view, boolean withToolbar) {
-        setInsets(context, view, withToolbar, 0);
+    public static InsetsValue getInsets(Activity context, View view, boolean withToolbar) {
+        return getInsets(context, view, withToolbar, 0);
     }
 
-    public static void setInsets(Activity context, View view, boolean withToolbar, int customShadowHeight) {
+    public static InsetsValue getInsets(Activity context, View view, boolean withToolbar, int customShadowHeight) {
+        InsetsValue value;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             // Pre-Kitkat
             int paddingTop = withToolbar ? calculateActionBarSize(context) : 0;
             paddingTop = paddingTop + customShadowHeight; //context.getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
-            view.setPadding(0, paddingTop, 0, 0);
+            value = new InsetsValue(0, paddingTop, 0, 0);
         } else {
             // Kitkat
             SystemBarTintManager tintManager = new SystemBarTintManager(context);
@@ -129,12 +130,62 @@ public class UIUtils {
             int paddingTop = config.getPixelInsetTop(withToolbar);
             paddingTop = paddingTop + customShadowHeight; //context.getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             view.setPadding(0, paddingTop, config.getPixelInsetRight(), config.getPixelInsetBottom());
+            value = new InsetsValue(0, paddingTop, config.getPixelInsetRight(), config.getPixelInsetBottom());
         }
-
+        return value;
     }
 
     public static int dp2px(Context context, float dp){
         float scale = context.getResources().getDisplayMetrics().density;
         return (int)(dp * scale + 0.5f);
+    }
+
+    public static class InsetsValue {
+        private int left;
+        private int top;
+        private int right;
+        private int bottom;
+
+        public InsetsValue() {
+        }
+
+        public InsetsValue(int left, int top, int right, int bottom) {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+
+        public int getTop() {
+            return top;
+        }
+
+        public void setTop(int top) {
+            this.top = top;
+        }
+
+        public int getLeft() {
+            return left;
+        }
+
+        public void setLeft(int left) {
+            this.left = left;
+        }
+
+        public int getRight() {
+            return right;
+        }
+
+        public void setRight(int right) {
+            this.right = right;
+        }
+
+        public int getBottom() {
+            return bottom;
+        }
+
+        public void setBottom(int bottom) {
+            this.bottom = bottom;
+        }
     }
 }
