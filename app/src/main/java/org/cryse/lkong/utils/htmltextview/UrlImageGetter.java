@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Html.ImageGetter;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -30,6 +31,7 @@ import com.squareup.picasso.Target;
 
 import org.cryse.lkong.R;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
@@ -50,17 +52,23 @@ public class UrlImageGetter implements ImageGetter {
         this.resources = context.getResources();
     }
 
+    private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
+    private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
     public Drawable getDrawable(String source) {
+        if(source.startsWith(EMOJI_PREFIX)) {
+            String emojiFileName = source.substring(EMOJI_PREFIX.length());
+            try {
+                Drawable emojiDrawable = Drawable.createFromStream(mContext.getAssets().open(EMOJI_PATH_WITH_SLASH + emojiFileName), null);
+                emojiDrawable.setBounds(0, 0, emojiDrawable.getIntrinsicWidth(),
+                        emojiDrawable.getIntrinsicHeight());
+                return emojiDrawable;
+            } catch (IOException e) {
+                Log.d("UrlImageGetter::getDrawable()", "getDrawable from assets failed.", e);
+            }
+        }
+
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView);
-
         picasso.load(source).placeholder(R.drawable.ic_default_avatar).error(R.drawable.ic_default_avatar).into(urlDrawable);
-
-        // get the actual source
-        // ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable);
-
-        // asyncTask.execute(source);
-
-        // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
     }
 
