@@ -76,7 +76,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         if (useLocalDrawables) {
             imgGetter = new LocalImageGetter(getContext());
         } else {
-            imgGetter = new UrlImageGetter(this, getContext());
+            imgGetter = new UrlImageGetter(getContext(), this);
         }
         // this uses Android's Html class for basic parsing, and HtmlTagHandler
         setText(Html.fromHtml(html, imgGetter, new HtmlTagHandler()));

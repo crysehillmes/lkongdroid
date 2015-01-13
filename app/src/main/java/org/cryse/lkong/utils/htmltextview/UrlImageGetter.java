@@ -23,12 +23,14 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.DrawableRes;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -37,111 +39,98 @@ import org.cryse.lkong.R;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 
 public class UrlImageGetter implements ImageGetter {
-    Context c;
-    View container;
+    Context mContext;
+    TextView mTargetTextView;
     Picasso picasso;
     final Resources resources;
     /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
-     * @param t
-     * @param c
+     * @param context
+     * @param targetTextView
      */
-    public UrlImageGetter(View t, Context c) {
-        this.c = c;
-        this.container = t;
-        this.picasso = Picasso.with(c);
-        this.resources = c.getResources();
+    public UrlImageGetter(Context context, TextView targetTextView) {
+        this.mContext = context;
+        this.mTargetTextView = targetTextView;
+        this.picasso = Picasso.with(context);
+        this.resources = context.getResources();
     }
 
     public Drawable getDrawable(String source) {
-        UrlDrawable urlDrawable = new UrlDrawable();
+        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView);
+
+        picasso.load(source).placeholder(R.drawable.ic_default_avatar).error(R.drawable.ic_default_avatar).into(urlDrawable);
 
         // get the actual source
-        ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable);
+        // ImageGetterAsyncTask asyncTask = new ImageGetterAsyncTask(urlDrawable);
 
-        asyncTask.execute(source);
+        // asyncTask.execute(source);
 
         // return reference to URLDrawable which will asynchronously load the image specified in the src tag
         return urlDrawable;
     }
 
-    public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
-        UrlDrawable urlDrawable;
-
-        public ImageGetterAsyncTask(UrlDrawable d) {
-            this.urlDrawable = d;
+    public static class UrlDrawable extends BitmapDrawable implements Target {
+        protected Context mContext;
+        protected Drawable mDrawable;
+        protected WeakReference<TextView> mTargetView;
+        public UrlDrawable(Context context, TextView targetTextView) {
+            super(context.getResources(), (Bitmap)null);
+            this.mContext = context;
+            mTargetView = new WeakReference<TextView>(targetTextView);
         }
-
-        @Override
-        protected Drawable doInBackground(String... params) {
-            try {
-                Bitmap bitmap = picasso.load(params[0]).placeholder(R.drawable.ic_default_avatar).get();
-                Drawable drawable = new BitmapDrawable(resources, bitmap);
-                drawable.setBounds(0, 0, 0 + drawable.getIntrinsicWidth(), 0 + drawable.getIntrinsicHeight());
-                Log.d("doInBackground", String.format("bitmap == null : %s, bitmap.width = %d, bitmap.height = %d", Boolean.toString(bitmap == null), bitmap.getWidth(), bitmap.getHeight()));
-                return drawable;
-            } catch (Exception e) {
-                Log.e("doInBackground", "error", e );
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Drawable result) {
-            // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0 + result.getIntrinsicHeight());
-
-            // change the reference of the current drawable to the result from the HTTP call
-            urlDrawable.drawable = result;
-
-            // redraw the image by invalidating the container
-            UrlImageGetter.this.container.invalidate();
-            UrlImageGetter.this.container.invalidate();
-            if(UrlImageGetter.this.container instanceof TextView) {
-                TextView textView = (TextView)UrlImageGetter.this.container;
-                textView.setText(textView.getText());
-            }
-        }
-
-        /**
-         * Get the Drawable from URL
-         *
-         * @param urlString
-         * @return
-         */
-        public Drawable fetchDrawable(String urlString) {
-            try {
-                InputStream is = fetch(urlString);
-                Drawable drawable = Drawable.createFromStream(is, "src");
-                drawable.setBounds(0, 0, 0 + drawable.getIntrinsicWidth(), 0 + drawable.getIntrinsicHeight());
-                return drawable;
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        private InputStream fetch(String urlString) throws MalformedURLException, IOException {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpGet request = new HttpGet(urlString);
-            HttpResponse response = httpClient.execute(request);
-            return response.getEntity().getContent();
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    public class UrlDrawable extends BitmapDrawable {
-        protected Drawable drawable;
 
         @Override
         public void draw(Canvas canvas) {
             // override the draw to facilitate refresh function later
-            if (drawable != null) {
-                drawable.draw(canvas);
+            if (mDrawable != null) {
+                mDrawable.draw(canvas);
             }
         }
+
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            Drawable newDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
+            newDrawable.setBounds(0, 0, 0 + newDrawable.getIntrinsicWidth(), 0 + newDrawable.getIntrinsicHeight());
+            this.mDrawable = newDrawable;
+            this.setBounds(0, 0, 0 + newDrawable.getIntrinsicWidth(), 0 + newDrawable.getIntrinsicHeight());
+            invalidateTargetTextView();
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            this.mDrawable = errorDrawable;
+            invalidateTargetTextView();
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+            this.mDrawable = placeHolderDrawable;
+            invalidateTargetTextView();
+        }
+
+        private void invalidateTargetTextView() {
+            TextView textView = mTargetView.get();
+            if(textView != null) {
+                Log.d("abc invalidateTargetTextView", "textView != null");
+                textView.invalidate();
+                textView.setText(textView.getText());
+            }
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return mDrawable.getIntrinsicHeight();
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return mDrawable.getIntrinsicWidth();
+        }
+
     }
 } 
