@@ -12,6 +12,8 @@ import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
+import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
+import org.jsoup.safety.Whitelist;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,7 +94,7 @@ public class ModelConverter {
             postModel.setFirst(item.getFirst() != 0);
             postModel.setId(item.getId());
             postModel.setMe(item.getIsme() != 0);
-            postModel.setMessage(item.getMessage());
+            // postModel.setMessage(item.getMessage());
             postModel.setNotGroup(item.getNotgroup() != 0);
             postModel.setOrdinal(item.getLou());
             postModel.setPid(Long.parseLong(item.getPid()));
@@ -138,6 +140,14 @@ public class ModelConverter {
                 postModel.setRateLog(rateList);
             }
 
+            postModel.setMessage(
+                    HtmlCleaner.fixTagBalanceAndRemoveEmpty(
+                            item.getMessage(),
+                            Whitelist.basicWithImages()
+                                    .addTags("font")
+                                    .addAttributes(":all","style", "color")
+                    )
+            );
             itemList.add(postModel);
         }
         return itemList;
