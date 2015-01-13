@@ -17,16 +17,23 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.cryse.lkong.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +42,8 @@ import java.net.MalformedURLException;
 public class UrlImageGetter implements ImageGetter {
     Context c;
     View container;
-
+    Picasso picasso;
+    final Resources resources;
     /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
@@ -45,6 +53,8 @@ public class UrlImageGetter implements ImageGetter {
     public UrlImageGetter(View t, Context c) {
         this.c = c;
         this.container = t;
+        this.picasso = Picasso.with(c);
+        this.resources = c.getResources();
     }
 
     public Drawable getDrawable(String source) {
@@ -68,8 +78,16 @@ public class UrlImageGetter implements ImageGetter {
 
         @Override
         protected Drawable doInBackground(String... params) {
-            String source = params[0];
-            return fetchDrawable(source);
+            try {
+                Bitmap bitmap = picasso.load(params[0]).placeholder(R.drawable.ic_default_avatar).get();
+                Drawable drawable = new BitmapDrawable(resources, bitmap);
+                drawable.setBounds(0, 0, 0 + drawable.getIntrinsicWidth(), 0 + drawable.getIntrinsicHeight());
+                Log.d("doInBackground", String.format("bitmap == null : %s, bitmap.width = %d, bitmap.height = %d", Boolean.toString(bitmap == null), bitmap.getWidth(), bitmap.getHeight()));
+                return drawable;
+            } catch (Exception e) {
+                Log.e("doInBackground", "error", e );
+                return null;
+            }
         }
 
         @Override
@@ -82,6 +100,11 @@ public class UrlImageGetter implements ImageGetter {
 
             // redraw the image by invalidating the container
             UrlImageGetter.this.container.invalidate();
+            UrlImageGetter.this.container.invalidate();
+            if(UrlImageGetter.this.container instanceof TextView) {
+                TextView textView = (TextView)UrlImageGetter.this.container;
+                textView.setText(textView.getText());
+            }
         }
 
         /**
