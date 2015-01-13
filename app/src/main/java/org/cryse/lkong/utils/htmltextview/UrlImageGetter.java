@@ -22,25 +22,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.support.annotation.DrawableRes;
 import android.text.Html.ImageGetter;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.cryse.lkong.R;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;
@@ -95,31 +85,34 @@ public class UrlImageGetter implements ImageGetter {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             Drawable newDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
-            newDrawable.setBounds(0, 0, 0 + newDrawable.getIntrinsicWidth(), 0 + newDrawable.getIntrinsicHeight());
-            this.mDrawable = newDrawable;
-            this.setBounds(0, 0, 0 + newDrawable.getIntrinsicWidth(), 0 + newDrawable.getIntrinsicHeight());
+            setDrawableAndSelfBounds(newDrawable);
             invalidateTargetTextView();
         }
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
-            this.mDrawable = errorDrawable;
+            setDrawableAndSelfBounds(errorDrawable);
             invalidateTargetTextView();
         }
 
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {
-            this.mDrawable = placeHolderDrawable;
+            setDrawableAndSelfBounds(placeHolderDrawable);
             invalidateTargetTextView();
         }
 
         private void invalidateTargetTextView() {
             TextView textView = mTargetView.get();
             if(textView != null) {
-                Log.d("abc invalidateTargetTextView", "textView != null");
                 textView.invalidate();
                 textView.setText(textView.getText());
             }
+        }
+
+        public void setDrawableAndSelfBounds(Drawable newDrawable) {
+            newDrawable.setBounds(0, 0, newDrawable.getIntrinsicWidth(), newDrawable.getIntrinsicHeight());
+            this.mDrawable = newDrawable;
+            this.setBounds(0, 0, newDrawable.getIntrinsicWidth(), newDrawable.getIntrinsicHeight());
         }
 
         @Override
