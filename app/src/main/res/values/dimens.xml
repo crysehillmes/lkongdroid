@@ -24,4 +24,6 @@
     <dimen name="text_size_caption">12sp</dimen><!-- Regular -->
     <dimen name="text_size_menu">14sp</dimen><!-- Medium -->
     <dimen name="text_size_button">14sp</dimen><!-- MEDIUM(ALL CAPS) -->
+    
+    <dimen name="height_activity_post_list_toolbar">104dp</dimen>
 </resources>

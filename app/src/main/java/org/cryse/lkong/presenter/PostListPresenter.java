@@ -28,6 +28,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
 
     public void loadThreadInfo(long tid) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadInfoSubscription);
+        mView.setLoading(true);
         mLoadThreadInfoSubscription = mLKongForumService.getThreadInfo(tid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -38,6 +39,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
+                            mView.setLoading(false);
                         },
                         () -> {
                             Timber.d("PostListPresenter::loadThreadInfo() onComplete().", LOG_TAG);
@@ -47,6 +49,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
 
     public void loadPostList(long tid, int page) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadPostListSubscription);
+        mView.setLoading(true);
         mLoadPostListSubscription = mLKongForumService.getPostList(tid, page)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -57,9 +60,11 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadPostList() onError().", LOG_TAG);
+                            mView.setLoading(false);
                         },
                         () -> {
                             Timber.d("PostListPresenter::loadPostList() onComplete().", LOG_TAG);
+                            mView.setLoading(false);
                         }
                 );
     }

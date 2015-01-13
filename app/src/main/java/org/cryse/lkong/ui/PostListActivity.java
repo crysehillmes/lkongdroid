@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -40,6 +43,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
+    @InjectView(R.id.activity_post_list_button_page_indicator)
+    Button mPageIndicatorButton;
+    @InjectView(R.id.activity_post_list_button_backward)
+    ImageButton mPrevPageButton;
+    @InjectView(R.id.activity_post_list_button_forward)
+    ImageButton mNextPageButton;
 
     private PostListAdapter mCollectionAdapter;
 
@@ -55,8 +64,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         ButterKnife.inject(this);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        /*getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         initRecyclerView();
@@ -67,18 +76,30 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(mThreadId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
         setTitle(mThreadSubject);
-
-
+        setPageControl();
     }
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView, true);
-        mPostCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getList(), false);
+        mPostCollectionView.getList().setPadding(insetsValue.getLeft(), insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar), insetsValue.getRight(), insetsValue.getBottom());
+        mPostCollectionView.getSwipeToRefresh().setProgressViewEndTarget(
+                true,
+                insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar) + UIUtils.calculateActionBarSize(this));
 
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mItemList);
         mPostCollectionView.setAdapter(mCollectionAdapter);
+    }
+
+    private void setPageControl() {
+        mPrevPageButton.setOnClickListener(view -> {
+            if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
+                getPresenter().loadPostList(mThreadId, mCurrentPage - 1);
+        });
+        mNextPageButton.setOnClickListener(view -> {
+            if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
+                getPresenter().loadPostList(mThreadId, mCurrentPage + 1);
+        });
     }
 
     @Override
@@ -88,18 +109,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             mThreadId = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_ID);
             if(savedInstanceState.containsKey(DataContract.BUNDLE_THREAD_INFO_OBJECT)) {
-                mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_INFO_OBJECT);
+                mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_SUBJECT);
                 mThreadModel = savedInstanceState.getParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mCurrentPage = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE);
                 mPageCount = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_PAGE_COUNT);
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 mCollectionAdapter.addAll(list);
                 setTitle(mThreadSubject);
+                updatePageIndicator();
             }
         } else {
+            mPostCollectionView.getSwipeToRefresh().measure(1,1);
+            mPostCollectionView.getSwipeToRefresh().setRefreshing(true);
             getPresenter().loadThreadInfo(mThreadId);
-            // mThreadCollectionView.getSwipeToRefresh().measure(1,1);
-            // mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
     }
@@ -119,18 +141,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_post_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case R.id.action_change_theme:
+                setNightMode(!isNightMode());
+                return true;
+            /*case android.R.id.home:
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     finishAfterTransition();
                 else
                     finish();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -138,6 +164,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    private void updatePageIndicator() {
+        this.mPageIndicatorButton.setText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
     }
 
     @Override
@@ -170,6 +200,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public void showPostList(int page, List<PostModel> posts) {
+        this.mCurrentPage = page;
+        updatePageIndicator();
         mCollectionAdapter.replaceWith(posts);
     }
 
@@ -178,12 +210,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadModel = threadInfoModel;
         mThreadSubject = threadInfoModel.getSubject();
         setTitle(mThreadSubject);
-        getPresenter().loadPostList(mThreadId, 1);
+
+        // Calculate page here.
+        int replyCount = mThreadModel.getReplies();
+        mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
+
+        if(mPageCount > 0)
+            getPresenter().loadPostList(mThreadId, 1);
     }
 
     @Override
     public void setLoading(Boolean value) {
-
+        this.mPostCollectionView.getSwipeToRefresh().setRefreshing(value);
     }
 
     @Override

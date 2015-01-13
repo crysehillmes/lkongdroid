@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.PostListActivity">
 
     <org.cryse.widget.recyclerview.SuperRecyclerView
         android:id="@+id/activity_post_list_recyclerview"
@@ -14,6 +16,54 @@
 
     </org.cryse.widget.recyclerview.SuperRecyclerView>
 
-    <include
-        layout="@layout/toolbar"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/my_awesome_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="?colorPrimary"
+                android:minHeight="?actionBarSize"
+                android:elevation="@dimen/toolbar_elevation"
+                app:popupTheme="?theme_toolbar_popup_theme"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+            <LinearLayout
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?colorPrimary"
+                android:elevation="@dimen/toolbar_elevation">
+                <ImageButton
+                    android:id="@+id/activity_post_list_button_backward"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackground"
+                    android:src="@drawable/ic_arrow_back" />
+
+                <Button
+                    android:id="@+id/activity_post_list_button_page_indicator"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="?selectableItemBackground"
+                    android:text="1 / 1"
+                    android:textColor="@color/white_87_percent"/>
+
+                <ImageButton
+                    android:id="@+id/activity_post_list_button_forward"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackground"
+                    android:src="@drawable/ic_arrow_forward" />
+            </LinearLayout>
+        </LinearLayout>
 </FrameLayout>
