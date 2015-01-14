@@ -2,17 +2,20 @@
 <org.cryse.lkong.widget.PagerControl xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?actionBarSize"
     android:orientation="vertical"
     app:cardBackgroundColor="?attr/theme_card_bg_color"
     app:cardCornerRadius="0dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="0dp">
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:orientation="horizontal"
-    style="?android:attr/buttonBarStyle">
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
         <ImageButton
             android:id="@+id/widget_pager_control_button_backward"
             android:layout_width="0dp"
@@ -28,7 +31,7 @@
             android:layout_weight="3"
             android:background="?selectableItemBackground"
             android:text="1 / 1"
-            android:textColor="?theme_text_color_primary"/>
+            android:textColor="?theme_text_color_primary" />
 
         <ImageButton
             android:id="@+id/widget_pager_control_button_forward"
@@ -37,5 +40,5 @@
             android:layout_weight="1"
             android:background="?selectableItemBackground"
             android:src="?theme_arrow_forward_drawable" />
-</LinearLayout>
-    </org.cryse.lkong.widget.PagerControl>
+    </LinearLayout>
+</org.cryse.lkong.widget.PagerControl>

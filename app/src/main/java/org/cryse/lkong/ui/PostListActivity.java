@@ -1,8 +1,10 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -54,6 +57,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @InjectView(R.id.activity_post_list_header_container)
     LinearLayout mHeaderView;
 
+    View mRecyclerTopPaddingHeaderView;
     PagerControl mHeaderPagerControl;
     PagerControl mFooterPagerControl;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
@@ -89,28 +93,36 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRecyclerView(), true);
-        mPostCollectionView.getRecyclerView().setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        /*UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRecyclerView(), true);
+        mPostCollectionView.getRecyclerView().setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());*/
         mPostCollectionView.getSwipeToRefresh().setProgressViewEndTarget(
                 true,
-                insetsValue.getTop() + UIUtils.calculateActionBarSize(this) * 2);
+                UIUtils.calculateActionBarSize(this) * 3);
 
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mItemList);
         mPostCollectionView.setAdapter(mCollectionAdapter);
 
+        mRecyclerTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) * 2);
+        mRecyclerTopPaddingHeaderView.setLayoutParams(topPaddingLP);
+        mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
+
         mHeaderPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
         RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mHeaderPagerControl.setLayoutParams(layoutParams1);
         mHeaderPagerControl.setOnPagerControlListener(mOnPagerControlListener);
-        mCollectionAdapter.addHeaderView(mHeaderPagerControl);
+        mHeaderView.addView(mHeaderPagerControl);
+
 
         mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
         RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mFooterPagerControl.setLayoutParams(layoutParams2);
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mCollectionAdapter.addFooterView(mFooterPagerControl);
+        mFooterPagerControl.setVisibility(View.INVISIBLE);
 
         mPostCollectionView.getRecyclerView().setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
             @Override
@@ -292,8 +304,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         this.mCurrentPage = page;
         updatePageIndicator();
         mCollectionAdapter.replaceWith(posts);
-        mPostCollectionView.getRecyclerView().scrollToPosition(0);
-        getSupportActionBar().show();
+        mPostCollectionView.getRecyclerView().smoothScrollToPosition(0);
+        mFooterPagerControl.setVisibility(View.VISIBLE);
     }
 
     @Override

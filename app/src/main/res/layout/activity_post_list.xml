@@ -10,7 +10,7 @@
     <org.cryse.widget.recyclerview.SuperRecyclerView
         android:id="@+id/activity_post_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:srv_empty="@layout/layout_empty_view"
         app:srv_scrollbarStyle="outsideOverlay"/>
 
