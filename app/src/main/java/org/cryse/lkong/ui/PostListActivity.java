@@ -10,10 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
@@ -34,6 +34,7 @@ import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,6 +56,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     PagerControl mHeaderPagerControl;
     PagerControl mFooterPagerControl;
+    private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
 
@@ -64,7 +66,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private String mThreadSubject = "";
 
     private int mBaseTranslationY;
-    private PagerControl.OnPagerControlListener mOnPagerControlListener;
+    private String[] mPageIndicatorItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -166,8 +168,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
 
             @Override
-            public void onPageIndicatorClick() {
-
+            public void onPageIndicatorClick() {MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
+                        .title(R.string.dialog_post_list_choose_page)
+                        .items(mPageIndicatorItems)
+                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                        .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
+                            if(i + 1 == mCurrentPage) return;
+                            getPresenter().loadPostList(mThreadId, i + 1);
+                        });
+                MaterialDialog dialog = dialogBuilder.build();
+                dialog.show();
             }
 
             @Override
@@ -189,6 +199,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mThreadModel = savedInstanceState.getParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mCurrentPage = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE);
                 mPageCount = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_PAGE_COUNT);
+                mPageIndicatorItems = savedInstanceState.getStringArray(DataContract.BUNDLE_THREAD_PAGE_INDICATOR_ITEMS);
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 mCollectionAdapter.addAll(list);
                 setTitle(mThreadSubject);
@@ -211,6 +222,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             outState.putParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT, mThreadModel);
             outState.putInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE, mCurrentPage);
             outState.putInt(DataContract.BUNDLE_THREAD_PAGE_COUNT, mPageCount);
+            outState.putStringArray(DataContract.BUNDLE_THREAD_PAGE_INDICATOR_ITEMS, mPageIndicatorItems);
             outState.putParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE, mCollectionAdapter.getItemArrayList());
         }
     }
@@ -280,6 +292,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         this.mCurrentPage = page;
         updatePageIndicator();
         mCollectionAdapter.replaceWith(posts);
+        mPostCollectionView.getRecyclerView().scrollToPosition(0);
+        getSupportActionBar().show();
     }
 
     @Override
@@ -291,6 +305,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         // Calculate page here.
         int replyCount = mThreadModel.getReplies();
         mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
+
+        mPageIndicatorItems = new String[mPageCount];
+        for(int i = 1; i <= mPageCount; i++) {
+            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+        }
 
         if(mPageCount > 0)
             getPresenter().loadPostList(mThreadId, 1);

@@ -20,5 +20,8 @@
         <item name="theme_card_bg_color">#111111</item>
         <item name="theme_text_color_primary">@color/text_color_primary_dark</item>
         <item name="theme_text_color_secondary">@color/text_color_secondary_dark</item>
+
+        <item name="theme_arrow_backward_drawable">@drawable/ic_arrow_back_white</item>
+        <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_white</item>
     </style>
 </resources>

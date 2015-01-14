@@ -194,7 +194,6 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
             arrayList.addAll(itemList);
             return arrayList;
         }
-
     }
 
     public void setOnItemClickListener(RecyclerViewOnItemClickListener listener) {
