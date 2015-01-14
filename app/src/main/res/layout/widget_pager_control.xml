@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.cryse.lkong.widget.PagerControl xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:cardBackgroundColor="?attr/theme_card_bg_color"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="0dp">
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
+    style="?android:attr/buttonBarStyle">
+        <ImageButton
+            android:id="@+id/widget_pager_control_button_backward"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_arrow_back" />
+
+        <Button
+            android:id="@+id/widget_pager_control_button_page_indicator"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:background="?selectableItemBackground"
+            android:text="1 / 1"
+            android:textColor="@color/white_87_percent"/>
+
+        <ImageButton
+            android:id="@+id/widget_pager_control_button_forward"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_arrow_forward" />
+</LinearLayout>
+    </org.cryse.lkong.widget.PagerControl>

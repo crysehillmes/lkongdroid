@@ -5,8 +5,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -26,6 +29,7 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.PostListView;
+import org.cryse.lkong.widget.PagerControl;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -48,12 +52,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     SuperRecyclerView mPostCollectionView;
     @InjectView(R.id.activity_post_list_header_container)
     LinearLayout mHeaderView;
-    @InjectView(R.id.activity_post_list_button_page_indicator)
-    Button mPageIndicatorButton;
-    @InjectView(R.id.activity_post_list_button_backward)
-    ImageButton mPrevPageButton;
-    @InjectView(R.id.activity_post_list_button_forward)
-    ImageButton mNextPageButton;
+
+    PagerControl mHeaderPagerControl;
+    PagerControl mFooterPagerControl;
 
     private PostListAdapter mCollectionAdapter;
 
@@ -63,7 +64,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private String mThreadSubject = "";
 
     private int mBaseTranslationY;
-
+    private PagerControl.OnPagerControlListener mOnPagerControlListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -74,6 +75,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
+        setupPageControlListener();
         initRecyclerView();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
@@ -82,19 +84,31 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(mThreadId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
         setTitle(mThreadSubject);
-        setPageControl();
     }
+
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRecyclerView(), false);
-        mPostCollectionView.getRecyclerView().setPadding(insetsValue.getLeft(), insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar), insetsValue.getRight(), insetsValue.getBottom());
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRecyclerView(), true);
+        mPostCollectionView.getRecyclerView().setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mPostCollectionView.getSwipeToRefresh().setProgressViewEndTarget(
                 true,
-                insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar) + UIUtils.calculateActionBarSize(this));
+                insetsValue.getTop() + UIUtils.calculateActionBarSize(this) * 2);
 
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mItemList);
         mPostCollectionView.setAdapter(mCollectionAdapter);
+
+        mHeaderPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
+        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mHeaderPagerControl.setLayoutParams(layoutParams1);
+        mHeaderPagerControl.setOnPagerControlListener(mOnPagerControlListener);
+        mCollectionAdapter.addHeaderView(mHeaderPagerControl);
+
+        mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
+        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mFooterPagerControl.setLayoutParams(layoutParams2);
+        mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
+        mCollectionAdapter.addFooterView(mFooterPagerControl);
 
         mPostCollectionView.getRecyclerView().setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
             @Override
@@ -143,15 +157,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         });
     }
 
-    private void setPageControl() {
-        mPrevPageButton.setOnClickListener(view -> {
-            if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
-                getPresenter().loadPostList(mThreadId, mCurrentPage - 1);
-        });
-        mNextPageButton.setOnClickListener(view -> {
-            if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
-                getPresenter().loadPostList(mThreadId, mCurrentPage + 1);
-        });
+    private void setupPageControlListener() {
+        mOnPagerControlListener = new PagerControl.OnPagerControlListener() {
+            @Override
+            public void onBackwardClick() {
+                if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
+                    getPresenter().loadPostList(mThreadId, mCurrentPage - 1);
+            }
+
+            @Override
+            public void onPageIndicatorClick() {
+
+            }
+
+            @Override
+            public void onForwardClick() {
+                if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
+                    getPresenter().loadPostList(mThreadId, mCurrentPage + 1);
+            }
+        };
     }
 
     @Override
@@ -219,7 +243,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void updatePageIndicator() {
-        this.mPageIndicatorButton.setText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
+        this.mHeaderPagerControl.setPageIndicatorText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
+        this.mFooterPagerControl.setPageIndicatorText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
     }
 
     @Override
