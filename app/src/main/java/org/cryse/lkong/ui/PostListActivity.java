@@ -5,12 +5,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -43,6 +46,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
+    @InjectView(R.id.activity_post_list_header_container)
+    LinearLayout mHeaderView;
     @InjectView(R.id.activity_post_list_button_page_indicator)
     Button mPageIndicatorButton;
     @InjectView(R.id.activity_post_list_button_backward)
@@ -57,6 +62,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private long mThreadId = -1;
     private String mThreadSubject = "";
 
+    private int mBaseTranslationY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +85,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         setPageControl();
     }
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getList(), false);
-        mPostCollectionView.getList().setPadding(insetsValue.getLeft(), insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar), insetsValue.getRight(), insetsValue.getBottom());
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRecyclerView(), false);
+        mPostCollectionView.getRecyclerView().setPadding(insetsValue.getLeft(), insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar), insetsValue.getRight(), insetsValue.getBottom());
         mPostCollectionView.getSwipeToRefresh().setProgressViewEndTarget(
                 true,
                 insetsValue.getTop() + getResources().getDimensionPixelSize(R.dimen.height_activity_post_list_toolbar) + UIUtils.calculateActionBarSize(this));
@@ -89,6 +95,52 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mItemList);
         mPostCollectionView.setAdapter(mCollectionAdapter);
+
+        mPostCollectionView.getRecyclerView().setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
+            @Override
+            public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+                int toolbarHeight = getToolbar().getHeight();
+                if (dragging || scrollY < toolbarHeight) {
+                    if (firstScroll) {
+                        float currentHeaderTranslationY = mHeaderView.getTranslationY();
+                        if (-toolbarHeight < currentHeaderTranslationY && toolbarHeight < scrollY) {
+                            mBaseTranslationY = scrollY;
+                        }
+                    }
+                    float headerTranslationY = ScrollUtils.getFloat(-(scrollY - mBaseTranslationY), -toolbarHeight, 0);
+                    mHeaderView.animate().cancel();
+                    mHeaderView.setTranslationY(headerTranslationY);
+                }
+            }
+
+            @Override
+            public void onDownMotionEvent() {
+
+            }
+
+            @Override
+            public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+                mBaseTranslationY = 0;
+
+                float headerTranslationY = mHeaderView.getTranslationY();
+                int toolbarHeight = getToolbar().getHeight();
+                if (scrollState == ScrollState.UP) {
+                    if (toolbarHeight < mPostCollectionView.getRecyclerView().getCurrentScrollY()) {
+                        if (headerTranslationY != -toolbarHeight) {
+                            mHeaderView.animate().cancel();
+                            mHeaderView.animate().translationY(-toolbarHeight).setDuration(200).start();
+                        }
+                    }
+                } else if (scrollState == ScrollState.DOWN) {
+                    if (toolbarHeight < mPostCollectionView.getRecyclerView().getCurrentScrollY()) {
+                        if (headerTranslationY != 0) {
+                            mHeaderView.animate().cancel();
+                            mHeaderView.animate().translationY(0).setDuration(200).start();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void setPageControl() {

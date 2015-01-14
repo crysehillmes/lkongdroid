@@ -12,11 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay">
-
-    </org.cryse.widget.recyclerview.SuperRecyclerView>
+        app:srv_scrollbarStyle="outsideOverlay"/>
 
         <LinearLayout
+            android:id="@+id/activity_post_list_header_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="0dp"
@@ -52,7 +51,7 @@
                     android:id="@+id/activity_post_list_button_page_indicator"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="?selectableItemBackground"
                     android:text="1 / 1"
                     android:textColor="@color/white_87_percent"/>
