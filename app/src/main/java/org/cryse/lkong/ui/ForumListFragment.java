@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,10 +17,12 @@ import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumListPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.ForumListView;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -120,12 +123,21 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     }
 
     private void initRecyclerView() {
-        UIUtils.setInsets(getActivity(), mRecyclerView, true);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mRecyclerView, true);
+        mRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mListAdapter = new ForumListAdapter(getActivity(), mForumList);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setRefreshListener(() -> getPresenter().getForumList());
+        mRecyclerView.setOnItemClickListener((view, position, id) -> {
+            ForumModel item = mListAdapter.getItem(position);
+            Intent intent = new Intent(getActivity(), ThreadListActivity.class);
+            intent.putExtra(DataContract.BUNDLE_FORUM_ID, item.getFid());
+            intent.putExtra(DataContract.BUNDLE_FORUM_NAME, item.getName());
+            startActivity(intent);
+        });
     }
 
     @Override

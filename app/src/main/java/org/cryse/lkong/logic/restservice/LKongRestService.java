@@ -11,6 +11,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
@@ -19,10 +20,14 @@ import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
+import org.cryse.lkong.logic.restservice.model.LKPostList;
+import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
@@ -174,8 +179,8 @@ public class LKongRestService {
         return forumModels;
     }
     
-    public List<ForumThreadModel> getForumThreadList(long fid, long start) throws Exception {
-        String url = LKONG_INDEX_URL + "?mod=data&sars=forum/" + Long.toString(fid);
+    public List<ForumThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=forum/%d%s", fid, ThreadListType.typeToRequestParam(listType));
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
@@ -185,11 +190,45 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        LKForumThreadList lkUserInfo = gson.fromJson(responseString, LKForumThreadList.class);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lkUserInfo);
+        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
+        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         return threadList;
     }
-    
+
+    public ThreadInfoModel getThreadInfo(long tid) throws Exception {
+        String url = String.format(LKONG_INDEX_URL + "?mod=ajax&action=threadconfig_%d", tid);
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKThreadInfo lkThreadInfo = gson.fromJson(responseString, LKThreadInfo.class);
+        ThreadInfoModel threadInfoModel = ModelConverter.toThreadInfoModel(lkThreadInfo);
+        return threadInfoModel;
+    }
+
+    public List<PostModel> getThreadPostList(long tid, int page) throws Exception {
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=thread/%d/%s", tid, page);
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKPostList lkPostList = gson.fromJson(responseString, LKPostList.class);
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lkPostList.getData().size()), LOG_TAG);
+        List<PostModel> postList = ModelConverter.toPostModelList(lkPostList);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", postList.size()), LOG_TAG);
+        return postList;
+    }
+
     private static String decompress(byte[] bytes) throws Exception {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         GZIPInputStream gis = new GZIPInputStream(byteArrayInputStream);
