@@ -22,7 +22,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.ViewHolder, PostModel> {
+public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
     public PostListAdapter(Context context, List<PostModel> mItemList) {
         super(context, mItemList);
@@ -30,7 +30,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_post, parent, false);
@@ -38,18 +38,25 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostListAdapter.Vie
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        PostModel item = getItem(position);
-        holder.mMessageTextView.setHtmlFromString(item.getMessage(), false);
-        holder.mAuthorTextView.setText(item.getAuthorName());
-        holder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(item.getDateline(), mTodayPrefix));
-        holder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, item.getOrdinal()));
-        Picasso.with(getContext())
-                .load(ModelConverter.uidToAvatarUrl(item.getAuthorId()))
-                .error(R.drawable.ic_default_avatar)
-                .placeholder(R.drawable.ic_default_avatar)
-                .into(holder.mAuthorAvatarImageView);
+        if(holder instanceof ViewHolder) {
+            ViewHolder viewHolder = (ViewHolder)holder;
+            Object item = getObjectItem(position);
+            if(item instanceof PostModel) {
+                PostModel postModel = (PostModel)item;
+
+                viewHolder.mMessageTextView.setHtmlFromString(postModel.getMessage(), false);
+                viewHolder.mAuthorTextView.setText(postModel.getAuthorName());
+                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
+                viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+                Picasso.with(getContext())
+                        .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(viewHolder.mAuthorAvatarImageView);
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

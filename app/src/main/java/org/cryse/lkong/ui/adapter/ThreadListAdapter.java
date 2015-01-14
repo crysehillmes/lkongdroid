@@ -20,7 +20,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadListAdapter.ViewHolder, ForumThreadModel> {
+public class ThreadListAdapter extends RecyclerViewBaseAdapter<ForumThreadModel> {
     private final String mTodayPrefix;
     public ThreadListAdapter(Context context, List<ForumThreadModel> mItemList) {
         super(context, mItemList);
@@ -28,7 +28,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadListAdapter
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_thread, parent, false);
@@ -36,20 +36,25 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadListAdapter
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        ForumThreadModel item = getItem(position);
+        if(holder instanceof ViewHolder) {
+            ViewHolder viewHolder = (ViewHolder)holder;
+            Object item = getObjectItem(position);
+            if(item instanceof ForumThreadModel) {
+                ForumThreadModel threadModel = (ForumThreadModel)item;
 
-
-        holder.mThreadTitleTextView.setText(android.text.Html.fromHtml(item.getSubject()));
-        holder.mThreadSecondaryTextView.setText(item.getUserName());
-        holder.mNotice1TextView.setText(Integer.toString(item.getReplyCount()));
-        holder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
-        Picasso.with(getContext())
-                .load(item.getUserIcon())
-                .error(R.drawable.ic_default_avatar)
-                .placeholder(R.drawable.ic_default_avatar)
-                .into(holder.mThreadIconImageView);
+                viewHolder.mThreadTitleTextView.setText(android.text.Html.fromHtml(threadModel.getSubject()));
+                viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
+                viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
+                viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), mTodayPrefix));
+                Picasso.with(getContext())
+                        .load(threadModel.getUserIcon())
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(viewHolder.mThreadIconImageView);
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
