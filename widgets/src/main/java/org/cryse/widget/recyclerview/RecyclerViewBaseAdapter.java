@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<RecyclerViewHolder> {
     protected Context mContext;
-    protected HeaderFootList<S> mObjectList;
+    protected HeaderFooterList<S> mObjectList;
     protected RecyclerViewOnItemClickListener mOnItemClickListener;
     protected RecyclerViewOnItemLongClickListener mOnItemLongClickListener;
 
@@ -23,7 +23,7 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
 
     public RecyclerViewBaseAdapter(Context context, List<S> items) {
         this.mContext = context;
-        this.mObjectList = new HeaderFootList<S>(items);
+        this.mObjectList = new HeaderFooterList<S>(items);
     }
 
     public void addAll(Collection<S> items) {
@@ -59,11 +59,11 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
     @Override
     public int getItemViewType(int position) {
         int ret = mObjectList.indexIn(position);
-        if( ret == HeaderFootList.IN_HEADER_LIST)
+        if( ret == HeaderFooterList.IN_HEADER_LIST)
             return onGetHeaderViewItemType(position);
-        else if(ret == HeaderFootList.IN_FOOTER_LIST)
+        else if(ret == HeaderFooterList.IN_FOOTER_LIST)
             return onGetFooterViewItemType(position);
-        else if(ret == HeaderFootList.IN_ITEM_LIST)
+        else if(ret == HeaderFooterList.IN_ITEM_LIST)
             return onGetItemViewItemType(position);
         else
             throw new IndexOutOfBoundsException();
