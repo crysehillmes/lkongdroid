@@ -19,6 +19,8 @@ public class HtmlCleaner {
                     && !element.tagName().equalsIgnoreCase("ul")
                     && !element.tagName().equalsIgnoreCase("li")
             ) {
+                if(element.select("img").size() > 0)
+                    continue;
                 element.remove();
             }
 
