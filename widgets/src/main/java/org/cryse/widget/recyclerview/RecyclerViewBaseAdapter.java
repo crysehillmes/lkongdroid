@@ -98,20 +98,29 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
     }
 
     public void replaceWith(Collection<S> items) {
-        int currentHeaderCount = mObjectList.getHeaderViewCount();
-        int oldCount = mObjectList.getItemCount();
-        int newCount = items.size();
-        int delCount = oldCount - newCount;
-        mObjectList.getItemList().clear();
-        mObjectList.getItemList().addAll(items);
-        if(delCount > 0) {
-            notifyItemRangeChanged(0 + currentHeaderCount, newCount);
-            notifyItemRangeRemoved(newCount + currentHeaderCount, delCount);
-        } else if(delCount < 0) {
-            notifyItemRangeChanged(0 + currentHeaderCount, oldCount);
-            notifyItemRangeInserted(oldCount + currentHeaderCount, - delCount);
+        replaceWith(items, false);
+    }
+
+    public void replaceWith(Collection<S> items, boolean cleanToReplace) {
+        if(cleanToReplace) {
+            clear();
+            addAll(items);
         } else {
-            notifyItemRangeChanged(0 + currentHeaderCount, newCount);
+            int currentHeaderCount = mObjectList.getHeaderViewCount();
+            int oldCount = mObjectList.getItemCount();
+            int newCount = items.size();
+            int delCount = oldCount - newCount;
+            mObjectList.getItemList().clear();
+            mObjectList.getItemList().addAll(items);
+            if(delCount > 0) {
+                notifyItemRangeChanged(0 + currentHeaderCount, newCount);
+                notifyItemRangeRemoved(newCount + currentHeaderCount, delCount);
+            } else if(delCount < 0) {
+                notifyItemRangeChanged(0 + currentHeaderCount, oldCount);
+                notifyItemRangeInserted(oldCount + currentHeaderCount, - delCount);
+            } else {
+                notifyItemRangeChanged(0 + currentHeaderCount, newCount);
+            }
         }
     }
 
