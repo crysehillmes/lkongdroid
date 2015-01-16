@@ -65,7 +65,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
-    private int mAmountScrollY = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -106,14 +105,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
 
         mHeaderPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
         mHeaderPagerControl.setLayoutParams(layoutParams1);
         mHeaderPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mHeaderView.addView(mHeaderPagerControl);
 
 
         mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
         mFooterPagerControl.setLayoutParams(layoutParams2);
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mCollectionAdapter.addFooterView(mFooterPagerControl);
@@ -121,6 +120,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         mPostCollectionView.getRecyclerView().setOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean dragging = false;
+            int mNegativeDyAmount = 0;
+            private int mAmountScrollY = 0;
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -132,14 +133,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 super.onScrolled(recyclerView, dx, dy);
 
                 mAmountScrollY = mAmountScrollY + dy;
-                Log.d("PostListActivity::initRecyclerView()", String.format("onScrollChanged(mAmountScrollY = %d, dragging = %s", mAmountScrollY, Boolean.toString(dragging)));
                 int toolbarHeight = getToolbar().getHeight();
-                if (dragging || mAmountScrollY < toolbarHeight) {
+                if (dy > 0) {
                     int headerTranslationY = 0;
+                    mNegativeDyAmount = 0;
                     if(mAmountScrollY - mBaseTranslationY - toolbarHeight > 0 && mAmountScrollY - mBaseTranslationY - toolbarHeight <= toolbarHeight) {
                         headerTranslationY = -(mAmountScrollY - mBaseTranslationY - toolbarHeight);
                     } else if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         headerTranslationY = - toolbarHeight;
+                    }
+                    mHeaderView.animate().cancel();
+                    mHeaderView.setTranslationY(headerTranslationY);
+                } else if(dy < 0) {
+                    int headerTranslationY = 0;
+                    mAmountScrollY = 0;
+                    mNegativeDyAmount = mNegativeDyAmount + dy;
+                    if(Math.abs(mNegativeDyAmount) - mBaseTranslationY > 0 && Math.abs(mNegativeDyAmount) - mBaseTranslationY <= toolbarHeight) {
+                        headerTranslationY = Math.abs(mNegativeDyAmount) - mBaseTranslationY - toolbarHeight;
+                    } else if(Math.abs(mNegativeDyAmount) - mBaseTranslationY  > toolbarHeight) {
+                        headerTranslationY = 0;
                     }
                     mHeaderView.animate().cancel();
                     mHeaderView.setTranslationY(headerTranslationY);
@@ -190,7 +202,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mPageCount = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_PAGE_COUNT);
                 mPageIndicatorItems = savedInstanceState.getStringArray(DataContract.BUNDLE_THREAD_PAGE_INDICATOR_ITEMS);
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
-                mCollectionAdapter.addAll(list);
+                // mCollectionAdapter.addAll(list);
+                showPostList(mCurrentPage, list);
                 setTitle(mThreadSubject);
                 updatePageIndicator();
             }
@@ -282,7 +295,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         updatePageIndicator();
         mPostCollectionView.getRecyclerView().stopScroll();
         mCollectionAdapter.replaceWith(posts);
-        mAmountScrollY = 0;
         mPostCollectionView.getRecyclerView().scrollToPosition(0);
         if(mHeaderView.getTranslationY() != 0)
             mHeaderView.animate().translationY(0).setDuration(300).start();
