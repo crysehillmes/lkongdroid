@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. -->
+    <style name="LKongDroidTheme.Dark" parent="FrameworkRoot.Dark">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="actionBarInsetStart">@dimen/keyline_2_minus_16dp</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="theme_toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme_navigation_drawer_bg">@color/theme_navigation_drawer_bg_dark</item>
+        <item name="theme_navigation_drawer_top_drawable">@drawable/drawer_top_image_dark</item>
+        <item name="theme_navigation_drawer_text_color">@android:color/white</item>
+        <item name="theme_navigation_drawer_icon_color">@android:color/white</item>
+
+        <item name="theme_float_label_layout_text_appearence">@style/TextAppearance.LKongDroid.FloatLabel.Dark</item>
+        <item name="theme_float_label_layout_selector">@color/float_label_selector_dark</item>
+        <item name="theme_card_bg_color">#111111</item>
+        <item name="theme_text_color_primary">@color/text_color_primary_dark</item>
+        <item name="theme_text_color_secondary">@color/text_color_secondary_dark</item>
+
+        <item name="theme_arrow_backward_drawable">@drawable/ic_arrow_back_white</item>
+        <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_white</item>
+    </style>
+</resources>

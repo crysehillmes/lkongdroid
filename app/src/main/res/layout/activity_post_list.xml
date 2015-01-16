@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.PostListActivity">
+
+    <org.cryse.widget.recyclerview.SuperRecyclerView
+        android:id="@+id/activity_post_list_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srv_empty="@layout/layout_empty_view"
+        app:srv_scrollbarStyle="outsideOverlay"/>
+
+        <LinearLayout
+            android:id="@+id/activity_post_list_header_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:layout_marginLeft="0dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/my_awesome_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="?colorPrimary"
+                android:minHeight="?actionBarSize"
+                android:elevation="@dimen/toolbar_elevation"
+                app:popupTheme="?theme_toolbar_popup_theme"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+
+        </LinearLayout>
+</FrameLayout>

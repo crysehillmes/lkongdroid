@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <org.cryse.widget.FloatLabelLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
+
+        <EditText
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/account_email_hint"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions"
+            android:imeOptions="actionNext"
+            android:nextFocusDown="@+id/edit_password" />
+
+    </org.cryse.widget.FloatLabelLayout>
+
+    <org.cryse.widget.FloatLabelLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
+
+        <EditText
+            android:id="@+id/edit_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/account_password_hint"
+            android:singleLine="true"
+            android:inputType="textPassword"
+            android:imeOptions="actionDone" />
+
+    </org.cryse.widget.FloatLabelLayout>
+    <ProgressBar
+        android:id="@+id/progressbar_signin"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="invisible"/>
+</LinearLayout>

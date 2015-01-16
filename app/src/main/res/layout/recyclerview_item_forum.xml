@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?selectableItemBackground"
+    android:padding="16dp">
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/recyclerview_item_forum_imageview_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:gravity="left|center_vertical"
+        android:scaleType="fitXY"
+        app:border_color="@android:color/transparent"
+        app:border_width="0dp"
+        app:shadow="false"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginLeft="96dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/recyclerview_item_forum_textview_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="placeholder"
+            android:textColor="?theme_text_color_primary"
+            android:textSize="@dimen/text_size_subhead"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/recyclerview_item_forum_textview_secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="2"
+            android:text="placeholder"
+            android:textColor="?theme_text_color_secondary"
+            android:textSize="@dimen/text_size_body1" />
+    </LinearLayout>
+</FrameLayout>
