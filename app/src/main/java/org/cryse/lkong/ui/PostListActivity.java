@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +26,7 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.PostListView;
+import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
@@ -50,6 +50,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     SuperRecyclerView mPostCollectionView;
     @InjectView(R.id.activity_post_list_header_container)
     LinearLayout mHeaderView;
+    @InjectView(R.id.fab)
+    FloatingActionButtonEx mFab;
 
     View mRecyclerTopPaddingHeaderView;
     PagerControl mHeaderPagerControl;
@@ -158,6 +160,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 }
             }
         });
+        mFab.attachToSuperRecyclerView(mPostCollectionView);
     }
 
     private void setupPageControlListener() {
