@@ -1,25 +1,20 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
-import android.graphics.Outline;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -37,7 +32,6 @@ import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,7 +63,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private long mThreadId = -1;
     private String mThreadSubject = "";
 
-    private int mBaseTranslationY;
+    private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,61 +105,56 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
 
         mHeaderPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
         mHeaderPagerControl.setLayoutParams(layoutParams1);
         mHeaderPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mHeaderView.addView(mHeaderPagerControl);
 
 
         mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
         mFooterPagerControl.setLayoutParams(layoutParams2);
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mCollectionAdapter.addFooterView(mFooterPagerControl);
         mFooterPagerControl.setVisibility(View.INVISIBLE);
 
-        mPostCollectionView.getRecyclerView().setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
+        mPostCollectionView.getRecyclerView().setOnScrollListener(new RecyclerView.OnScrollListener() {
+            boolean dragging = false;
+            int mNegativeDyAmount = 0;
+            private int mAmountScrollY = 0;
             @Override
-            public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState ? true : false;
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
-                if (dragging || scrollY < toolbarHeight) {
-                    if (firstScroll) {
-                        float currentHeaderTranslationY = mHeaderView.getTranslationY();
-                        if (-toolbarHeight < currentHeaderTranslationY && toolbarHeight < scrollY) {
-                            mBaseTranslationY = scrollY;
-                        }
+                if (dy > 0) {
+                    int headerTranslationY = 0;
+                    mNegativeDyAmount = 0;
+                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > 0 && mAmountScrollY - mBaseTranslationY - toolbarHeight <= toolbarHeight) {
+                        headerTranslationY = -(mAmountScrollY - mBaseTranslationY - toolbarHeight);
+                    } else if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
+                        headerTranslationY = - toolbarHeight;
                     }
-                    float headerTranslationY = ScrollUtils.getFloat(-(scrollY - mBaseTranslationY), -toolbarHeight, 0);
                     mHeaderView.animate().cancel();
                     mHeaderView.setTranslationY(headerTranslationY);
-                }
-            }
-
-            @Override
-            public void onDownMotionEvent() {
-
-            }
-
-            @Override
-            public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-                mBaseTranslationY = 0;
-
-                float headerTranslationY = mHeaderView.getTranslationY();
-                int toolbarHeight = getToolbar().getHeight();
-                if (scrollState == ScrollState.UP) {
-                    if (toolbarHeight < mPostCollectionView.getRecyclerView().getCurrentScrollY()) {
-                        if (headerTranslationY != -toolbarHeight) {
-                            mHeaderView.animate().cancel();
-                            mHeaderView.animate().translationY(-toolbarHeight).setDuration(200).start();
-                        }
+                } else if(dy < 0) {
+                    int headerTranslationY = 0;
+                    mAmountScrollY = 0;
+                    mNegativeDyAmount = mNegativeDyAmount + dy;
+                    if(Math.abs(mNegativeDyAmount) - mBaseTranslationY > 0 && Math.abs(mNegativeDyAmount) - mBaseTranslationY <= toolbarHeight) {
+                        headerTranslationY = Math.abs(mNegativeDyAmount) - mBaseTranslationY - toolbarHeight;
+                    } else if(Math.abs(mNegativeDyAmount) - mBaseTranslationY  > toolbarHeight) {
+                        headerTranslationY = 0;
                     }
-                } else if (scrollState == ScrollState.DOWN) {
-                    if (toolbarHeight < mPostCollectionView.getRecyclerView().getCurrentScrollY()) {
-                        if (headerTranslationY != 0) {
-                            mHeaderView.animate().cancel();
-                            mHeaderView.animate().translationY(0).setDuration(200).start();
-                        }
-                    }
+                    mHeaderView.animate().cancel();
+                    mHeaderView.setTranslationY(headerTranslationY);
                 }
             }
         });
@@ -213,7 +202,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mPageCount = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_PAGE_COUNT);
                 mPageIndicatorItems = savedInstanceState.getStringArray(DataContract.BUNDLE_THREAD_PAGE_INDICATOR_ITEMS);
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
-                mCollectionAdapter.addAll(list);
+                // mCollectionAdapter.addAll(list);
+                showPostList(mCurrentPage, list);
                 setTitle(mThreadSubject);
                 updatePageIndicator();
             }
@@ -303,8 +293,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public void showPostList(int page, List<PostModel> posts) {
         this.mCurrentPage = page;
         updatePageIndicator();
+        mPostCollectionView.getRecyclerView().stopScroll();
         mCollectionAdapter.replaceWith(posts);
-        mPostCollectionView.getRecyclerView().smoothScrollToPosition(0);
+        mPostCollectionView.getRecyclerView().scrollToPosition(0);
+        if(mHeaderView.getTranslationY() != 0)
+            mHeaderView.animate().translationY(0).setDuration(300).start();
         mFooterPagerControl.setVisibility(View.VISIBLE);
     }
 

@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-
 import org.cryse.widget.R;
 
 public class SuperRecyclerView extends FrameLayout {
@@ -23,7 +21,7 @@ public class SuperRecyclerView extends FrameLayout {
 
     protected ViewStub    mProgress;
     protected ViewStub    mMoreProgress;
-    protected ObservableRecyclerView mRecyclerView;
+    protected RecyclerView mRecyclerView;
     protected ViewStub    mEmpty;
 
     protected float   mDividerHeight;
@@ -54,7 +52,7 @@ public class SuperRecyclerView extends FrameLayout {
         return mPtrLayout;
     }
 
-    public ObservableRecyclerView getRecyclerView() {
+    public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
 
@@ -134,8 +132,8 @@ public class SuperRecyclerView extends FrameLayout {
 
         View recyclerView = v.findViewById(android.R.id.list);
 
-        if (recyclerView instanceof ObservableRecyclerView)
-            mRecyclerView = (ObservableRecyclerView) recyclerView;
+        if (recyclerView instanceof RecyclerView)
+            mRecyclerView = (RecyclerView) recyclerView;
         else
             throw new IllegalArgumentException("SuperRecyclerView works with a ObservableRecyclerView!");
 

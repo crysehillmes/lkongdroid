@@ -55,6 +55,9 @@ public class UrlImageGetter implements ImageGetter {
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
     private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
     public Drawable getDrawable(String source) {
+        if(source == null) {
+            return mContext.getResources().getDrawable(R.drawable.ic_default_avatar);
+        }
         if(source.startsWith(EMOJI_PREFIX)) {
             String emojiFileName = source.substring(EMOJI_PREFIX.length());
             try {
