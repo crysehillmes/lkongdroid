@@ -161,6 +161,31 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
         });
         mFab.attachToSuperRecyclerView(mPostCollectionView);
+        mFab.setOnClickListener(view -> {
+            Intent intent = new Intent(this, NewPostActivity.class);
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+            intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, mThreadSubject));
+            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == DataContract.REQUEST_ID_NEW_POST) {
+            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT) && data.hasExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT)) {
+                int newPageCount = data.getIntExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, 0);
+                int newReplyCount = data.getIntExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT, 0);
+                if(newReplyCount > mThreadModel.getReplies())
+                    mThreadModel.setReplies(newReplyCount);
+                if(newPageCount > mPageCount) {
+                    mPageCount = newPageCount;
+                }
+                if(newPageCount == mCurrentPage) {
+                    getPresenter().loadPostList(mThreadId, mCurrentPage);
+                }
+            }
+        }
     }
 
     private void setupPageControlListener() {
@@ -244,17 +269,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
-            case R.id.action_new_post:
-                Intent intent = new Intent(this, NewPostActivity.class);
-                intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
-                startActivity(intent);
-                return true;
-            /*case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
-                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }

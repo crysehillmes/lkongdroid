@@ -1,7 +1,6 @@
 package org.cryse.lkong.logic;
 
-import android.util.Log;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.restservice.LKongRestService;
@@ -12,17 +11,15 @@ import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
+import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.Subscriber;
 import timber.log.Timber;
 
 public class LKongForumService {
@@ -164,45 +161,27 @@ public class LKongForumService {
         });
     }
 
-    private static final int IMG_TYPE_LOCAL = 1;
-    private static final int IMG_TYPE_URL = 2;
-    private static final int IMG_TYPE_EMOJI = 3;
-    private static final String IMG_TAG_FORMAT = "([([[%d][%s]])])";
 
     public Observable<NewPostResult> newPostReply(LKAuthObject authObject, long tid, Long pid, String content) {
         return Observable.create(subscriber -> {
             try {
-                Pattern pattern = Pattern.compile("\\(\\[\\(\\[\\[(\\d)\\]\\[([^\\]]+)\\]\\]\\)\\]\\)");
-                Matcher matcher = pattern.matcher(content);
-                StringBuffer s = new StringBuffer();
-                while (matcher.find()) {
-                    Log.d("tst", "group " + matcher.group());
-                    Log.d("tst", "groupCount: " + Integer.toString(matcher.groupCount()));
-                    Log.d("tst", "group 1: " + matcher.group(1));
-                    Log.d("tst", "group 2: " + matcher.group(2));
-                    switch(Integer.valueOf(matcher.group(1))) {
-                        case IMG_TYPE_URL:
-                            matcher.appendReplacement(s, matcher.group(2));
-                            break;
-                        case IMG_TYPE_EMOJI:
-                            matcher.appendReplacement(s, "http://img.lkong.cn/bq/" + matcher.group(2) + ".gif\"" + " em=\"" + matcher.group(2).substring(2));
-                            break;
-                        case IMG_TYPE_LOCAL:
-                            try {
-                                String uploadUrl = mLKongRestService.uploadImageToLKong(matcher.group(2));
-                                matcher.appendReplacement(s, uploadUrl);
-                            } catch(Exception ex) {
-                                Timber.e(ex, "uploadImageToLKong failed", LOG_TAG);
-                                continue;
-                            }
-                            break;
+                String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
+                ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
+                contentProcessor.setUploadImageCallback(path -> {
+                    String uploadUrl = "";
+                    try {
+                        uploadUrl = mLKongRestService.uploadImageToLKong(authObject, path);
+                    } catch(Exception ex) {
+                        Timber.e(ex, "uploadImageToLKong failed", LOG_TAG);
+                    } finally {
+                        return uploadUrl;
                     }
-                }
-                matcher.appendTail(s);
-                Timber.d(s.toString(), LOG_TAG);
-                String finalContent = s.toString();
+                });
+                contentProcessor.run();
+                String replaceResult = contentProcessor.getResultContent();
 
-                NewPostResult result = mLKongRestService.newPostReply(authObject, tid, pid, finalContent);
+                Timber.d(replaceResult, LOG_TAG);
+                NewPostResult result = mLKongRestService.newPostReply(authObject, tid, pid, replaceResult);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

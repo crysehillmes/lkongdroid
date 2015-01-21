@@ -14,7 +14,7 @@ public class NewPostResult {
         this.tid = tid;
     }
 
-    public long getPageCount() {
+    public int getPageCount() {
         return pageCount;
     }
 

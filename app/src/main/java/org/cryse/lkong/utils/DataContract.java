@@ -15,5 +15,10 @@ public class DataContract {
     public static final String BUNDLE_THREAD_INFO_OBJECT= "bundle_thread_info_object";
 
 
+    public static final String BUNDLE_THREAD_REPLY_COUNT= "bundle_thread_reply_count";
+
     public static final String BUNDLE_POST_ID = "bundle_post_id";
+    public static final String BUNDLE_POST_REPLY_TITLE = "bundle_post_reply_title";
+
+    public static final int REQUEST_ID_NEW_POST = 129;
 }

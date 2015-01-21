@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_new_post"
-        android:title="New Post"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_change_theme"
         android:title="@string/action_dark_theme"
         app:showAsAction="never" />

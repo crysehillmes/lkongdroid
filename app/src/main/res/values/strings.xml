@@ -13,6 +13,10 @@
     <string name="action_dark_theme">Dark Theme</string>
     <string name="action_light_theme">Light Theme</string>
 
+    <string name="action_insert_image">Insert Image</string>
+    <string name="action_insert_emoji">Insert Emoji</string>
+    <string name="action_send_post">Send</string>
+
     <string name="drawer_item_forum_list">Forum List</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_settings">Settings</string>
@@ -25,6 +29,7 @@
 
     <string name="format_post_ordinal">#%1$d</string>
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
+    <string name="format_post_reply_title">Reply: %1$s</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
@@ -33,4 +38,5 @@
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
+    <string name="dialog_new_post_sending">Sending post…</string>
 </resources>
