@@ -5,6 +5,7 @@ import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.NavigationDrawerFragment;
+import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.ThreadListActivity;
@@ -21,4 +22,5 @@ public interface LKongPresenterComponent {
     void inject(ForumListFragment fragment);
     void inject(ThreadListActivity activity);
     void inject(PostListActivity activity);
+    void inject(NewPostActivity activity);
 }

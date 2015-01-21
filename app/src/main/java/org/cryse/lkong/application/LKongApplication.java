@@ -24,11 +24,13 @@ public class LKongApplication extends Application {
     private MainActivityComponent mainActivityComponent;
     private LKongPresenterComponent lKongPresenterComponent;
     private AndroidNavigation mNavigation;
+    private UserAccountManager mUserAccountManager;
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
         mNavigation = new AndroidNavigation(this);
+        mUserAccountManager = new UserAccountManager();
         initComponents();
     }
 
@@ -48,6 +50,10 @@ public class LKongApplication extends Application {
 
     public static LKongApplication get(Context context) {
         return (LKongApplication) context.getApplicationContext();
+    }
+
+    public UserAccountManager getUserAccountManager() {
+        return mUserAccountManager;
     }
 
     public MainActivityComponent mainActivityComponent() {

@@ -244,6 +244,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
+            case R.id.action_new_post:
+                Intent intent = new Intent(this, NewPostActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+                startActivity(intent);
+                return true;
             /*case android.R.id.home:
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     finishAfterTransition();

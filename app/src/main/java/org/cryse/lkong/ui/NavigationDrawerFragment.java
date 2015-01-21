@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.presenter.UserAccountPresenter;
@@ -38,6 +39,8 @@ import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.UserAccountView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.LongPreference;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -98,6 +101,8 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
 
     @Inject
     UserAccountPresenter mUserAccountPresenter;
+    @Inject
+    UserAccountManager mUserAccountManager;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -379,6 +384,10 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     @Override
     public void showUserAccount(UserAccountEntity userAccount) {
         if(userAccount != null) {
+            ArrayList<UserAccountEntity> accountEntities = new ArrayList<UserAccountEntity>();
+            accountEntities.add(userAccount);
+            mUserAccountManager.setUserAccounts(accountEntities, userAccount.getUserId());
+
             mCurrentAccount = userAccount;
             mAccountUserNameTextView.setText(userAccount.getUserName());
             Picasso.with(getActivity())
