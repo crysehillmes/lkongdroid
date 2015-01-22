@@ -23,11 +23,13 @@ import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
+import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
+import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ForumThreadModel;
@@ -276,7 +278,7 @@ public class LKongRestService {
         RequestBody formBody = builder.build();
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=post")
+                .url("http://lkong.cn/forum/index.php?mod=post")
                 .post(formBody)
                 .build();
 
@@ -300,6 +302,43 @@ public class LKongRestService {
         clearCookies();
 
         return newPostResult;
+    }
+
+    public NewThreadResult newPostThread(LKAuthObject authObject, String title, long fid, String content, boolean follow) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("title", title)
+                .add("type", "new")
+                .add("fid", Long.toString(fid))
+                .add("content", content)
+                .add("follow", follow ? "1" : "0");
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url("http://lkong.cn/post/new/index.php?mod=post")
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseBody = getStringFromGzipResponse(response);
+        Timber.d(responseBody, LOG_TAG);
+        LKNewThreadResult lkNewThreadResult = gson.fromJson(responseBody, LKNewThreadResult.class);
+        NewThreadResult newThreadResult = new NewThreadResult();
+        if(lkNewThreadResult == null || !lkNewThreadResult.isSuccess()) {
+            newThreadResult.setSuccess(false);
+            newThreadResult.setErrorMessage(lkNewThreadResult != null ? lkNewThreadResult.getError() : "");
+            Timber.d("newPostThread failed", LOG_TAG);
+        } else {
+            newThreadResult.setSuccess(true);
+            newThreadResult.setTid(lkNewThreadResult.getTid());
+            newThreadResult.setType(lkNewThreadResult.getType());
+            Timber.d("newPostThread success", LOG_TAG);
+        }
+        clearCookies();
+
+        return newThreadResult;
     }
 
     private static String decompress(byte[] bytes) throws Exception {

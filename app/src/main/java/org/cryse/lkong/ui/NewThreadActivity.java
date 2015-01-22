@@ -30,15 +30,15 @@ import android.widget.ImageButton;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
-import org.cryse.lkong.model.NewPostResult;
-import org.cryse.lkong.presenter.NewPostPresenter;
+import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.presenter.NewThreadPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
-import org.cryse.lkong.view.NewPostView;
+import org.cryse.lkong.view.NewThreadView;
 import org.cryse.utils.ColorUtils;
 
 import java.io.File;
@@ -55,14 +55,16 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import timber.log.Timber;
 
-public class NewPostActivity extends AbstractThemeableActivity implements NewPostView {
+public class NewThreadActivity extends AbstractThemeableActivity implements NewThreadView {
     @Inject
-    NewPostPresenter mPresenter;
+    NewThreadPresenter mPresenter;
 
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.activity_new_post_edittext_content)
+    @InjectView(R.id.activity_new_thread_edittext_title)
+    EditText mTitleEditText;
+    @InjectView(R.id.activity_new_thread_edittext_content)
     EditText mContentEditText;
 
     @InjectView(R.id.action_insert_emoji)
@@ -71,8 +73,8 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
     ImageButton mInsertImageButton;
 
     String mTitle;
-    long mThreadId;
-    Long mPostId;
+    long mForumId;
+    String mForumName;
 
 
     ProgressDialog mProgressDialog;
@@ -81,7 +83,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_post);
+        setContentView(R.layout.activity_new_thread);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -89,15 +91,11 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         ButterKnife.inject(this);
         Intent intent = getIntent();
-        if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
-            mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, 0);
-            mTitle = intent.getStringExtra(DataContract.BUNDLE_POST_REPLY_TITLE);
-            if(intent.hasExtra(DataContract.BUNDLE_POST_ID))
-                mPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, 0);
-            else
-                mPostId = null;
+        if(intent.hasExtra(DataContract.BUNDLE_FORUM_ID)) {
+            mForumId = intent.getLongExtra(DataContract.BUNDLE_FORUM_ID, 0);
+            mForumName = intent.getStringExtra(DataContract.BUNDLE_FORUM_NAME);
         }
-        setTitle(mTitle);
+        setTitle(mForumName);
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
     }
@@ -151,30 +149,32 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
     }
 
     private void submitPost() {
+        mTitleEditText.clearFocus();
         mContentEditText.clearFocus();
+        String title = mTitleEditText.getText().toString();
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
             mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
-            getPresenter().newPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, android.text.Html.toHtml(spannableContent));
+            getPresenter().newThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
         } else {
             ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
         }
     }
 
-    public NewPostPresenter getPresenter() {
+    public NewThreadPresenter getPresenter() {
         return mPresenter;
     }
 
+
     @Override
-    public void onPostComplete(NewPostResult result) {
+    public void onPostThreadComplete(NewThreadResult result) {
         if(mProgressDialog != null)
             mProgressDialog.dismiss();
         if(result != null && result.isSuccess()) {
             Intent intent = new Intent();
-            intent.putExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, result.getPageCount());
-            intent.putExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT, result.getReplyCount());
-            NewPostActivity.this.setResult(RESULT_OK, intent);
-            NewPostActivity.this.finish();
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, result.getTid());
+            NewThreadActivity.this.setResult(RESULT_OK, intent);
+            NewThreadActivity.this.finish();
 
         } else {
             if(result != null) {
@@ -190,7 +190,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
             @Override
             public void onEmoticonSelection(String emoticonName) {
                 try {
-                    Drawable emoji = Drawable.createFromStream(NewPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
+                    Drawable emoji = Drawable.createFromStream(NewThreadActivity.this.getAssets().open("emoji/" + emoticonName), null);
                     addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), 96, 96);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -228,7 +228,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
         // Camera.
         final List<Intent> cameraIntents = new ArrayList<Intent>();
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         final PackageManager packageManager = getPackageManager();
         final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
         for(ResolveInfo res : listCam) {
@@ -275,7 +275,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                     }
                     else
                     {
-                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
                     }
                 }
 

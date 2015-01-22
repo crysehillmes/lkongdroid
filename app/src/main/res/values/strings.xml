@@ -36,6 +36,8 @@
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
 
+    <string name="toast_failure_new_post">Failed to post, please try again.</string>
+
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending post…</string>

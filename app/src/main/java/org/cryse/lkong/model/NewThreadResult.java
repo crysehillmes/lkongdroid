@@ -1,10 +1,10 @@
-package org.cryse.lkong.logic.restservice.model;
+package org.cryse.lkong.model;
 
-public class LKNewThreadResult {
+public class NewThreadResult {
     private long tid;
     private boolean success;
     private String type;
-    private String error;
+    private String errorMessage;
 
     public long getTid() {
         return tid;
@@ -30,11 +30,11 @@ public class LKNewThreadResult {
         this.type = type;
     }
 
-    public String getError() {
-        return error;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
