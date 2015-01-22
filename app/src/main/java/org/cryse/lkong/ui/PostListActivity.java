@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -158,6 +159,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mHeaderView.animate().cancel();
                     mHeaderView.setTranslationY(headerTranslationY);
                 }
+            }
+        });
+
+        mCollectionAdapter.setOnItemReplyClickListener(new PostListAdapter.OnItemReplyClickListener() {
+            @Override
+            public void onReplyClick(View view, int position) {
+                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                Log.d("REPLY_CLICK", String.format("Position: %d, Item Ordinal: %d", position, postItem.getOrdinal()));
+                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+                intent.putExtra(DataContract.BUNDLE_POST_ID, postItem.getPid());
+                intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, postItem.getAuthor().getUserName()));
+                startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
             }
         });
         mFab.attachToSuperRecyclerView(mPostCollectionView);

@@ -90,16 +90,18 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/message_container">
             <Button
+                android:id="@+id/recyclerview_item_post_button_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
-                android:text="Rate"/>
+                android:text="@string/button_rate"/>
             <Button
+                android:id="@+id/recyclerview_item_post_button_replay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="?selectableItemBackground"
-                android:text="Reply"/>
+                android:text="@string/button_reply"/>
 
         </RelativeLayout>
     </RelativeLayout>

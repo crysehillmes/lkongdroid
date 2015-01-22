@@ -165,6 +165,14 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         return mObjectList.size();
     }
 
+    public int getHeaderViewCount() {
+        return mObjectList.getHeaderViewCount();
+    }
+
+    public int getFooterViewCount() {
+        return mObjectList.getFooterViewCount();
+    }
+
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
@@ -178,15 +186,15 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         return mObjectList.getItemList().get(position);
     }
 
-    public String getString(@StringRes int id) {
+    protected String getString(@StringRes int id) {
         return mContext.getString(id);
     }
 
-    public String getString(@StringRes int id, Object... args) {
+    protected String getString(@StringRes int id, Object... args) {
         return mContext.getString(id, args);
     }
 
-    public Context getContext() {
+    protected Context getContext() {
         return mContext;
     }
 
