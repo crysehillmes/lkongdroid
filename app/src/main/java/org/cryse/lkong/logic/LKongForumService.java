@@ -170,7 +170,9 @@ public class LKongForumService {
                 contentProcessor.setUploadImageCallback(path -> {
                     String uploadUrl = "";
                     try {
+                        Timber.d("setUploadImageCallback start", LOG_TAG);
                         uploadUrl = mLKongRestService.uploadImageToLKong(authObject, path);
+                        Timber.d(String.format("uploadImageToLKong result %s", uploadUrl), LOG_TAG);
                     } catch(Exception ex) {
                         Timber.e(ex, "uploadImageToLKong failed", LOG_TAG);
                     } finally {

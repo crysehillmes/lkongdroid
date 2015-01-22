@@ -1,10 +1,23 @@
 package org.cryse.lkong.ui;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -29,12 +42,19 @@ import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
 import org.cryse.utils.ColorUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class NewPostActivity extends AbstractThemeableActivity implements NewPostView {
     @Inject
@@ -48,6 +68,8 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     @InjectView(R.id.action_insert_emoji)
     ImageButton mInsertEmoticonButton;
+    @InjectView(R.id.action_insert_image)
+    ImageButton mInsertImageButton;
 
     String mTitle;
     long mThreadId;
@@ -78,6 +100,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         }
         setTitle(mTitle);
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
+        mInsertImageButton.setOnClickListener(view -> openImageIntent());
     }
 
     @Override
@@ -179,6 +202,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     private void addImageBetweenText(Drawable drawable, int type, String src, int width, int height) {
         drawable .setBounds(0, 0, width == 0 ? drawable.getIntrinsicWidth() : width, height == 0 ? drawable.getIntrinsicHeight() : height);
+        Timber.d(src, "addImageBetweenText");
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
         int selectionCursor = mContentEditText.getSelectionStart();
         mContentEditText.getText().insert(selectionCursor, imageTag);
@@ -188,5 +212,122 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         builder.setSpan(new ImageSpan(drawable, imageTag), selectionCursor - imageTag.length(), selectionCursor, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         mContentEditText.setText(builder);
         mContentEditText.setSelection(selectionCursor);
+    }
+
+    private static final int SELECT_PICTURE = 1;
+    private Uri outputFileUri;
+
+    private void openImageIntent() {
+        // Determine Uri of camera image to save.
+        final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "MyDir" + File.separator);
+        root.mkdirs();
+        final String fname = UUID.randomUUID().toString();
+        final File sdImageMainDirectory = new File(root, fname);
+        outputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+        // Camera.
+        final List<Intent> cameraIntents = new ArrayList<Intent>();
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = getPackageManager();
+        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        for(ResolveInfo res : listCam) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            cameraIntents.add(intent);
+        }
+
+        // Filesystem.
+        final Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/*");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        // Chooser of filesystem options.
+        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+
+        // Add the camera options.
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
+
+        startActivityForResult(chooserIntent, SELECT_PICTURE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(resultCode == RESULT_OK)
+        {
+            if(requestCode == SELECT_PICTURE)
+            {
+                final boolean isCamera;
+                if(data == null)
+                {
+                    isCamera = true;
+                }
+                else
+                {
+                    final String action = data.getAction();
+                    if(action == null)
+                    {
+                        isCamera = false;
+                    }
+                    else
+                    {
+                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    }
+                }
+
+                Uri selectedImageUri;
+                if(isCamera)
+                {
+                    selectedImageUri = outputFileUri;
+                }
+                else
+                {
+                    selectedImageUri = data == null ? null : data.getData();
+                }
+                try {
+                    InputStream imageStream = getContentResolver().openInputStream(selectedImageUri);
+                    Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
+                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, getRealPathFromURI(this, selectedImageUri), 256, 256);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            // Will return "image:x*"
+            String wholeID = DocumentsContract.getDocumentId(contentUri);
+
+            // Split at colon, use second item in the array
+            String id = wholeID.split(":")[1];
+
+            String[] column = { MediaStore.Images.Media.DATA };
+
+            // where id is equal to
+            String sel = MediaStore.Images.Media._ID + "=?";
+
+            cursor = getContentResolver().
+                    query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[]{ id }, null);
+
+            String filePath = "";
+
+            int columnIndex = cursor.getColumnIndex(column[0]);
+
+            if (cursor.moveToFirst()) {
+                filePath = cursor.getString(columnIndex);
+            }
+            return filePath;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }

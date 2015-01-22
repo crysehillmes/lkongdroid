@@ -12,6 +12,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.apache.tika.Tika;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
@@ -60,6 +61,7 @@ public class LKongRestService {
     OkHttpClient okHttpClient;
     CookieManager cookieManager;
     Gson gson;
+    private final Tika tika = new Tika();
     @Inject
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
@@ -232,18 +234,18 @@ public class LKongRestService {
         return postList;
     }
 
-    private static final MediaType IMAGE_MEDIA_TYPE = MediaType.parse("image/*");
-
     public String uploadImageToLKong(LKAuthObject authObject, String imagePath) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
+        File fileToUpload = new File(imagePath);
+        String mimeTypeString = tika.detect(fileToUpload);
+
         RequestBody formBody = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
-                .addFormDataPart("name", "Profile Pic")
-                .addFormDataPart("filename", "name", RequestBody
-                        .create(IMAGE_MEDIA_TYPE, new File(imagePath)))
+                .addFormDataPart("file", imagePath.substring(imagePath.lastIndexOf("/")), RequestBody
+                        .create(MediaType.parse(mimeTypeString), fileToUpload))
                 .build();
-        String url = "http://lkong.cn:1337/upload?callback=http://lkong.cn/get.php";
+        String url = "http://lkong.cn:1337/upload";
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(url)
@@ -252,8 +254,12 @@ public class LKongRestService {
 
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = response.body().string();
+        Timber.d(responseString, LOG_TAG);
+        JSONObject jsonObject = new JSONObject(responseString);
+        String newUrl = jsonObject.getString("filelink");
         clearCookies();
-        return response.header("Location");
+        return newUrl;
     }
 
     public NewPostResult newPostReply(LKAuthObject authObject, long tid, Long pid, String content) throws Exception {
