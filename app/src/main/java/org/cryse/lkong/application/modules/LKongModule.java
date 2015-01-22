@@ -2,6 +2,8 @@ package org.cryse.lkong.application.modules;
 
 import android.content.Context;
 
+import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabaseHelper;
@@ -52,5 +54,12 @@ public class LKongModule {
     @Provides
     public LKongForumService provideLKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
         return new LKongForumService(lKongRestService, lKongDatabase);
+    }
+
+    @Singleton
+    @Provides
+     public UserAccountManager provideUserAccountManager(@ApplicationContext Context context) {
+        LKongApplication application = (LKongApplication)context;
+        return application.getUserAccountManager();
     }
 }

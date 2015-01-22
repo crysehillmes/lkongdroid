@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.cryse.widget.recyclerview.SuperRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_emoticon_recyclerview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:srv_empty="@layout/layout_empty_view"
+    app:srv_scrollbarStyle="outsideOverlay" />

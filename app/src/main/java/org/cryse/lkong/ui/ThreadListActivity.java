@@ -14,13 +14,13 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
-import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ThreadListView;
+import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -42,6 +42,8 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     @InjectView(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
+    @InjectView(R.id.fab)
+    FloatingActionButtonEx mFab;
 
     ThreadListAdapter mCollectionAdapter;
 
@@ -97,6 +99,26 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
             startActivity(intent);
         });
+        mFab.attachToSuperRecyclerView(mThreadCollectionView);
+        mFab.setOnClickListener(view -> {
+            Intent intent = new Intent(this, NewThreadActivity.class);
+            intent.putExtra(DataContract.BUNDLE_FORUM_ID, mForumId);
+            intent.putExtra(DataContract.BUNDLE_FORUM_NAME, mForumName);
+            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_THREAD);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == DataContract.REQUEST_ID_NEW_THREAD) {
+            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
+                long tid = data.getLongExtra(DataContract.BUNDLE_THREAD_ID, 0);
+                Intent intent = new Intent(this, PostListActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

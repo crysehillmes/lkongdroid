@@ -35,7 +35,7 @@ public class UserAccountEntity {
             }
             return authObject;
         }
-        throw new IllegalStateException("authCookie, dzsbheyCookie, identityCookie must not be null.");
+        throw new IllegalStateException(String.format("authCookie, dzsbheyCookie, identityCookie must not be null, auth %b, dzsbhey %b, identity = %b", authCookie == null, dzsbheyCookie == null, identityCookie == null));
     }
 
     public long getUserId() {

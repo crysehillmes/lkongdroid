@@ -27,6 +27,7 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.PostListView;
+import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
@@ -50,6 +51,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     SuperRecyclerView mPostCollectionView;
     @InjectView(R.id.activity_post_list_header_container)
     LinearLayout mHeaderView;
+    @InjectView(R.id.fab)
+    FloatingActionButtonEx mFab;
 
     View mRecyclerTopPaddingHeaderView;
     PagerControl mHeaderPagerControl;
@@ -158,6 +161,45 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 }
             }
         });
+
+        mCollectionAdapter.setOnItemReplyClickListener(new PostListAdapter.OnItemReplyClickListener() {
+            @Override
+            public void onReplyClick(View view, int position) {
+                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                Log.d("REPLY_CLICK", String.format("Position: %d, Item Ordinal: %d", position, postItem.getOrdinal()));
+                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+                intent.putExtra(DataContract.BUNDLE_POST_ID, postItem.getPid());
+                intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, postItem.getAuthor().getUserName()));
+                startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+            }
+        });
+        mFab.attachToSuperRecyclerView(mPostCollectionView);
+        mFab.setOnClickListener(view -> {
+            Intent intent = new Intent(this, NewPostActivity.class);
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+            intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, mThreadSubject));
+            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == DataContract.REQUEST_ID_NEW_POST) {
+            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT) && data.hasExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT)) {
+                int newPageCount = data.getIntExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, 0);
+                int newReplyCount = data.getIntExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT, 0);
+                if(newReplyCount > mThreadModel.getReplies())
+                    mThreadModel.setReplies(newReplyCount);
+                if(newPageCount > mPageCount) {
+                    mPageCount = newPageCount;
+                }
+                if(newPageCount == mCurrentPage) {
+                    getPresenter().loadPostList(mThreadId, mCurrentPage);
+                }
+            }
+        }
     }
 
     private void setupPageControlListener() {
@@ -241,12 +283,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
-            /*case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
-                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }

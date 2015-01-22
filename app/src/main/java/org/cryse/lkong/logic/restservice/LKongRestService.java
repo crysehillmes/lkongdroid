@@ -1,16 +1,18 @@
 package org.cryse.lkong.logic.restservice;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.apache.tika.Tika;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
@@ -20,10 +22,14 @@ import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
+import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
+import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.NewPostResult;
+import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ForumThreadModel;
@@ -32,13 +38,14 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
 import org.cryse.lkong.utils.LKAuthObject;
-import org.cryse.lkong.utils.SerializableHttpCookie;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
@@ -56,11 +63,13 @@ public class LKongRestService {
     OkHttpClient okHttpClient;
     CookieManager cookieManager;
     Gson gson;
+    private final Tika tika = new Tika();
     @Inject
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
         this.cookieManager = new CookieManager(
         );
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         this.okHttpClient.setCookieHandler(cookieManager);
 
         this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
@@ -90,7 +99,7 @@ public class LKongRestService {
         signInResult.setSuccess(success);
         signInResult.setMe(me);
         readCookies(signInResult);
-        cookieManager.getCookieStore().removeAll();
+        clearCookies();
 
         return signInResult;
     }
@@ -112,9 +121,7 @@ public class LKongRestService {
 
     public UserInfoModel getUserInfo(LKAuthObject authObject) throws Exception {
         checkSignInStatus(authObject, false);
-        cookieManager.getCookieStore().add(authObject.getAuthURI(), authObject.getAuthHttpCookie());
-        cookieManager.getCookieStore().add(authObject.getDzsbheyURI(), authObject.getDzsbheyHttpCookie());
-        cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
+        applyAuthCookies(authObject);
 
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
@@ -127,7 +134,7 @@ public class LKongRestService {
         Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
         UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
-        cookieManager.getCookieStore().removeAll();
+        clearCookies();
         return userInfoModel;
     }
 
@@ -229,6 +236,111 @@ public class LKongRestService {
         return postList;
     }
 
+    public String uploadImageToLKong(LKAuthObject authObject, String imagePath) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        File fileToUpload = new File(imagePath);
+        String mimeTypeString = tika.detect(fileToUpload);
+
+        RequestBody formBody = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("file", imagePath.substring(imagePath.lastIndexOf("/")), RequestBody
+                        .create(MediaType.parse(mimeTypeString), fileToUpload))
+                .build();
+        String url = "http://lkong.cn:1337/upload";
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = response.body().string();
+        Timber.d(responseString, LOG_TAG);
+        JSONObject jsonObject = new JSONObject(responseString);
+        String newUrl = jsonObject.getString("filelink");
+        clearCookies();
+        return newUrl;
+    }
+
+    public NewPostResult newPostReply(LKAuthObject authObject, long tid, Long pid, String content) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("type", "reply")
+                .add("tid", Long.toString(tid))
+                .add("myrequestid", pid == null ? String.format("thread_%d", tid) : String.format("post_%d", pid))
+                .add("content", content);
+        if(pid != null) {
+            builder.add("replyid", pid.toString());
+        }
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url("http://lkong.cn/forum/index.php?mod=post")
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseBody = getStringFromGzipResponse(response);
+        Timber.d(responseBody, LOG_TAG);
+        LKNewPostResult lkNewPostResult = gson.fromJson(responseBody, LKNewPostResult.class);
+        NewPostResult newPostResult = new NewPostResult();
+        if(lkNewPostResult == null || !lkNewPostResult.isSuccess()) {
+            newPostResult.setSuccess(false);
+            newPostResult.setErrorMessage(lkNewPostResult != null ? lkNewPostResult.getError() : "");
+            Timber.d("NewPost failed", LOG_TAG);
+        } else {
+            newPostResult.setSuccess(true);
+            newPostResult.setTid(lkNewPostResult.getTid());
+            newPostResult.setPageCount(lkNewPostResult.getPage());
+            newPostResult.setReplyCount(lkNewPostResult.getLou());
+            Timber.d("NewPost success", LOG_TAG);
+        }
+        clearCookies();
+
+        return newPostResult;
+    }
+
+    public NewThreadResult newPostThread(LKAuthObject authObject, String title, long fid, String content, boolean follow) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("title", title)
+                .add("type", "new")
+                .add("fid", Long.toString(fid))
+                .add("content", content)
+                .add("follow", follow ? "1" : "0");
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url("http://lkong.cn/post/new/index.php?mod=post")
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseBody = getStringFromGzipResponse(response);
+        Timber.d(responseBody, LOG_TAG);
+        LKNewThreadResult lkNewThreadResult = gson.fromJson(responseBody, LKNewThreadResult.class);
+        NewThreadResult newThreadResult = new NewThreadResult();
+        if(lkNewThreadResult == null || !lkNewThreadResult.isSuccess()) {
+            newThreadResult.setSuccess(false);
+            newThreadResult.setErrorMessage(lkNewThreadResult != null ? lkNewThreadResult.getError() : "");
+            Timber.d("newPostThread failed", LOG_TAG);
+        } else {
+            newThreadResult.setSuccess(true);
+            newThreadResult.setTid(lkNewThreadResult.getTid());
+            newThreadResult.setType(lkNewThreadResult.getType());
+            Timber.d("newPostThread success", LOG_TAG);
+        }
+        clearCookies();
+
+        return newThreadResult;
+    }
+
     private static String decompress(byte[] bytes) throws Exception {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         GZIPInputStream gis = new GZIPInputStream(byteArrayInputStream);
@@ -252,21 +364,12 @@ public class LKongRestService {
         }
         if(checkIdentity) {
             if(authObject.hasIdentity()) {
-                throw new IdentityExpiredException();
+                if(authObject.hasIdentityExpired())
+                    throw new IdentityExpiredException();
             } else {
                 throw new NeedIdentityException();
             }
         }
-    }
-
-    private String getLKForumIconUrl(long fid) {
-        String fidString = String.format("%1$06d", fid);
-        String iconUrl = String.format("http://img.lkong.cn/forumavatar/000/%s/%s/%s_avatar_middle.jpg",
-                fidString.substring(0, 2),
-                fidString.substring(2, 4),
-                fidString.substring(4, 6)
-        );
-        return iconUrl;
     }
 
     private void readCookies(SignInResult signInResult) {
@@ -281,18 +384,21 @@ public class LKongRestService {
                     // auth cookie pair
                     if(cookie.hasExpired())
                         continue;
+                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
                     authURI = uri;
                     authHttpCookie = cookie;
                 } else if (cookie.getName().compareToIgnoreCase("dzsbhey") == 0) {
                     // dzsbhey cookie pair
                     if(cookie.hasExpired())
-                        continue;;
+                        continue;
+                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
                     dzsbheyURI = uri;
                     dzsbheyHttpCookie = cookie;
                 } else if (cookie.getName().compareToIgnoreCase("identity") == 0) {
                     // identity cookie pair
                     if(cookie.hasExpired())
-                        continue;;
+                        continue;
+                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
                     identityURI = uri;
                     identityHttpCookie = cookie;
                 }
@@ -303,9 +409,20 @@ public class LKongRestService {
                 identityURI != null && identityHttpCookie != null) {
             signInResult.setAuthCookie(CookieUtils.serializeHttpCookie(authURI, authHttpCookie));
             signInResult.setDzsbheyCookie(CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie));
-            signInResult.setDzsbheyCookie(CookieUtils.serializeHttpCookie(identityURI, identityHttpCookie));
+            signInResult.setIdentityCookie(CookieUtils.serializeHttpCookie(identityURI, identityHttpCookie));
         } else {
             throw new NeedSignInException("Cookie expired.");
         }
+    }
+
+    private void applyAuthCookies(LKAuthObject authObject) {
+        clearCookies();
+        cookieManager.getCookieStore().add(authObject.getAuthURI(), authObject.getAuthHttpCookie());
+        cookieManager.getCookieStore().add(authObject.getDzsbheyURI(), authObject.getDzsbheyHttpCookie());
+        cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
+    }
+
+    private void clearCookies() {
+        cookieManager.getCookieStore().removeAll();
     }
 }
