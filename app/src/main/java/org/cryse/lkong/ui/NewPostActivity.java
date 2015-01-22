@@ -2,14 +2,18 @@ package org.cryse.lkong.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -17,11 +21,15 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.presenter.NewPostPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.dialog.EmoticonDialog;
+import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
 import org.cryse.utils.ColorUtils;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -37,6 +45,9 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     @InjectView(R.id.activity_new_post_edittext_content)
     EditText mContentEditText;
+
+    @InjectView(R.id.action_insert_emoji)
+    ImageButton mInsertEmoticonButton;
 
     String mTitle;
     long mThreadId;
@@ -66,6 +77,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 mPostId = null;
         }
         setTitle(mTitle);
+        mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
     }
 
     @Override
@@ -146,5 +158,35 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         } else {
             ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? "Error" : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
         }
+    }
+
+    private void insertEmoticon() {
+        new EmoticonDialog().show(this, new EmoticonDialog.Callback() {
+            @Override
+            public void onEmoticonSelection(String emoticonName) {
+                Log.d("INSERT_EMOTICON", emoticonName);
+                try {
+                    Drawable emoji = Drawable.createFromStream(NewPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
+                    addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), 96, 96);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private static final String IMG_TAG_FORMAT = "([([[%d][%s]])])";
+
+    private void addImageBetweenText(Drawable drawable, int type, String src, int width, int height) {
+        drawable .setBounds(0, 0, width == 0 ? drawable.getIntrinsicWidth() : width, height == 0 ? drawable.getIntrinsicHeight() : height);
+        String imageTag = String.format(IMG_TAG_FORMAT, type, src);
+        int selectionCursor = mContentEditText.getSelectionStart();
+        mContentEditText.getText().insert(selectionCursor, imageTag);
+        selectionCursor = mContentEditText.getSelectionStart();
+
+        SpannableStringBuilder builder = new SpannableStringBuilder(mContentEditText.getText());
+        builder.setSpan(new ImageSpan(drawable, imageTag), selectionCursor - imageTag.length(), selectionCursor, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mContentEditText.setText(builder);
+        mContentEditText.setSelection(selectionCursor);
     }
 }

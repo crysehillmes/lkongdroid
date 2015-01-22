@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 import timber.log.Timber;
 
 public class ContentProcessor {
-    private static final int IMG_TYPE_LOCAL = 1;
-    private static final int IMG_TYPE_URL = 2;
-    private static final int IMG_TYPE_EMOJI = 3;
+    public static final int IMG_TYPE_LOCAL = 1;
+    public static final int IMG_TYPE_URL = 2;
+    public static final int IMG_TYPE_EMOJI = 3;
     private String mOriginalContent;
     private String mResultContent;
     private UploadImageCallback mUploadImageCallback;
