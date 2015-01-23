@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/author_container">
 
-            <org.cryse.lkong.utils.htmltextview.HtmlTextView
+            <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_post_textview_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
