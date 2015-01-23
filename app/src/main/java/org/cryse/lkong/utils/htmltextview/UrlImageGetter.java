@@ -30,6 +30,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.utils.UIUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -39,6 +40,7 @@ public class UrlImageGetter implements ImageGetter {
     TextView mTargetTextView;
     Picasso picasso;
     final Resources resources;
+    int mEmoticonSize;
     /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
@@ -50,6 +52,7 @@ public class UrlImageGetter implements ImageGetter {
         this.mTargetTextView = targetTextView;
         this.picasso = Picasso.with(context);
         this.resources = context.getResources();
+        this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
     }
 
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
@@ -62,8 +65,8 @@ public class UrlImageGetter implements ImageGetter {
             String emojiFileName = source.substring(EMOJI_PREFIX.length());
             try {
                 Drawable emojiDrawable = Drawable.createFromStream(mContext.getAssets().open(EMOJI_PATH_WITH_SLASH + emojiFileName), null);
-                emojiDrawable.setBounds(0, 0, emojiDrawable.getIntrinsicWidth(),
-                        emojiDrawable.getIntrinsicHeight());
+                emojiDrawable.setBounds(0, 0, mEmoticonSize == 0 ? emojiDrawable.getIntrinsicWidth() : mEmoticonSize,
+                        mEmoticonSize == 0 ? emojiDrawable.getIntrinsicHeight() : mEmoticonSize);
                 return emojiDrawable;
             } catch (IOException e) {
                 Log.d("UrlImageGetter::getDrawable()", "getDrawable from assets failed.", e);

@@ -140,6 +140,11 @@ public class UIUtils {
         return (int)(dp * scale + 0.5f);
     }
 
+    public static int sp2px(Context context, float sp){
+        float scale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int)(sp * scale + 0.5f);
+    }
+
     public static class InsetsValue {
         private int left;
         private int top;
