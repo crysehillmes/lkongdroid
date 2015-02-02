@@ -9,7 +9,7 @@ import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
-public class RealPathUtil {
+public class ContentUriPathUtils {
     public static String getRealPathFromUri(Context context, Uri uri) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return getRealPathFromUri_API19(context, uri);

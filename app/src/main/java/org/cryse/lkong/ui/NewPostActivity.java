@@ -2,11 +2,9 @@ package org.cryse.lkong.ui;
 
 import android.app.ProgressDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -35,8 +32,8 @@ import org.cryse.lkong.presenter.NewPostPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.ContentProcessor;
+import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.RealPathUtil;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
@@ -292,7 +289,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 try {
                     InputStream imageStream = getContentResolver().openInputStream(selectedImageUri);
                     Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
-                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, RealPathUtil.getRealPathFromUri(this, selectedImageUri), 256, 256);
+                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
