@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -25,6 +26,7 @@ import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.PostListView;
@@ -56,13 +58,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
-    @InjectView(R.id.activity_post_list_header_container)
-    LinearLayout mHeaderView;
     @InjectView(R.id.fab)
     FloatingActionButtonEx mFab;
+    @InjectView(R.id.activity_post_list_page_control)
+    PagerControl mFooterPagerControl;
 
     View mRecyclerTopPaddingHeaderView;
-    PagerControl mFooterPagerControl;
+    View mRecyclerBottomPaddingHeaderView;
+
+    QuickReturnUtils mToolbarQuickReturn;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
@@ -113,13 +117,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mRecyclerTopPaddingHeaderView.setLayoutParams(topPaddingLP);
         mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
 
-        mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
-        mFooterPagerControl.setLayoutParams(layoutParams2);
-        mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
-        mCollectionAdapter.addFooterView(mFooterPagerControl);
-        mFooterPagerControl.setVisibility(View.INVISIBLE);
+        mRecyclerBottomPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        RecyclerView.LayoutParams bottomPaddingLP = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + UIUtils.dp2px(this, 16f * 2));
+        mRecyclerBottomPaddingHeaderView.setLayoutParams(bottomPaddingLP);
+        mCollectionAdapter.addFooterView(mRecyclerBottomPaddingHeaderView);
 
+        mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
+        mToolbarQuickReturn = new QuickReturnUtils(getToolbar(), QuickReturnUtils.ANIMATE_DIRECTION_UP);
         mPostCollectionView.getRecyclerView().setOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean dragging = false;
             int mNegativeDyAmount = 0;
@@ -128,6 +133,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
+                if((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING) && isRecyclerViewAtBottom(recyclerView)) {
+                    mFooterPagerControl.show();
+                    mFab.show();
+                }
             }
 
             @Override
@@ -139,24 +148,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 if (dy > 0) {
                     int headerTranslationY = 0;
                     mNegativeDyAmount = 0;
-                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > 0 && mAmountScrollY - mBaseTranslationY - toolbarHeight <= toolbarHeight) {
-                        headerTranslationY = -(mAmountScrollY - mBaseTranslationY - toolbarHeight);
-                    } else if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
-                        headerTranslationY = - toolbarHeight;
+                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight && mToolbarQuickReturn.isVisible()) {
+                        mToolbarQuickReturn.hide();
                     }
-                    mHeaderView.animate().cancel();
-                    mHeaderView.setTranslationY(headerTranslationY);
+                    if(headerTranslationY == -toolbarHeight)
+                        mToolbarQuickReturn.hide();
+                    mFooterPagerControl.hide();
+                    mFab.hide();
                 } else if(dy < 0) {
-                    int headerTranslationY = 0;
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
-                    if(Math.abs(mNegativeDyAmount) - mBaseTranslationY > 0 && Math.abs(mNegativeDyAmount) - mBaseTranslationY <= toolbarHeight) {
-                        headerTranslationY = Math.abs(mNegativeDyAmount) - mBaseTranslationY - toolbarHeight;
-                    } else if(Math.abs(mNegativeDyAmount) - mBaseTranslationY  > toolbarHeight) {
-                        headerTranslationY = 0;
-                    }
-                    mHeaderView.animate().cancel();
-                    mHeaderView.setTranslationY(headerTranslationY);
+                    if(!mToolbarQuickReturn.isVisible()) mToolbarQuickReturn.show();
+                    mFooterPagerControl.show();
+                    mFab.show();
                 }
             }
         });
@@ -327,9 +331,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.getRecyclerView().stopScroll();
         mCollectionAdapter.replaceWith(posts);
         mPostCollectionView.getRecyclerView().scrollToPosition(0);
-        if(mHeaderView.getTranslationY() != 0)
-            mHeaderView.animate().translationY(0).setDuration(300).start();
-        mFooterPagerControl.setVisibility(View.VISIBLE);
+        if(!mToolbarQuickReturn.isVisible())
+            mToolbarQuickReturn.show();
     }
 
     @Override
@@ -368,5 +371,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     public PostListPresenter getPresenter() {
         return mPresenter;
+    }
+
+    private boolean isRecyclerViewAtBottom(RecyclerView recyclerView) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if(layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
+            return (gridLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+        } else if(layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
+            return (linearLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+        } else {
+            throw new IllegalStateException();
+        }
     }
 }
