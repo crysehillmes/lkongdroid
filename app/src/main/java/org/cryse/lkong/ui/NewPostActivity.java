@@ -36,6 +36,7 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.RealPathUtil;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
@@ -291,43 +292,10 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 try {
                     InputStream imageStream = getContentResolver().openInputStream(selectedImageUri);
                     Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
-                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, getRealPathFromURI(this, selectedImageUri), 256, 256);
+                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, RealPathUtil.getRealPathFromUri(this, selectedImageUri), 256, 256);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
-        }
-    }
-
-    public String getRealPathFromURI(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            // Will return "image:x*"
-            String wholeID = DocumentsContract.getDocumentId(contentUri);
-
-            // Split at colon, use second item in the array
-            String id = wholeID.split(":")[1];
-
-            String[] column = { MediaStore.Images.Media.DATA };
-
-            // where id is equal to
-            String sel = MediaStore.Images.Media._ID + "=?";
-
-            cursor = getContentResolver().
-                    query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            column, sel, new String[]{ id }, null);
-
-            String filePath = "";
-
-            int columnIndex = cursor.getColumnIndex(column[0]);
-
-            if (cursor.moveToFirst()) {
-                filePath = cursor.getString(columnIndex);
-            }
-            return filePath;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
     }

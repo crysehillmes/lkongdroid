@@ -56,15 +56,17 @@ public class LKongForumService {
 
     public Observable<Void> persistUserAccount(UserAccountEntity userAccountEntity) {
         return Observable.create(subscriber -> {
-            try {if(mLKongDatabase != null && mLKongDatabase.isOpen() && userAccountEntity != null) {
-            if(mLKongDatabase.isUserAccountExist(userAccountEntity.getUserId())) {
-                mLKongDatabase.updateUserAccount(userAccountEntity);
-            } else {
-                mLKongDatabase.addUserAccount(userAccountEntity);}
-            }
+            try {
+                if (mLKongDatabase != null && mLKongDatabase.isOpen() && userAccountEntity != null) {
+                    if (mLKongDatabase.isUserAccountExist(userAccountEntity.getUserId())) {
+                        mLKongDatabase.updateUserAccount(userAccountEntity);
+                    } else {
+                        mLKongDatabase.addUserAccount(userAccountEntity);
+                    }
+                }
                 subscriber.onNext(null);
                 subscriber.onCompleted();
-        } catch (Exception e) {
+            } catch (Exception e) {
                 subscriber.onError(e);
             }
         });

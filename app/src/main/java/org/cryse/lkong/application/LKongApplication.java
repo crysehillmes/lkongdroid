@@ -7,8 +7,10 @@ import android.util.Log;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
 import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
+import org.cryse.lkong.application.component.Dagger_UserAccountComponent;
 import org.cryse.lkong.application.component.LKongPresenterComponent;
 import org.cryse.lkong.application.component.MainActivityComponent;
+import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
@@ -23,6 +25,7 @@ public class LKongApplication extends Application {
     private static final String TAG = LKongApplication.class.getCanonicalName();
     private MainActivityComponent mainActivityComponent;
     private LKongPresenterComponent lKongPresenterComponent;
+    private UserAccountComponent userAccountComponent;
     private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
     @Override
@@ -31,7 +34,10 @@ public class LKongApplication extends Application {
         Timber.plant(new CrashReportingTree());
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
+
         initComponents();
+        userAccountComponent.inject(mUserAccountManager);
+        mUserAccountManager.init();
     }
 
     private void initComponents() {
@@ -41,6 +47,12 @@ public class LKongApplication extends Application {
                 .preferenceModule(new PreferenceModule(this))
                 .build();
         lKongPresenterComponent = Dagger_LKongPresenterComponent
+                .builder()
+                .contextModule(new ContextModule(this, mNavigation))
+                .lKongModule(new LKongModule())
+                .preferenceModule(new PreferenceModule(this))
+                .build();
+        userAccountComponent = Dagger_UserAccountComponent
                 .builder()
                 .contextModule(new ContextModule(this, mNavigation))
                 .lKongModule(new LKongModule())
@@ -62,6 +74,10 @@ public class LKongApplication extends Application {
 
     public LKongPresenterComponent lKongPresenterComponent() {
         return lKongPresenterComponent;
+    }
+
+    public UserAccountComponent userAccountComponent() {
+        return userAccountComponent;
     }
 
     /** A tree which logs important information for crash reporting. */

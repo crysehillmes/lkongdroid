@@ -5,6 +5,8 @@ import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.cryse.lkong.R;
@@ -12,6 +14,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.MainActivity;
+import org.cryse.lkong.ui.SignInActivity;
 
 public class AndroidNavigation {
     private LKongApplication mApplication;
@@ -74,5 +77,10 @@ public class AndroidNavigation {
 
     public void navigateToSettingsActivity() {
 
+    }
+
+    public void navigateToSignInActivity(Context context) {
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
     }
 }

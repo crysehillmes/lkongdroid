@@ -128,7 +128,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState ? true : false;
+                dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
             }
 
             @Override
@@ -162,17 +162,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
         });
 
-        mCollectionAdapter.setOnItemReplyClickListener(new PostListAdapter.OnItemReplyClickListener() {
-            @Override
-            public void onReplyClick(View view, int position) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-                Log.d("REPLY_CLICK", String.format("Position: %d, Item Ordinal: %d", position, postItem.getOrdinal()));
-                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
-                intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
-                intent.putExtra(DataContract.BUNDLE_POST_ID, postItem.getPid());
-                intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, postItem.getAuthor().getUserName()));
-                startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
-            }
+        mCollectionAdapter.setOnItemReplyClickListener((view, position) -> {
+            PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+            Log.d("REPLY_CLICK", String.format("Position: %d, Item Ordinal: %d", position, postItem.getOrdinal()));
+            Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
+            intent.putExtra(DataContract.BUNDLE_POST_ID, postItem.getPid());
+            intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, postItem.getAuthor().getUserName()));
+            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
         });
         mFab.attachToSuperRecyclerView(mPostCollectionView);
         mFab.setOnClickListener(view -> {
