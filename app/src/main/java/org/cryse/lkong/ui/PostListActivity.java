@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -62,9 +63,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @InjectView(R.id.activity_post_list_page_control)
     PagerControl mFooterPagerControl;
 
-    View mRecyclerTopPaddingHeaderView;
-    View mRecyclerBottomPaddingHeaderView;
-
+    View mTopPaddingHeaderView;
+    View mBottomPaddingHeaderView;
+    View mThreadIntroHeaderView;
+    TextView mThreadTitleTextView;
     QuickReturnUtils mToolbarQuickReturn;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
@@ -88,6 +90,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         setupPageControlListener();
+        setTitle(R.string.activity_title_post_list);
+
         initRecyclerView();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
@@ -95,7 +99,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         if(mThreadId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
-        setTitle(mThreadSubject);
     }
 
     private void initRecyclerView() {
@@ -110,17 +113,24 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter = new PostListAdapter(this, mItemList);
         mPostCollectionView.setAdapter(mCollectionAdapter);
 
-        mRecyclerTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
         RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        mRecyclerTopPaddingHeaderView.setLayoutParams(topPaddingLP);
-        mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
+        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
+        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
 
-        mRecyclerBottomPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        mBottomPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
         RecyclerView.LayoutParams bottomPaddingLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + UIUtils.dp2px(this, 16f * 2));
-        mRecyclerBottomPaddingHeaderView.setLayoutParams(bottomPaddingLP);
-        mCollectionAdapter.addFooterView(mRecyclerBottomPaddingHeaderView);
+        mBottomPaddingHeaderView.setLayoutParams(bottomPaddingLP);
+        mCollectionAdapter.addFooterView(mBottomPaddingHeaderView);
+
+        mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
+        RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mThreadIntroHeaderView.setLayoutParams(threadIntroHeaderLP);
+        mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
+        mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mToolbarQuickReturn = new QuickReturnUtils(getToolbar(), QuickReturnUtils.ANIMATE_DIRECTION_UP);
@@ -243,7 +253,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 // mCollectionAdapter.addAll(list);
                 showPostList(mCurrentPage, list);
-                setTitle(mThreadSubject);
                 updatePageIndicator();
             }
         } else {
@@ -335,7 +344,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
         mThreadModel = threadInfoModel;
         mThreadSubject = threadInfoModel.getSubject();
-        setTitle(mThreadSubject);
+        mThreadTitleTextView.setText(mThreadSubject);
+        mCollectionAdapter.notifyItemChanged(1);
 
         // Calculate page here.
         int replyCount = mThreadModel.getReplies();
