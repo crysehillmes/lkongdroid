@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -136,6 +135,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 if((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING) && isRecyclerViewAtBottom(recyclerView)) {
                     mFooterPagerControl.show();
                     mFab.show();
+                    mToolbarQuickReturn.show();
                 }
             }
 
@@ -146,19 +146,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
                 if (dy > 0) {
-                    int headerTranslationY = 0;
                     mNegativeDyAmount = 0;
-                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight && mToolbarQuickReturn.isVisible()) {
+                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         mToolbarQuickReturn.hide();
                     }
-                    if(headerTranslationY == -toolbarHeight)
-                        mToolbarQuickReturn.hide();
                     mFooterPagerControl.hide();
                     mFab.hide();
                 } else if(dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
-                    if(!mToolbarQuickReturn.isVisible()) mToolbarQuickReturn.show();
+                    mToolbarQuickReturn.show();
                     mFooterPagerControl.show();
                     mFab.show();
                 }
@@ -331,8 +328,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.getRecyclerView().stopScroll();
         mCollectionAdapter.replaceWith(posts);
         mPostCollectionView.getRecyclerView().scrollToPosition(0);
-        if(!mToolbarQuickReturn.isVisible())
-            mToolbarQuickReturn.show();
+        mToolbarQuickReturn.show();
     }
 
     @Override
