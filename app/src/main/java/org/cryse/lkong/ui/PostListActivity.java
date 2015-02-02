@@ -62,7 +62,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     FloatingActionButtonEx mFab;
 
     View mRecyclerTopPaddingHeaderView;
-    PagerControl mHeaderPagerControl;
     PagerControl mFooterPagerControl;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
@@ -110,16 +109,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         mRecyclerTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
         RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) * 2);
+                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
         mRecyclerTopPaddingHeaderView.setLayoutParams(topPaddingLP);
         mCollectionAdapter.addHeaderView(mRecyclerTopPaddingHeaderView);
-
-        mHeaderPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
-        RecyclerView.LayoutParams layoutParams1 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
-        mHeaderPagerControl.setLayoutParams(layoutParams1);
-        mHeaderPagerControl.setOnPagerControlListener(mOnPagerControlListener);
-        mHeaderView.addView(mHeaderPagerControl);
-
 
         mFooterPagerControl = (PagerControl)getLayoutInflater().inflate(R.layout.widget_pager_control, null);
         RecyclerView.LayoutParams layoutParams2 = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this));
@@ -297,7 +289,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void updatePageIndicator() {
-        this.mHeaderPagerControl.setPageIndicatorText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
         this.mFooterPagerControl.setPageIndicatorText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
     }
 
