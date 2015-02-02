@@ -11,11 +11,13 @@ import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ForumThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -39,6 +41,12 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     private long mLastItemSortKey = -1;
     @Inject
     ThreadListPresenter mPresenter;
+
+    @Inject
+    AndroidNavigation mAndroidNavigation;
+
+    @Inject
+    UserAccountManager mUserAccountManager;
 
     @InjectView(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
@@ -101,10 +109,11 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);
         mFab.setOnClickListener(view -> {
-            Intent intent = new Intent(this, NewThreadActivity.class);
-            intent.putExtra(DataContract.BUNDLE_FORUM_ID, mForumId);
-            intent.putExtra(DataContract.BUNDLE_FORUM_NAME, mForumName);
-            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_THREAD);
+            if (mUserAccountManager.isSignedIn()) {
+                mAndroidNavigation.openActivityForNewThread(this, mForumId, mForumName);
+            } else {
+                mAndroidNavigation.navigateToSignInActivity(this);
+            }
         });
     }
 

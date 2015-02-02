@@ -29,6 +29,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.presenter.UserAccountPresenter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
@@ -44,6 +45,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -107,7 +109,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    UserAccountEntity mCurrentAccount;
+    UserAccountEntity mCurrentAccount = null;
 
     /**
      * Used to post delay navigation action to improve UX
@@ -403,16 +405,20 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     public void getUserInfo() {
         // Get from local first
         // Get from web if failed.
-        mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
-        if(mCurrentAccount != null) {
-            mAccountUserNameTextView.setText(mCurrentAccount.getUserName());
-            Picasso.with(getActivity())
-                    .load(mCurrentAccount.getUserAvatar())
-                    .error(R.drawable.ic_default_avatar)
-                    .placeholder(R.drawable.ic_default_avatar)
-                    .into(mAccountAvatarImageView);
-            String secondInfoText = mCurrentAccount.getEmail();
-            mAccountEmailTextView.setText(secondInfoText);
+        if(mUserAccountManager.isSignedIn()) {
+            mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+            if(mCurrentAccount != null) {
+                mAccountUserNameTextView.setText(mCurrentAccount.getUserName());
+                Picasso.with(getActivity())
+                        .load(mCurrentAccount.getUserAvatar())
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(mAccountAvatarImageView);
+                String secondInfoText = mCurrentAccount.getEmail();
+                mAccountEmailTextView.setText(secondInfoText);
+            }
+        } else {
+            mAndroidNavigation.navigateToSignInActivity(getActivity());
         }
     }
 

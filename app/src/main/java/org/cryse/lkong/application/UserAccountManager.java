@@ -3,6 +3,7 @@ package org.cryse.lkong.application;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.utils.preference.LongPreference;
 
@@ -46,18 +47,27 @@ public class UserAccountManager {
     }
 
     public UserAccountEntity getCurrentUserAccount() {
-        if(mCurrentUserAccount != null) return mCurrentUserAccount;
-        if(mUserAccounts.size() > 0) {
+        if(mCurrentUserAccount == null && mUserAccounts.size() > 0) {
             mCurrentUserAccount = mUserAccounts.get(0);
             mDefaultAccountUid.set(mCurrentUserAccount.getUserId());
             mAuthObject = mCurrentUserAccount.getAuthObject();
             return mCurrentUserAccount;
         }
-        throw new IllegalStateException("You should sign in before you do this.");
+        if(mCurrentUserAccount != null) return mCurrentUserAccount;
+        throw new NeedSignInException("You should sign in before you do this.");
     }
 
     public LKAuthObject getAuthObject() {
+        if(mAuthObject == null && mCurrentUserAccount != null) {
+            mAuthObject = mCurrentUserAccount.getAuthObject();
+        }
         return mAuthObject;
+    }
+
+    public boolean isSignedIn() {
+        if(mCurrentUserAccount != null || mUserAccounts.size() > 0)
+            return true;
+        return false;
     }
 
     public List<UserAccountEntity> getUserAccounts() {

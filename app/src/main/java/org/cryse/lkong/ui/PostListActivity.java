@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,11 +17,13 @@ import com.afollestad.materialdialogs.Theme;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -46,6 +47,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private ThreadInfoModel mThreadModel;
     @Inject
     PostListPresenter mPresenter;
+
+    @Inject
+    AndroidNavigation mAndroidNavigation;
+
+    @Inject
+    UserAccountManager mUserAccountManager;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
@@ -163,20 +170,20 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         });
 
         mCollectionAdapter.setOnItemReplyClickListener((view, position) -> {
-            PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-            Log.d("REPLY_CLICK", String.format("Position: %d, Item Ordinal: %d", position, postItem.getOrdinal()));
-            Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
-            intent.putExtra(DataContract.BUNDLE_POST_ID, postItem.getPid());
-            intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, postItem.getAuthor().getUserName()));
-            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+            if(mUserAccountManager.isSignedIn()) {
+                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                mAndroidNavigation.openActivityForReplyToPost(this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
+            } else {
+                mAndroidNavigation.navigateToSignInActivity(this);
+            }
         });
         mFab.attachToSuperRecyclerView(mPostCollectionView);
         mFab.setOnClickListener(view -> {
-            Intent intent = new Intent(this, NewPostActivity.class);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, mThreadId);
-            intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, getString(R.string.format_post_reply_title, mThreadSubject));
-            startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+            if (mUserAccountManager.isSignedIn()) {
+                mAndroidNavigation.openActivityForReplyToThread(this, mThreadId, mThreadSubject);
+            } else {
+                mAndroidNavigation.navigateToSignInActivity(this);
+            }
         });
     }
 
