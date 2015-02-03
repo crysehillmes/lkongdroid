@@ -40,8 +40,9 @@ public class ModelConverter {
         return userInfoModel;
     }
 
-    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList) {
+    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
         List<ForumThreadModel> threadList = new ArrayList<ForumThreadModel>();
+        ForumThreadModel nextSortKeyItem = null;
         for(LKForumThreadItem item : lkForumThreadList.getData()) {
             ForumThreadModel threadModel = new ForumThreadModel();
             threadModel.setSortKey(item.getSortkey());
@@ -55,8 +56,12 @@ public class ModelConverter {
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
             threadModel.setSubject(item.getSubject());
-            threadList.add(threadModel);
+            if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
+                nextSortKeyItem = threadModel;
+            else
+                threadList.add(threadModel);
         }
+        if(checkNextTimeSortKey && nextSortKeyItem != null) threadList.add(nextSortKeyItem);
         return threadList;
     }
 

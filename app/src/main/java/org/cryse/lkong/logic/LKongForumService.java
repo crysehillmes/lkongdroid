@@ -224,4 +224,16 @@ public class LKongForumService {
             }
         });
     }
+
+    public Observable<List<ForumThreadModel>> getFavorite(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ForumThreadModel> forumModelList = mLKongRestService.getFavorites(authObject, start);
+                subscriber.onNext(forumModelList);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
 }

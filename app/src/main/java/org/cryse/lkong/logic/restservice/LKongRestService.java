@@ -49,6 +49,8 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -199,7 +201,7 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList);
+        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
         Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         return threadList;
     }
@@ -339,6 +341,29 @@ public class LKongRestService {
         clearCookies();
 
         return newThreadResult;
+    }
+
+    public List<ForumThreadModel> getFavorites(LKAuthObject authObject, long start) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=my/favorite");
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
+        if(lKThreadList.getData() == null || lKThreadList.getData().size() == 0)
+            return new ArrayList<ForumThreadModel>();
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
+        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, true);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
+        clearCookies();
+        return threadList;
     }
 
     private static String decompress(byte[] bytes) throws Exception {
