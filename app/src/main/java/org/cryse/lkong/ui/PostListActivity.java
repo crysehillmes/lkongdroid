@@ -85,8 +85,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         ButterKnife.inject(this);
-        /*getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         setupPageControlListener();
@@ -254,6 +254,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 // mCollectionAdapter.addAll(list);
                 showPostList(mCurrentPage, list);
                 updatePageIndicator();
+                mThreadTitleTextView.setText(mThreadSubject);
+                mCollectionAdapter.notifyItemChanged(1);
             }
         } else {
             mPostCollectionView.getSwipeToRefresh().measure(1,1);
@@ -286,6 +288,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    finishAfterTransition();
+                else
+                    finish();
+                return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
