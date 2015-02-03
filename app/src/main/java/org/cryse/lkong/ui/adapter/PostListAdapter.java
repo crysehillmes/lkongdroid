@@ -59,8 +59,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
                 UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                        .setPlaceHolder(R.drawable.ic_default_avatar)
-                        .setError(R.drawable.ic_default_avatar);
+                        .setPlaceHolder(R.drawable.image_placeholder)
+                        .setError(R.drawable.image_placeholder);
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
                 viewHolder.mMessageTextView.setText(spannedText);
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
