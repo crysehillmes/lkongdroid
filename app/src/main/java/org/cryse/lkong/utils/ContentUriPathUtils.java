@@ -12,7 +12,10 @@ import android.provider.MediaStore;
 public class ContentUriPathUtils {
     public static String getRealPathFromUri(Context context, Uri uri) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return getRealPathFromUri_API19(context, uri);
+            if(uri.getPath().contains(":"))
+                return getRealPathFromUri_API19(context, uri);
+            else
+                return getRealPathFromUri_API11to18(context, uri);
         } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             return getRealPathFromUri_API11to18(context, uri);
         } else {
