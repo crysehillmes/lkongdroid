@@ -14,6 +14,7 @@ public class DataContract {
     public static final String BUNDLE_THREAD_PAGE_INDICATOR_ITEMS = "bundle_thread_page_indicator_items";
     public static final String BUNDLE_THREAD_INFO_OBJECT= "bundle_thread_info_object";
 
+    public static final String BUNDLE_THREAD_IS_FAVORITE = "bundle_is_favorite";
 
     public static final String BUNDLE_THREAD_REPLY_COUNT= "bundle_thread_reply_count";
 

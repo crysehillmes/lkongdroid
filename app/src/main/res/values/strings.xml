@@ -12,6 +12,8 @@
     <string name="action_dark_theme">Dark Theme</string>
     <string name="action_light_theme">Light Theme</string>
 
+    <string name="action_thread_add_favorite">Add Favorite</string>
+    <string name="action_thread_remove_favorite">Remove Favorite</string>
     <string name="action_insert_image">Insert Image</string>
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>

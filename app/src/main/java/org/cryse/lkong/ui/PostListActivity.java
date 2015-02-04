@@ -68,6 +68,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
     QuickReturnUtils mToolbarQuickReturn;
+    MenuItem mFavoriteMenuItem;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
@@ -76,7 +77,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private long mThreadId = -1;
     private String mThreadSubject = "";
-
+    private boolean mIsFavorite;
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
     @Override
@@ -245,6 +246,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             mThreadId = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_ID);
             if(savedInstanceState.containsKey(DataContract.BUNDLE_THREAD_INFO_OBJECT)) {
+                mIsFavorite = savedInstanceState.getBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE);
                 mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_SUBJECT);
                 mThreadModel = savedInstanceState.getParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mCurrentPage = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE);
@@ -270,6 +272,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         super.onSaveInstanceState(outState);
         outState.putLong(DataContract.BUNDLE_THREAD_ID, mThreadId);
         if(mThreadModel != null) {
+            outState.putBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE, mIsFavorite);
             outState.putString(DataContract.BUNDLE_THREAD_SUBJECT, mThreadSubject);
             outState.putParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT, mThreadModel);
             outState.putInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE, mCurrentPage);
@@ -282,7 +285,21 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_list, menu);
+        mFavoriteMenuItem = menu.findItem(R.id.action_thread_favorite);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(mItemList.size() == 0) mFavoriteMenuItem.setVisible(false);
+        else if(mItemList.size() > 0) {
+            mFavoriteMenuItem.setVisible(true);
+            if(mIsFavorite)
+                mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+            else
+                mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -346,6 +363,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.replaceWith(posts);
         mPostCollectionView.getRecyclerView().scrollToPosition(0);
         mToolbarQuickReturn.show();
+        if(page == 1 && posts.size() > 0)
+            mIsFavorite = mItemList.get(0).isFavorite();
+        invalidateOptionsMenu();
     }
 
     @Override
