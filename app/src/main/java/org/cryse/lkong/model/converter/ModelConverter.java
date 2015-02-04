@@ -94,6 +94,7 @@ public class ModelConverter {
             //postModel.setAuthor(item.getAuthor());
             postModel.setAuthorId(item.getAuthorid());
             postModel.setAuthorName(item.getAuthor());
+            postModel.setFavorite(item.isFavorite());
             postModel.setDateline(item.getDateline());
             postModel.setFid(item.getFid());
             postModel.setFirst(item.getFirst() != 0);

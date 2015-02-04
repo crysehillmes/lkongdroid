@@ -10,6 +10,7 @@ public class LKPostItem {
     private String message;
     private String author;
     private long authorid;
+    private boolean favorite = false;
     private int isme; // Gson add int to boolean converter
     private int notgroup; // Gson add int to boolean converter
     private String pid; // GSON add String to long converter
@@ -69,6 +70,14 @@ public class LKPostItem {
 
     public void setAuthorid(long authorid) {
         this.authorid = authorid;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     public int getIsme() {
