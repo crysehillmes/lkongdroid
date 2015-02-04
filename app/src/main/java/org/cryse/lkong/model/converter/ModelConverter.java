@@ -56,6 +56,7 @@ public class ModelConverter {
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
             threadModel.setSubject(item.getSubject());
+            threadModel.setSortKeyTime(new Date(item.getSortkey()));
             if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
                 nextSortKeyItem = threadModel;
             else
@@ -106,6 +107,7 @@ public class ModelConverter {
             postModel.setPid(Long.parseLong(item.getPid()));
             //postModel.setRateLog();
             postModel.setSortKey(item.getSortkey());
+            postModel.setSortKeyTime(new Date(item.getSortkey()));
             postModel.setStatus(item.getStatus());
             postModel.setTid(item.getTid());
             postModel.setTsAdmin(item.isTsadmin());

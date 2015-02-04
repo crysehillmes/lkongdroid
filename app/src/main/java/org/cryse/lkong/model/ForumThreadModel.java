@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class ForumThreadModel implements Serializable, Parcelable {
     private long sortKey;
+    private Date sortKeyTime;
     private Date dateline;
     private String subject;
     private String userName;
@@ -25,6 +26,14 @@ public class ForumThreadModel implements Serializable, Parcelable {
 
     public void setSortKey(long sortKey) {
         this.sortKey = sortKey;
+    }
+
+    public Date getSortKeyTime() {
+        return sortKeyTime;
+    }
+
+    public void setSortKeyTime(Date sortKeyTime) {
+        this.sortKeyTime = sortKeyTime;
     }
 
     public Date getDateline() {
@@ -107,6 +116,9 @@ public class ForumThreadModel implements Serializable, Parcelable {
         this.userIcon = userIcon;
     }
 
+    public ForumThreadModel() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -115,6 +127,7 @@ public class ForumThreadModel implements Serializable, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.sortKey);
+        dest.writeLong(sortKeyTime != null ? sortKeyTime.getTime() : -1);
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
         dest.writeString(this.subject);
         dest.writeString(this.userName);
@@ -127,11 +140,10 @@ public class ForumThreadModel implements Serializable, Parcelable {
         dest.writeString(this.userIcon);
     }
 
-    public ForumThreadModel() {
-    }
-
     private ForumThreadModel(Parcel in) {
         this.sortKey = in.readLong();
+        long tmpSortKeyTime = in.readLong();
+        this.sortKeyTime = tmpSortKeyTime == -1 ? null : new Date(tmpSortKeyTime);
         long tmpDateline = in.readLong();
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
         this.subject = in.readString();
@@ -145,7 +157,7 @@ public class ForumThreadModel implements Serializable, Parcelable {
         this.userIcon = in.readString();
     }
 
-    public static final Parcelable.Creator<ForumThreadModel> CREATOR = new Parcelable.Creator<ForumThreadModel>() {
+    public static final Creator<ForumThreadModel> CREATOR = new Creator<ForumThreadModel>() {
         public ForumThreadModel createFromParcel(Parcel source) {
             return new ForumThreadModel(source);
         }
