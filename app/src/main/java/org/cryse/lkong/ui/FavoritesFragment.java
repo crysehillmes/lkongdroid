@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
@@ -52,7 +52,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
 
     ThreadListAdapter mCollectionAdapter;
 
-    List<ForumThreadModel> mItemList = new ArrayList<ForumThreadModel>();
+    List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
 
     public static FavoritesFragment newInstance(Bundle args) {
         FavoritesFragment fragment = new FavoritesFragment();
@@ -98,7 +98,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
             }
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ForumThreadModel item = mCollectionAdapter.getItem(position);
+            ThreadModel item = mCollectionAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), PostListActivity.class);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
@@ -130,7 +130,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
         super.onActivityCreated(savedInstanceState);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<ForumThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
+            ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
         } else {
@@ -159,7 +159,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
     }
 
     @Override
-    public void showThreadList(List<ForumThreadModel> threadList, boolean isLoadMore) {
+    public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
         if(isLoadMore) {
             if (threadList.size() == 0) isNoMore = true;
             // isLoadingMore = false;
@@ -178,7 +178,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
             }*/
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            ForumThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
+            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;

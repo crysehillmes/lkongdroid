@@ -32,7 +32,7 @@ import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
@@ -49,8 +49,6 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -188,7 +186,7 @@ public class LKongRestService {
         return forumModels;
     }
     
-    public List<ForumThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
+    public List<ThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
         String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=forum/%d%s", fid, ThreadListType.typeToRequestParam(listType));
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
@@ -201,7 +199,7 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
+        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
         Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         return threadList;
     }
@@ -343,7 +341,7 @@ public class LKongRestService {
         return newThreadResult;
     }
 
-    public List<ForumThreadModel> getFavorites(LKAuthObject authObject, long start) throws Exception {
+    public List<ThreadModel> getFavorites(LKAuthObject authObject, long start) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
         String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=my/favorite");
@@ -358,9 +356,9 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         if(lKThreadList.getData() == null || lKThreadList.getData().size() == 0)
-            return new ArrayList<ForumThreadModel>();
+            return new ArrayList<ThreadModel>();
         Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, true);
+        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, true);
         Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         clearCookies();
         return threadList;

@@ -9,7 +9,7 @@ import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.ContentProcessor;
@@ -128,10 +128,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start, int listType) {
+    public Observable<List<ThreadModel>> getForumThread(long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
+                List<ThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
@@ -225,10 +225,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumThreadModel>> getFavorite(LKAuthObject authObject, long start) {
+    public Observable<List<ThreadModel>> getFavorite(LKAuthObject authObject, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<ForumThreadModel> forumModelList = mLKongRestService.getFavorites(authObject, start);
+                List<ThreadModel> forumModelList = mLKongRestService.getFavorites(authObject, start);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {

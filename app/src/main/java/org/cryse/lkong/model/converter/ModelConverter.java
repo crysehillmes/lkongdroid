@@ -8,7 +8,7 @@ import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKPostUser;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -40,11 +40,11 @@ public class ModelConverter {
         return userInfoModel;
     }
 
-    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
-        List<ForumThreadModel> threadList = new ArrayList<ForumThreadModel>();
-        ForumThreadModel nextSortKeyItem = null;
+    public static List<ThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
+        List<ThreadModel> threadList = new ArrayList<ThreadModel>();
+        ThreadModel nextSortKeyItem = null;
         for(LKForumThreadItem item : lkForumThreadList.getData()) {
-            ForumThreadModel threadModel = new ForumThreadModel();
+            ThreadModel threadModel = new ThreadModel();
             threadModel.setSortKey(item.getSortkey());
             threadModel.setUserName(item.getUsername());
             threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));

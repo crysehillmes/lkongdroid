@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ForumThreadModel implements Serializable, Parcelable {
+public class ThreadModel implements Serializable, Parcelable {
     private long sortKey;
     private Date sortKeyTime;
     private Date dateline;
@@ -116,7 +116,7 @@ public class ForumThreadModel implements Serializable, Parcelable {
         this.userIcon = userIcon;
     }
 
-    public ForumThreadModel() {
+    public ThreadModel() {
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ForumThreadModel implements Serializable, Parcelable {
         dest.writeString(this.userIcon);
     }
 
-    private ForumThreadModel(Parcel in) {
+    private ThreadModel(Parcel in) {
         this.sortKey = in.readLong();
         long tmpSortKeyTime = in.readLong();
         this.sortKeyTime = tmpSortKeyTime == -1 ? null : new Date(tmpSortKeyTime);
@@ -157,13 +157,13 @@ public class ForumThreadModel implements Serializable, Parcelable {
         this.userIcon = in.readString();
     }
 
-    public static final Creator<ForumThreadModel> CREATOR = new Creator<ForumThreadModel>() {
-        public ForumThreadModel createFromParcel(Parcel source) {
-            return new ForumThreadModel(source);
+    public static final Creator<ThreadModel> CREATOR = new Creator<ThreadModel>() {
+        public ThreadModel createFromParcel(Parcel source) {
+            return new ThreadModel(source);
         }
 
-        public ForumThreadModel[] newArray(int size) {
-            return new ForumThreadModel[size];
+        public ThreadModel[] newArray(int size) {
+            return new ThreadModel[size];
         }
     };
 }

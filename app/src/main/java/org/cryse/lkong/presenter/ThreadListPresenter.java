@@ -1,7 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.ThreadListView;
 
@@ -77,7 +77,7 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
     private class EmptyTheadListView implements ThreadListView {
 
         @Override
-        public void showThreadList(List<ForumThreadModel> threadList, boolean isLoadMore) {
+        public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
 
         }
 

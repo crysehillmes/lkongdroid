@@ -13,7 +13,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.logic.ThreadListType;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -55,7 +55,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     ThreadListAdapter mCollectionAdapter;
 
-    List<ForumThreadModel> mItemList = new ArrayList<ForumThreadModel>();
+    List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
 
     private long mForumId = -1;
     private String mForumName = "";
@@ -100,7 +100,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ForumThreadModel item = mCollectionAdapter.getItem(position);
+            ThreadModel item = mCollectionAdapter.getItem(position);
             Intent intent = new Intent(this, PostListActivity.class);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
@@ -135,7 +135,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         super.onPostCreate(savedInstanceState);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<ForumThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
+            ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
@@ -208,7 +208,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     }
 
     @Override
-    public void showThreadList(List<ForumThreadModel> threadList, boolean isLoadMore) {
+    public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
         if(isLoadMore) {
             if (threadList.size() == 0) isNoMore = true;
             // isLoadingMore = false;
@@ -227,7 +227,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }*/
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            ForumThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
+            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;
