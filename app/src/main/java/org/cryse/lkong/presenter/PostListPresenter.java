@@ -3,6 +3,7 @@ package org.cryse.lkong.presenter;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.PostListView;
 
@@ -21,6 +22,8 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     PostListView mView;
     Subscription mLoadPostListSubscription;
     Subscription mLoadThreadInfoSubscription;
+    Subscription mAddOrRemoveFavoriteSubscription;
+
     @Inject
     public PostListPresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
@@ -47,10 +50,10 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 );
     }
 
-    public void loadPostList(long tid, int page) {
+    public void loadPostList(LKAuthObject authObject, long tid, int page) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadPostListSubscription);
         mView.setLoading(true);
-        mLoadPostListSubscription = mLKongForumService.getPostList(tid, page)
+        mLoadPostListSubscription = mLKongForumService.getPostList(authObject, tid, page)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -69,6 +72,24 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 );
     }
 
+    public void addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) {
+        SubscriptionUtils.checkAndUnsubscribe(mAddOrRemoveFavoriteSubscription);
+        mAddOrRemoveFavoriteSubscription = mLKongForumService.addOrRemoveFavorite(authObject, tid, remove)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            Timber.d("PostListPresenter::addOrRemoveFavorite() onNext().", LOG_TAG);
+                            mView.onAddOrRemoveFavoriteComplete(result);
+                        },
+                        error -> {
+                            Timber.e(error, "PostListPresenter::addOrRemoveFavorite() onError().", LOG_TAG);
+                        },
+                        () -> {
+                            Timber.d("PostListPresenter::addOrRemoveFavorite() onComplete().", LOG_TAG);
+                        }
+                );
+    }
 
     @Override
     public void bindView(PostListView view) {
@@ -84,6 +105,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     public void destroy() {
         SubscriptionUtils.checkAndUnsubscribe(mLoadPostListSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadInfoSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mAddOrRemoveFavoriteSubscription);
     }
 
     private class EmptyPostListView implements PostListView {
@@ -94,6 +116,11 @@ public class PostListPresenter implements BasePresenter<PostListView> {
 
         @Override
         public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
+
+        }
+
+        @Override
+        public void onAddOrRemoveFavoriteComplete(boolean isFavorite) {
 
         }
 

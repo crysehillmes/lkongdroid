@@ -152,10 +152,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<PostModel>> getPostList(long tid, int page) {
+    public Observable<List<PostModel>> getPostList(LKAuthObject authObject, long tid, int page) {
         return Observable.create(subscriber -> {
            try {
-               List<PostModel> postList = mLKongRestService.getThreadPostList(tid, page);
+               List<PostModel> postList = mLKongRestService.getThreadPostList(authObject, tid, page);
                subscriber.onNext(postList);
                subscriber.onCompleted();
            } catch (Exception ex) {
@@ -233,6 +233,18 @@ public class LKongForumService {
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<Boolean> addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) {
+        return Observable.create(subscriber -> {
+            try {
+                Boolean result = mLKongRestService.addOrRemoveFavorite(authObject, tid, remove);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
             }
         });
     }

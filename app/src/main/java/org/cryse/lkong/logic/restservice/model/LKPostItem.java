@@ -10,7 +10,7 @@ public class LKPostItem {
     private String message;
     private String author;
     private long authorid;
-    private boolean favorite = false;
+    private boolean favorite;
     private int isme; // Gson add int to boolean converter
     private int notgroup; // Gson add int to boolean converter
     private String pid; // GSON add String to long converter

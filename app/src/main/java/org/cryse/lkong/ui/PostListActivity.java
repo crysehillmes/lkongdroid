@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -204,7 +205,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mPageCount = newPageCount;
                 }
                 if(newPageCount == mCurrentPage) {
-                    getPresenter().loadPostList(mThreadId, mCurrentPage);
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
                 }
             }
         }
@@ -215,7 +216,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onBackwardClick() {
                 if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
-                    getPresenter().loadPostList(mThreadId, mCurrentPage - 1);
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage - 1);
             }
 
             @Override
@@ -225,7 +226,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
                             if(i + 1 == mCurrentPage) return;
-                            getPresenter().loadPostList(mThreadId, i + 1);
+                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1);
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -234,7 +235,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onForwardClick() {
                 if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
-                    getPresenter().loadPostList(mThreadId, mCurrentPage + 1);
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1);
             }
         };
     }
@@ -291,13 +292,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(mItemList.size() == 0) mFavoriteMenuItem.setVisible(false);
+        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
         else if(mItemList.size() > 0) {
             mFavoriteMenuItem.setVisible(true);
-            if(mIsFavorite)
+            if(mIsFavorite) {
+                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
                 mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
-            else
+            }
+            else {
+                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
                 mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -313,6 +318,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
+                return true;
+            case R.id.action_thread_favorite:
+                getPresenter().addOrRemoveFavorite(mUserAccountManager.getAuthObject(), mThreadId, mIsFavorite);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -363,8 +371,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.replaceWith(posts);
         mPostCollectionView.getRecyclerView().scrollToPosition(0);
         mToolbarQuickReturn.show();
-        if(page == 1 && posts.size() > 0)
+        if(page == 1 && posts.size() > 0 && mItemList.get(0).getOrdinal() == 1) {
             mIsFavorite = mItemList.get(0).isFavorite();
+        }
         invalidateOptionsMenu();
     }
 
@@ -385,7 +394,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
 
         if(mPageCount > 0)
-            getPresenter().loadPostList(mThreadId, 1);
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1);
+    }
+
+    @Override
+    public void onAddOrRemoveFavoriteComplete(boolean isFavorite) {
+        if(mCurrentPage == 1 && mItemList.size() > 0) {
+            mItemList.get(0).setFavorite(isFavorite);
+        }
+        mIsFavorite = isFavorite;
+        invalidateOptionsMenu();
     }
 
     @Override
