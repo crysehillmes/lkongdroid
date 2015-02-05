@@ -6,13 +6,13 @@ import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
 public class RxEventBus {
-    private final Subject<Object, Object> _bus = new SerializedSubject<>(PublishSubject.create());
+    private final Subject<AbstractEvent, AbstractEvent> mInstance = new SerializedSubject<>(PublishSubject.create());
 
-    public void sendEvent(Object o) {
-        _bus.onNext(o);
+    public void sendEvent(AbstractEvent event) {
+        mInstance.onNext(event);
     }
 
-    public Observable<Object> toObservable() {
-        return _bus;
+    public Observable<AbstractEvent> toObservable() {
+        return mInstance;
     }
 }
