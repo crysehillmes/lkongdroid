@@ -117,7 +117,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Override
     public String getFragmentTitle() {
-        return getString(R.string.drawer_item_favorites);
+        return getString(R.string.drawer_item_timeline);
     }
 
     @Override
