@@ -8,7 +8,7 @@ import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKPostUser;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -40,10 +40,11 @@ public class ModelConverter {
         return userInfoModel;
     }
 
-    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList) {
-        List<ForumThreadModel> threadList = new ArrayList<ForumThreadModel>();
+    public static List<ThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
+        List<ThreadModel> threadList = new ArrayList<ThreadModel>();
+        ThreadModel nextSortKeyItem = null;
         for(LKForumThreadItem item : lkForumThreadList.getData()) {
-            ForumThreadModel threadModel = new ForumThreadModel();
+            ThreadModel threadModel = new ThreadModel();
             threadModel.setSortKey(item.getSortkey());
             threadModel.setUserName(item.getUsername());
             threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));
@@ -55,8 +56,13 @@ public class ModelConverter {
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
             threadModel.setSubject(item.getSubject());
-            threadList.add(threadModel);
+            threadModel.setSortKeyTime(new Date(item.getSortkey()));
+            if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
+                nextSortKeyItem = threadModel;
+            else
+                threadList.add(threadModel);
         }
+        if(checkNextTimeSortKey && nextSortKeyItem != null) threadList.add(nextSortKeyItem);
         return threadList;
     }
 
@@ -89,6 +95,7 @@ public class ModelConverter {
             //postModel.setAuthor(item.getAuthor());
             postModel.setAuthorId(item.getAuthorid());
             postModel.setAuthorName(item.getAuthor());
+            postModel.setFavorite(item.isFavorite());
             postModel.setDateline(item.getDateline());
             postModel.setFid(item.getFid());
             postModel.setFirst(item.getFirst() != 0);
@@ -100,6 +107,7 @@ public class ModelConverter {
             postModel.setPid(Long.parseLong(item.getPid()));
             //postModel.setRateLog();
             postModel.setSortKey(item.getSortkey());
+            postModel.setSortKeyTime(new Date(item.getSortkey()));
             postModel.setStatus(item.getStatus());
             postModel.setTid(item.getTid());
             postModel.setTsAdmin(item.isTsadmin());

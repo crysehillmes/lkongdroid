@@ -1,9 +1,9 @@
 package org.cryse.lkong.view;
 
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 
 import java.util.List;
 
 public interface ThreadListView extends ContentViewEx {
-    public void showThreadList(List<ForumThreadModel> threadList, boolean isLoadMore);
+    public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore);
 }

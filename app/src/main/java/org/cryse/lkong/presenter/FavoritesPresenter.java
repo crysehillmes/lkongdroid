@@ -2,6 +2,7 @@ package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.ThreadListView;
 
@@ -14,25 +15,26 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ThreadListPresenter implements BasePresenter<ThreadListView> {
-    public static final String LOG_TAG = ThreadListPresenter.class.getName();
+public class FavoritesPresenter implements BasePresenter<ThreadListView> {
+    public static final String LOG_TAG = FavoritesPresenter.class.getName();
     LKongForumService mLKongForumService;
     ThreadListView mView;
-    Subscription mLoadThreadListSubscription;
+    Subscription mLoadFavoritesSubscription;
 
     @Inject
-    public ThreadListPresenter(LKongForumService forumService) {
+    public FavoritesPresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
+        this.mView = new EmptyTheadListView();
     }
 
-    public void loadThreadList(long fid, int listType, boolean loadingMore) {
-        loadThreadList(fid, -1, listType, loadingMore);
+    public void loadFavorites(LKAuthObject authObject, boolean loadingMore) {
+        loadFavorites(authObject, -1, loadingMore);
     }
 
-    public void loadThreadList(long fid, long start, int listType, boolean loadingMore) {
-        SubscriptionUtils.checkAndUnsubscribe(mLoadThreadListSubscription);
+    public void loadFavorites(LKAuthObject authObject, long start, boolean loadingMore) {
+        SubscriptionUtils.checkAndUnsubscribe(mLoadFavoritesSubscription);
         setLoadingStatus(loadingMore, true);
-        mLoadThreadListSubscription = mLKongForumService.getForumThread(fid, start, listType)
+        mLoadFavoritesSubscription = mLKongForumService.getFavorite(authObject, start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -64,7 +66,7 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
 
     @Override
     public void destroy() {
-        SubscriptionUtils.checkAndUnsubscribe(mLoadThreadListSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mLoadFavoritesSubscription);
     }
 
     private void setLoadingStatus(boolean loadingMore, boolean isLoading) {

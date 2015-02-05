@@ -9,7 +9,7 @@ import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.ContentProcessor;
@@ -128,10 +128,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumThreadModel>> getForumThread(long fid, long start, int listType) {
+    public Observable<List<ThreadModel>> getForumThread(long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                List<ForumThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
+                List<ThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
@@ -152,10 +152,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<PostModel>> getPostList(long tid, int page) {
+    public Observable<List<PostModel>> getPostList(LKAuthObject authObject, long tid, int page) {
         return Observable.create(subscriber -> {
            try {
-               List<PostModel> postList = mLKongRestService.getThreadPostList(tid, page);
+               List<PostModel> postList = mLKongRestService.getThreadPostList(authObject, tid, page);
                subscriber.onNext(postList);
                subscriber.onCompleted();
            } catch (Exception ex) {
@@ -217,6 +217,30 @@ public class LKongForumService {
 
                 Timber.d(replaceResult, LOG_TAG);
                 NewThreadResult result = mLKongRestService.newPostThread(authObject, title, fid, replaceResult, follow);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<ThreadModel>> getFavorite(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ThreadModel> forumModelList = mLKongRestService.getFavorites(authObject, start);
+                subscriber.onNext(forumModelList);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<Boolean> addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) {
+        return Observable.create(subscriber -> {
+            try {
+                Boolean result = mLKongRestService.addOrRemoveFavorite(authObject, tid, remove);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

@@ -1,6 +1,7 @@
 package org.cryse.lkong.logic.restservice;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +33,7 @@ import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
@@ -43,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -186,7 +188,7 @@ public class LKongRestService {
         return forumModels;
     }
     
-    public List<ForumThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
+    public List<ThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
         String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=forum/%d%s", fid, ThreadListType.typeToRequestParam(listType));
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
@@ -199,7 +201,7 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
-        List<ForumThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList);
+        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
         Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
         return threadList;
     }
@@ -219,7 +221,11 @@ public class LKongRestService {
         return threadInfoModel;
     }
 
-    public List<PostModel> getThreadPostList(long tid, int page) throws Exception {
+    public List<PostModel> getThreadPostList(LKAuthObject authObject, long tid, int page) throws Exception {
+        if(authObject != null) {
+            checkSignInStatus(authObject, true);
+            applyAuthCookies(authObject);
+        }
         String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=thread/%d/%s", tid, page);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
@@ -229,10 +235,10 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
+        saveToSDCard("hava.json", responseString);
         LKPostList lkPostList = gson.fromJson(responseString, LKPostList.class);
-        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lkPostList.getData().size()), LOG_TAG);
         List<PostModel> postList = ModelConverter.toPostModelList(lkPostList);
-        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", postList.size()), LOG_TAG);
+        clearCookies();
         return postList;
     }
 
@@ -339,6 +345,56 @@ public class LKongRestService {
         clearCookies();
 
         return newThreadResult;
+    }
+
+    public List<ThreadModel> getFavorites(LKAuthObject authObject, long start) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=my/favorite");
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
+        if(lKThreadList.getData() == null || lKThreadList.getData().size() == 0)
+            return new ArrayList<ThreadModel>();
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
+        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, true);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
+        clearCookies();
+        return threadList;
+    }
+
+    public Boolean addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = String.format(LKONG_INDEX_URL + String.format("?mod=ajax&action=favorite&tid=%d", tid));
+        url = url + (remove ? "&type=-1" : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        JSONObject jsonObject = new JSONObject(responseString);
+        if(!jsonObject.has("isfavorite")) return false;
+        Boolean isFavorite = jsonObject.getInt("isfavorite") != 0 ;
+        clearCookies();
+        return isFavorite;
+    }
+
+    public void saveToSDCard(String filename, String content)throws Exception {
+        File file = new File(Environment.getExternalStorageDirectory(), filename);//指定文件存储目录为SD卡，文件名
+        FileOutputStream outStream = new FileOutputStream(file);//输出文件流
+        outStream.write(content.getBytes());
+        outStream.close();
     }
 
     private static String decompress(byte[] bytes) throws Exception {
