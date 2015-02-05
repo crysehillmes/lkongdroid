@@ -11,6 +11,7 @@ import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.ThreadListActivity;
+import org.cryse.lkong.ui.TimelineFragment;
 
 import javax.inject.Singleton;
 
@@ -27,4 +28,5 @@ public interface LKongPresenterComponent {
     void inject(NewPostActivity activity);
     void inject(NewThreadActivity activity);
     void inject(FavoritesFragment fragment);
+    void inject(TimelineFragment fragment);
 }

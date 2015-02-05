@@ -12,6 +12,7 @@ public class LKTimelineItem {
     private String t_author;
     private long t_authorid;
     private int t_replynum;
+    private int replynum;
     private String id;
     private long sortkey;
 
@@ -101,6 +102,14 @@ public class LKTimelineItem {
 
     public void setT_replynum(int t_replynum) {
         this.t_replynum = t_replynum;
+    }
+
+    public int getReplynum() {
+        return replynum;
+    }
+
+    public void setReplynum(int replynum) {
+        this.replynum = replynum;
     }
 
     public String getId() {

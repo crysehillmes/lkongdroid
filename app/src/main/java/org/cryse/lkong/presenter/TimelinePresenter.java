@@ -24,6 +24,7 @@ public class TimelinePresenter implements BasePresenter<TimelineView> {
     @Inject
     public TimelinePresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
+        this.mView = new EmptyTimelineView();
     }
 
     public void loadTimeline(LKAuthObject authObject, boolean loadingMore) {

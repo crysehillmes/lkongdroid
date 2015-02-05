@@ -53,6 +53,7 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -406,11 +407,13 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
+        saveToSDCard("timeline", responseString);
         LKTimelineData lkTimelineData = gson.fromJson(responseString, LKTimelineData.class);
         if(lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
             return new ArrayList<TimelineModel>();
         Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lkTimelineData.getData().size()), LOG_TAG);
         List<TimelineModel> timelineList = ModelConverter.toTimelineModel(lkTimelineData);
+        Collections.reverse(timelineList);
         Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", timelineList.size()), LOG_TAG);
         clearCookies();
         return timelineList;
