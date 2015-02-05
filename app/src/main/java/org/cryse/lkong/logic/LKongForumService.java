@@ -13,6 +13,7 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -246,6 +247,18 @@ public class LKongForumService {
             try {
                 Boolean result = mLKongRestService.addOrRemoveFavorite(authObject, tid, remove);
                 mEventBus.sendEvent(new FavoritesChangedEvent());
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<TimelineModel>> getTimeline(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<TimelineModel> result = mLKongRestService.getTimeline(authObject, start);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

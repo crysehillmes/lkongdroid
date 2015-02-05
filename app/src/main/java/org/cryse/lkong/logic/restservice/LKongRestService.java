@@ -27,6 +27,7 @@ import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
 import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
+import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
@@ -35,6 +36,7 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
@@ -388,6 +390,30 @@ public class LKongRestService {
         Boolean isFavorite = jsonObject.getInt("isfavorite") != 0 ;
         clearCookies();
         return isFavorite;
+    }
+
+    public List<TimelineModel> getTimeline(LKAuthObject authObject, long start) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+
+        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=index/");
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKTimelineData lkTimelineData = gson.fromJson(responseString, LKTimelineData.class);
+        if(lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
+            return new ArrayList<TimelineModel>();
+        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lkTimelineData.getData().size()), LOG_TAG);
+        List<TimelineModel> timelineList = ModelConverter.toTimelineModel(lkTimelineData);
+        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", timelineList.size()), LOG_TAG);
+        clearCookies();
+        return timelineList;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {

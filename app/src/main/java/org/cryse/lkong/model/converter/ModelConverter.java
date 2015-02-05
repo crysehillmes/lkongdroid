@@ -7,10 +7,13 @@ import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKPostUser;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
+import org.cryse.lkong.logic.restservice.model.LKTimelineData;
+import org.cryse.lkong.logic.restservice.model.LKTimelineItem;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.safety.Whitelist;
@@ -159,6 +162,29 @@ public class ModelConverter {
             itemList.add(postModel);
         }
         return itemList;
+    }
+
+    public static List<TimelineModel> toTimelineModel(LKTimelineData timelineData) {
+        List<TimelineModel> timelineModels = new ArrayList<>(timelineData.getData().size());
+        for(LKTimelineItem item : timelineData.getData()) {
+            TimelineModel model = new TimelineModel();
+            model.setId(item.getId());
+            model.setQuote(item.isIsquote());
+            model.setUserId(Long.valueOf(item.getUid()));
+            model.setUserName(item.getUsername());
+            model.setDateline(new Date(Long.valueOf(item.getDateline())));
+            model.setMessage(item.getMessage());
+            model.setThread(item.isIsthread());
+            model.setTid(Long.valueOf(item.getTid()));
+            model.setSubject(item.getSubject());
+            model.setThreadAuthor(item.getT_author());
+            model.setThreadAuthorId(item.getT_authorid());
+            model.setThreadReplyCount(item.getT_replynum());
+            model.setSortKey(item.getSortkey());
+            model.setSortKeyDate(new Date(item.getSortkey()));
+            timelineModels.add(model);
+        }
+        return timelineModels;
     }
 
     public static String uidToAvatarUrl(long uid) {
