@@ -10,6 +10,7 @@ import org.cryse.lkong.data.LKongDatabaseHelper;
 import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 
@@ -52,8 +53,8 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public LKongForumService provideLKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
-        return new LKongForumService(lKongRestService, lKongDatabase);
+    public LKongForumService provideLKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase, RxEventBus rxEventBus) {
+        return new LKongForumService(lKongRestService, lKongDatabase, rxEventBus);
     }
 
     @Singleton

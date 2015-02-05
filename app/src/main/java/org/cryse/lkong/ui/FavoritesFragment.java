@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.FavoritesChangedEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
@@ -34,12 +36,16 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class FavoritesFragment extends MainActivityFragment implements ThreadListView {
+    private static final String BUNDLE_NEED_REFRESH = "bundle_favorites_need_refresh";
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
     @Inject
     FavoritesPresenter mPresenter;
+
+    @Inject
+    RxEventBus mEventBus;
 
     @Inject
     AndroidNavigation mAndroidNavigation;
@@ -53,6 +59,8 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
     ThreadListAdapter mCollectionAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
+
+    boolean mNeedRefresh = false;
 
     public static FavoritesFragment newInstance(Bundle args) {
         FavoritesFragment fragment = new FavoritesFragment();
@@ -123,6 +131,7 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
         super.onSaveInstanceState(outState);
         outState.putLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY, mLastItemSortKey);
         outState.putParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE, mCollectionAdapter.getItemArrayList());
+        outState.putBoolean(BUNDLE_NEED_REFRESH, mNeedRefresh);
     }
 
     @Override
@@ -133,9 +142,24 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
             ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
+            mNeedRefresh = savedInstanceState.getBoolean(BUNDLE_NEED_REFRESH);
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
+            getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
+        }
+
+        mEventBus.toObservable().subscribe(event -> {
+           if(event instanceof FavoritesChangedEvent)
+               mNeedRefresh = true;
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mNeedRefresh) {
+            mNeedRefresh = false;
             getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
         }
     }

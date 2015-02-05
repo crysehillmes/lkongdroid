@@ -3,6 +3,8 @@ package org.cryse.lkong.logic;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.event.FavoritesChangedEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
@@ -27,12 +29,14 @@ public class LKongForumService {
     public static final String LOG_TAG = LKongForumService.class.getName();
     LKongRestService mLKongRestService;
     LKongDatabase mLKongDatabase;
+    RxEventBus mEventBus;
 
     @Inject
     @Singleton
-    public LKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
+    public LKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase, RxEventBus rxEventBus) {
         this.mLKongRestService = lKongRestService;
         this.mLKongDatabase = lKongDatabase;
+        this.mEventBus = rxEventBus;
         try {
             this.mLKongDatabase.initialize();
         } catch (Exception ex) {
@@ -241,6 +245,7 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 Boolean result = mLKongRestService.addOrRemoveFavorite(authObject, tid, remove);
+                mEventBus.sendEvent(new FavoritesChangedEvent());
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
