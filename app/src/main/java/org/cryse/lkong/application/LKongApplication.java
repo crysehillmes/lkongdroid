@@ -22,19 +22,19 @@ import timber.log.Timber;
 
 @Singleton
 public class LKongApplication extends Application {
-    private static final String TAG = LKongApplication.class.getCanonicalName();
+    private static final String TAG = LKongApplication.class.getName();
     private MainActivityComponent mainActivityComponent;
     private LKongPresenterComponent lKongPresenterComponent;
     private UserAccountComponent userAccountComponent;
     private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
-
         initComponents();
         userAccountComponent.inject(mUserAccountManager);
         mUserAccountManager.init();

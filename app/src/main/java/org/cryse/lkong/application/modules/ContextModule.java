@@ -5,6 +5,7 @@ import android.content.Context;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 
 import javax.inject.Singleton;
@@ -33,6 +34,12 @@ public class ContextModule {
     @Provides
     public LKongApplication provideLKongApplication() {
         return (LKongApplication)mApplicationContext;
+    }
+
+    @Singleton
+    @Provides
+    public RxEventBus provideRxEventBus() {
+        return new RxEventBus();
     }
 
     @Provides
