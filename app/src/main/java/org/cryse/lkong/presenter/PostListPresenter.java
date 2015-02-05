@@ -17,7 +17,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class PostListPresenter implements BasePresenter<PostListView> {
-    public static final String LOG_TAG = ThreadListPresenter.class.getName();
+    public static final String LOG_TAG = PostListPresenter.class.getName();
     LKongForumService mLKongForumService;
     PostListView mView;
     Subscription mLoadPostListSubscription;
