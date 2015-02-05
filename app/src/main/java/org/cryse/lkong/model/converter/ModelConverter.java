@@ -1,5 +1,7 @@
 package org.cryse.lkong.model.converter;
 
+import android.util.Log;
+
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKPostItem;
@@ -59,7 +61,7 @@ public class ModelConverter {
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
             threadModel.setSubject(item.getSubject());
-            threadModel.setSortKeyTime(new Date(item.getSortkey()));
+            threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
             if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
                 nextSortKeyItem = threadModel;
             else
@@ -110,7 +112,7 @@ public class ModelConverter {
             postModel.setPid(Long.parseLong(item.getPid()));
             //postModel.setRateLog();
             postModel.setSortKey(item.getSortkey());
-            postModel.setSortKeyTime(new Date(item.getSortkey()));
+            postModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
             postModel.setStatus(item.getStatus());
             postModel.setTid(item.getTid());
             postModel.setTsAdmin(item.isTsadmin());
@@ -172,16 +174,23 @@ public class ModelConverter {
             model.setQuote(item.isIsquote());
             model.setUserId(Long.valueOf(item.getUid()));
             model.setUserName(item.getUsername());
-            model.setDateline(new Date(Long.valueOf(item.getDateline())));
+            model.setDateline(new Date(Long.valueOf(item.getDateline())* 1000l));
             model.setMessage(item.getMessage());
             model.setThread(item.isIsthread());
-            model.setTid(Long.valueOf(item.getTid()));
+            if(item.isIsthread()) {
+                model.setTid(Long.valueOf(item.getId().substring(7)));
+                model.setThreadReplyCount(item.getReplynum());
+                model.setThreadAuthor(item.getUsername());
+                model.setThreadAuthorId(Long.valueOf(item.getUid()));
+            } else {
+                model.setTid(Long.valueOf(item.getTid()));
+                model.setThreadReplyCount(item.getT_replynum());
+                model.setThreadAuthor(item.getT_author());
+                model.setThreadAuthorId(item.getT_authorid());
+            }
             model.setSubject(item.getSubject());
-            model.setThreadAuthor(item.getT_author());
-            model.setThreadAuthorId(item.getT_authorid());
-            model.setThreadReplyCount(item.getT_replynum());
             model.setSortKey(item.getSortkey());
-            model.setSortKeyDate(new Date(item.getSortkey()));
+            model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
             timelineModels.add(model);
         }
         return timelineModels;
