@@ -104,9 +104,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         mCollectionView.setOnItemClickListener((view, position, id) -> {
             TimelineModel item = mCollectionAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), PostListActivity.class);
-            String idString = item.getId().substring(7);
-            long tid = Long.parseLong(idString);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+            intent.putExtra(DataContract.BUNDLE_THREAD_ID, item.getTid());
             startActivity(intent);
         });
     }
@@ -150,7 +148,6 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), false);
     }
 
     @Override
