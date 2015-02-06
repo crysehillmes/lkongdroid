@@ -32,7 +32,7 @@
     <string name="navigation_drawer_close">关闭导航抽屉</string>
     <string name="format_timeline_reply_to_thread">\@%1$s 发表新主题:</string>
     <string name="format_timeline_reply_to_reply">\@%1$s 在 %2$s 回复</string>
-    <string name="format_timeline_create_thread">新主题：&#160;</string>
+    <string name="format_timeline_create_thread">发表新主题：%1$s</string>
     <string name="format_post_reply_title">回复: %1$s</string>
     <string name="format_post_ordinal">%1$d 楼</string>
     <string name="format_post_list_page_indicator_detail">%1$d 页 (%2$d - %3$d)</string>

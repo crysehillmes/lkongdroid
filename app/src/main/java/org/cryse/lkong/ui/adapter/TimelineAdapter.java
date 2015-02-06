@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
+import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -54,8 +56,10 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             if(item instanceof TimelineModel) {
                 TimelineModel timelineModel = (TimelineModel)item;
 
+                SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
                 String mainContent;
                 if(timelineModel.isQuote()) {
+                    // 回复某一条回复
                     viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
 
                     SpannableStringBuilder spanText = new SpannableStringBuilder();
@@ -68,8 +72,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
                     mainContent = timelineModel.getReplyQuote().getMessage();
-
                 } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
+                    // 回复某一主题
                     viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
                     SpannableStringBuilder spanText = new SpannableStringBuilder();
                     String secondaryText = getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
@@ -79,12 +83,20 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     viewHolder.mSecondaryMessageTextView.setText(spanText);
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
-
                     mainContent = timelineModel.getMessage();
                 } else if(timelineModel.isThread()) {
+                    // 用户自己发布主题
                     viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+                    String createInfo = getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
+                    mainPrefixSpannable.append(createInfo);
+                    mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary)),
+                            0,
+                            createInfo.length(),
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    mainPrefixSpannable.append('\n');
                     mainContent = timelineModel.getMessage();
                 } else {
+                    // 其他
                     viewHolder.mSecondaryContainer.setVisibility(View.GONE);
                     mainContent = timelineModel.getMessage();
                 }
@@ -94,7 +106,9 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, urlImageGetter, new HtmlTagHandler());
-                viewHolder.mMessageTextView.setText(spannedText);
+                SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
+                mainSpannable.append(mainPrefixSpannable).append(spannedText);
+                viewHolder.mMessageTextView.setText(mainSpannable);
 
                 viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
