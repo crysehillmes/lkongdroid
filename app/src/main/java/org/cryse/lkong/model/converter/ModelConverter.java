@@ -20,6 +20,8 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
@@ -205,20 +207,39 @@ public class ModelConverter {
             if(item.isIsquote()) {
                 TimelineModel.ReplyQuote replyQuote = new TimelineModel.ReplyQuote();
                 Document document = Jsoup.parseBodyFragment(item.getMessage());;
-                Elements elements = document.select("div > div > div > a");
-                if(elements.size() > 0) {
-                    if(!TextUtils.isEmpty(elements.get(0).html()) && elements.get(0).html().length() > 2) {
-                        replyQuote.setPosterName(elements.get(0).html().substring(1));
+                Elements targetElements = document.select("div > div > div > a");
+                if(targetElements.size() > 0) {
+                    if(!TextUtils.isEmpty(targetElements.get(0).html()) && targetElements.get(0).html().length() > 2) {
+                        replyQuote.setPosterName(targetElements.get(0).html().substring(1));
                     }
-                    if(elements.get(0).nextSibling() != null
-                            && !TextUtils.isEmpty(elements.get(0).nextSibling().outerHtml())
-                            && elements.get(0).nextSibling().outerHtml().length() > 4) {
-                        replyQuote.setPosterMessage(elements.get(0).nextSibling().outerHtml().substring(3));
+                    Node firstTargetContentSibling = targetElements.get(0).nextSibling();
+                    StringBuilder targetContentBuilder = new StringBuilder();
+                    if(firstTargetContentSibling != null
+                            && !TextUtils.isEmpty(firstTargetContentSibling.outerHtml())
+                            && firstTargetContentSibling.outerHtml().length() > 4) {
+                        targetContentBuilder.append(firstTargetContentSibling.outerHtml().substring(3));
+                        Node nextTargetContentSibling = firstTargetContentSibling.nextSibling();
+                        while (nextTargetContentSibling != null) {
+                            targetContentBuilder.append(nextTargetContentSibling.outerHtml());
+                            nextTargetContentSibling = nextTargetContentSibling.nextSibling();
+                        }
                     }
+                    replyQuote.setPosterMessage(targetContentBuilder.toString());
                 }
-                Elements myMessageElements = document.select("div");
-                if(myMessageElements.size() > 0 && myMessageElements.get(0).nextSibling() != null) {
-                    replyQuote.setMessage(myMessageElements.get(0).nextSibling().outerHtml());
+                Elements divElements = document.select("div");
+                if(divElements.size() > 0) {
+                    Element rootDiv = divElements.get(0);
+                    StringBuilder messageBuilder = new StringBuilder();
+                    Node firstMessageSibling = rootDiv.nextSibling();
+                    if(firstMessageSibling != null) {
+                        messageBuilder.append(firstMessageSibling.outerHtml());
+                        Node nextMessageSibling = firstMessageSibling.nextSibling();
+                        while (nextMessageSibling != null) {
+                            messageBuilder.append(nextMessageSibling.outerHtml());
+                            nextMessageSibling = nextMessageSibling.nextSibling();
+                        }
+                    }
+                    replyQuote.setMessage(messageBuilder.toString());
                 }
                 model.setReplyQuote(replyQuote);
             }
