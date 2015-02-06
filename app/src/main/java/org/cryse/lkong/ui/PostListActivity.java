@@ -383,6 +383,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadSubject = threadInfoModel.getSubject();
         mThreadTitleTextView.setText(mThreadSubject);
         mCollectionAdapter.notifyItemChanged(1);
+        mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
         // Calculate page here.
         int replyCount = mThreadModel.getReplies();

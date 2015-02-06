@@ -1,8 +1,12 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
+import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -31,6 +36,7 @@ import butterknife.InjectView;
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
     private OnItemReplyClickListener mOnItemReplyClickListener;
+    private long mThreadAuthorId;
     public PostListAdapter(Context context, List<PostModel> mItemList) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
@@ -65,7 +71,19 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mMessageTextView.setText(spannedText);
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                viewHolder.mAuthorTextView.setText(postModel.getAuthorName());
+                SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
+                autherNameSpannable.append(postModel.getAuthorName());
+                autherNameSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, postModel.getAuthorName().length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                if(postModel.getAuthorId() == mThreadAuthorId) {
+                    String threadAuthorIndicator = getString(R.string.indicator_thread_author);
+                    autherNameSpannable.append(threadAuthorIndicator);
+                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
+                            postModel.getAuthorName().length(),
+                            postModel.getAuthorName().length() + threadAuthorIndicator.length(),
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                viewHolder.mAuthorTextView.setText(autherNameSpannable);
+
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
                 if(postModel.getRateScore() != 0) {
@@ -73,12 +91,20 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 } else {
                     viewHolder.mRateButton.setText(R.string.button_rate);
                 }
+
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
                         .into(viewHolder.mAuthorAvatarImageView);
             }
+        }
+    }
+
+    public void setThreadAuthorId(long threadAuthorId) {
+        if(threadAuthorId != mThreadAuthorId) {
+            this.mThreadAuthorId = threadAuthorId;
+            notifyDataSetChanged();
         }
     }
 
