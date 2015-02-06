@@ -91,6 +91,15 @@ public class MainActivity extends AbstractThemeableActivity
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
+                        getString(R.string.drawer_item_at_me),
+                        NavigationType.FRAGMENT_AT_ME_MESSAGES,
+                        R.drawable.ic_drawer_timeline,
+                        true,
+                        true
+                )
+        );
+        mNavigationDrawerFragment.getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
                         getString(R.string.drawer_item_settings),
                         NavigationType.ACTIVITY_SETTINGS,
                         R.drawable.ic_drawer_settings,
@@ -112,7 +121,10 @@ public class MainActivity extends AbstractThemeableActivity
                 mNavigation.navigateToFavoritesFragment(null);
                 break;
             case FRAGMENT_TIMELINE:
-                mNavigation.navigateToTimelineFragment(null);
+                mNavigation.navigateToTimelineFragment();
+                break;
+            case FRAGMENT_AT_ME_MESSAGES:
+                mNavigation.navigateToAtMeMessagesFragment();
                 break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity();

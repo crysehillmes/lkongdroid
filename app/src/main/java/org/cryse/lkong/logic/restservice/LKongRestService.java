@@ -15,6 +15,7 @@ import com.squareup.okhttp.Response;
 
 import org.apache.tika.Tika;
 import org.cryse.lkong.logic.ThreadListType;
+import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
@@ -238,7 +239,6 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        saveToSDCard("hava.json", responseString);
         LKPostList lkPostList = gson.fromJson(responseString, LKPostList.class);
         List<PostModel> postList = ModelConverter.toPostModelList(lkPostList);
         clearCookies();
@@ -391,11 +391,11 @@ public class LKongRestService {
         return isFavorite;
     }
 
-    public List<TimelineModel> getTimeline(LKAuthObject authObject, long start) throws Exception {
+    public List<TimelineModel> getTimeline(LKAuthObject authObject, long start, int listType) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
 
-        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=index/");
+        String url = String.format(LKONG_INDEX_URL + TimelineListType.typeToRequestParam(listType));
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
