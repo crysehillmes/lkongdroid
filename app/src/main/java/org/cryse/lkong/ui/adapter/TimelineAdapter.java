@@ -3,10 +3,8 @@ package org.cryse.lkong.ui.adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +77,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
                     int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
                     spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    viewHolder.mSecondaryMessageTextView.setText(secondaryText);
+                    viewHolder.mSecondaryMessageTextView.setText(spanText);
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
 
                     mainContent = timelineModel.getMessage();
