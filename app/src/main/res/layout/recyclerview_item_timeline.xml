@@ -87,7 +87,7 @@
                 android:layout_height="1dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="#DDD"/>
+                android:background="?theme_card_divier_color"/>
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_timeline_secondary_message"
