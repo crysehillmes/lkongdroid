@@ -21,7 +21,7 @@
     <string name="drawer_item_favorites">我的收藏</string>
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
-    <string name="drawer_item_timeline">主页</string>
+    <string name="drawer_item_timeline">信息流</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
     <string name="toast_failure_new_post">回复失败，请重试。</string>
     <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
@@ -39,4 +39,5 @@
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
     <string name="format_forum_item_threads_todayposts">主题数: %1$d \n今日回复: %2$d</string>
     <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
+    <string name="drawer_item_at_me">@我</string>
 </resources>

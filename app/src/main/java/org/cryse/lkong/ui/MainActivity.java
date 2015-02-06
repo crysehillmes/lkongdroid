@@ -93,7 +93,7 @@ public class MainActivity extends AbstractThemeableActivity
                 new NavigationDrawerItem(
                         getString(R.string.drawer_item_at_me),
                         NavigationType.FRAGMENT_AT_ME_MESSAGES,
-                        R.drawable.ic_drawer_timeline,
+                        R.drawable.ic_drawer_message,
                         true,
                         true
                 )
