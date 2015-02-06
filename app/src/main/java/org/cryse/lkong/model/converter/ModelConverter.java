@@ -1,7 +1,6 @@
 package org.cryse.lkong.model.converter;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
@@ -21,7 +20,6 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
@@ -209,13 +207,10 @@ public class ModelConverter {
                             && elements.get(0).nextSibling().outerHtml().length() > 4) {
                         replyQuote.setPosterMessage(elements.get(0).nextSibling().outerHtml().substring(3));
                     }
-                    Log.d("CONVERTER", String.format("posterName: %s", replyQuote.getPosterName()));
-                    Log.d("CONVERTER", String.format("posterMessage: %s", replyQuote.getPosterMessage()));
                 }
                 Elements myMessageElements = document.select("div");
                 if(myMessageElements.size() > 0 && myMessageElements.get(0).nextSibling() != null) {
                     replyQuote.setMessage(myMessageElements.get(0).nextSibling().outerHtml());
-                    Log.d("CONVERTER", String.format("message: %s", replyQuote.getMessage()));
                 }
                 model.setReplyQuote(replyQuote);
             }

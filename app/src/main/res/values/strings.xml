@@ -32,6 +32,9 @@
     <string name="format_post_ordinal">#%1$d</string>
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
     <string name="format_post_reply_title">Reply: %1$s</string>
+    <string name="format_timeline_reply_to_reply">\@%1$s replies in %2$s</string>
+    <string name="format_timeline_create_thread">New Thread:&#160;</string>
+    <string name="format_timeline_reply_to_thread">\@%1$s create a new thread:</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
@@ -49,7 +52,4 @@
     <string name="button_rate">Rate</string>
 
     <string name="placeholder_thread_title">Loading…</string>
-
-
-    <string name="format_timeline_reply_in_thread">&#160; replies in %1$s</string>
 </resources>

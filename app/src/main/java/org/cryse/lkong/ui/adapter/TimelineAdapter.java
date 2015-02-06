@@ -61,16 +61,27 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
 
                     SpannableStringBuilder spanText = new SpannableStringBuilder();
-                    spanText.append("@").append(timelineModel.getReplyQuote().getPosterName());
-                    spanText.setSpan(new StyleSpan(Typeface.BOLD), 0, timelineModel.getReplyQuote().getPosterName().length() + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    spanText.append(getString(R.string.format_timeline_reply_in_thread, timelineModel.getSubject()));
+                    String secondaryText = getString(R.string.format_timeline_reply_to_reply, timelineModel.getReplyQuote().getPosterName(), timelineModel.getSubject());
+                    spanText.append(secondaryText);
+                    int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
+                    int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
+                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     viewHolder.mSecondaryMessageTextView.setText(spanText);
 
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
                     mainContent = timelineModel.getReplyQuote().getMessage();
 
                 } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
-                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+                    viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
+                    SpannableStringBuilder spanText = new SpannableStringBuilder();
+                    String secondaryText = getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
+                    spanText.append(secondaryText);
+                    int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
+                    int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
+                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    viewHolder.mSecondaryMessageTextView.setText(secondaryText);
+                    viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
+
                     mainContent = timelineModel.getMessage();
                 } else if(timelineModel.isThread()) {
                     viewHolder.mSecondaryContainer.setVisibility(View.GONE);
