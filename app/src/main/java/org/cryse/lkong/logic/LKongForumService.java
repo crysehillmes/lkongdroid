@@ -116,16 +116,18 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumModel>> getForumList() {
+    public Observable<List<ForumModel>> getForumList(boolean updateFromWeb) {
         return Observable.create(subscriber -> {
             try {
                 if (mLKongDatabase.isCachedForumList()) {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
                 }
-                List<ForumModel> forumModelList = mLKongRestService.getForumList();
-                if (forumModelList != null)
-                    mLKongDatabase.cacheForumList(forumModelList);
-                subscriber.onNext(forumModelList);
+                if(updateFromWeb) {
+                    List<ForumModel> forumModelList = mLKongRestService.getForumList();
+                    if (forumModelList != null)
+                        mLKongDatabase.cacheForumList(forumModelList);
+                    subscriber.onNext(forumModelList);
+                }
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);

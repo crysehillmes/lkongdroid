@@ -93,6 +93,8 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     @Override
     public void onResume() {
         super.onResume();
+        if(mForumList.size() == 0)
+            getPresenter().getForumList(false);
     }
 
     @Override
@@ -119,7 +121,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getPresenter().getForumList();
+        getPresenter().getForumList(true);
     }
 
     private void initRecyclerView() {
@@ -130,7 +132,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mListAdapter = new ForumListAdapter(getActivity(), mForumList);
         mRecyclerView.setAdapter(mListAdapter);
-        mRecyclerView.setRefreshListener(() -> getPresenter().getForumList());
+        mRecyclerView.setRefreshListener(() -> getPresenter().getForumList(true));
         mRecyclerView.setOnItemClickListener((view, position, id) -> {
             ForumModel item = mListAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), ThreadListActivity.class);
