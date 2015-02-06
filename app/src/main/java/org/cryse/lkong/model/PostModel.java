@@ -26,6 +26,7 @@ public class PostModel implements Parcelable {
     private boolean isAdmin;
     private int ordinal;
     private long tid;
+    private int rateScore;
     private List<PostRate> rateLog;
     private PostAuthor author;
 
@@ -174,6 +175,14 @@ public class PostModel implements Parcelable {
 
     public void setTid(long tid) {
         this.tid = tid;
+    }
+
+    public int getRateScore() {
+        return rateScore;
+    }
+
+    public void setRateScore(int rateScore) {
+        this.rateScore = rateScore;
     }
 
     public List<PostRate> getRateLog() {
@@ -497,6 +506,7 @@ public class PostModel implements Parcelable {
         dest.writeByte(isAdmin ? (byte) 1 : (byte) 0);
         dest.writeInt(this.ordinal);
         dest.writeLong(this.tid);
+        dest.writeInt(this.rateScore);
         dest.writeTypedList(rateLog);
         dest.writeParcelable(this.author, 0);
     }
@@ -522,6 +532,7 @@ public class PostModel implements Parcelable {
         this.isAdmin = in.readByte() != 0;
         this.ordinal = in.readInt();
         this.tid = in.readLong();
+        this.rateScore = in.readInt();
         in.readTypedList(rateLog, PostRate.CREATOR);
         this.author = in.readParcelable(PostAuthor.class.getClassLoader());
     }

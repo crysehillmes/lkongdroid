@@ -68,6 +68,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mAuthorTextView.setText(postModel.getAuthorName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+                if(postModel.getRateScore() != 0) {
+                    viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
+                } else {
+                    viewHolder.mRateButton.setText(R.string.button_rate);
+                }
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .error(R.drawable.ic_default_avatar)
@@ -89,7 +94,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         TextView mMessageTextView;
         @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)
         ImageView mAuthorAvatarImageView;
-
+        @InjectView(R.id.recyclerview_item_post_button_rate)
+        Button mRateButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)
         Button mReplyButton;
 

@@ -139,6 +139,7 @@ public class ModelConverter {
             }
 
             if(item.getRatelog() != null) {
+                int score = 0;
                 List<LKPostRateItem> lkRateLog = item.getRatelog();
                 List<PostModel.PostRate> rateList = new ArrayList<PostModel.PostRate>(lkRateLog.size());
                 for(LKPostRateItem rateItem : lkRateLog) {
@@ -151,8 +152,10 @@ public class ModelConverter {
                             rateItem.getUid(),
                             rateItem.getUsername()
                     );
+                    score = score + rateItem.getScore();
                     rateList.add(newRate);
                 }
+                postModel.setRateScore(score);
                 postModel.setRateLog(rateList);
             }
 
