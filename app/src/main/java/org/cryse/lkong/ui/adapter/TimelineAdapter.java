@@ -1,8 +1,13 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +59,16 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 String mainContent;
                 if(timelineModel.isQuote()) {
                     viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
-                    viewHolder.mSecondaryMessageTextView.setText(timelineModel.getReplyQuote().getPosterName());
-                    viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
 
+                    SpannableStringBuilder spanText = new SpannableStringBuilder();
+                    spanText.append("@").append(timelineModel.getReplyQuote().getPosterName());
+                    spanText.setSpan(new StyleSpan(Typeface.BOLD), 0, timelineModel.getReplyQuote().getPosterName().length() + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spanText.append(getString(R.string.format_timeline_reply_in_thread, timelineModel.getSubject()));
+                    viewHolder.mSecondaryMessageTextView.setText(spanText);
+
+                    viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
                     mainContent = timelineModel.getReplyQuote().getMessage();
+
                 } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
                     viewHolder.mSecondaryContainer.setVisibility(View.GONE);
                     mainContent = timelineModel.getMessage();
@@ -75,7 +86,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                         .setError(R.drawable.image_placeholder);
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, urlImageGetter, new HtmlTagHandler());
                 viewHolder.mMessageTextView.setText(spannedText);
-                viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
                 viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
@@ -94,8 +104,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         TextView mAuthorTextView;
         @InjectView(R.id.recyclerview_item_timeline_textview_dateline)
         TextView mDatelineTextView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_ordinal)
-        TextView mOrdinalTextView;
         @InjectView(R.id.recyclerview_item_timeline_textview_message)
         TextView mMessageTextView;
         @InjectView(R.id.recyclerview_item_timeline_imageview_author_avatar)

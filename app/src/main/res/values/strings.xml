@@ -49,4 +49,7 @@
     <string name="button_rate">Rate</string>
 
     <string name="placeholder_thread_title">Loading…</string>
+
+
+    <string name="format_timeline_reply_in_thread">&#160; replies in %1$s</string>
 </resources>
