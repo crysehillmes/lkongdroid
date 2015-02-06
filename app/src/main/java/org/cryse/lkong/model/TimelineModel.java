@@ -20,6 +20,7 @@ public class TimelineModel implements Parcelable {
     private String id;
     private long sortKey;
     private Date sortKeyDate;
+    private ReplyQuote replyQuote;
 
     public boolean isQuote() {
         return isQuote;
@@ -133,6 +134,90 @@ public class TimelineModel implements Parcelable {
         this.sortKeyDate = sortKeyDate;
     }
 
+    public ReplyQuote getReplyQuote() {
+        return replyQuote;
+    }
+
+    public void setReplyQuote(ReplyQuote replyQuote) {
+        this.replyQuote = replyQuote;
+    }
+
+    public TimelineModel() {
+    }
+
+
+    public static class ReplyQuote implements Parcelable {
+        String posterName; // 原回复的作者
+        String posterMessage; // 原回复的内容
+        String posterDatelineString;
+        String message; // 我对其对的回复
+
+        public String getPosterName() {
+            return posterName;
+        }
+
+        public void setPosterName(String posterName) {
+            this.posterName = posterName;
+        }
+
+        public String getPosterMessage() {
+            return posterMessage;
+        }
+
+        public void setPosterMessage(String posterMessage) {
+            this.posterMessage = posterMessage;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getPosterDatelineString() {
+            return posterDatelineString;
+        }
+
+        public void setPosterDatelineString(String posterDatelineString) {
+            this.posterDatelineString = posterDatelineString;
+        }
+
+        public ReplyQuote() {
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.posterName);
+            dest.writeString(this.posterMessage);
+            dest.writeString(this.posterDatelineString);
+            dest.writeString(this.message);
+        }
+
+        private ReplyQuote(Parcel in) {
+            this.posterName = in.readString();
+            this.posterMessage = in.readString();
+            this.posterDatelineString = in.readString();
+            this.message = in.readString();
+        }
+
+        public static final Creator<ReplyQuote> CREATOR = new Creator<ReplyQuote>() {
+            public ReplyQuote createFromParcel(Parcel source) {
+                return new ReplyQuote(source);
+            }
+
+            public ReplyQuote[] newArray(int size) {
+                return new ReplyQuote[size];
+            }
+        };
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -154,9 +239,7 @@ public class TimelineModel implements Parcelable {
         dest.writeString(this.id);
         dest.writeLong(this.sortKey);
         dest.writeLong(sortKeyDate != null ? sortKeyDate.getTime() : -1);
-    }
-
-    public TimelineModel() {
+        dest.writeParcelable(this.replyQuote, 0);
     }
 
     private TimelineModel(Parcel in) {
@@ -176,9 +259,10 @@ public class TimelineModel implements Parcelable {
         this.sortKey = in.readLong();
         long tmpSortKeyDate = in.readLong();
         this.sortKeyDate = tmpSortKeyDate == -1 ? null : new Date(tmpSortKeyDate);
+        this.replyQuote = in.readParcelable(ReplyQuote.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<TimelineModel> CREATOR = new Parcelable.Creator<TimelineModel>() {
+    public static final Creator<TimelineModel> CREATOR = new Creator<TimelineModel>() {
         public TimelineModel createFromParcel(Parcel source) {
             return new TimelineModel(source);
         }

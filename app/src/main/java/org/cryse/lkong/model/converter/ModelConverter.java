@@ -1,5 +1,6 @@
 package org.cryse.lkong.model.converter;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
@@ -18,7 +19,11 @@ import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -175,7 +180,6 @@ public class ModelConverter {
             model.setUserId(Long.valueOf(item.getUid()));
             model.setUserName(item.getUsername());
             model.setDateline(new Date(Long.valueOf(item.getDateline())* 1000l));
-            model.setMessage(item.getMessage());
             model.setThread(item.isIsthread());
             if(item.isIsthread()) {
                 model.setTid(Long.valueOf(item.getId().substring(7)));
@@ -188,9 +192,35 @@ public class ModelConverter {
                 model.setThreadAuthor(item.getT_author());
                 model.setThreadAuthorId(item.getT_authorid());
             }
+            model.setMessage(item.getMessage());
             model.setSubject(item.getSubject());
             model.setSortKey(item.getSortkey());
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
+            if(item.isIsquote()) {
+                TimelineModel.ReplyQuote replyQuote = new TimelineModel.ReplyQuote();
+                Document document = Jsoup.parseBodyFragment(item.getMessage());;
+                Elements elements = document.select("div > div > div > a");
+                if(elements.size() > 0) {
+                    if(!TextUtils.isEmpty(elements.get(0).html()) && elements.get(0).html().length() > 2) {
+                        replyQuote.setPosterName(elements.get(0).html().substring(1));
+                    }
+                    if(elements.get(0).nextSibling() != null
+                            && !TextUtils.isEmpty(elements.get(0).nextSibling().outerHtml())
+                            && elements.get(0).nextSibling().outerHtml().length() > 4) {
+                        replyQuote.setPosterMessage(elements.get(0).nextSibling().outerHtml().substring(3));
+                    }
+                    Log.d("CONVERTER", String.format("posterName: %s", replyQuote.getPosterName()));
+                    Log.d("CONVERTER", String.format("posterMessage: %s", replyQuote.getPosterMessage()));
+                }
+                Elements myMessageElements = document.select("div");
+                if(myMessageElements.size() > 0 && myMessageElements.get(0).nextSibling() != null) {
+                    replyQuote.setMessage(myMessageElements.get(0).nextSibling().outerHtml());
+                    Log.d("CONVERTER", String.format("message: %s", replyQuote.getMessage()));
+                }
+                model.setReplyQuote(replyQuote);
+            }
+
+
             timelineModels.add(model);
         }
         return timelineModels;

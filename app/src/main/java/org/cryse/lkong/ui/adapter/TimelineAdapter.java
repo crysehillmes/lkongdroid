@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -48,20 +49,38 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             ViewHolder viewHolder = (ViewHolder)holder;
             Object item = getObjectItem(position);
             if(item instanceof TimelineModel) {
-                TimelineModel threadModel = (TimelineModel)item;
+                TimelineModel timelineModel = (TimelineModel)item;
+
+                String mainContent;
+                if(timelineModel.isQuote()) {
+                    viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
+                    viewHolder.mSecondaryMessageTextView.setText(timelineModel.getReplyQuote().getPosterName());
+                    viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
+
+                    mainContent = timelineModel.getReplyQuote().getMessage();
+                } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
+                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+                    mainContent = timelineModel.getMessage();
+                } else if(timelineModel.isThread()) {
+                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+                    mainContent = timelineModel.getMessage();
+                } else {
+                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+                    mainContent = timelineModel.getMessage();
+                }
 
                 UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(threadModel.getMessage(), urlImageGetter, new HtmlTagHandler());
+                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, urlImageGetter, new HtmlTagHandler());
                 viewHolder.mMessageTextView.setText(spannedText);
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                viewHolder.mAuthorTextView.setText(threadModel.getUserName());
-                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(threadModel.getDateline(), mTodayPrefix));
+                viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
+                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
                 Picasso.with(getContext())
-                        .load(ModelConverter.uidToAvatarUrl(threadModel.getUserId()))
+                        .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
                         .into(viewHolder.mAuthorAvatarImageView);
@@ -82,9 +101,18 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         @InjectView(R.id.recyclerview_item_timeline_imageview_author_avatar)
         ImageView mAuthorAvatarImageView;
 
+
+        @InjectView(R.id.secondary_message_container)
+        RelativeLayout mSecondaryContainer;
+        @InjectView(R.id.recyclerview_item_timeline_secondary_message)
+        TextView mSecondaryMessageTextView;
+        @InjectView(R.id.recyclerview_item_timeline_third_message)
+        TextView mThirdMessageTextView;
         public ViewHolder(View v) {
             super(v);
             ButterKnife.inject(this, v);
         }
     }
+
+
 }
