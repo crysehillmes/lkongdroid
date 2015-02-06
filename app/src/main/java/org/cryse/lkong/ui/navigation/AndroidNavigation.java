@@ -1,17 +1,26 @@
 package org.cryse.lkong.ui.navigation;
 
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.MainActivity;
+import org.cryse.lkong.ui.NewPostActivity;
+import org.cryse.lkong.ui.NewThreadActivity;
+import org.cryse.lkong.ui.SignInActivity;
+import org.cryse.lkong.ui.TimelineFragment;
+import org.cryse.lkong.utils.DataContract;
 
 public class AndroidNavigation {
     private LKongApplication mApplication;
@@ -72,7 +81,52 @@ public class AndroidNavigation {
         }
     }
 
+    public void navigateToTimelineFragment() {
+        if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_TIMELINE);
+            Fragment fragment = TimelineFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
+    public void navigateToAtMeMessagesFragment() {
+        if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
+            Fragment fragment = TimelineFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
     public void navigateToSettingsActivity() {
 
+    }
+
+    public void navigateToSignInActivity(Context context) {
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
+    }
+
+    public void openActivityForReplyToThread(Activity activity, long threadId, String threadSubject) {
+        Intent intent = new Intent(activity, NewPostActivity.class);
+        intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
+        intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, activity.getString(R.string.format_post_reply_title, threadSubject));
+        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+    }
+
+    public void openActivityForReplyToPost(Activity activity, long threadId, String postAuthorName, long postId) {
+        Intent intent = new Intent(activity, NewPostActivity.class);
+        intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
+        intent.putExtra(DataContract.BUNDLE_POST_ID, postId);
+        intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, activity.getString(R.string.format_post_reply_title, postAuthorName));
+        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+    }
+
+    public void openActivityForNewThread(Activity activity, long forumId, String forumName) {
+        Intent intent = new Intent(activity, NewThreadActivity.class);
+        intent.putExtra(DataContract.BUNDLE_FORUM_ID, forumId);
+        intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
+        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_THREAD);
     }
 }

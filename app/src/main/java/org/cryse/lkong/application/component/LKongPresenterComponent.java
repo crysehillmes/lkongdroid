@@ -3,11 +3,15 @@ package org.cryse.lkong.application.component;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
+import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.NavigationDrawerFragment;
+import org.cryse.lkong.ui.NewPostActivity;
+import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.ThreadListActivity;
+import org.cryse.lkong.ui.TimelineFragment;
 
 import javax.inject.Singleton;
 
@@ -21,4 +25,8 @@ public interface LKongPresenterComponent {
     void inject(ForumListFragment fragment);
     void inject(ThreadListActivity activity);
     void inject(PostListActivity activity);
+    void inject(NewPostActivity activity);
+    void inject(NewThreadActivity activity);
+    void inject(FavoritesFragment fragment);
+    void inject(TimelineFragment fragment);
 }

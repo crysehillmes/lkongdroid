@@ -18,11 +18,12 @@
         <item name="theme_float_label_layout_text_appearence">@style/TextAppearance.LKongDroid.FloatLabel.Light</item>
         <item name="theme_float_label_layout_selector">@color/float_label_selector_light</item>
         <item name="theme_card_bg_color">#FFFFFF</item>
+        <item name="theme_card_divier_color">#DDDDDD</item>
 
         <item name="theme_text_color_primary">@color/text_color_primary</item>
         <item name="theme_text_color_secondary">@color/text_color_secondary</item>
 
-        <item name="theme_arrow_backward_drawable">@drawable/ic_arrow_back_black</item>
-        <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_black</item>
+        <item name="theme_arrow_backward_drawable">@drawable/ic_arrow_back_white</item>
+        <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_white</item>
     </style>
 </resources>

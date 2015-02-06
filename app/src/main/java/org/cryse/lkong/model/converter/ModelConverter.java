@@ -1,5 +1,7 @@
 package org.cryse.lkong.model.converter;
 
+import android.text.TextUtils;
+
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKPostItem;
@@ -7,15 +9,25 @@ import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKPostUser;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
+import org.cryse.lkong.logic.restservice.model.LKTimelineData;
+import org.cryse.lkong.logic.restservice.model.LKTimelineItem;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -40,10 +52,11 @@ public class ModelConverter {
         return userInfoModel;
     }
 
-    public static List<ForumThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList) {
-        List<ForumThreadModel> threadList = new ArrayList<ForumThreadModel>();
+    public static List<ThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
+        List<ThreadModel> threadList = new ArrayList<ThreadModel>();
+        ThreadModel nextSortKeyItem = null;
         for(LKForumThreadItem item : lkForumThreadList.getData()) {
-            ForumThreadModel threadModel = new ForumThreadModel();
+            ThreadModel threadModel = new ThreadModel();
             threadModel.setSortKey(item.getSortkey());
             threadModel.setUserName(item.getUsername());
             threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));
@@ -55,7 +68,15 @@ public class ModelConverter {
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
             threadModel.setSubject(item.getSubject());
-            threadList.add(threadModel);
+            threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
+            if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
+                nextSortKeyItem = threadModel;
+            else
+                threadList.add(threadModel);
+        }
+        if(checkNextTimeSortKey && nextSortKeyItem != null) {
+            Collections.sort(threadList, new ThreadModelCompareBySortKeyTime());
+            threadList.add(nextSortKeyItem);
         }
         return threadList;
     }
@@ -89,6 +110,7 @@ public class ModelConverter {
             //postModel.setAuthor(item.getAuthor());
             postModel.setAuthorId(item.getAuthorid());
             postModel.setAuthorName(item.getAuthor());
+            postModel.setFavorite(item.isFavorite());
             postModel.setDateline(item.getDateline());
             postModel.setFid(item.getFid());
             postModel.setFirst(item.getFirst() != 0);
@@ -100,6 +122,7 @@ public class ModelConverter {
             postModel.setPid(Long.parseLong(item.getPid()));
             //postModel.setRateLog();
             postModel.setSortKey(item.getSortkey());
+            postModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
             postModel.setStatus(item.getStatus());
             postModel.setTid(item.getTid());
             postModel.setTsAdmin(item.isTsadmin());
@@ -123,6 +146,7 @@ public class ModelConverter {
             }
 
             if(item.getRatelog() != null) {
+                int score = 0;
                 List<LKPostRateItem> lkRateLog = item.getRatelog();
                 List<PostModel.PostRate> rateList = new ArrayList<PostModel.PostRate>(lkRateLog.size());
                 for(LKPostRateItem rateItem : lkRateLog) {
@@ -135,8 +159,10 @@ public class ModelConverter {
                             rateItem.getUid(),
                             rateItem.getUsername()
                     );
+                    score = score + rateItem.getScore();
                     rateList.add(newRate);
                 }
+                postModel.setRateScore(score);
                 postModel.setRateLog(rateList);
             }
 
@@ -151,6 +177,77 @@ public class ModelConverter {
             itemList.add(postModel);
         }
         return itemList;
+    }
+
+    public static List<TimelineModel> toTimelineModel(LKTimelineData timelineData) {
+        List<TimelineModel> timelineModels = new ArrayList<>(timelineData.getData().size());
+        for(LKTimelineItem item : timelineData.getData()) {
+            TimelineModel model = new TimelineModel();
+            model.setId(item.getId());
+            model.setQuote(item.isIsquote());
+            model.setUserId(Long.valueOf(item.getUid()));
+            model.setUserName(item.getUsername());
+            model.setDateline(new Date(Long.valueOf(item.getDateline())* 1000l));
+            model.setThread(item.isIsthread());
+            if(item.isIsthread()) {
+                model.setTid(Long.valueOf(item.getId().substring(7)));
+                model.setThreadReplyCount(item.getReplynum());
+                model.setThreadAuthor(item.getUsername());
+                model.setThreadAuthorId(Long.valueOf(item.getUid()));
+            } else {
+                model.setTid(Long.valueOf(item.getTid()));
+                model.setThreadReplyCount(item.getT_replynum());
+                model.setThreadAuthor(item.getT_author());
+                model.setThreadAuthorId(item.getT_authorid());
+            }
+            model.setMessage(item.getMessage());
+            model.setSubject(item.getSubject());
+            model.setSortKey(item.getSortkey());
+            model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
+            if(item.isIsquote()) {
+                TimelineModel.ReplyQuote replyQuote = new TimelineModel.ReplyQuote();
+                Document document = Jsoup.parseBodyFragment(item.getMessage());;
+                Elements targetElements = document.select("div > div > div > a");
+                if(targetElements.size() > 0) {
+                    if(!TextUtils.isEmpty(targetElements.get(0).html()) && targetElements.get(0).html().length() > 2) {
+                        replyQuote.setPosterName(targetElements.get(0).html().substring(1));
+                    }
+                    Node firstTargetContentSibling = targetElements.get(0).nextSibling();
+                    StringBuilder targetContentBuilder = new StringBuilder();
+                    if(firstTargetContentSibling != null
+                            && !TextUtils.isEmpty(firstTargetContentSibling.outerHtml())
+                            && firstTargetContentSibling.outerHtml().length() > 4) {
+                        targetContentBuilder.append(firstTargetContentSibling.outerHtml().substring(3));
+                        Node nextTargetContentSibling = firstTargetContentSibling.nextSibling();
+                        while (nextTargetContentSibling != null) {
+                            targetContentBuilder.append(nextTargetContentSibling.outerHtml());
+                            nextTargetContentSibling = nextTargetContentSibling.nextSibling();
+                        }
+                    }
+                    replyQuote.setPosterMessage(targetContentBuilder.toString());
+                }
+                Elements divElements = document.select("div");
+                if(divElements.size() > 0) {
+                    Element rootDiv = divElements.get(0);
+                    StringBuilder messageBuilder = new StringBuilder();
+                    Node firstMessageSibling = rootDiv.nextSibling();
+                    if(firstMessageSibling != null) {
+                        messageBuilder.append(firstMessageSibling.outerHtml());
+                        Node nextMessageSibling = firstMessageSibling.nextSibling();
+                        while (nextMessageSibling != null) {
+                            messageBuilder.append(nextMessageSibling.outerHtml());
+                            nextMessageSibling = nextMessageSibling.nextSibling();
+                        }
+                    }
+                    replyQuote.setMessage(messageBuilder.toString());
+                }
+                model.setReplyQuote(replyQuote);
+            }
+
+
+            timelineModels.add(model);
+        }
+        return timelineModels;
     }
 
     public static String uidToAvatarUrl(long uid) {
@@ -171,5 +268,12 @@ public class ModelConverter {
                 fidString.substring(4, 6)
         );
         return iconUrl;
+    }
+
+    public static class ThreadModelCompareBySortKeyTime implements Comparator<ThreadModel> {
+
+        public int compare(ThreadModel o1, ThreadModel o2) {
+            return o1.getSortKeyTime().compareTo(o2.getSortKeyTime());
+        }
     }
 }

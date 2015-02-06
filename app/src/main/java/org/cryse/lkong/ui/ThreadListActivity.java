@@ -11,16 +11,18 @@ import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.logic.ThreadListType;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
-import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ThreadListView;
+import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -40,12 +42,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Inject
     ThreadListPresenter mPresenter;
 
+    @Inject
+    AndroidNavigation mAndroidNavigation;
+
+    @Inject
+    UserAccountManager mUserAccountManager;
+
     @InjectView(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
+    @InjectView(R.id.fab)
+    FloatingActionButtonEx mFab;
 
     ThreadListAdapter mCollectionAdapter;
 
-    List<ForumThreadModel> mItemList = new ArrayList<ForumThreadModel>();
+    List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
 
     private long mForumId = -1;
     private String mForumName = "";
@@ -90,13 +100,34 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ForumThreadModel item = mCollectionAdapter.getItem(position);
+            ThreadModel item = mCollectionAdapter.getItem(position);
             Intent intent = new Intent(this, PostListActivity.class);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
             intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
             startActivity(intent);
         });
+        mFab.attachToSuperRecyclerView(mThreadCollectionView);
+        mFab.setOnClickListener(view -> {
+            if (mUserAccountManager.isSignedIn()) {
+                mAndroidNavigation.openActivityForNewThread(this, mForumId, mForumName);
+            } else {
+                mAndroidNavigation.navigateToSignInActivity(this);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == DataContract.REQUEST_ID_NEW_THREAD) {
+            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
+                long tid = data.getLongExtra(DataContract.BUNDLE_THREAD_ID, 0);
+                Intent intent = new Intent(this, PostListActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
@@ -104,7 +135,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         super.onPostCreate(savedInstanceState);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<ForumThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
+            ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
@@ -177,7 +208,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     }
 
     @Override
-    public void showThreadList(List<ForumThreadModel> threadList, boolean isLoadMore) {
+    public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
         if(isLoadMore) {
             if (threadList.size() == 0) isNoMore = true;
             // isLoadingMore = false;
@@ -196,7 +227,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }*/
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            ForumThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
+            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;

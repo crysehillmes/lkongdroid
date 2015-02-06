@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.DimenRes;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -135,9 +136,18 @@ public class UIUtils {
         return value;
     }
 
+    public static int getSpDimensionPixelSize(Context context, @DimenRes int resId) {
+        return sp2px(context, context.getResources().getDimension(resId));
+    }
+
     public static int dp2px(Context context, float dp){
         float scale = context.getResources().getDisplayMetrics().density;
         return (int)(dp * scale + 0.5f);
+    }
+
+    public static int sp2px(Context context, float sp){
+        float scale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int)(sp * scale + 0.5f);
     }
 
     public static class InsetsValue {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,28 +12,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay"/>
-
-        <LinearLayout
-            android:id="@+id/activity_post_list_header_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="top"
-            android:layout_marginLeft="0dp"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.Toolbar
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/my_awesome_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="?colorPrimary"
-                android:minHeight="?actionBarSize"
-                android:elevation="@dimen/toolbar_elevation"
-                app:popupTheme="?theme_toolbar_popup_theme"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        app:srv_scrollbarStyle="outsideOverlay" />
 
 
-        </LinearLayout>
-</FrameLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_awesome_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:minHeight="?actionBarSize"
+        app:popupTheme="?theme_toolbar_popup_theme"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <org.cryse.lkong.widget.FloatingActionButtonEx
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_fab_action_create"
+        app:fab_colorNormal="?colorPrimary"
+        app:fab_colorPressed="?colorPrimaryDark"
+        app:fab_colorRipple="?colorAccent" />
+
+    <include
+        android:id="@+id/activity_post_list_page_control"
+        layout="@layout/widget_pager_control"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:layout_toLeftOf="@+id/fab"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
+</RelativeLayout>

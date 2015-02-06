@@ -8,4 +8,5 @@ import java.util.List;
 public interface PostListView extends ContentView{
     public void showPostList(int page, List<PostModel> posts);
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel);
+    public void onAddOrRemoveFavoriteComplete(boolean isFavorite);
 }

@@ -10,10 +10,12 @@ import java.util.List;
 public class PostModel implements Parcelable {
     private long fid;
     private long sortKey;
+    private Date sortKeyTime;
     private Date dateline;
     private String message;
     private String authorName;
     private long authorId;
+    private boolean favorite;
     private boolean isMe; // Gson add int to boolean converter
     private boolean notGroup; // Gson add int to boolean converter
     private long pid; // GSON add String to long converter
@@ -24,31 +26,11 @@ public class PostModel implements Parcelable {
     private boolean isAdmin;
     private int ordinal;
     private long tid;
+    private int rateScore;
     private List<PostRate> rateLog;
     private PostAuthor author;
 
     public PostModel() {
-    }
-
-    public PostModel(long fid, long sortKey, Date dateline, String message, String authorName, long authorId, boolean isMe, boolean notGroup, long pid, boolean first, int status, String id, boolean tsAdmin, boolean isAdmin, int ordinal, long tid, List<PostRate> rateLog, PostAuthor author) {
-        this.fid = fid;
-        this.sortKey = sortKey;
-        this.dateline = dateline;
-        this.message = message;
-        this.authorName = authorName;
-        this.authorId = authorId;
-        this.isMe = isMe;
-        this.notGroup = notGroup;
-        this.pid = pid;
-        this.first = first;
-        this.status = status;
-        this.id = id;
-        this.tsAdmin = tsAdmin;
-        this.isAdmin = isAdmin;
-        this.ordinal = ordinal;
-        this.tid = tid;
-        this.rateLog = rateLog;
-        this.author = author;
     }
 
     public long getFid() {
@@ -65,6 +47,14 @@ public class PostModel implements Parcelable {
 
     public void setSortKey(long sortKey) {
         this.sortKey = sortKey;
+    }
+
+    public Date getSortKeyTime() {
+        return sortKeyTime;
+    }
+
+    public void setSortKeyTime(Date sortKeyTime) {
+        this.sortKeyTime = sortKeyTime;
     }
 
     public Date getDateline() {
@@ -97,6 +87,14 @@ public class PostModel implements Parcelable {
 
     public void setAuthorId(long authorId) {
         this.authorId = authorId;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     public boolean isMe() {
@@ -177,6 +175,14 @@ public class PostModel implements Parcelable {
 
     public void setTid(long tid) {
         this.tid = tid;
+    }
+
+    public int getRateScore() {
+        return rateScore;
+    }
+
+    public void setRateScore(int rateScore) {
+        this.rateScore = rateScore;
     }
 
     public List<PostRate> getRateLog() {
@@ -484,10 +490,12 @@ public class PostModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.fid);
         dest.writeLong(this.sortKey);
+        dest.writeLong(sortKeyTime != null ? sortKeyTime.getTime() : -1);
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
         dest.writeString(this.message);
         dest.writeString(this.authorName);
         dest.writeLong(this.authorId);
+        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
         dest.writeByte(isMe ? (byte) 1 : (byte) 0);
         dest.writeByte(notGroup ? (byte) 1 : (byte) 0);
         dest.writeLong(this.pid);
@@ -498,6 +506,7 @@ public class PostModel implements Parcelable {
         dest.writeByte(isAdmin ? (byte) 1 : (byte) 0);
         dest.writeInt(this.ordinal);
         dest.writeLong(this.tid);
+        dest.writeInt(this.rateScore);
         dest.writeTypedList(rateLog);
         dest.writeParcelable(this.author, 0);
     }
@@ -505,11 +514,14 @@ public class PostModel implements Parcelable {
     private PostModel(Parcel in) {
         this.fid = in.readLong();
         this.sortKey = in.readLong();
+        long tmpSortKeyTime = in.readLong();
+        this.sortKeyTime = tmpSortKeyTime == -1 ? null : new Date(tmpSortKeyTime);
         long tmpDateline = in.readLong();
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
         this.message = in.readString();
         this.authorName = in.readString();
         this.authorId = in.readLong();
+        this.favorite = in.readByte() != 0;
         this.isMe = in.readByte() != 0;
         this.notGroup = in.readByte() != 0;
         this.pid = in.readLong();
@@ -520,11 +532,12 @@ public class PostModel implements Parcelable {
         this.isAdmin = in.readByte() != 0;
         this.ordinal = in.readInt();
         this.tid = in.readLong();
+        this.rateScore = in.readInt();
         in.readTypedList(rateLog, PostRate.CREATOR);
         this.author = in.readParcelable(PostAuthor.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<PostModel> CREATOR = new Parcelable.Creator<PostModel>() {
+    public static final Creator<PostModel> CREATOR = new Creator<PostModel>() {
         public PostModel createFromParcel(Parcel source) {
             return new PostModel(source);
         }

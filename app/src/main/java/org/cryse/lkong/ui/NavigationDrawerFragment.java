@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -27,9 +26,12 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.presenter.UserAccountPresenter;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
@@ -97,13 +99,17 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     LongPreference mDefaultAccountUid;
 
     @Inject
+    AndroidNavigation mAndroidNavigation;
+    @Inject
     UserAccountPresenter mUserAccountPresenter;
+    @Inject
+    UserAccountManager mUserAccountManager;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    UserAccountEntity mCurrentAccount;
+    UserAccountEntity mCurrentAccount = null;
 
     /**
      * Used to post delay navigation action to improve UX
@@ -157,8 +163,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
         ButterKnife.inject(this, rootView);
         mAccountAvatarImageView.setOnClickListener(view -> {
             if(mCurrentAccount == null) {
-                Intent intent = new Intent(getActivity(), SignInActivity.class);
-                startActivity(intent);
+                mAndroidNavigation.navigateToSignInActivity(getActivity());
             } else {
                 // TODO: Go to profile view
             }
@@ -379,15 +384,6 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     @Override
     public void showUserAccount(UserAccountEntity userAccount) {
         if(userAccount != null) {
-            mCurrentAccount = userAccount;
-            mAccountUserNameTextView.setText(userAccount.getUserName());
-            Picasso.with(getActivity())
-                    .load(userAccount.getUserAvatar())
-                    .error(R.drawable.ic_default_avatar)
-                    .placeholder(R.drawable.ic_default_avatar)
-                    .into(mAccountAvatarImageView);
-            String secondInfoText = userAccount.getEmail();
-            mAccountEmailTextView.setText(secondInfoText);
         }
     }
 
@@ -409,9 +405,18 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     public void getUserInfo() {
         // Get from local first
         // Get from web if failed.
-        long uid = mDefaultAccountUid.get();
-        if(uid >= 0) {
-            getUserAccountPresenter().getUserAccount(uid);
+        if(mUserAccountManager.isSignedIn()) {
+            mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+            if(mCurrentAccount != null) {
+                mAccountUserNameTextView.setText(mCurrentAccount.getUserName());
+                Picasso.with(getActivity())
+                        .load(mCurrentAccount.getUserAvatar())
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(mAccountAvatarImageView);
+                String secondInfoText = mCurrentAccount.getEmail();
+                mAccountEmailTextView.setText(secondInfoText);
+            }
         }
     }
 

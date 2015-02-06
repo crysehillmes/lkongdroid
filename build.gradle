@@ -42,7 +42,7 @@ def getBranchPrefix = { ->
     } else if (branchName.startsWith("support")) {
         return "support"
     } else {
-        throw new GradleException('Not a pre-defined branch.')
+        return "temp"
     }
 }
 

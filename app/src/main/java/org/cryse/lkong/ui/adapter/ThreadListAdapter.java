@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.model.ForumThreadModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -20,9 +20,9 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ThreadListAdapter extends RecyclerViewBaseAdapter<ForumThreadModel> {
+public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private final String mTodayPrefix;
-    public ThreadListAdapter(Context context, List<ForumThreadModel> mItemList) {
+    public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
     }
@@ -41,8 +41,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ForumThreadModel>
         if(holder instanceof ViewHolder) {
             ViewHolder viewHolder = (ViewHolder)holder;
             Object item = getObjectItem(position);
-            if(item instanceof ForumThreadModel) {
-                ForumThreadModel threadModel = (ForumThreadModel)item;
+            if(item instanceof ThreadModel) {
+                ThreadModel threadModel = (ThreadModel)item;
 
                 viewHolder.mThreadTitleTextView.setText(android.text.Html.fromHtml(threadModel.getSubject()));
                 viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());

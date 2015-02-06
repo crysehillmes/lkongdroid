@@ -1,10 +1,12 @@
 package org.cryse.lkong.ui;
 
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -18,7 +20,7 @@ import javax.inject.Inject;
 
 public class MainActivity extends AbstractThemeableActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+    boolean mDoubleBackToExitPressedOnce = false;
     @Inject
     AndroidNavigation mNavigation;
 
@@ -73,6 +75,24 @@ public class MainActivity extends AbstractThemeableActivity
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
+                        getString(R.string.drawer_item_at_me),
+                        NavigationType.FRAGMENT_AT_ME_MESSAGES,
+                        R.drawable.ic_drawer_message,
+                        true,
+                        true
+                )
+        );
+        mNavigationDrawerFragment.getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
+                        getString(R.string.drawer_item_timeline),
+                        NavigationType.FRAGMENT_TIMELINE,
+                        R.drawable.ic_drawer_timeline,
+                        true,
+                        true
+                )
+        );
+        mNavigationDrawerFragment.getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
                         getString(R.string.drawer_item_favorites),
                         NavigationType.FRAGMENT_FAVORITES,
                         R.drawable.ic_drawer_favorites,
@@ -101,6 +121,12 @@ public class MainActivity extends AbstractThemeableActivity
                 break;
             case FRAGMENT_FAVORITES:
                 mNavigation.navigateToFavoritesFragment(null);
+                break;
+            case FRAGMENT_TIMELINE:
+                mNavigation.navigateToTimelineFragment();
+                break;
+            case FRAGMENT_AT_ME_MESSAGES:
+                mNavigation.navigateToAtMeMessagesFragment();
                 break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity();
@@ -143,5 +169,18 @@ public class MainActivity extends AbstractThemeableActivity
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDoubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.mDoubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.toast_double_tap_to_exit), Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(() -> mDoubleBackToExitPressedOnce = false, 2000);
     }
 }

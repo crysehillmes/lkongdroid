@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.SignInResult;
@@ -34,6 +35,9 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     @Inject
     @PrefsDefaultAccountUid
     LongPreference mDefaultAccountUid;
+    @Inject
+    UserAccountManager mUserAccountManager;
+
 
     @InjectView(R.id.edit_email)
     EditText mEmailEditText;
@@ -135,6 +139,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         if(userAccount != null) {
             Toast.makeText(this, "SignIn successfully.", Toast.LENGTH_SHORT).show();
             mDefaultAccountUid.set(userAccount.getUserId());
+            mUserAccountManager.refresh();
         }
         setViewStatus(false);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

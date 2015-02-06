@@ -30,10 +30,10 @@ public class ForumListPresenter implements BasePresenter<ForumListView> {
         this.mView = new EmptyForumListView();
     }
 
-    public void getForumList() {
+    public void getForumList(boolean updateFromWeb) {
         SubscriptionUtils.checkAndUnsubscribe(mForumListSubscription);
         mView.setLoading(true);
-        mForumListSubscription = mLKongForumService.getForumList()
+        mForumListSubscription = mLKongForumService.getForumList(updateFromWeb)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
