@@ -82,6 +82,15 @@ public class MainActivity extends AbstractThemeableActivity
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
+                        getString(R.string.drawer_item_timeline),
+                        NavigationType.FRAGMENT_TIMELINE,
+                        R.drawable.ic_drawer_timeline,
+                        true,
+                        true
+                )
+        );
+        mNavigationDrawerFragment.getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
                         getString(R.string.drawer_item_settings),
                         NavigationType.ACTIVITY_SETTINGS,
                         R.drawable.ic_drawer_settings,
@@ -101,6 +110,9 @@ public class MainActivity extends AbstractThemeableActivity
                 break;
             case FRAGMENT_FAVORITES:
                 mNavigation.navigateToFavoritesFragment(null);
+                break;
+            case FRAGMENT_TIMELINE:
+                mNavigation.navigateToTimelineFragment(null);
                 break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity();

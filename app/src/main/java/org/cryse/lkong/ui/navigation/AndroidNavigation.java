@@ -18,6 +18,7 @@ import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.SignInActivity;
+import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.utils.DataContract;
 
 public class AndroidNavigation {
@@ -75,6 +76,13 @@ public class AndroidNavigation {
     public void navigateToFavoritesFragment(Bundle args) {
         if(isAttachToMainActivity()) {
             Fragment fragment = FavoritesFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
+    public void navigateToTimelineFragment(Bundle args) {
+        if(isAttachToMainActivity()) {
+            Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }
     }
