@@ -257,10 +257,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<TimelineModel>> getTimeline(LKAuthObject authObject, long start) {
+    public Observable<List<TimelineModel>> getTimeline(LKAuthObject authObject, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                List<TimelineModel> result = mLKongRestService.getTimeline(authObject, start);
+                List<TimelineModel> result = mLKongRestService.getTimeline(authObject, start, listType);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

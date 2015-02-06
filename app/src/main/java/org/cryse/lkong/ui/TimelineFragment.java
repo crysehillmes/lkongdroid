@@ -15,6 +15,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
@@ -35,10 +36,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class TimelineFragment extends MainActivityFragment implements TimelineView {
+    public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
+    private int mListType;
     @Inject
     TimelinePresenter mPresenter;
 
@@ -74,6 +77,10 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
      public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         injectThis();
+        Bundle args = getArguments();
+        if(args == null)
+            throw new IllegalArgumentException();
+        mListType = args.getInt(BUNDLE_LIST_TYPE);
     }
 
     @Nullable
@@ -92,10 +99,10 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCollectionAdapter = new TimelineAdapter(getActivity(), mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
-        mCollectionView.setRefreshListener(() -> getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), false));
+        mCollectionView.setRefreshListener(() -> getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mListType, false));
         mCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
+                getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mLastItemSortKey, mListType, true);
             } else {
                 mCollectionView.setLoadingMore(false);
                 mCollectionView.hideMoreProgress();
@@ -117,7 +124,13 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Override
     public String getFragmentTitle() {
-        return getString(R.string.drawer_item_timeline);
+        if(mListType == TimelineListType.TYPE_AT_ME) {
+            return getString(R.string.drawer_item_at_me);
+        } else if(mListType == TimelineListType.TYPE_TIMELINE) {
+            return getString(R.string.drawer_item_timeline);
+        } else {
+            throw new IllegalStateException("Wrong list type.");
+        }
     }
 
     @Override
@@ -138,7 +151,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         } else {
             mCollectionView.getSwipeToRefresh().measure(1,1);
             mCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), false);
+            getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mListType, false);
         }
 
         mEventBus.toObservable().subscribe(event -> {

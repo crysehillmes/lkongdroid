@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.MainActivity;
@@ -80,8 +81,19 @@ public class AndroidNavigation {
         }
     }
 
-    public void navigateToTimelineFragment(Bundle args) {
+    public void navigateToTimelineFragment() {
         if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_TIMELINE);
+            Fragment fragment = TimelineFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
+    public void navigateToAtMeMessagesFragment() {
+        if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
             Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }

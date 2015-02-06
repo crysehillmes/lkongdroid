@@ -27,14 +27,14 @@ public class TimelinePresenter implements BasePresenter<TimelineView> {
         this.mView = new EmptyTimelineView();
     }
 
-    public void loadTimeline(LKAuthObject authObject, boolean loadingMore) {
-        loadTimeline(authObject, -1, loadingMore);
+    public void loadTimeline(LKAuthObject authObject, int listType, boolean loadingMore) {
+        loadTimeline(authObject, -1, listType, loadingMore);
     }
 
-    public void loadTimeline(LKAuthObject authObject, long start, boolean loadingMore) {
+    public void loadTimeline(LKAuthObject authObject, long start, int listType, boolean loadingMore) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadTimelineSubscription);
         setLoadingStatus(loadingMore, true);
-        mLoadTimelineSubscription = mLKongForumService.getTimeline(authObject, start)
+        mLoadTimelineSubscription = mLKongForumService.getTimeline(authObject, start, listType)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
