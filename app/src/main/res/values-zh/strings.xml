@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">龙的天空</string>
+    <string name="account_email_hint">注册邮箱</string>
+    <string name="account_password_hint">密码</string>
+    <string name="action_dark_theme">夜间模式</string>
+    <string name="action_insert_emoji">插入表情</string>
+    <string name="action_insert_image">插入图片</string>
+    <string name="action_light_theme">日间模式</string>
+    <string name="action_send_post">发送</string>
+    <string name="action_settings">设置</string>
+    <string name="action_thread_add_favorite">收藏</string>
+    <string name="action_thread_remove_favorite">移除收藏</string>
+    <string name="activity_title_post_list">查看主题</string>
+    <string name="button_rate">评分</string>
+    <string name="button_reply">回复</string>
+    <string name="datetime_today">今天</string>
+    <string name="dialog_choose_emoticon_title">选择表情：</string>
+    <string name="dialog_new_post_sending">正在发送…</string>
+    <string name="dialog_post_list_choose_page">跳转至</string>
+    <string name="drawer_item_favorites">我的收藏</string>
+    <string name="drawer_item_forum_list">板块列表</string>
+    <string name="drawer_item_settings">设置</string>
+    <string name="drawer_item_timeline">主页</string>
+    <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
+    <string name="toast_failure_new_post">回复失败，请重试。</string>
+    <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
+    <string name="toast_failure_get_user_info">获取用户信息失败。</string>
+    <string name="toast_failure_get_forum_list">刷新板块列表失败。</string>
+    <string name="placeholder_thread_title">加载中…</string>
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+    <string name="format_timeline_reply_to_thread">\@%1$s 发表新主题:</string>
+    <string name="format_timeline_reply_to_reply">\@%1$s 在 %2$s 回复</string>
+    <string name="format_timeline_create_thread">新主题：&#160;</string>
+    <string name="format_post_reply_title">回复: %1$s</string>
+    <string name="format_post_ordinal">%1$d 楼</string>
+    <string name="format_post_list_page_indicator_detail">%1$d 页 (%2$d - %3$d)</string>
+    <string name="format_post_list_page_indicator">%1$d / %2$d</string>
+    <string name="format_forum_item_threads_todayposts">主题数: %1$d \n今日回复: %2$d</string>
+</resources>
