@@ -24,6 +24,8 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +72,10 @@ public class ModelConverter {
             else
                 threadList.add(threadModel);
         }
-        if(checkNextTimeSortKey && nextSortKeyItem != null) threadList.add(nextSortKeyItem);
+        if(checkNextTimeSortKey && nextSortKeyItem != null) {
+            Collections.sort(threadList, new ThreadModelCompareBySortKeyTime());
+            threadList.add(nextSortKeyItem);
+        }
         return threadList;
     }
 
@@ -242,5 +247,12 @@ public class ModelConverter {
                 fidString.substring(4, 6)
         );
         return iconUrl;
+    }
+
+    public static class ThreadModelCompareBySortKeyTime implements Comparator<ThreadModel> {
+
+        public int compare(ThreadModel o1, ThreadModel o2) {
+            return o1.getSortKeyTime().compareTo(o2.getSortKeyTime());
+        }
     }
 }

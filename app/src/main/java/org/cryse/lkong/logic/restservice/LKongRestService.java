@@ -366,11 +366,9 @@ public class LKongRestService {
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         if(lKThreadList.getData() == null || lKThreadList.getData().size() == 0)
             return new ArrayList<ThreadModel>();
-        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
-        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, true);
-        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
+        List<ThreadModel> favorites = ModelConverter.toForumThreadModel(lKThreadList, true);
         clearCookies();
-        return threadList;
+        return favorites;
     }
 
     public Boolean addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) throws Exception {
@@ -407,14 +405,11 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
-        saveToSDCard("timeline", responseString);
         LKTimelineData lkTimelineData = gson.fromJson(responseString, LKTimelineData.class);
         if(lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
             return new ArrayList<TimelineModel>();
-        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lkTimelineData.getData().size()), LOG_TAG);
         List<TimelineModel> timelineList = ModelConverter.toTimelineModel(lkTimelineData);
         Collections.reverse(timelineList);
-        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", timelineList.size()), LOG_TAG);
         clearCookies();
         return timelineList;
     }
