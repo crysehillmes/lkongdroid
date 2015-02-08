@@ -179,14 +179,16 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         mContentEditText.clearFocus();
         String title = mTitleEditText.getText().toString();
         Spannable spannableContent = mContentEditText.getText();
-        if(spannableContent != null && spannableContent.length() > 0) {
+        if(spannableContent != null && spannableContent.length() > 0 && !TextUtils.isEmpty(title)) {
             if (mSendServiceBinder != null) {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
                 // finishCompat();
             }
+        } else if(TextUtils.isEmpty(title)){
+            ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
         } else {
-            ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
+            ToastProxy.showToast(this, getString(R.string.toast_error_content_empty), ToastSupport.TOAST_ALERT);
         }
     }
 

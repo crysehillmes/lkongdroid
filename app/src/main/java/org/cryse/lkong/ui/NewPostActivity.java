@@ -187,7 +187,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 // finishCompat();
             }
         } else {
-            ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
+            ToastProxy.showToast(this, getString(R.string.toast_error_content_empty), ToastSupport.TOAST_ALERT);
         }
     }
 

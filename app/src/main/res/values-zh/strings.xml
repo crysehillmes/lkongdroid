@@ -47,4 +47,6 @@
     <string name="notification_title_sending_post_successfully">回复发送成功</string>
     <string name="notification_title_sending_thread_failed">发表主题失败</string>
     <string name="notification_title_sending_thread_successfully">发表主题成功</string>
+    <string name="toast_error_content_empty">内容不能为空。</string>
+    <string name="toast_error_title_empty">标题不能为空</string>
 </resources>

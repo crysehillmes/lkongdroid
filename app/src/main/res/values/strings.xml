@@ -43,6 +43,9 @@
 
     <string name="toast_failure_new_post">Failed to post, please try again.</string>
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
+    <string name="toast_error_title_empty">Title should not be empty.</string>
+    <string name="toast_error_content_empty">Content should not be empty.</string>
+
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
