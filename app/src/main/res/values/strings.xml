@@ -65,6 +65,7 @@
 
     <string name="placeholder_thread_title">Loading…</string>
     <string name="indicator_thread_author">&#160;&#160;[OP]</string>
+    <string name="indicator_thread_digest">[Digest]&#160;</string>
 
     <string name="notification_title_sending_post">Sending reply…</string>
     <string name="notification_title_sending_post_successfully">Send reply successfully.</string>

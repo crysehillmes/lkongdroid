@@ -63,7 +63,7 @@ public class ModelConverter {
             threadModel.setUid(item.getUid());
             threadModel.setClosed(item.getClosed());
             threadModel.setDateline(item.getDateline());
-            threadModel.setDigest(item.getDigest());
+            threadModel.setDigest(item.getDigest() > 0);
             threadModel.setFid(item.getFid());
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());

@@ -7,6 +7,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -245,7 +248,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 // mCollectionAdapter.addAll(list);
                 showPostList(mCurrentPage, list);
                 updatePageIndicator();
-                mThreadTitleTextView.setText(mThreadSubject);
+                setThreadSubjectSpanned(mThreadModel);
                 mCollectionAdapter.notifyItemChanged(1);
             }
         } else {
@@ -393,7 +396,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
         mThreadModel = threadInfoModel;
         mThreadSubject = threadInfoModel.getSubject();
-        mThreadTitleTextView.setText(mThreadSubject);
+        setThreadSubjectSpanned(mThreadModel);
         mCollectionAdapter.notifyItemChanged(1);
         mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
@@ -449,5 +452,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    private void setThreadSubjectSpanned(ThreadInfoModel threadInfoModel) {
+        SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
+        if(threadInfoModel.isDigest()) {
+            String digestIndicator = getString(R.string.indicator_thread_digest);
+            spannableTitle.append(digestIndicator);
+            spannableTitle.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(this, R.attr.colorAccent)), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
+        mThreadTitleTextView.setText(spannableTitle);
     }
 }

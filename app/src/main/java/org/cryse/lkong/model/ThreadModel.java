@@ -12,7 +12,7 @@ public class ThreadModel implements Serializable, Parcelable {
     private Date dateline;
     private String subject;
     private String userName;
-    private int digest;
+    private boolean digest;
     private int closed;
     private long uid;
     private int replyCount;
@@ -60,11 +60,11 @@ public class ThreadModel implements Serializable, Parcelable {
         this.userName = userName;
     }
 
-    public int getDigest() {
+    public boolean isDigest() {
         return digest;
     }
 
-    public void setDigest(int digest) {
+    public void setDigest(boolean digest) {
         this.digest = digest;
     }
 
@@ -131,7 +131,7 @@ public class ThreadModel implements Serializable, Parcelable {
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
         dest.writeString(this.subject);
         dest.writeString(this.userName);
-        dest.writeInt(this.digest);
+        dest.writeByte(digest ? (byte) 1 : (byte) 0);
         dest.writeInt(this.closed);
         dest.writeLong(this.uid);
         dest.writeInt(this.replyCount);
@@ -148,7 +148,7 @@ public class ThreadModel implements Serializable, Parcelable {
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
         this.subject = in.readString();
         this.userName = in.readString();
-        this.digest = in.readInt();
+        this.digest = in.readByte() != 0;
         this.closed = in.readInt();
         this.uid = in.readLong();
         this.replyCount = in.readInt();
