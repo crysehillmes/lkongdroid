@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
 import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
@@ -38,6 +40,7 @@ public class LKongApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
+        Crashlytics.start(this);
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         mEventBus = new RxEventBus();
@@ -123,6 +126,7 @@ public class LKongApplication extends Application {
             if (BuildConfig.DEBUG) {
                 Log.e((String) args[0], message, t);
             }
+            Crashlytics.logException(t);
         }
 
         @Override
