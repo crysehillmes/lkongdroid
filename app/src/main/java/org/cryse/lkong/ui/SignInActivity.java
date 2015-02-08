@@ -1,18 +1,22 @@
 package org.cryse.lkong.ui;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
+import android.text.TextUtils;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
-import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -27,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import timber.log.Timber;
 
-public class SignInActivity extends AbstractThemeableActivity implements SignInView{
+public class SignInActivity extends AbstractThemeableActivity implements SignInView {
     private static final String LOG_TAG = SignInActivity.class.getName();
     @Inject
     SignInPresenter mPresenter;
@@ -43,17 +47,37 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     EditText mEmailEditText;
     @InjectView(R.id.edit_password)
     EditText mPasswordEditText;
-    @InjectView(R.id.progressbar_signin)
-    ProgressBar mSignInProgressBar;
+    @InjectView(R.id.sign_in_result_textview)
+    TextView mResultTextView;
+
+    @InjectView(R.id.button_sign_in)
+    Button mSignInButton;
+    @InjectView(R.id.button_sign_up)
+    Button mSignUpButton;
+
+    ProgressDialog mSignInProgress;
 
     CharSequence mEmailText;
+    CharSequence mPasswordText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_signin);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            getWindow().setStatusBarColor(Color.GRAY);
         ButterKnife.inject(this);
+
+        mSignInButton.setOnClickListener(view -> signIn());
+        mSignUpButton.setOnClickListener(view -> {
+            String url = "http://lkong.cn/";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        });
     }
 
     @Override
@@ -62,7 +86,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         mEmailEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 if(mEmailEditText.getText().length() <= 0)
-                    mEmailEditText.setError("Please enter your email here.");
+                    mEmailEditText.setError(getString(R.string.input_error_email));
                 else
                     mPasswordEditText.requestFocus();
                 return true;
@@ -71,22 +95,34 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         });
         mPasswordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                mEmailText = mEmailEditText.getText();
-                CharSequence password = mPasswordEditText.getText();
-                if (mEmailText.length() <= 0) {
-                    mEmailEditText.setError("Please enter your email here.");
-                    return true;
-                } else if (password.length() <= 0) {
-                    mPasswordEditText.setError("Please enter your password here.");
-                    return true;
-                } else {
-                    setViewStatus(true);
-                    getPresenter().SignIn(mEmailText.toString(), password.toString());
-                    return true;
-                }
+                if(checkEmailAndPasswordEditText())
+                    signIn();
+                return true;
             }
             return false;
         });
+    }
+
+    private boolean checkEmailAndPasswordEditText() {
+        mEmailText = mEmailEditText.getText();
+        mPasswordText = mPasswordEditText.getText();
+        if (TextUtils.isEmpty(mEmailText)) {
+            mEmailEditText.setError(getString(R.string.input_error_email));
+            return false;
+        }
+        if (TextUtils.isEmpty(mPasswordText)) {
+            mPasswordEditText.setError(getString(R.string.input_error_password));
+            return false;
+        }
+        return true;
+    }
+
+    private void signIn() {
+        if(checkEmailAndPasswordEditText()) {
+            setLoading(true);
+            getPresenter().SignIn(mEmailText.toString(), mPasswordText.toString());
+        }
+
     }
 
     @Override
@@ -99,6 +135,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     protected void onStop() {
         super.onStop();
         getPresenter().unbindView();
+        dismissProgressDialog();
     }
 
     @Override
@@ -114,43 +151,28 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
 
     @Override
     public void signInComplete(SignInResult signInResult) {
-        if(signInResult.isSuccess()) {
+        setLoading(false);
+        if(signInResult != null && signInResult.isSuccess()) {
             Timber.d("SignInActivity::signInComplete() success.", LOG_TAG);
-            UserAccountEntity userAccountEntity = new UserAccountEntity(
-                    signInResult.getMe().getUid(),
-                    mEmailText.toString(),
-                    signInResult.getMe().getUserName(),
-                    signInResult.getMe().getUserIcon(),
-                    signInResult.getAuthCookie(),
-                    signInResult.getDzsbheyCookie(),
-                    signInResult.getIdentityCookie()
-            );
-            getPresenter().persistUserAccount(userAccountEntity);
+            mResultTextView.setText("");
+            mDefaultAccountUid.set(signInResult.getMe().getUid());
+            mUserAccountManager.refresh();
+            finishCompat();
         } else {
             Timber.d("SignInActivity::signInComplete() failed().", LOG_TAG);
-            setViewStatus(false);
-            Toast.makeText(this, "SignIn failed.", Toast.LENGTH_SHORT).show();
+            String errorMessage = signInResult == null ? "" : signInResult.getErrorMessage();
+            mResultTextView.setText(TextUtils.isEmpty(errorMessage) ? getString(R.string.toast_sign_in_failed) : errorMessage);
         }
-    }
-
-    @Override
-    public void onPersistUserAccountComplete(UserAccountEntity userAccount) {
-        Timber.d("SignInActivity::onPersistUserAccountComplete().", LOG_TAG);
-        if(userAccount != null) {
-            Toast.makeText(this, "SignIn successfully.", Toast.LENGTH_SHORT).show();
-            mDefaultAccountUid.set(userAccount.getUserId());
-            mUserAccountManager.refresh();
-        }
-        setViewStatus(false);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            this.finishAfterTransition();
-        else
-            this.finish();
     }
 
     @Override
     public void setLoading(Boolean value) {
-
+        if(value) {
+            dismissProgressDialog();
+            mSignInProgress = ProgressDialog.show(this, "", getString(R.string.dialog_signing_in));
+        } else {
+            dismissProgressDialog();
+        }
     }
 
     @Override
@@ -167,15 +189,8 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         return mPresenter;
     }
 
-    private void setViewStatus(boolean isSigningIn) {
-        if(isSigningIn) {
-            mEmailEditText.setEnabled(false);
-            mPasswordEditText.setEnabled(false);
-            mSignInProgressBar.setVisibility(View.VISIBLE);
-        } else {
-            mEmailEditText.setEnabled(true);
-            mPasswordEditText.setEnabled(true);
-            mSignInProgressBar.setVisibility(View.INVISIBLE);
-        }
+    private void dismissProgressDialog() {
+        if(mSignInProgress != null && mSignInProgress.isShowing())
+            mSignInProgress.dismiss();
     }
 }

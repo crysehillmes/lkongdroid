@@ -49,4 +49,6 @@
     <string name="notification_title_sending_thread_successfully">发表主题成功</string>
     <string name="toast_error_content_empty">内容不能为空。</string>
     <string name="toast_error_title_empty">标题不能为空</string>
+    <string name="button_sign_in">登录</string>
+    <string name="button_sign_up">注册</string>
 </resources>

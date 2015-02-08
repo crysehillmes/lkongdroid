@@ -46,14 +46,22 @@
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
 
+    <string name="toast_sign_in_success">Sign in successfully.</string>
+    <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending…</string>
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
+    <string name="dialog_signing_in">Sign in…</string>
 
+    <string name="button_sign_up">Sign Up</string>
+    <string name="button_sign_in">Sign In</string>
     <string name="button_reply">Reply</string>
     <string name="button_rate">Rate</string>
+
+    <string name="input_error_email">Please enter your email here.</string>
+    <string name="input_error_password">Please enter your password here.</string>
 
     <string name="placeholder_thread_title">Loading…</string>
     <string name="indicator_thread_author">&#160;&#160;[OP]</string>

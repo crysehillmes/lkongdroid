@@ -2,6 +2,8 @@ package org.cryse.lkong.logic.restservice;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,10 +99,16 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseBody = getStringFromGzipResponse(response);
+        SignInResult signInResult = new SignInResult();
         JSONObject jsonObject = new JSONObject(responseBody);
+        if(responseBody.contains("\"error\":")) {
+            String errorMessage = jsonObject.getString("error");
+            signInResult.setSuccess(false);
+            signInResult.setErrorMessage(TextUtils.isEmpty(errorMessage) ? "" : errorMessage);
+            return signInResult;
+        }
         boolean success = jsonObject.getBoolean("success");
         UserInfoModel me = getUserConfigInfo();
-        SignInResult signInResult = new SignInResult();
 
         signInResult.setSuccess(success);
         signInResult.setMe(me);

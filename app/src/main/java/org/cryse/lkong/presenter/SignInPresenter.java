@@ -20,7 +20,6 @@ public class SignInPresenter implements BasePresenter<SignInView> {
     LKongForumService mLKongForumService;
 
     Subscription mSignInSubscription;
-    Subscription mPersistUserAccountSubscription;
     SignInView mView;
 
     @Inject
@@ -42,7 +41,6 @@ public class SignInPresenter implements BasePresenter<SignInView> {
     @Override
     public void destroy() {
         SubscriptionUtils.checkAndUnsubscribe(mSignInSubscription);
-        SubscriptionUtils.checkAndUnsubscribe(mPersistUserAccountSubscription);
     }
 
     public void SignIn(String email, String password) {
@@ -57,31 +55,13 @@ public class SignInPresenter implements BasePresenter<SignInView> {
                         },
                         error -> {
                             Timber.e(error, "SignInPresenter::SignIn() onError().", LOG_TAG);
-                            mView.signInComplete(null);
+                            SignInResult signInResult = new SignInResult();
+                            signInResult.setSuccess(false);
+                            mView.signInComplete(signInResult);
                             mView.showToast(ToastErrorConstant.TOAST_FAILURE_SIGNIN, ToastSupport.TOAST_ALERT);
                         },
                         () -> {
                             Timber.d("SignInPresenter::SignIn() onComplete().", LOG_TAG);
-                        });
-    }
-
-    public void persistUserAccount(UserAccountEntity userAccount) {
-        SubscriptionUtils.checkAndUnsubscribe(mPersistUserAccountSubscription);
-        mPersistUserAccountSubscription = mLKongForumService.persistUserAccount(userAccount)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            Timber.d("SignInPresenter::persistUserAccount() onNext().", LOG_TAG);
-                            mView.onPersistUserAccountComplete(userAccount);
-                        },
-                        error -> {
-                            Timber.e(error, "SignInPresenter::persistUserAccount() onError().", LOG_TAG);
-                            mView.onPersistUserAccountComplete(null);
-                            mView.showToast(ToastErrorConstant.TOAST_FAILURE_SIGNIN, ToastSupport.TOAST_ALERT);
-                        },
-                        () -> {
-                            Timber.d("SignInPresenter::persistUserAccount() onComplete().", LOG_TAG);
                         });
     }
 
@@ -104,11 +84,6 @@ public class SignInPresenter implements BasePresenter<SignInView> {
 
         @Override
         public void signInComplete(SignInResult signInResult) {
-
-        }
-
-        @Override
-        public void onPersistUserAccountComplete(UserAccountEntity userAccount) {
 
         }
     }
