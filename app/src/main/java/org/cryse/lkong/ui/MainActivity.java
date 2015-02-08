@@ -76,8 +76,8 @@ public class MainActivity extends AbstractThemeableActivity
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
                         getString(R.string.drawer_item_at_me),
-                        NavigationType.FRAGMENT_AT_ME_MESSAGES,
-                        R.drawable.ic_drawer_message,
+                        NavigationType.FRAGMENT_MENTIONS,
+                        R.drawable.ic_drawer_mentions,
                         true,
                         true
                 )
@@ -125,7 +125,7 @@ public class MainActivity extends AbstractThemeableActivity
             case FRAGMENT_TIMELINE:
                 mNavigation.navigateToTimelineFragment();
                 break;
-            case FRAGMENT_AT_ME_MESSAGES:
+            case FRAGMENT_MENTIONS:
                 mNavigation.navigateToAtMeMessagesFragment();
                 break;
             case ACTIVITY_SETTINGS:
