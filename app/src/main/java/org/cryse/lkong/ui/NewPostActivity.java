@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -121,8 +122,9 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
         mEventBus.toObservable().subscribe(event -> {
             if(event instanceof NewPostDoneEvent) {
-                onPostComplete(((NewPostDoneEvent)event).getPostResult());
-            }});
+                runOnUiThread(() -> onPostComplete(((NewPostDoneEvent)event).getPostResult()));
+            }
+        });
     }
 
     @Override
@@ -198,7 +200,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         if(mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
         if(result != null && result.isSuccess()) {
-            finishCompat();
+            new Handler().postDelayed(this::finishCompat, 300);
         } else {
             if(result != null) {
                 ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);

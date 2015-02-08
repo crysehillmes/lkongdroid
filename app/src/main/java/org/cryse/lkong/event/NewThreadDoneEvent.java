@@ -1,27 +1,19 @@
 package org.cryse.lkong.event;
 
+import org.cryse.lkong.model.NewThreadResult;
+
 public class NewThreadDoneEvent implements AbstractEvent {
-    private long fid;
-    private long tid;
+    private NewThreadResult newThreadResult;
 
-    public NewThreadDoneEvent(long fid, long tid) {
-        this.fid = fid;
-        this.tid = tid;
+    public NewThreadDoneEvent(NewThreadResult newThreadResult) {
+        this.newThreadResult = newThreadResult;
     }
 
-    public long getFid() {
-        return fid;
+    public NewThreadResult getNewThreadResult() {
+        return newThreadResult;
     }
 
-    public void setFid(long fid) {
-        this.fid = fid;
-    }
-
-    public long getTid() {
-        return tid;
-    }
-
-    public void setTid(long tid) {
-        this.tid = tid;
+    public void setNewThreadResult(NewThreadResult newThreadResult) {
+        this.newThreadResult = newThreadResult;
     }
 }

@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -30,6 +31,8 @@ import android.widget.ImageButton;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.NewThreadDoneEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.presenter.NewThreadPresenter;
 import org.cryse.lkong.service.SendPostService;
@@ -64,6 +67,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @Inject
+    RxEventBus mEventBus;
+
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
     @InjectView(R.id.activity_new_thread_edittext_content)
@@ -78,6 +84,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     long mForumId;
     String mForumName;
 
+    ProgressDialog mProgressDialog;
     ServiceConnection mBackgroundServiceConnection;
     private SendPostService.SendPostServiceBinder mSendServiceBinder;
 
@@ -110,7 +117,11 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
             }
         };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
-        mInsertImageButton.setOnClickListener(view -> openImageIntent());
+        mInsertImageButton.setOnClickListener(view -> openImageIntent());mEventBus.toObservable().subscribe(event -> {
+            if (event instanceof NewThreadDoneEvent) {
+                runOnUiThread(() -> onPostThreadComplete(((NewThreadDoneEvent) event).getNewThreadResult()));
+            }
+        });
     }
 
     @Override
@@ -142,6 +153,8 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        if(mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 
     @Override
@@ -171,8 +184,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
             if (mSendServiceBinder != null) {
+                mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
                 mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
-                finishCompat();
+                // finishCompat();
             }
         } else {
             ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
@@ -187,10 +201,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     @Override
     public void onPostThreadComplete(NewThreadResult result) {
         if(result != null && result.isSuccess()) {
-            Intent intent = new Intent();
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, result.getTid());
-            NewThreadActivity.this.setResult(RESULT_OK, intent);
-            NewThreadActivity.this.finish();
+            new Handler().postDelayed(this::finishCompat, 300);
 
         } else {
             if(result != null) {
@@ -222,13 +233,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         Timber.d(src, "addImageBetweenText");
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
         int selectionCursor = mContentEditText.getSelectionStart();
-        mContentEditText.getText().insert(selectionCursor, imageTag);
-        selectionCursor = mContentEditText.getSelectionStart();
-
-        SpannableStringBuilder builder = new SpannableStringBuilder(mContentEditText.getText());
-        builder.setSpan(new ImageSpan(drawable, imageTag), selectionCursor - imageTag.length(), selectionCursor, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mContentEditText.setText(builder);
-        mContentEditText.setSelection(selectionCursor);
+        SpannableStringBuilder builder = new SpannableStringBuilder(imageTag);
+        builder.setSpan(new ImageSpan(drawable, imageTag), 0, imageTag.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mContentEditText.getText().insert(selectionCursor, builder);
     }
 
     private static final int SELECT_PICTURE = 1;
