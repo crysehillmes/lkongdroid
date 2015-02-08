@@ -182,7 +182,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
             if(mSendServiceBinder != null) {
-                mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
+                mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 mSendServiceBinder.sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, android.text.Html.toHtml(spannableContent));
                 // finishCompat();
             }

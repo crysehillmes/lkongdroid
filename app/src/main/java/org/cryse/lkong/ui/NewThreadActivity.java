@@ -140,10 +140,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
                 setNightMode(!isNightMode());
                 return true;
             case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
+                finishCompat();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -184,7 +181,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
             if (mSendServiceBinder != null) {
-                mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
+                mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
                 // finishCompat();
             }
