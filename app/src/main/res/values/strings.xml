@@ -55,7 +55,7 @@
     <string name="placeholder_thread_title">Loading…</string>
     <string name="indicator_thread_author">&#160;&#160;[OP]</string>
 
-    <string name="notification_title_sending_post">Sending Post:&#160;</string>
+    <string name="notification_title_sending_post">Sending reply…</string>
     <string name="notification_title_sending_post_successfully">Send reply successfully.</string>
     <string name="notification_title_sending_post_failed">Send reply failed.</string>
     <string name="notification_title_sending_thread_successfully">Create thread successfully.</string>
