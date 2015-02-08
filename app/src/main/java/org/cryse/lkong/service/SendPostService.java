@@ -125,7 +125,7 @@ public class SendPostService extends Service {
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
-            showSendPostTaskResultNotification(postResult);
+            // showSendPostTaskResultNotification(postResult);
             if(postResult != null && postResult.isSuccess()) {
                 mEventBus.sendEvent(new NewPostDoneEvent(postResult));
             }
@@ -153,7 +153,7 @@ public class SendPostService extends Service {
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
-            showSendThreadTaskResultNotification(threadResult);
+            // showSendThreadTaskResultNotification(threadResult);
             if(threadResult != null && threadResult.isSuccess()) {
                 mEventBus.sendEvent(new NewThreadDoneEvent(threadResult));
             }
