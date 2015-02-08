@@ -199,25 +199,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == DataContract.REQUEST_ID_NEW_POST) {
-            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT) && data.hasExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT)) {
-                int newPageCount = data.getIntExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, 0);
-                int newReplyCount = data.getIntExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT, 0);
-                if(newReplyCount > mThreadModel.getReplies())
-                    mThreadModel.setReplies(newReplyCount);
-                if(newPageCount > mPageCount) {
-                    mPageCount = newPageCount;
-                }
-                if(newPageCount == mCurrentPage) {
-                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
-                }
-            }
-        }
-    }
-
     private void setupPageControlListener() {
         mOnPagerControlListener = new PagerControl.OnPagerControlListener() {
             @Override
@@ -276,9 +257,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mEventBus.toObservable().subscribe(event -> {
             if(event instanceof NewPostDoneEvent) {
                 NewPostDoneEvent doneEvent = (NewPostDoneEvent)event;
-                long tid = doneEvent.getTid();
+                long tid = doneEvent.getPostResult().getTid();
                 if(tid == mThreadId) {
-                    int newReplyCount = doneEvent.getReplyCount() + 1; // 楼主本身的一楼未计算
+                    int newReplyCount = doneEvent.getPostResult().getReplyCount() + 1; // 楼主本身的一楼未计算
                     if(newReplyCount > mThreadModel.getReplies())
                         mThreadModel.setReplies(newReplyCount);
                     int newPageCount = newReplyCount == 0 ? 1 : (int)Math.ceil((double) newReplyCount / 20d);

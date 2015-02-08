@@ -127,7 +127,7 @@ public class SendPostService extends Service {
             stopForeground(true);
             showSendPostTaskResultNotification(postResult);
             if(postResult != null && postResult.isSuccess()) {
-                mEventBus.sendEvent(new NewPostDoneEvent(postResult.getTid(), postResult.getReplyCount()));
+                mEventBus.sendEvent(new NewPostDoneEvent(postResult));
             }
         }
     }

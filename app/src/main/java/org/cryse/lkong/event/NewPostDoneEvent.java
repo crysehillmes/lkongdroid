@@ -1,27 +1,19 @@
 package org.cryse.lkong.event;
 
+import org.cryse.lkong.model.NewPostResult;
+
 public class NewPostDoneEvent implements AbstractEvent {
-    private int replyCount;
-    private long tid;
+    private NewPostResult postResult;
 
-    public NewPostDoneEvent(long tid, int replyCount) {
-        this.tid = tid;
-        this.replyCount = replyCount;
+    public NewPostDoneEvent(NewPostResult postResult) {
+        this.postResult = postResult;
     }
 
-    public int getReplyCount() {
-        return replyCount;
+    public NewPostResult getPostResult() {
+        return postResult;
     }
 
-    public void setReplyCount(int replyCount) {
-        this.replyCount = replyCount;
-    }
-
-    public long getTid() {
-        return tid;
-    }
-
-    public void setTid(long tid) {
-        this.tid = tid;
+    public void setPostResult(NewPostResult postResult) {
+        this.postResult = postResult;
     }
 }
