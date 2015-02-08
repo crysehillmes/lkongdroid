@@ -1,8 +1,9 @@
 package org.cryse.lkong.ui;
 
-import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Spannable;
@@ -29,6 +31,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.presenter.NewPostPresenter;
+import org.cryse.lkong.service.SendPostService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.ContentProcessor;
@@ -72,8 +75,8 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
     long mThreadId;
     Long mPostId;
 
-
-    ProgressDialog mProgressDialog;
+    ServiceConnection mBackgroundServiceConnection;
+    private SendPostService.SendPostServiceBinder mSendServiceBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,17 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 mPostId = null;
         }
         setTitle(mTitle);
+        mBackgroundServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mSendServiceBinder = (SendPostService.SendPostServiceBinder) service;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mSendServiceBinder = null;
+            }
+        };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
     }
@@ -135,12 +149,15 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
     protected void onStop() {
         super.onStop();
         getPresenter().unbindView();
+        this.unbindService(mBackgroundServiceConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         getPresenter().bindView(this);
+        Intent service = new Intent(this.getApplicationContext(), SendPostService.class);
+        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -152,8 +169,10 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         mContentEditText.clearFocus();
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
-            mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
-            getPresenter().newPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, android.text.Html.toHtml(spannableContent));
+            if(mSendServiceBinder != null) {
+                mSendServiceBinder.sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, android.text.Html.toHtml(spannableContent));
+                finishCompat();
+            }
         } else {
             ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
         }
@@ -165,8 +184,6 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     @Override
     public void onPostComplete(NewPostResult result) {
-        if(mProgressDialog != null)
-            mProgressDialog.dismiss();
         if(result != null && result.isSuccess()) {
             Intent intent = new Intent();
             intent.putExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, result.getPageCount());

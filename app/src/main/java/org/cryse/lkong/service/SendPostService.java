@@ -10,11 +10,13 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
 import java.util.concurrent.BlockingQueue;
@@ -23,102 +25,102 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javax.inject.Inject;
 
 public class SendPostService extends Service {
-        private static final String LOG_TAG = SendPostService.class.getName();
-        @Inject
-        LKongRestService mLKRestService;
+    private static final String LOG_TAG = SendPostService.class.getName();
+    @Inject
+    LKongRestService mLKRestService;
 
-        BlockingQueue<SendTask> mTaskQueue = new LinkedBlockingQueue<SendTask>();
-        SendTask mCurrentTask = null;
-        public static final int NOTIFICATION_START_ID = 150;
-        public int notification_count = 0;
+    BlockingQueue<SendTask> mTaskQueue = new LinkedBlockingQueue<SendTask>();
+    SendTask mCurrentTask = null;
+    public static final int NOTIFICATION_START_ID = 150;
+    public int notification_count = 0;
 
-        NotificationManager mNotifyManager;
-        static final int SENDING_NOTIFICATION_ID = 110;
+    NotificationManager mNotifyManager;
+    static final int SENDING_NOTIFICATION_ID = 110;
 
-        boolean stopCurrentTask = false;
-        Thread mCachingThread;
-        boolean mIsStopingService;
+    boolean stopCurrentTask = false;
+    Thread mCachingThread;
+    boolean mIsStopingService;
 
-        @Override
-        public void onCreate() {
-            super.onCreate();
-            LKongApplication.get(this).sendServiceComponet().inject(this);
-            mNotifyManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        LKongApplication.get(this).sendServiceComponet().inject(this);
+        mNotifyManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            mCachingThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (!mIsStopingService) {
-                            mCurrentTask = mTaskQueue.take();
-                            if(mCurrentTask instanceof SendPostTask) {
-                                sendPost((SendPostTask)mCurrentTask);
-                            } else if(mCurrentTask instanceof SendThreadTask) {
-                                sendThread((SendThreadTask)mCurrentTask);
-                            }
-                            mCurrentTask = null;
+        mCachingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (!mIsStopingService) {
+                        mCurrentTask = mTaskQueue.take();
+                        if (mCurrentTask instanceof SendPostTask) {
+                            sendPost((SendPostTask) mCurrentTask);
+                        } else if (mCurrentTask instanceof SendThreadTask) {
+                            sendThread((SendThreadTask) mCurrentTask);
                         }
-                    } catch (InterruptedException ex) {
-                        Log.e(LOG_TAG, "Caching thread exception.", ex);
+                        mCurrentTask = null;
                     }
-                }
-            });
-            mCachingThread.start();
-        }
-
-        @Override
-        public void onDestroy() {
-            mIsStopingService = true;
-            super.onDestroy();
-        }
-
-        @Override
-        public IBinder onBind(Intent intent) {
-            return new SendPostServiceBinder();
-        }
-
-        @Override
-        public int onStartCommand(Intent intent, int flags, int startId) {
-            Log.d(LOG_TAG, "onStartCommand");
-            if(intent != null && intent.hasExtra("type")) {
-
-                Log.d(LOG_TAG, String.format("onStartCommand: %s", intent.getStringExtra("type")));
-                if("cancel_current".compareTo(intent.getStringExtra("type")) == 0) {
-                    Log.d(LOG_TAG, "onStartCommand, type: cancel_current");
-                    stopCurrentTask = true;
-                } else if("cancel_all".compareTo(intent.getStringExtra("type")) == 0) {
-                    Log.d(LOG_TAG, "onStartCommand, type: cancel_all");
-                    mTaskQueue.clear();
-                    stopCurrentTask = true;
+                } catch (InterruptedException ex) {
+                    Log.e(LOG_TAG, "Caching thread exception.", ex);
                 }
             }
-            return super.onStartCommand(intent, flags, startId);
-        }
+        });
+        mCachingThread.start();
+    }
 
-        public void sendPost(SendPostTask task) {
-            Log.d(LOG_TAG, "sendPost");
-            NotificationCompat.Builder progressNotificationBuilder;
+    @Override
+    public void onDestroy() {
+        mIsStopingService = true;
+        super.onDestroy();
+    }
 
-            progressNotificationBuilder = new NotificationCompat.Builder(SendPostService.this);
-            progressNotificationBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post))
-                    .setContentText("")
-                    .setSmallIcon(R.drawable.ic_action_send)
-                    .setOngoing(true)
-                    .setProgress(100, 0, true);
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new SendPostServiceBinder();
+    }
 
-            startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
-            NewPostResult postResult = null;
-            try {
-                postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), task.getContent());
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
-                stopForeground(true);
-                showSendPostTaskResultNotification(postResult);
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "onStartCommand");
+        if (intent != null && intent.hasExtra("type")) {
+
+            Log.d(LOG_TAG, String.format("onStartCommand: %s", intent.getStringExtra("type")));
+            if ("cancel_current".compareTo(intent.getStringExtra("type")) == 0) {
+                Log.d(LOG_TAG, "onStartCommand, type: cancel_current");
+                stopCurrentTask = true;
+            } else if ("cancel_all".compareTo(intent.getStringExtra("type")) == 0) {
+                Log.d(LOG_TAG, "onStartCommand, type: cancel_all");
+                mTaskQueue.clear();
+                stopCurrentTask = true;
             }
         }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void sendPost(SendPostTask task) {
+        Log.d(LOG_TAG, "sendPost");
+        NotificationCompat.Builder progressNotificationBuilder;
+
+        progressNotificationBuilder = new NotificationCompat.Builder(SendPostService.this);
+        progressNotificationBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post))
+                .setContentText("")
+                .setSmallIcon(R.drawable.ic_action_send)
+                .setOngoing(true);
+
+        startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
+        NewPostResult postResult = null;
+        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
+        try {
+            postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
+            stopForeground(true);
+            showSendPostTaskResultNotification(postResult);
+        }
+    }
 
     public void sendThread(SendThreadTask task) {
         Log.d(LOG_TAG, "sendPost");
@@ -128,13 +130,13 @@ public class SendPostService extends Service {
         progressNotificationBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post))
                 .setContentText("")
                 .setSmallIcon(R.drawable.ic_action_send)
-                .setProgress(100, 0, true)
                 .setOngoing(true);
 
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         NewThreadResult threadResult = null;
+        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
         try {
-            threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), task.getContent(), task.isFollow());
+            threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -144,11 +146,33 @@ public class SendPostService extends Service {
         }
     }
 
+    private String preprocessContent(LKAuthObject authObject, String content) {
+        String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
+        ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
+        contentProcessor.setUploadImageCallback(path -> {
+            String uploadUrl = "";
+            try {
+                Log.d(LOG_TAG, "setUploadImageCallback start");
+                uploadUrl = mLKRestService.uploadImageToLKong(authObject, path);
+                Log.d(LOG_TAG, String.format("uploadImageToLKong result %s", uploadUrl));
+            } catch (Exception ex) {
+                Log.e(LOG_TAG, "uploadImageToLKong failed", ex);
+            } finally {
+                return uploadUrl;
+            }
+        });
+        contentProcessor.run();
+        String replaceResult = contentProcessor.getResultContent();
+
+        Log.d(LOG_TAG, replaceResult);
+        return replaceResult;
+    }
+
     private void showSendPostTaskResultNotification(NewPostResult newPostResult) {
         notification_count = notification_count + 1;
         NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(this);
         Bundle extras = new Bundle();
-        if(newPostResult != null && newPostResult.isSuccess()) {
+        if (newPostResult != null && newPostResult.isSuccess()) {
             extras.putLong("tid", newPostResult.getTid());
             extras.putLong("reply_count", newPostResult.getReplyCount());
             mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post_successfully))
@@ -167,51 +191,51 @@ public class SendPostService extends Service {
         mNotifyManager.notify(NOTIFICATION_START_ID + notification_count, mResultBuilder.build());
     }
 
-        private void showSendThreadTaskResultNotification(NewThreadResult newThreadResult) {
-            notification_count = notification_count + 1;
-            NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(this);
-            Bundle extras = new Bundle();
-            if(newThreadResult != null && newThreadResult.isSuccess()) {
-                mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_successfully))
-                        .setContentText("")
-                        .setSmallIcon(R.drawable.ic_notification_done)
-                        .setExtras(extras)
-                        .setAutoCancel(true);
-            } else {
-                mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_failed))
-                        .setContentText("")
-                        .setSmallIcon(R.drawable.ic_notification_error)
-                        .setExtras(extras)
-                        .setAutoCancel(true);
-            }
-
-            mNotifyManager.notify(NOTIFICATION_START_ID + notification_count, mResultBuilder.build());
+    private void showSendThreadTaskResultNotification(NewThreadResult newThreadResult) {
+        notification_count = notification_count + 1;
+        NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(this);
+        Bundle extras = new Bundle();
+        if (newThreadResult != null && newThreadResult.isSuccess()) {
+            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_successfully))
+                    .setContentText("")
+                    .setSmallIcon(R.drawable.ic_notification_done)
+                    .setExtras(extras)
+                    .setAutoCancel(true);
+        } else {
+            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_failed))
+                    .setContentText("")
+                    .setSmallIcon(R.drawable.ic_notification_error)
+                    .setExtras(extras)
+                    .setAutoCancel(true);
         }
 
-        public class SendPostServiceBinder extends Binder {
-            public boolean hasSendingTask() {
-                return mCurrentTask != null;
-            }
-
-            public void sendPost(LKAuthObject authObject, long tid, Long pid, String content) {
-                SendPostTask task = new SendPostTask();
-                task.setAuthObject(authObject);
-                task.setTid(tid);
-                task.setPid(pid);
-                task.setContent(content);
-                mTaskQueue.add(task);
-            }
-
-            public void sendThread(LKAuthObject authObject, String title, long fid, String content, boolean follow) {
-                SendThreadTask task = new SendThreadTask();
-                task.setAuthObject(authObject);
-                task.setTitle(title);
-                task.setFid(fid);
-                task.setContent(content);
-                task.setFollow(follow);
-                mTaskQueue.add(task);
-            }
-        }
-
-
+        mNotifyManager.notify(NOTIFICATION_START_ID + notification_count, mResultBuilder.build());
     }
+
+    public class SendPostServiceBinder extends Binder {
+        public boolean hasSendingTask() {
+            return mCurrentTask != null;
+        }
+
+        public void sendPost(LKAuthObject authObject, long tid, Long pid, String content) {
+            SendPostTask task = new SendPostTask();
+            task.setAuthObject(authObject);
+            task.setTid(tid);
+            task.setPid(pid);
+            task.setContent(content);
+            mTaskQueue.add(task);
+        }
+
+        public void sendThread(LKAuthObject authObject, String title, long fid, String content, boolean follow) {
+            SendThreadTask task = new SendThreadTask();
+            task.setAuthObject(authObject);
+            task.setTitle(title);
+            task.setFid(fid);
+            task.setContent(content);
+            task.setFollow(follow);
+            mTaskQueue.add(task);
+        }
+    }
+
+
+}
