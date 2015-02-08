@@ -122,7 +122,7 @@ public class LKongForumService {
                 if (mLKongDatabase.isCachedForumList()) {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
                 }
-                if(updateFromWeb) {
+                if(updateFromWeb || !mLKongDatabase.isCachedForumList()) {
                     List<ForumModel> forumModelList = mLKongRestService.getForumList();
                     if (forumModelList != null)
                         mLKongDatabase.cacheForumList(forumModelList);
