@@ -41,4 +41,10 @@
     <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
     <string name="drawer_item_at_me">提及我的</string>
     <string name="toast_double_tap_to_exit">再按一次返回键退出</string>
+    <string name="notification_content_network_error">网络错误</string>
+    <string name="notification_title_sending_post">正在发送回复…</string>
+    <string name="notification_title_sending_post_failed">回复发送失败</string>
+    <string name="notification_title_sending_post_successfully">回复发送成功</string>
+    <string name="notification_title_sending_thread_failed">发表主题失败</string>
+    <string name="notification_title_sending_thread_successfully">发表主题成功</string>
 </resources>

@@ -7,13 +7,16 @@ import android.util.Log;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
 import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
+import org.cryse.lkong.application.component.Dagger_SendServiceComponet;
 import org.cryse.lkong.application.component.Dagger_UserAccountComponent;
 import org.cryse.lkong.application.component.LKongPresenterComponent;
 import org.cryse.lkong.application.component.MainActivityComponent;
+import org.cryse.lkong.application.component.SendServiceComponet;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 
 import javax.inject.Singleton;
@@ -24,10 +27,12 @@ import timber.log.Timber;
 public class LKongApplication extends Application {
     private static final String TAG = LKongApplication.class.getName();
     private MainActivityComponent mainActivityComponent;
-    private LKongPresenterComponent lKongPresenterComponent;
-    private UserAccountComponent userAccountComponent;
+    private LKongPresenterComponent mLKongPresenterComponent;
+    private UserAccountComponent mUserAccountComponent;
+    private SendServiceComponet mSendServiceComponet;
     private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
+    private RxEventBus mEventBus;
 
     @Override
     public void onCreate() {
@@ -35,28 +40,34 @@ public class LKongApplication extends Application {
         Timber.plant(new CrashReportingTree());
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
+        mEventBus = new RxEventBus();
         initComponents();
-        userAccountComponent.inject(mUserAccountManager);
+        mUserAccountComponent.inject(mUserAccountManager);
         mUserAccountManager.init();
     }
 
     private void initComponents() {
         mainActivityComponent = Dagger_MainActivityComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation))
+                .contextModule(new ContextModule(this, mNavigation, mEventBus))
                 .preferenceModule(new PreferenceModule(this))
                 .build();
-        lKongPresenterComponent = Dagger_LKongPresenterComponent
+        mLKongPresenterComponent = Dagger_LKongPresenterComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation))
+                .contextModule(new ContextModule(this, mNavigation, mEventBus))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
                 .build();
-        userAccountComponent = Dagger_UserAccountComponent
+        mUserAccountComponent = Dagger_UserAccountComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation))
+                .contextModule(new ContextModule(this, mNavigation, mEventBus))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
+                .build();
+        mSendServiceComponet = Dagger_SendServiceComponet
+                .builder()
+                .contextModule(new ContextModule(this, mNavigation, mEventBus))
+                .lKongModule(new LKongModule())
                 .build();
     }
 
@@ -73,11 +84,15 @@ public class LKongApplication extends Application {
     }
 
     public LKongPresenterComponent lKongPresenterComponent() {
-        return lKongPresenterComponent;
+        return mLKongPresenterComponent;
     }
 
     public UserAccountComponent userAccountComponent() {
-        return userAccountComponent;
+        return mUserAccountComponent;
+    }
+
+    public SendServiceComponet sendServiceComponet() {
+        return mSendServiceComponet;
     }
 
     /** A tree which logs important information for crash reporting. */

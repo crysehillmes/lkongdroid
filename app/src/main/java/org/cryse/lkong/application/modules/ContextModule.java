@@ -17,10 +17,11 @@ import dagger.Provides;
 public class ContextModule {
     Application mApplicationContext;
     AndroidNavigation mNavigation;
-
-    public ContextModule(Application application, AndroidNavigation navigation) {
+    RxEventBus mEventBus;
+    public ContextModule(Application application, AndroidNavigation navigation, RxEventBus eventBus) {
         this.mApplicationContext = application;
         this.mNavigation = navigation;
+        this.mEventBus = eventBus;
     }
 
     @Singleton
@@ -39,7 +40,7 @@ public class ContextModule {
     @Singleton
     @Provides
     public RxEventBus provideRxEventBus() {
-        return new RxEventBus();
+        return mEventBus;
     }
 
     @Provides

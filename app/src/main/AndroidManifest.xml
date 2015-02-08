@@ -26,6 +26,7 @@
         <activity android:name=".ui.PostListActivity"/>
         <activity android:name=".ui.NewPostActivity"/>
         <activity android:name=".ui.NewThreadActivity"/>
+        <service android:name=".service.SendPostService"/>
     </application>
 
 </manifest>

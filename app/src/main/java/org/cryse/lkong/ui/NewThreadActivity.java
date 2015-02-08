@@ -2,7 +2,9 @@ package org.cryse.lkong.ui;
 
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -13,6 +15,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Spannable;
@@ -27,8 +31,11 @@ import android.widget.ImageButton;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.NewThreadDoneEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.presenter.NewThreadPresenter;
+import org.cryse.lkong.service.SendPostService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.ContentProcessor;
@@ -60,6 +67,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @Inject
+    RxEventBus mEventBus;
+
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
     @InjectView(R.id.activity_new_thread_edittext_content)
@@ -74,8 +84,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     long mForumId;
     String mForumName;
 
-
     ProgressDialog mProgressDialog;
+    ServiceConnection mBackgroundServiceConnection;
+    private SendPostService.SendPostServiceBinder mSendServiceBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +105,23 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
             mForumName = intent.getStringExtra(DataContract.BUNDLE_FORUM_NAME);
         }
         setTitle(mForumName);
+        mBackgroundServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mSendServiceBinder = (SendPostService.SendPostServiceBinder) service;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mSendServiceBinder = null;
+            }
+        };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
-        mInsertImageButton.setOnClickListener(view -> openImageIntent());
+        mInsertImageButton.setOnClickListener(view -> openImageIntent());mEventBus.toObservable().subscribe(event -> {
+            if (event instanceof NewThreadDoneEvent) {
+                runOnUiThread(() -> onPostThreadComplete(((NewThreadDoneEvent) event).getNewThreadResult()));
+            }
+        });
     }
 
     @Override
@@ -114,10 +140,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
                 setNightMode(!isNightMode());
                 return true;
             case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
+                finishCompat();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,18 +150,23 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        if(mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         getPresenter().unbindView();
+        this.unbindService(mBackgroundServiceConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         getPresenter().bindView(this);
+        Intent service = new Intent(this.getApplicationContext(), SendPostService.class);
+        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -152,8 +180,11 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         String title = mTitleEditText.getText().toString();
         Spannable spannableContent = mContentEditText.getText();
         if(spannableContent != null && spannableContent.length() > 0) {
-            mProgressDialog = ProgressDialog.show(this, getString(R.string.dialog_new_post_sending), "");
-            getPresenter().newThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
+            if (mSendServiceBinder != null) {
+                mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
+                mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
+                // finishCompat();
+            }
         } else {
             ToastProxy.showToast(this, "Empty content.", ToastSupport.TOAST_ALERT);
         }
@@ -166,13 +197,8 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
 
     @Override
     public void onPostThreadComplete(NewThreadResult result) {
-        if(mProgressDialog != null)
-            mProgressDialog.dismiss();
         if(result != null && result.isSuccess()) {
-            Intent intent = new Intent();
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, result.getTid());
-            NewThreadActivity.this.setResult(RESULT_OK, intent);
-            NewThreadActivity.this.finish();
+            new Handler().postDelayed(this::finishCompat, 300);
 
         } else {
             if(result != null) {
@@ -204,13 +230,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         Timber.d(src, "addImageBetweenText");
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
         int selectionCursor = mContentEditText.getSelectionStart();
-        mContentEditText.getText().insert(selectionCursor, imageTag);
-        selectionCursor = mContentEditText.getSelectionStart();
-
-        SpannableStringBuilder builder = new SpannableStringBuilder(mContentEditText.getText());
-        builder.setSpan(new ImageSpan(drawable, imageTag), selectionCursor - imageTag.length(), selectionCursor, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mContentEditText.setText(builder);
-        mContentEditText.setSelection(selectionCursor);
+        SpannableStringBuilder builder = new SpannableStringBuilder(imageTag);
+        builder.setSpan(new ImageSpan(drawable, imageTag), 0, imageTag.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mContentEditText.getText().insert(selectionCursor, builder);
     }
 
     private static final int SELECT_PICTURE = 1;
