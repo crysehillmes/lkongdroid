@@ -7,9 +7,11 @@ import android.util.Log;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
 import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
+import org.cryse.lkong.application.component.Dagger_SendServiceComponet;
 import org.cryse.lkong.application.component.Dagger_UserAccountComponent;
 import org.cryse.lkong.application.component.LKongPresenterComponent;
 import org.cryse.lkong.application.component.MainActivityComponent;
+import org.cryse.lkong.application.component.SendServiceComponet;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
@@ -24,8 +26,9 @@ import timber.log.Timber;
 public class LKongApplication extends Application {
     private static final String TAG = LKongApplication.class.getName();
     private MainActivityComponent mainActivityComponent;
-    private LKongPresenterComponent lKongPresenterComponent;
-    private UserAccountComponent userAccountComponent;
+    private LKongPresenterComponent mLKongPresenterComponent;
+    private UserAccountComponent mUserAccountComponent;
+    private SendServiceComponet mSendServiceComponet;
     private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
 
@@ -36,7 +39,7 @@ public class LKongApplication extends Application {
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         initComponents();
-        userAccountComponent.inject(mUserAccountManager);
+        mUserAccountComponent.inject(mUserAccountManager);
         mUserAccountManager.init();
     }
 
@@ -46,17 +49,22 @@ public class LKongApplication extends Application {
                 .contextModule(new ContextModule(this, mNavigation))
                 .preferenceModule(new PreferenceModule(this))
                 .build();
-        lKongPresenterComponent = Dagger_LKongPresenterComponent
+        mLKongPresenterComponent = Dagger_LKongPresenterComponent
                 .builder()
                 .contextModule(new ContextModule(this, mNavigation))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
                 .build();
-        userAccountComponent = Dagger_UserAccountComponent
+        mUserAccountComponent = Dagger_UserAccountComponent
                 .builder()
                 .contextModule(new ContextModule(this, mNavigation))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
+                .build();
+        mSendServiceComponet = Dagger_SendServiceComponet
+                .builder()
+                .contextModule(new ContextModule(this, mNavigation))
+                .lKongModule(new LKongModule())
                 .build();
     }
 
@@ -73,11 +81,15 @@ public class LKongApplication extends Application {
     }
 
     public LKongPresenterComponent lKongPresenterComponent() {
-        return lKongPresenterComponent;
+        return mLKongPresenterComponent;
     }
 
     public UserAccountComponent userAccountComponent() {
-        return userAccountComponent;
+        return mUserAccountComponent;
+    }
+
+    public SendServiceComponet sendServiceComponet() {
+        return mSendServiceComponet;
     }
 
     /** A tree which logs important information for crash reporting. */
