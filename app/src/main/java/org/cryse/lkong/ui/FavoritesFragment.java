@@ -21,6 +21,7 @@ import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -36,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class FavoritesFragment extends MainActivityFragment implements ThreadListView {
+    public static final String LOG_TAG = FavoritesFragment.class.getName();
     private static final String BUNDLE_NEED_REFRESH = "bundle_favorites_need_refresh";
     private boolean isNoMore = false;
     private boolean isLoading = false;
@@ -162,6 +164,16 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
             mNeedRefresh = false;
             getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
         }
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
     @Override

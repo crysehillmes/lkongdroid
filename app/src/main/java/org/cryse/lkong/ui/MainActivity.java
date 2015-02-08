@@ -14,12 +14,14 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
 import org.cryse.lkong.ui.navigation.NavigationType;
+import org.cryse.lkong.utils.AnalyticsUtils;
 
 import javax.inject.Inject;
 
 
 public class MainActivity extends AbstractThemeableActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+    public static final String LOG_TAG = MainActivity.class.getName();
     boolean mDoubleBackToExitPressedOnce = false;
     @Inject
     AndroidNavigation mNavigation;
@@ -54,6 +56,16 @@ public class MainActivity extends AbstractThemeableActivity
     @Override
     protected void injectThis() {
         LKongApplication.get(this).mainActivityComponent().inject(this);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentActivityExit(this, LOG_TAG);
     }
 
     @Override

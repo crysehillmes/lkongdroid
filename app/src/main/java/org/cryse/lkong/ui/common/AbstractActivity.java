@@ -50,13 +50,13 @@ public abstract class AbstractActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // AnalyticsHelper.trackActivityEnter(this);
+        analyticsTrackEnter();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // AnalyticsHelper.trackActivityExit(this);
+        analyticsTrackExit();
     }
 
     /**
@@ -157,4 +157,8 @@ public abstract class AbstractActivity extends ActionBarActivity {
         else
             this.finish();
     }
+
+    protected abstract void analyticsTrackEnter();
+
+    protected abstract void analyticsTrackExit();
 }

@@ -42,6 +42,7 @@ dependencies {
     compile project(':utils')
     compile project(':widgets')
     // compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.umeng.analytics:analytics:5.4.1'
     compile 'com.android.support:appcompat-v7:21.0.3'
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.8.1'
     compile 'com.google.dagger:dagger:2.0-SNAPSHOT'

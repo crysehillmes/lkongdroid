@@ -5,8 +5,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.umeng.analytics.AnalyticsConfig;
 
 import org.cryse.lkong.BuildConfig;
+import org.cryse.lkong.R;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
 import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
 import org.cryse.lkong.application.component.Dagger_SendServiceComponet;
@@ -20,6 +22,7 @@ import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 
 import javax.inject.Singleton;
 
@@ -40,6 +43,7 @@ public class LKongApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
+        AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
         Crashlytics.start(this);
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();

@@ -33,6 +33,7 @@ import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.ToastProxy;
@@ -51,7 +52,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class PostListActivity extends AbstractThemeableActivity implements PostListView{
+public class PostListActivity extends AbstractThemeableActivity implements PostListView {
+    public static final String LOG_TAG = PostListActivity.class.getName();
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
@@ -344,6 +346,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackActivityExit(this, LOG_TAG);
     }
 
     private void updatePageIndicator() {

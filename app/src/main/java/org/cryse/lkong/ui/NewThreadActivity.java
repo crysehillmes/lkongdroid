@@ -38,6 +38,7 @@ import org.cryse.lkong.presenter.NewThreadPresenter;
 import org.cryse.lkong.service.SendPostService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -61,6 +62,7 @@ import butterknife.InjectView;
 import timber.log.Timber;
 
 public class NewThreadActivity extends AbstractThemeableActivity implements NewThreadView {
+    public static final String LOG_TAG = NewThreadActivity.class.getName();
     @Inject
     NewThreadPresenter mPresenter;
 
@@ -172,6 +174,16 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackActivityExit(this, LOG_TAG);
     }
 
     private void submitPost() {

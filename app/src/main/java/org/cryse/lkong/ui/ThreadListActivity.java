@@ -18,6 +18,7 @@ import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -35,6 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
+    public static final String LOG_TAG = ThreadListActivity.class.getName();
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
@@ -177,6 +179,16 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackActivityExit(this, LOG_TAG);
     }
 
     @Override

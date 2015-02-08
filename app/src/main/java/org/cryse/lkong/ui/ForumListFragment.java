@@ -17,6 +17,7 @@ import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumListPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
@@ -95,6 +96,16 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
         super.onResume();
         if(mForumList.size() == 0)
             getPresenter().getForumList(false);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
     @Override
