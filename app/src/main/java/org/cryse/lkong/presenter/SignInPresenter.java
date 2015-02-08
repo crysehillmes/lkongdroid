@@ -1,6 +1,5 @@
 package org.cryse.lkong.presenter;
 
-import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.utils.SubscriptionUtils;

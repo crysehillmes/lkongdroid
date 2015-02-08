@@ -53,7 +53,7 @@
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending…</string>
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
-    <string name="dialog_signing_in">Sign in…</string>
+    <string name="dialog_signing_in">Signing in…</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>
