@@ -417,6 +417,8 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
                 String secondInfoText = mCurrentAccount.getEmail();
                 mAccountEmailTextView.setText(secondInfoText);
             }
+        } else {
+            mAndroidNavigation.navigateToSignInActivity(getActivity());
         }
     }
 
