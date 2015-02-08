@@ -221,13 +221,9 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         Timber.d(src, "addImageBetweenText");
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
         int selectionCursor = mContentEditText.getSelectionStart();
-        mContentEditText.getText().insert(selectionCursor, imageTag);
-        selectionCursor = mContentEditText.getSelectionStart();
-
-        SpannableStringBuilder builder = new SpannableStringBuilder(mContentEditText.getText());
-        builder.setSpan(new ImageSpan(drawable, imageTag), selectionCursor - imageTag.length(), selectionCursor, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mContentEditText.setText(builder);
-        mContentEditText.setSelection(selectionCursor);
+        SpannableStringBuilder builder = new SpannableStringBuilder(imageTag);
+        builder.setSpan(new ImageSpan(drawable, imageTag), 0, imageTag.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        mContentEditText.getText().insert(selectionCursor, builder);
     }
 
     private static final int SELECT_PICTURE = 1;

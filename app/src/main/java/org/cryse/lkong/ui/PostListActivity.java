@@ -20,6 +20,10 @@ import com.afollestad.materialdialogs.Theme;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.FavoritesChangedEvent;
+import org.cryse.lkong.event.NewPostDoneEvent;
+import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
@@ -56,6 +60,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Inject
     UserAccountManager mUserAccountManager;
+
+    @Inject
+    RxEventBus mEventBus;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
@@ -266,6 +273,30 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             getPresenter().loadThreadInfo(mThreadId);
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
+        mEventBus.toObservable().subscribe(event -> {
+            if(event instanceof NewPostDoneEvent) {
+                NewPostDoneEvent doneEvent = (NewPostDoneEvent)event;
+                long tid = doneEvent.getTid();
+                if(tid == mThreadId) {
+                    int newReplyCount = doneEvent.getReplyCount() + 1; // 楼主本身的一楼未计算
+                    if(newReplyCount > mThreadModel.getReplies())
+                        mThreadModel.setReplies(newReplyCount);
+                    int newPageCount = newReplyCount == 0 ? 1 : (int)Math.ceil((double) newReplyCount / 20d);
+                    if(newPageCount > mPageCount) {
+                        mPageCount = newPageCount;
+                        mPageIndicatorItems = new String[mPageCount];
+                        for(int i = 1; i <= mPageCount; i++) {
+                            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+                        }
+                        runOnUiThread(this::updatePageIndicator);
+                    }
+                    if(newPageCount == mCurrentPage) {
+                        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
+                    }
+                }
+
+            }
+        });
     }
 
     @Override
@@ -386,7 +417,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
         // Calculate page here.
-        int replyCount = mThreadModel.getReplies();
+        int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
         mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
 
         mPageIndicatorItems = new String[mPageCount];

@@ -13,6 +13,9 @@ import android.util.Log;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.event.NewPostDoneEvent;
+import org.cryse.lkong.event.NewThreadDoneEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
@@ -28,6 +31,9 @@ public class SendPostService extends Service {
     private static final String LOG_TAG = SendPostService.class.getName();
     @Inject
     LKongRestService mLKRestService;
+
+    @Inject
+    RxEventBus mEventBus;
 
     BlockingQueue<SendTask> mTaskQueue = new LinkedBlockingQueue<SendTask>();
     SendTask mCurrentTask = null;
@@ -109,6 +115,7 @@ public class SendPostService extends Service {
                 .setOngoing(true);
 
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
+        mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         NewPostResult postResult = null;
         String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
         try {
@@ -119,6 +126,9 @@ public class SendPostService extends Service {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
             showSendPostTaskResultNotification(postResult);
+            if(postResult != null && postResult.isSuccess()) {
+                mEventBus.sendEvent(new NewPostDoneEvent(postResult.getTid(), postResult.getReplyCount()));
+            }
         }
     }
 
@@ -133,6 +143,7 @@ public class SendPostService extends Service {
                 .setOngoing(true);
 
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
+        mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         NewThreadResult threadResult = null;
         String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
         try {
@@ -143,6 +154,9 @@ public class SendPostService extends Service {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
             showSendThreadTaskResultNotification(threadResult);
+            if(threadResult != null && threadResult.isSuccess()) {
+                mEventBus.sendEvent(new NewThreadDoneEvent(task.getFid(), threadResult.getTid()));
+            }
         }
     }
 
@@ -175,14 +189,14 @@ public class SendPostService extends Service {
         if (newPostResult != null && newPostResult.isSuccess()) {
             extras.putLong("tid", newPostResult.getTid());
             extras.putLong("reply_count", newPostResult.getReplyCount());
-            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post_successfully))
+            mResultBuilder.setContentTitle(getString(R.string.notification_title_sending_post_successfully))
                     .setContentText("")
                     .setSmallIcon(R.drawable.ic_notification_done)
                     .setExtras(extras)
                     .setAutoCancel(true);
         } else {
-            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post_failed))
-                    .setContentText("")
+            mResultBuilder.setContentTitle(getString(R.string.notification_title_sending_post_failed))
+                    .setContentText(newPostResult != null ? newPostResult.getErrorMessage() : getString(R.string.notification_content_network_error))
                     .setSmallIcon(R.drawable.ic_notification_error)
                     .setExtras(extras)
                     .setAutoCancel(true);
@@ -196,14 +210,14 @@ public class SendPostService extends Service {
         NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(this);
         Bundle extras = new Bundle();
         if (newThreadResult != null && newThreadResult.isSuccess()) {
-            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_successfully))
+            mResultBuilder.setContentTitle(getString(R.string.notification_title_sending_thread_successfully))
                     .setContentText("")
                     .setSmallIcon(R.drawable.ic_notification_done)
                     .setExtras(extras)
                     .setAutoCancel(true);
         } else {
-            mResultBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_thread_failed))
-                    .setContentText("")
+            mResultBuilder.setContentTitle(getString(R.string.notification_title_sending_thread_failed))
+                    .setContentText(newThreadResult != null ? newThreadResult.getErrorMessage() : getString(R.string.notification_content_network_error))
                     .setSmallIcon(R.drawable.ic_notification_error)
                     .setExtras(extras)
                     .setAutoCancel(true);
