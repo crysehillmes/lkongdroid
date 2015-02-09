@@ -207,6 +207,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_thread_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -214,10 +215,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
+                finishCompat();
+                return true;
+            case R.id.action_change_theme:
+                setNightMode(!isNightMode());
                 return true;
         }
         return super.onOptionsItemSelected(item);
