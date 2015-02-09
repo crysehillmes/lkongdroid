@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Long Kong</string>
+    <string name="app_name">Long Kong (Alpha)</string>
     <string name="activity_title_post_list">View Thread</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -94,10 +94,12 @@
     <string name="settings_item_author_name_value">Cryse Hillmes</string>
     <string name="settings_item_author_name_title">Author</string>
     <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
-    <string name="settings_item_email_address_title">Feedback</string>
+    <string name="settings_item_email_address_title">Author Email</string>
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
+    <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
+    <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
 </resources>
