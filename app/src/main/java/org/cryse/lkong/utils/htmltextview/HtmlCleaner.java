@@ -17,7 +17,6 @@ public class HtmlCleaner {
         for (Element element : fixedDoc.select("*")) {
             if (!element.hasText() && element.isBlock() && !element.tagName().equalsIgnoreCase("img")
                     && !element.tagName().equalsIgnoreCase("ul")
-                    && !element.tagName().equalsIgnoreCase("li")
             ) {
                 if(element.select("img").size() > 0)
                     continue;
