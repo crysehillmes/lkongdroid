@@ -51,6 +51,7 @@ public class MainActivity extends AbstractThemeableActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         mNavigation.attachMainActivity(this);
+        getSwipeBackLayout().setEnableGesture(false);
     }
 
     @Override
