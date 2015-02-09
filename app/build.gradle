@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
 apply plugin: 'retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
@@ -24,6 +25,7 @@ android {
         debug {}
         release {}
     }
+
     buildTypes {
         debug {
             debuggable true
@@ -35,12 +37,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/MANIFEST.MF'
+    }
 }
 
 dependencies {
     compile project(':utils')
     compile project(':widgets')
     // compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.umeng.analytics:analytics:5.4.1'
     compile 'com.android.support:appcompat-v7:21.0.3'
     retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.8.1'
     compile 'com.google.dagger:dagger:2.0-SNAPSHOT'
@@ -66,6 +79,7 @@ dependencies {
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'org.apache.tika:tika-core:1.7'
+    compile 'com.crashlytics.android:crashlytics:1.+'
 }
 
 retrolambda {

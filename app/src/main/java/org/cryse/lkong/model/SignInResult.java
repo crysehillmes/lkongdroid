@@ -6,6 +6,7 @@ public class SignInResult {
     private String dzsbheyCookie;
     private String identityCookie;
     private UserInfoModel me;
+    private String errorMessage;
 
     public boolean isSuccess() {
         return success;
@@ -45,5 +46,13 @@ public class SignInResult {
 
     public void setMe(UserInfoModel me) {
         this.me = me;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

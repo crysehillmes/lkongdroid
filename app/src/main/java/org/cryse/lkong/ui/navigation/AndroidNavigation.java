@@ -18,6 +18,7 @@ import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
+import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.utils.DataContract;
@@ -99,8 +100,9 @@ public class AndroidNavigation {
         }
     }
 
-    public void navigateToSettingsActivity() {
-
+    public void navigateToSettingsActivity(Context context) {
+        Intent intent = new Intent(context, SettingsActivity.class);
+        context.startActivity(intent);
     }
 
     public void navigateToSignInActivity(Context context) {
@@ -112,7 +114,7 @@ public class AndroidNavigation {
         Intent intent = new Intent(activity, NewPostActivity.class);
         intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
         intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, activity.getString(R.string.format_post_reply_title, threadSubject));
-        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+        activity.startActivity(intent);
     }
 
     public void openActivityForReplyToPost(Activity activity, long threadId, String postAuthorName, long postId) {
@@ -120,13 +122,13 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
         intent.putExtra(DataContract.BUNDLE_POST_ID, postId);
         intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, activity.getString(R.string.format_post_reply_title, postAuthorName));
-        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_POST);
+        activity.startActivity(intent);
     }
 
     public void openActivityForNewThread(Activity activity, long forumId, String forumName) {
         Intent intent = new Intent(activity, NewThreadActivity.class);
         intent.putExtra(DataContract.BUNDLE_FORUM_ID, forumId);
         intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
-        activity.startActivityForResult(intent, DataContract.REQUEST_ID_NEW_THREAD);
+        activity.startActivity(intent);
     }
 }

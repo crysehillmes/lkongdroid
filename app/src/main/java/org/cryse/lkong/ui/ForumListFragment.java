@@ -17,12 +17,12 @@ import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumListPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.ForumListView;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -98,6 +98,16 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
     }
 
     @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
     }
@@ -138,6 +148,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
             Intent intent = new Intent(getActivity(), ThreadListActivity.class);
             intent.putExtra(DataContract.BUNDLE_FORUM_ID, item.getFid());
             intent.putExtra(DataContract.BUNDLE_FORUM_NAME, item.getName());
+            intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, item.getDescription());
             startActivity(intent);
         });
     }

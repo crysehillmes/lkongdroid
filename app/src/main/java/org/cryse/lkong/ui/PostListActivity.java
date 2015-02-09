@@ -7,6 +7,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,12 +24,17 @@ import com.afollestad.materialdialogs.Theme;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.FavoritesChangedEvent;
+import org.cryse.lkong.event.NewPostDoneEvent;
+import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.ToastProxy;
@@ -44,7 +53,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class PostListActivity extends AbstractThemeableActivity implements PostListView{
+public class PostListActivity extends AbstractThemeableActivity implements PostListView {
+    public static final String LOG_TAG = PostListActivity.class.getName();
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
@@ -56,6 +66,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Inject
     UserAccountManager mUserAccountManager;
+
+    @Inject
+    RxEventBus mEventBus;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     SuperRecyclerView mPostCollectionView;
@@ -110,9 +123,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 true,
                 UIUtils.calculateActionBarSize(this) * 3);
 
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int width = displaymetrics.widthPixels;
+
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList);
+        mCollectionAdapter = new PostListAdapter(this, mItemList, (width * 4 / 5));
         mPostCollectionView.setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -192,25 +209,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == DataContract.REQUEST_ID_NEW_POST) {
-            if(data != null && data.hasExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT) && data.hasExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT)) {
-                int newPageCount = data.getIntExtra(DataContract.BUNDLE_THREAD_PAGE_COUNT, 0);
-                int newReplyCount = data.getIntExtra(DataContract.BUNDLE_THREAD_REPLY_COUNT, 0);
-                if(newReplyCount > mThreadModel.getReplies())
-                    mThreadModel.setReplies(newReplyCount);
-                if(newPageCount > mPageCount) {
-                    mPageCount = newPageCount;
-                }
-                if(newPageCount == mCurrentPage) {
-                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
-                }
-            }
-        }
-    }
-
     private void setupPageControlListener() {
         mOnPagerControlListener = new PagerControl.OnPagerControlListener() {
             @Override
@@ -257,7 +255,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 // mCollectionAdapter.addAll(list);
                 showPostList(mCurrentPage, list);
                 updatePageIndicator();
-                mThreadTitleTextView.setText(mThreadSubject);
+                setThreadSubjectSpanned(mThreadModel);
                 mCollectionAdapter.notifyItemChanged(1);
             }
         } else {
@@ -266,6 +264,30 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             getPresenter().loadThreadInfo(mThreadId);
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
+        mEventBus.toObservable().subscribe(event -> {
+            if(event instanceof NewPostDoneEvent) {
+                NewPostDoneEvent doneEvent = (NewPostDoneEvent)event;
+                long tid = doneEvent.getPostResult().getTid();
+                if(tid == mThreadId) {
+                    int newReplyCount = doneEvent.getPostResult().getReplyCount() + 1; // 楼主本身的一楼未计算
+                    if(newReplyCount > mThreadModel.getReplies())
+                        mThreadModel.setReplies(newReplyCount);
+                    int newPageCount = newReplyCount == 0 ? 1 : (int)Math.ceil((double) newReplyCount / 20d);
+                    if(newPageCount > mPageCount) {
+                        mPageCount = newPageCount;
+                        mPageIndicatorItems = new String[mPageCount];
+                        for(int i = 1; i <= mPageCount; i++) {
+                            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+                        }
+                        runOnUiThread(this::updatePageIndicator);
+                    }
+                    if(newPageCount == mCurrentPage) {
+                        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
+                    }
+                }
+
+            }
+        });
     }
 
     @Override
@@ -331,6 +353,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
     }
 
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackActivityExit(this, LOG_TAG);
+    }
+
     private void updatePageIndicator() {
         this.mFooterPagerControl.setPageIndicatorText(getString(R.string.format_post_list_page_indicator, mCurrentPage, mPageCount));
     }
@@ -381,12 +413,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
         mThreadModel = threadInfoModel;
         mThreadSubject = threadInfoModel.getSubject();
-        mThreadTitleTextView.setText(mThreadSubject);
+        setThreadSubjectSpanned(mThreadModel);
         mCollectionAdapter.notifyItemChanged(1);
         mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
         // Calculate page here.
-        int replyCount = mThreadModel.getReplies();
+        int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
         mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
 
         mPageIndicatorItems = new String[mPageCount];
@@ -437,5 +469,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    private void setThreadSubjectSpanned(ThreadInfoModel threadInfoModel) {
+        SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
+        if(threadInfoModel.isDigest()) {
+            String digestIndicator = getString(R.string.indicator_thread_digest);
+            spannableTitle.append(digestIndicator);
+            spannableTitle.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(this, R.attr.colorAccent)), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
+        mThreadTitleTextView.setText(spannableTitle);
     }
 }

@@ -51,25 +51,25 @@ public class LKongForumService {
             try {
                 SignInResult signInResult = mLKongRestService.signIn(email, password);
 
-                subscriber.onNext(signInResult);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        });
-    }
-
-    public Observable<Void> persistUserAccount(UserAccountEntity userAccountEntity) {
-        return Observable.create(subscriber -> {
-            try {
-                if (mLKongDatabase != null && mLKongDatabase.isOpen() && userAccountEntity != null) {
-                    if (mLKongDatabase.isUserAccountExist(userAccountEntity.getUserId())) {
-                        mLKongDatabase.updateUserAccount(userAccountEntity);
-                    } else {
-                        mLKongDatabase.addUserAccount(userAccountEntity);
+                if(signInResult != null && signInResult.isSuccess()) {
+                    UserAccountEntity userAccountEntity = new UserAccountEntity(
+                            signInResult.getMe().getUid(),
+                            email,
+                            signInResult.getMe().getUserName(),
+                            signInResult.getMe().getUserIcon(),
+                            signInResult.getAuthCookie(),
+                            signInResult.getDzsbheyCookie(),
+                            signInResult.getIdentityCookie()
+                    );
+                    if (mLKongDatabase != null && mLKongDatabase.isOpen()) {
+                        if (mLKongDatabase.isUserAccountExist(userAccountEntity.getUserId())) {
+                            mLKongDatabase.updateUserAccount(userAccountEntity);
+                        } else {
+                            mLKongDatabase.addUserAccount(userAccountEntity);
+                        }
                     }
                 }
-                subscriber.onNext(null);
+                subscriber.onNext(signInResult);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
@@ -122,7 +122,7 @@ public class LKongForumService {
                 if (mLKongDatabase.isCachedForumList()) {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
                 }
-                if(updateFromWeb) {
+                if(updateFromWeb || !mLKongDatabase.isCachedForumList()) {
                     List<ForumModel> forumModelList = mLKongRestService.getForumList();
                     if (forumModelList != null)
                         mLKongDatabase.cacheForumList(forumModelList);

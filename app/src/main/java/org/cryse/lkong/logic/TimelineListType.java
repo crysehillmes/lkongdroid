@@ -13,4 +13,15 @@ public class TimelineListType {
                 throw new IllegalArgumentException("Unknown type.");
         }
     }
+
+    public static String typeToTypeName(int type) {
+        switch (type) {
+            case TYPE_TIMELINE:
+                return "Timeline";
+            case TYPE_AT_ME:
+                return "Mentions";
+            default:
+                throw new IllegalArgumentException("Unknown type.");
+        }
+    }
 }

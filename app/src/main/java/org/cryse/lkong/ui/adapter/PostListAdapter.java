@@ -37,9 +37,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
     private OnItemReplyClickListener mOnItemReplyClickListener;
     private long mThreadAuthorId;
-    public PostListAdapter(Context context, List<PostModel> mItemList) {
+    private int mMaxImageWidth;
+    public PostListAdapter(Context context, List<PostModel> mItemList, int maxImageWidth) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
+        mMaxImageWidth = maxImageWidth;
     }
 
     public void setOnItemReplyClickListener(OnItemReplyClickListener onItemReplyClickListener) {
@@ -66,6 +68,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
+                        .setMaxImageWidth(mMaxImageWidth)
                         .setError(R.drawable.image_placeholder);
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
                 viewHolder.mMessageTextView.setText(spannedText);

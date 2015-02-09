@@ -35,6 +35,7 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.navigation.NavigationDrawerAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.UserAccountView;
@@ -320,6 +321,16 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
     }
 
     @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -417,6 +428,8 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
                 String secondInfoText = mCurrentAccount.getEmail();
                 mAccountEmailTextView.setText(secondInfoText);
             }
+        } else {
+            mAndroidNavigation.navigateToSignInActivity(getActivity());
         }
     }
 

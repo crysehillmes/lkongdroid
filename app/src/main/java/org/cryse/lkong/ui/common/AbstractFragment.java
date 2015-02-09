@@ -31,11 +31,13 @@ public abstract class AbstractFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        analyticsTrackEnter();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        analyticsTrackExit();
     }
 
     public ActionBarActivity getActionBarActivity() {
@@ -61,4 +63,8 @@ public abstract class AbstractFragment extends Fragment {
     public boolean isNightMode() {
         return ((AbstractThemeableActivity)getActionBarActivity()).isNightMode();
     }
+
+    protected abstract void analyticsTrackEnter();
+
+    protected abstract void analyticsTrackExit();
 }

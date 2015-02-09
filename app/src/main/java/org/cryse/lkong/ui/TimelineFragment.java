@@ -21,6 +21,7 @@ import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -36,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class TimelineFragment extends MainActivityFragment implements TimelineView {
+    public static final String LOG_TAG = TimelineFragment.class.getName();
     public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
     private boolean isNoMore = false;
     private boolean isLoading = false;
@@ -181,6 +183,15 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         getPresenter().destroy();
     }
 
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG + "." + TimelineListType.typeToTypeName(mListType));
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG + "." + TimelineListType.typeToTypeName(mListType));
+    }
 
     @Override
     public void showTimeline(List<TimelineModel> timelineItems, boolean loadMore) {

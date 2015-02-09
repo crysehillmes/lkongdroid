@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_category_dispaly_title">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="is_night_mode"
+            android:summary="@string/settings_item_is_night_mode_summary"
+            android:title="@string/settings_item_is_night_mode_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_category_other_title">
+        <Preference
+            android:summary="@string/settings_item_feedback_value"
+            android:title="@string/settings_item_feedback_title">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:lkongdroid@outlook.com" />
+        </Preference>
+        <Preference
+            android:title="@string/settings_item_about_title">
+            <intent
+                android:targetPackage="org.cryse.lkong"
+                android:targetClass="org.cryse.lkong.ui.SettingsActivity" >
+                <extra android:name="type" android:value="about" />
+                </intent>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -50,13 +50,13 @@ public abstract class AbstractActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // AnalyticsHelper.trackActivityEnter(this);
+        analyticsTrackEnter();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // AnalyticsHelper.trackActivityExit(this);
+        analyticsTrackExit();
     }
 
     /**
@@ -150,4 +150,15 @@ public abstract class AbstractActivity extends ActionBarActivity {
         if(mPreLShadow != null)
             mPreLShadow.setVisibility(visibility);
     }
+
+    public void finishCompat() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            this.finishAfterTransition();
+        else
+            this.finish();
+    }
+
+    protected abstract void analyticsTrackEnter();
+
+    protected abstract void analyticsTrackExit();
 }

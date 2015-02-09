@@ -14,10 +14,12 @@ public class HtmlCleaner {
         for (Element liChild: fixedDoc.select("li br")) {
             liChild.remove();
         }
+        for (Element pInLi: fixedDoc.select("li p")) {
+            pInLi.unwrap();
+        }
         for (Element element : fixedDoc.select("*")) {
             if (!element.hasText() && element.isBlock() && !element.tagName().equalsIgnoreCase("img")
                     && !element.tagName().equalsIgnoreCase("ul")
-                    && !element.tagName().equalsIgnoreCase("li")
             ) {
                 if(element.select("img").size() > 0)
                     continue;

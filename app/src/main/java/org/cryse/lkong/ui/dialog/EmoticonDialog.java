@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import org.cryse.widget.recyclerview.SuperRecyclerView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -63,6 +65,7 @@ public class EmoticonDialog extends DialogFragment {
 
         mEmoticonCollectionView = (SuperRecyclerView) dialog.getCustomView().findViewById(R.id.dialog_emoticon_recyclerview);
         mEmoticonFileNames = listAssetFiles("emoji");
+        Collections.sort(mEmoticonFileNames, new EmojiComparator());
         mEmoticonCollectionView.setItemAnimator(new DefaultItemAnimator());
         mEmoticonCollectionView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         mCollectionAdapter = new EmoticonAdapter(getActivity(), mEmoticonFileNames);
@@ -77,6 +80,15 @@ public class EmoticonDialog extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    private class EmojiComparator implements Comparator<String> {
+        @Override
+        public int compare(String lhs, String rhs) {
+            Integer left = Integer.valueOf(lhs.substring(2,lhs.length() - 4));
+            Integer right = Integer.valueOf(rhs.substring(2,rhs.length() - 4));
+            return left.compareTo(right);
+        }
     }
 
     private List<String> listAssetFiles(String path) {

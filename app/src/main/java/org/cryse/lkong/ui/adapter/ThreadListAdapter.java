@@ -1,6 +1,10 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
+import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -22,9 +27,11 @@ import butterknife.InjectView;
 
 public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private final String mTodayPrefix;
+    private int mColorAccent;
     public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
+        mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
     }
 
     @Override
@@ -44,7 +51,14 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
             if(item instanceof ThreadModel) {
                 ThreadModel threadModel = (ThreadModel)item;
 
-                viewHolder.mThreadTitleTextView.setText(android.text.Html.fromHtml(threadModel.getSubject()));
+                SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
+                if(threadModel.isDigest()) {
+                    String digestIndicator = getString(R.string.indicator_thread_digest);
+                    spannableTitle.append(digestIndicator);
+                    spannableTitle.setSpan(new ForegroundColorSpan(mColorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                spannableTitle.append(android.text.Html.fromHtml(threadModel.getSubject()));
+                viewHolder.mThreadTitleTextView.setText(spannableTitle);
                 viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
                 viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
                 viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), mTodayPrefix));

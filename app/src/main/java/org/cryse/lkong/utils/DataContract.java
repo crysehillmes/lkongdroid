@@ -4,7 +4,9 @@ public class DataContract {
     public static final String BUNDLE_CONTENT_LIST_STORE = "bundle_content_list_store";
     public static final String BUNDLE_FORUM_ID = "bundle_forum_id";
     public static final String BUNDLE_FORUM_NAME = "bundle_forum_name";
+    public static final String BUNDLE_FORUM_DESCRIPTION = "bundle_forum_description";
     public static final String BUNDLE_THREAD_LIST_LAST_SORTKEY = "bundle_forum_last_sortkey";
+    public static final String BUNDLE_THREAD_LIST_TYPE = "bundle_thread_list_type";
 
 
     public static final String BUNDLE_THREAD_ID = "bundle_thread_id";

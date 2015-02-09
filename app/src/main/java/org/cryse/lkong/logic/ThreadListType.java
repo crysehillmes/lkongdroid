@@ -1,14 +1,12 @@
 package org.cryse.lkong.logic;
 
 public class ThreadListType {
-    public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_SORT_BY_REPLY = 1;
+    public static final int TYPE_SORT_BY_REPLY = 0;
+    public static final int TYPE_DIGEST = 1;
     public static final int TYPE_SORT_BY_POST = 2;
-    public static final int TYPE_DIGEST = 3;
 
     public static String typeToRequestParam(int typeCode) {
         switch (typeCode) {
-            case TYPE_DEFAULT:
             case TYPE_SORT_BY_REPLY:
                 return "";
             case TYPE_SORT_BY_POST:

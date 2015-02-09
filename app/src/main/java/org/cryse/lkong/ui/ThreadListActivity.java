@@ -5,9 +5,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -18,6 +24,7 @@ import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
@@ -33,8 +40,10 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
+    public static final String LOG_TAG = ThreadListActivity.class.getName();
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
@@ -53,12 +62,16 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @InjectView(R.id.fab)
     FloatingActionButtonEx mFab;
 
+    View mHeaderView;
+    Spinner mListTypeSpinner;
+
     ThreadListAdapter mCollectionAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
 
     private long mForumId = -1;
     private String mForumName = "";
+    private String mForumDescription = "";
     private int mCurrentListType = ThreadListType.TYPE_SORT_BY_REPLY;
 
     @Override
@@ -72,10 +85,12 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         initRecyclerView();
+        setUpHeaderView();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_FORUM_ID) && intent.hasExtra(DataContract.BUNDLE_FORUM_NAME)) {
             mForumId = intent.getLongExtra(DataContract.BUNDLE_FORUM_ID, -1);
             mForumName = intent.getStringExtra(DataContract.BUNDLE_FORUM_NAME);
+            mForumDescription = intent.getStringExtra(DataContract.BUNDLE_FORUM_DESCRIPTION);
         }
         if(mForumId == -1 || TextUtils.isEmpty(mForumName))
             throw new IllegalStateException("ThreadListActivity missing extra in intent.");
@@ -100,7 +115,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ThreadModel item = mCollectionAdapter.getItem(position);
+            ThreadModel item = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
             Intent intent = new Intent(this, PostListActivity.class);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
@@ -115,6 +130,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
+    }
+
+    private void setUpHeaderView() {
+        mHeaderView = getLayoutInflater().inflate(R.layout.layout_forum_header, null);
+        mListTypeSpinner = (Spinner) mHeaderView.findViewById(R.id.layout_forum_header_spinner_list_type);
+
+        String[] listTypeNames = getResources().getStringArray(R.array.thread_list_type_arrays);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, listTypeNames);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mListTypeSpinner.setAdapter(dataAdapter);
+        RecyclerView.LayoutParams headerLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mHeaderView.setLayoutParams(headerLP);
+        mCollectionAdapter.addHeaderView(mHeaderView);
     }
 
     @Override
@@ -139,12 +168,30 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             mCollectionAdapter.addAll(list);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
+            mForumDescription = savedInstanceState.getString(DataContract.BUNDLE_FORUM_DESCRIPTION);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
+            mCurrentListType = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_LIST_TYPE);
+            mListTypeSpinner.setSelection(mCurrentListType);
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
             getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
+        mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int currentListType = mCurrentListType;
+                mCurrentListType = position;
+                if(currentListType != mCurrentListType) {
+                    getPresenter().loadThreadList(mForumId, mCurrentListType, false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -152,12 +199,15 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         super.onSaveInstanceState(outState);
         outState.putLong(DataContract.BUNDLE_FORUM_ID, mForumId);
         outState.putString(DataContract.BUNDLE_FORUM_NAME, mForumName);
+        outState.putString(DataContract.BUNDLE_FORUM_DESCRIPTION, mForumDescription);
         outState.putLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY, mLastItemSortKey);
+        outState.putInt(DataContract.BUNDLE_THREAD_LIST_TYPE, mCurrentListType);
         outState.putParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE, mCollectionAdapter.getItemArrayList());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_thread_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -165,10 +215,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
+                finishCompat();
+                return true;
+            case R.id.action_change_theme:
+                setNightMode(!isNightMode());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -177,6 +227,16 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackActivityEnter(this, LOG_TAG);
+    }
+
+    @Override
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackActivityExit(this, LOG_TAG);
     }
 
     @Override
@@ -227,7 +287,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }*/
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
+            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1 - mCollectionAdapter.getHeaderViewCount());
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;
