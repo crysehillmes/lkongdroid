@@ -21,6 +21,7 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ScrollerCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -1112,6 +1113,9 @@ public class ViewDragHelper {
                     final float dx = x - mInitialMotionX[pointerId];
                     final float dy = y - mInitialMotionY[pointerId];
 
+                    if(Math.abs(dy) > 16f) {
+                        return mDragState == STATE_DRAGGING;
+                    }
                     reportNewEdgeDrags(dx, dy, pointerId);
                     if (mDragState == STATE_DRAGGING) {
                         // Callback might have started an edge drag

@@ -37,7 +37,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int width = displaymetrics.widthPixels;
         getSwipeBackLayout().setEdgeSize(width);
-        // getSwipeBackLayout().setSensitivity(this, 0.05f);
+        getSwipeBackLayout().setSensitivity(this, 0.5f);
         getSwipeBackLayout().setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
     }
 
