@@ -37,9 +37,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
     private OnItemReplyClickListener mOnItemReplyClickListener;
     private long mThreadAuthorId;
-    public PostListAdapter(Context context, List<PostModel> mItemList) {
+    private int mMaxImageWidth;
+    public PostListAdapter(Context context, List<PostModel> mItemList, int maxImageWidth) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
+        mMaxImageWidth = maxImageWidth;
     }
 
     public void setOnItemReplyClickListener(OnItemReplyClickListener onItemReplyClickListener) {

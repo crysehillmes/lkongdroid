@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,9 +123,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 true,
                 UIUtils.calculateActionBarSize(this) * 3);
 
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int width = displaymetrics.widthPixels;
+
         mPostCollectionView.setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList);
+        mCollectionAdapter = new PostListAdapter(this, mItemList, (width * 4 / 5));
         mPostCollectionView.setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
