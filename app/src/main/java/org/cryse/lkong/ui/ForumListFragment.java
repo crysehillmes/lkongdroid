@@ -23,7 +23,6 @@ import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.view.ForumListView;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -149,6 +148,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
             Intent intent = new Intent(getActivity(), ThreadListActivity.class);
             intent.putExtra(DataContract.BUNDLE_FORUM_ID, item.getFid());
             intent.putExtra(DataContract.BUNDLE_FORUM_NAME, item.getName());
+            intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, item.getDescription());
             startActivity(intent);
         });
     }
