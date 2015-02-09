@@ -18,6 +18,7 @@ import org.cryse.lkong.ui.ForumListFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
+import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.utils.DataContract;
@@ -99,8 +100,9 @@ public class AndroidNavigation {
         }
     }
 
-    public void navigateToSettingsActivity() {
-
+    public void navigateToSettingsActivity(Context context) {
+        Intent intent = new Intent(context, SettingsActivity.class);
+        context.startActivity(intent);
     }
 
     public void navigateToSignInActivity(Context context) {

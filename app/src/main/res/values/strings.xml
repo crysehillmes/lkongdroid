@@ -79,4 +79,23 @@
         <item>Digests</item>
         <item>Sort By Create Time</item>
     </string-array>
+
+    <!-- Settings section -->
+    <string name="settings_category_dispaly_title">Display</string>
+    <string name="settings_item_is_night_mode_title">Dark Mode</string>
+    <string name="settings_item_is_night_mode_summary">Use dark mode in night could protect your eye.</string>
+
+    <string name="settings_category_other_title">Other</string>
+    <string name="settings_item_about_title">About</string>
+
+    <!-- About -->
+    <string name="settings_about_activity_title">About</string>
+    <string name="settings_category_author_title">About</string>
+    <string name="settings_item_author_name_value">Cryse Hillmes</string>
+    <string name="settings_item_author_name_title">Author</string>
+    <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
+    <string name="settings_item_email_address_title">Feedback</string>
+    <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
+    <string name="settings_item_author_blog_site">Website</string>
+    <string name="settings_item_version">Version</string>
 </resources>

@@ -141,7 +141,7 @@ public class MainActivity extends AbstractThemeableActivity
                 mNavigation.navigateToAtMeMessagesFragment();
                 break;
             case ACTIVITY_SETTINGS:
-                mNavigation.navigateToSettingsActivity();
+                mNavigation.navigateToSettingsActivity(this);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown NavigationDrawerItem position.");

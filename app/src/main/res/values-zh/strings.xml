@@ -63,4 +63,23 @@
         <item>精华</item>
         <item>按主题发布时间排序</item>
     </string-array>
+
+    <!-- Settings section -->
+    <string name="settings_category_dispaly_title">显示</string>
+    <string name="settings_item_is_night_mode_title">夜间模式</string>
+    <string name="settings_item_is_night_mode_summary">夜间使用较低的亮度，减少双眼的疲劳</string>
+
+    <string name="settings_category_other_title">其他</string>
+    <string name="settings_item_about_title">关于</string>
+
+    <!-- About -->
+    <string name="settings_about_activity_title">关于</string>
+    <string name="settings_category_author_title">关于</string>
+    <string name="settings_item_author_name_value">Cryse Hillmes</string>
+    <string name="settings_item_author_name_title">作者</string>
+    <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
+    <string name="settings_item_email_address_title">联系与反馈</string>
+    <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
+    <string name="settings_item_author_blog_site">作者网站</string>
+    <string name="settings_item_version">版本</string>
 </resources>
