@@ -97,5 +97,7 @@
     <string name="settings_item_email_address_title">Feedback</string>
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
+    <string name="settings_item_change_log_title">Changelog</string>
+    <string name="settings_item_change_log_summary">Changelog of recent versions</string>
     <string name="settings_item_version">Version</string>
 </resources>

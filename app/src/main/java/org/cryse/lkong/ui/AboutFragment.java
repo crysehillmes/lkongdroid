@@ -4,7 +4,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.webkit.WebView;
 import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.lkong.R;
 
@@ -45,6 +48,21 @@ public class AboutFragment extends PreferenceFragment {
                         }
                     }
                 }
+                return true;
+            }
+        });
+
+        Preference changelogPref = (Preference) findPreference("prefs_about_changelog");
+        changelogPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                        .title(R.string.settings_item_change_log_title)
+                        .customView(R.layout.dialog_webview, false)
+                        .positiveText(android.R.string.ok)
+                        .build();
+                WebView webView = (WebView) dialog.getCustomView().findViewById(R.id.webview);
+                webView.loadUrl("file:///android_asset/changelog.html");
+                dialog.show();
                 return true;
             }
         });

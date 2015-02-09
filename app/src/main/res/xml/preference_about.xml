@@ -4,17 +4,17 @@
     <PreferenceCategory android:title="@string/settings_category_author_title">
         <Preference
             android:summary="@string/settings_item_author_name_value"
-            android:title="@string/settings_item_author_name_title" >
+            android:title="@string/settings_item_author_name_title">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://plus.google.com/+CryseHillmes"/>
+                android:data="https://plus.google.com/+CryseHillmes" />
         </Preference>
         <Preference
             android:summary="@string/settings_item_email_address_value"
             android:title="@string/settings_item_email_address_title">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="mailto:tyk5555@hotmail.com"/>
+                android:data="mailto:tyk5555@hotmail.com" />
         </Preference>
         <Preference
             android:summary="@string/settings_item_author_blog_site_value"
@@ -24,9 +24,12 @@
                 android:data="http://www.cryse.org" />
         </Preference>
         <Preference
+            android:key="prefs_about_changelog"
+            android:summary="@string/settings_item_change_log_summary"
+            android:title="@string/settings_item_change_log_title"/>
+        <Preference
             android:key="prefs_about_version"
             android:summary=""
-            android:title="@string/settings_item_version">
-        </Preference>
+            android:title="@string/settings_item_version"/>
     </PreferenceCategory>
 </PreferenceScreen>
