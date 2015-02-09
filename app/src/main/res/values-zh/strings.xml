@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">龙的天空</string>
+    <string name="app_name">龙的天空 (测试版)</string>
     <string name="account_email_hint">注册邮箱</string>
     <string name="account_password_hint">密码</string>
     <string name="action_dark_theme">夜间模式</string>
