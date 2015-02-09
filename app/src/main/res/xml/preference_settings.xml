@@ -11,6 +11,13 @@
 
     <PreferenceCategory android:title="@string/settings_category_other_title">
         <Preference
+            android:summary="@string/settings_item_feedback_value"
+            android:title="@string/settings_item_feedback_title">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:lkongdroid@outlook.com" />
+        </Preference>
+        <Preference
             android:title="@string/settings_item_about_title">
             <intent
                 android:targetPackage="org.cryse.lkong"
