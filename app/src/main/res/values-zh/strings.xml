@@ -31,7 +31,7 @@
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
     <string name="format_timeline_reply_to_thread">\@%1$s 发表新主题:</string>
-    <string name="format_timeline_reply_to_reply">\@%1$s 在 %2$s 回复</string>
+    <string name="format_timeline_reply_to_reply">\@%1$s 回复了 %2$s</string>
     <string name="format_timeline_create_thread">发表新主题：%1$s</string>
     <string name="format_post_reply_title">回复: %1$s</string>
     <string name="format_post_ordinal">%1$d 楼</string>
