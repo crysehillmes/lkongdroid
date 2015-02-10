@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
@@ -101,7 +102,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mainContent = timelineModel.getMessage();
                 }
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView)
+                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);

@@ -8,7 +8,20 @@
             android:summary="@string/settings_item_is_night_mode_summary"
             android:title="@string/settings_item_is_night_mode_title" />
     </PreferenceCategory>
-
+    <PreferenceCategory android:title="@string/settings_category_forum_title">
+        <ListPreference
+            android:key="prefs_image_download_policy"
+            android:defaultValue="0"
+            android:dialogTitle="@string/settings_item_image_download_policy_title"
+            android:entries="@array/image_download_policy_arrays"
+            android:entryValues="@array/image_download_policy_values_arrays"
+            android:title="@string/settings_item_image_download_policy_title" />
+        <EditTextPreference
+            android:key="post_extra_tail_text"
+            android:title="@string/settings_item_post_extra_tail_text_title"
+            android:summary="@string/settings_item_post_extra_tail_text_summary"
+            android:defaultValue="@string/settings_item_post_extra_tail_text_default"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_other_title">
         <Preference
             android:summary="@string/settings_item_feedback_value"
@@ -17,13 +30,23 @@
                 android:action="android.intent.action.VIEW"
                 android:data="mailto:lkongdroid@outlook.com" />
         </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_author_title">
+        <Preference
+            android:key="prefs_about_changelog"
+            android:summary="@string/settings_item_change_log_summary"
+            android:title="@string/settings_item_change_log_title"/>
+        <Preference
+            android:key="prefs_about_version"
+            android:summary=""
+            android:title="@string/settings_item_version"/>
         <Preference
             android:title="@string/settings_item_about_title">
             <intent
                 android:targetPackage="org.cryse.lkong"
                 android:targetClass="org.cryse.lkong.ui.SettingsActivity" >
                 <extra android:name="type" android:value="about" />
-                </intent>
+            </intent>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

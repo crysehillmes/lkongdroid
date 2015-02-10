@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.lkong.event.NewThreadDoneEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewThreadResult;
@@ -46,6 +47,7 @@ import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewThreadView;
 import org.cryse.utils.ColorUtils;
+import org.cryse.utils.preference.StringPreference;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,6 +73,10 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
 
     @Inject
     RxEventBus mEventBus;
+
+    @Inject
+    @PrefsPostTail
+    StringPreference mPostTailText;
 
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
@@ -194,7 +200,10 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         if(spannableContent != null && spannableContent.length() > 0 && !TextUtils.isEmpty(title)) {
             if (mSendServiceBinder != null) {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
-                mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, android.text.Html.toHtml(spannableContent), false);
+                StringBuilder sendContentBuilder = new StringBuilder();
+                sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
+                sendContentBuilder.append("<br><br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
+                mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, sendContentBuilder.toString(), false);
                 // finishCompat();
             }
         } else if(TextUtils.isEmpty(title)){

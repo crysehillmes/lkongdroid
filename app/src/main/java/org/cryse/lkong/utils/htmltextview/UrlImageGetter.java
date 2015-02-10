@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 Antarix Tandon
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
@@ -30,29 +14,33 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.cryse.lkong.utils.ConnectionUtils;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;
-    TextView mTargetTextView;
+    WeakReference<TextView> mTargetTextView;
     Picasso picasso;
     final Resources mResources;
     int mEmoticonSize  = 0;
     int mMaxImageWidth = 0;
     int mPlaceHolderResource  = 0;
     int mErrorResource = 0;
+    int mImageDownloadPolicy = 0;
     /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
      * @param context
      * @param targetTextView
      */
-    public UrlImageGetter(Context context, TextView targetTextView) {
+    public UrlImageGetter(Context context, TextView targetTextView, int downloadPolicy) {
         this.mContext = context;
-        this.mTargetTextView = targetTextView;
+        this.mTargetTextView = new WeakReference<TextView>(targetTextView);
         this.picasso = Picasso.with(context);
         this.mResources = context.getResources();
+        this.mImageDownloadPolicy = downloadPolicy;
         // this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
     }
 
@@ -90,12 +78,16 @@ public class UrlImageGetter implements ImageGetter {
                         mEmoticonSize == 0 ? emojiDrawable.getIntrinsicHeight() : mEmoticonSize);
                 return emojiDrawable;
             } catch (IOException e) {
-                Log.d("UrlImageGetter::getDrawable()", "getDrawable from assets failed.", e);
+                Log.d("UrlImageGetter", "getDrawable() from assets failed.", e);
             }
         }
 
-        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView, mMaxImageWidth);
-        picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView.get(), mMaxImageWidth);
+        if(ConnectionUtils.shouldDownloadImage(mContext, mImageDownloadPolicy)) {
+            picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        } else {
+            picasso.load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        }
         return urlDrawable;
     }
 

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.umeng.analytics.AnalyticsConfig;
+import com.umeng.update.UmengUpdateAgent;
 
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
@@ -45,6 +46,8 @@ public class LKongApplication extends Application {
         Timber.plant(new CrashReportingTree());
         AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
         Crashlytics.start(this);
+        UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
+        UmengUpdateAgent.update(this);
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         mEventBus = new RxEventBus();

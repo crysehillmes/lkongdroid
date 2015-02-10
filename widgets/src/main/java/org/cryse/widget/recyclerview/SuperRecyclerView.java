@@ -326,14 +326,14 @@ public class SuperRecyclerView extends FrameLayout {
         return mRecyclerView.getAdapter();
     }
 
-    private int getFirstVisiblePosition() {
+    public int getFirstVisiblePosition() {
         RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        if(layoutManager instanceof LinearLayoutManager) {
-            LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
-            return linearLayoutManager.findFirstVisibleItemPosition();
-        } else if(layoutManager instanceof GridLayoutManager) {
+        if(layoutManager instanceof GridLayoutManager) {
             GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
             return gridLayoutManager.findFirstVisibleItemPosition();
+        } else if(layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
+            return linearLayoutManager.findFirstVisibleItemPosition();
         } else {
             throw new IllegalStateException();
         }

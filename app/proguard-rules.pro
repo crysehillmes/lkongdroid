@@ -115,3 +115,8 @@
 # Tika's optional deps
 -dontwarn aQute.**
 -dontwarn org.osgi.**
+
+-keepclassmembers class * {
+   public <init>(org.json.JSONObject);
+}
+-keep class com.umeng.** { *; }

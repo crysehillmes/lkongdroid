@@ -6,7 +6,7 @@ import org.cryse.lkong.model.ThreadInfoModel;
 import java.util.List;
 
 public interface PostListView extends ContentView{
-    public void showPostList(int page, List<PostModel> posts);
+    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition);
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel);
     public void onAddOrRemoveFavoriteComplete(boolean isFavorite);
 }
