@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.cryse.lkong.utils.ConnectionUtils;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -26,17 +28,19 @@ public class UrlImageGetter implements ImageGetter {
     int mMaxImageWidth = 0;
     int mPlaceHolderResource  = 0;
     int mErrorResource = 0;
+    int mImageDownloadPolicy = 0;
     /**
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
      * @param context
      * @param targetTextView
      */
-    public UrlImageGetter(Context context, TextView targetTextView) {
+    public UrlImageGetter(Context context, TextView targetTextView, int downloadPolicy) {
         this.mContext = context;
         this.mTargetTextView = new WeakReference<TextView>(targetTextView);
         this.picasso = Picasso.with(context);
         this.mResources = context.getResources();
+        this.mImageDownloadPolicy = downloadPolicy;
         // this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
     }
 
@@ -79,7 +83,11 @@ public class UrlImageGetter implements ImageGetter {
         }
 
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView.get(), mMaxImageWidth);
-        picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        if(ConnectionUtils.shouldDownloadImage(mContext, mImageDownloadPolicy)) {
+            picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        } else {
+            picasso.load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+        }
         return urlDrawable;
     }
 

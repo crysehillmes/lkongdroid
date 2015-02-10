@@ -9,4 +9,7 @@ public class PreferenceConstant {
 
     public static final String SHARED_PREFERENCE_POST_TAIL_TEXT = "post_extra_tail_text";
     public static final String SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE = "";
+
+    public static final String SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY = "prefs_image_download_policy";
+    public static final String SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE = "0";
 }

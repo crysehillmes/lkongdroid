@@ -9,7 +9,6 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.umeng.update.UmengUpdateAgent;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -27,6 +26,8 @@ public class SettingsFragment extends PreferenceFragment {
         mOnConcisePreferenceChangedListener = new OnConcisePreferenceChangedListener();
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_settings);
+
+        setImagePolicySummary();
         setupVersionPrefs();
     }
 
@@ -52,7 +53,18 @@ public class SettingsFragment extends PreferenceFragment {
                     parentActivity.reloadTheme();
                 }
             }
+            if(key.equals(PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY)) {
+                setImagePolicySummary();
+            }
         }
+    }
+
+    public void setImagePolicySummary() {
+        String downloadPolicyString = getPreferenceManager().getSharedPreferences().getString(PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE);
+        int imageDownloadPolicy = Integer.valueOf(downloadPolicyString);
+        String[] policyArray = getActivity().getResources().getStringArray(R.array.image_download_policy_arrays);
+        Preference imageDownloadPolicyPrefs = findPreference(PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY);
+        imageDownloadPolicyPrefs.setSummary(policyArray[imageDownloadPolicy]);
     }
 
     public void setupVersionPrefs() {

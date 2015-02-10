@@ -9,6 +9,13 @@
             android:title="@string/settings_item_is_night_mode_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
+        <ListPreference
+            android:key="prefs_image_download_policy"
+            android:defaultValue="0"
+            android:dialogTitle="@string/settings_item_image_download_policy_title"
+            android:entries="@array/image_download_policy_arrays"
+            android:entryValues="@array/image_download_policy_values_arrays"
+            android:title="@string/settings_item_image_download_policy_title" />
         <EditTextPreference
             android:key="post_extra_tail_text"
             android:title="@string/settings_item_post_extra_tail_text_title"

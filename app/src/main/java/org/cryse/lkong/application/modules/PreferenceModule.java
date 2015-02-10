@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
+import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.utils.preference.BooleanPreference;
@@ -48,5 +49,11 @@ public class PreferenceModule {
     @PrefsPostTail
     StringPreference providePostTailText(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT, PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE);
+    }
+
+    @Provides
+    @PrefsImageDownloadPolicy
+    StringPreference provideImageDownloadPolicy(SharedPreferences preferences) {
+        return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE);
     }
 }

@@ -72,6 +72,7 @@
     <string name="settings_category_other_title">其他</string>
     <string name="settings_item_about_title">关于</string>
 
+    <string name="settings_item_image_download_policy_title">图片加载策略</string>
     <!-- About -->
     <string name="settings_about_activity_title">关于</string>
     <string name="settings_category_author_title">关于</string>
@@ -91,4 +92,17 @@
     <string name="format_post_tail_prefix">&#160;──&#160;</string>
     <string name="settings_item_post_extra_tail_text_default">来自龙的天空 Android 客户端</string>
     <string name="settings_category_forum_title">论坛设置</string>
+
+
+    <string-array name="image_download_policy_arrays">
+        <item>总是加载</item>
+        <item>永不加载</item>
+        <item>仅 WiFi 加载</item>
+    </string-array>
+
+    <string-array name="image_download_policy_values_arrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

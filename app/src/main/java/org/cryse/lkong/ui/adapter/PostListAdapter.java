@@ -38,10 +38,17 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private OnItemReplyClickListener mOnItemReplyClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
-    public PostListAdapter(Context context, List<PostModel> mItemList, int maxImageWidth) {
+    private int mImageDownloadPolicy;
+
+    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy, int maxImageWidth) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = maxImageWidth;
+        mImageDownloadPolicy = imageDownloadPolicy;
+    }
+
+    public void setImageDownloadPolicy(int imageDownloadPolicy) {
+        mImageDownloadPolicy = imageDownloadPolicy;
     }
 
     public void setOnItemReplyClickListener(OnItemReplyClickListener onItemReplyClickListener) {
@@ -65,7 +72,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView)
+                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setMaxImageWidth(mMaxImageWidth)

@@ -90,6 +90,7 @@
     <string name="settings_item_about_title">About</string>
 
 
+    <string name="settings_item_image_download_policy_title">Image download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
     <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post.</string>
     <string name="format_post_tail_prefix">&#160;——&#160;</string>
@@ -109,4 +110,16 @@
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
+
+    <string-array name="image_download_policy_arrays">
+        <item>Always</item>
+        <item>Never</item>
+        <item>Only WiFi</item>
+    </string-array>
+
+    <string-array name="image_download_policy_values_arrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
