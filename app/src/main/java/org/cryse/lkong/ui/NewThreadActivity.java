@@ -202,7 +202,8 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
-                sendContentBuilder.append("<br><br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
+                if(!TextUtils.isEmpty(mPostTailText.get()))
+                    sendContentBuilder.append("<br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
                 mSendServiceBinder.sendThread(mUserAccountManager.getAuthObject(), title, mForumId, sendContentBuilder.toString(), false);
                 // finishCompat();
             }

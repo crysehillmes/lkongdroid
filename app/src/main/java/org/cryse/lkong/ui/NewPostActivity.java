@@ -203,7 +203,8 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
-                sendContentBuilder.append("<br><br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
+                if(!TextUtils.isEmpty(mPostTailText.get()))
+                    sendContentBuilder.append("<br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
                 mSendServiceBinder.sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, sendContentBuilder.toString());
                 // finishCompat();
             }
