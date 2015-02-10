@@ -41,11 +41,11 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
                 ForumModel forumModel = (ForumModel)item;
 
                 viewHolder.mForumTitleTextView.setText(forumModel.getName());
-                viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));
+                /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
                 Picasso.with(getContext())
                         .load(forumModel.getIcon())
-                        .placeholder(R.drawable.ic_default_avatar)
-                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
                         .into(viewHolder.mForumIconImageView);
             }
         }
@@ -58,8 +58,8 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
         public ImageView mForumIconImageView;
         @InjectView(R.id.recyclerview_item_forum_textview_title)
         public TextView mForumTitleTextView;
-        @InjectView(R.id.recyclerview_item_forum_textview_secondary)
-        public TextView mForumSecondaryTextView;
+        /*@InjectView(R.id.recyclerview_item_forum_textview_secondary)
+        public TextView mForumSecondaryTextView;*/
 
         public ViewHolder(View v) {
             super(v);
