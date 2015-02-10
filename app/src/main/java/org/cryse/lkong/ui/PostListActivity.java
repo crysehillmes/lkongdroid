@@ -284,7 +284,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 NewPostDoneEvent doneEvent = (NewPostDoneEvent)event;
                 long tid = doneEvent.getPostResult().getTid();
                 if(tid == mThreadId) {
-                    int newReplyCount = doneEvent.getPostResult().getReplyCount() + 1; // 楼主本身的一楼未计算
+                    int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
                     if(newReplyCount > mThreadModel.getReplies())
                         mThreadModel.setReplies(newReplyCount);
                     int newPageCount = newReplyCount == 0 ? 1 : (int)Math.ceil((double) newReplyCount / 20d);
@@ -297,7 +297,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         runOnUiThread(this::updatePageIndicator);
                     }
                     if(newPageCount == mCurrentPage) {
-                        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage);
+                        runOnUiThread(()-> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage));
                     }
                 }
 
