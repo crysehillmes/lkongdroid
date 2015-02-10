@@ -168,6 +168,8 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
             mResultTextView.setText("");
             mDefaultAccountUid.set(signInResult.getMe().getUid());
             mUserAccountManager.refresh();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
             finishCompat();
         } else {
             Timber.d("SignInActivity::signInComplete() failed().", LOG_TAG);
