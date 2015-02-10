@@ -187,9 +187,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 } else if(dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
-                    mToolbarQuickReturn.show();
-                    mFooterPagerControl.show();
-                    mFab.show();
+                    if(Math.abs(mNegativeDyAmount - mBaseTranslationY) > toolbarHeight) {
+                        mToolbarQuickReturn.show();
+                        mFooterPagerControl.show();
+                        mFab.show();
+                    }
                 }
             }
         });
