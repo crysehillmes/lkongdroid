@@ -8,7 +8,13 @@
             android:summary="@string/settings_item_is_night_mode_summary"
             android:title="@string/settings_item_is_night_mode_title" />
     </PreferenceCategory>
-
+    <PreferenceCategory android:title="@string/settings_category_forum_title">
+        <EditTextPreference
+            android:key="post_extra_tail_text"
+            android:title="@string/settings_item_post_extra_tail_text_title"
+            android:summary="@string/settings_item_post_extra_tail_text_summary"
+            android:defaultValue="@string/settings_item_post_extra_tail_text_default"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_other_title">
         <Preference
             android:summary="@string/settings_item_feedback_value"

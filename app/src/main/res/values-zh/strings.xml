@@ -86,4 +86,9 @@
     <string name="settings_item_feedback_value">有关界面、功能改进的建议，或者错误报告都可以~</string>
     <string name="settings_item_feedback_title">建议与反馈</string>
     <string name="settings_item_version">版本</string>
+    <string name="settings_item_post_extra_tail_text_summary">设置你的小尾巴内容</string>
+    <string name="settings_item_post_extra_tail_text_title">小尾巴</string>
+    <string name="format_post_tail_prefix">&#160;──&#160;</string>
+    <string name="settings_item_post_extra_tail_text_default">来自龙的天空 Android 客户端</string>
+    <string name="settings_category_forum_title">论坛设置</string>
 </resources>

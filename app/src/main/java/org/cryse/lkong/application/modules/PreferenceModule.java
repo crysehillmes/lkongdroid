@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
+import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.LongPreference;
 import org.cryse.utils.preference.PreferenceConstant;
@@ -41,5 +42,11 @@ public class PreferenceModule {
     @PrefsDefaultAccountUid
     LongPreference provideDefaultAccountUid(SharedPreferences preferences) {
         return new LongPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID, PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID_VALUE);
+    }
+
+    @Provides
+    @PrefsPostTail
+    StringPreference providePostTailText(SharedPreferences preferences) {
+        return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT, PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE);
     }
 }
