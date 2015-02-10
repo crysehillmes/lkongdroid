@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 Antarix Tandon
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
@@ -35,7 +19,7 @@ import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;
-    TextView mTargetTextView;
+    WeakReference<TextView> mTargetTextView;
     Picasso picasso;
     final Resources mResources;
     int mEmoticonSize  = 0;
@@ -50,7 +34,7 @@ public class UrlImageGetter implements ImageGetter {
      */
     public UrlImageGetter(Context context, TextView targetTextView) {
         this.mContext = context;
-        this.mTargetTextView = targetTextView;
+        this.mTargetTextView = new WeakReference<TextView>(targetTextView);
         this.picasso = Picasso.with(context);
         this.mResources = context.getResources();
         // this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
@@ -90,11 +74,11 @@ public class UrlImageGetter implements ImageGetter {
                         mEmoticonSize == 0 ? emojiDrawable.getIntrinsicHeight() : mEmoticonSize);
                 return emojiDrawable;
             } catch (IOException e) {
-                Log.d("UrlImageGetter::getDrawable()", "getDrawable from assets failed.", e);
+                Log.d("UrlImageGetter", "getDrawable() from assets failed.", e);
             }
         }
 
-        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView, mMaxImageWidth);
+        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView.get(), mMaxImageWidth);
         picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
         return urlDrawable;
     }
