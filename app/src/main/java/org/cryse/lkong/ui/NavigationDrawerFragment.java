@@ -430,6 +430,7 @@ public class NavigationDrawerFragment extends AbstractFragment implements UserAc
             }
         } else {
             mAndroidNavigation.navigateToSignInActivity(getActivity());
+            getThemedActivity().finishCompat();
         }
     }
 
