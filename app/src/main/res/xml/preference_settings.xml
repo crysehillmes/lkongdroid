@@ -17,13 +17,23 @@
                 android:action="android.intent.action.VIEW"
                 android:data="mailto:lkongdroid@outlook.com" />
         </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_author_title">
+        <Preference
+            android:key="prefs_about_changelog"
+            android:summary="@string/settings_item_change_log_summary"
+            android:title="@string/settings_item_change_log_title"/>
+        <Preference
+            android:key="prefs_about_version"
+            android:summary=""
+            android:title="@string/settings_item_version"/>
         <Preference
             android:title="@string/settings_item_about_title">
             <intent
                 android:targetPackage="org.cryse.lkong"
                 android:targetClass="org.cryse.lkong.ui.SettingsActivity" >
                 <extra android:name="type" android:value="about" />
-                </intent>
+            </intent>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
