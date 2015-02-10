@@ -211,7 +211,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onBackwardClick() {
                 if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
-                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage - 1);
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage - 1, true);
             }
 
             @Override
@@ -221,7 +221,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
                             if(i + 1 == mCurrentPage) return;
-                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1);
+                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1, true);
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -230,7 +230,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onForwardClick() {
                 if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
-                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1);
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1, true);
             }
         };
     }
@@ -297,7 +297,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         runOnUiThread(this::updatePageIndicator);
                     }
                     if(newPageCount == mCurrentPage) {
-                        runOnUiThread(()-> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage));
+                        runOnUiThread(()-> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false));
                     }
                 }
 
@@ -419,12 +419,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         getPresenter().destroy();
     }
 
-    public void showPostList(int page, List<PostModel> posts, boolean resetPosition) {
+    @Override
+    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition) {
         this.mCurrentPage = page;
         updatePageIndicator();
         // mPostCollectionView.getRecyclerView().stopScroll();
         mCollectionAdapter.replaceWith(posts);
-        if(resetPosition) {
+        if(refreshPosition) {
             mPostCollectionView.getRecyclerView().scrollToPosition(0);
             mToolbarQuickReturn.show();
         }
@@ -432,11 +433,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             mIsFavorite = mItemList.get(0).isFavorite();
         }
         invalidateOptionsMenu();
-    }
-
-    @Override
-    public void showPostList(int page, List<PostModel> posts) {
-        showPostList(page, posts, true);
     }
 
     @Override
@@ -457,7 +453,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
 
         if(mPageCount > 0)
-            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1);
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true);
     }
 
     @Override
