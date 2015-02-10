@@ -79,6 +79,15 @@ public class MainActivity extends AbstractThemeableActivity
     public void onInitialNavigationDrawerItems() {
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
+                        getString(R.string.drawer_item_timeline),
+                        NavigationType.FRAGMENT_TIMELINE,
+                        R.drawable.ic_drawer_timeline,
+                        true,
+                        true
+                )
+        );
+        mNavigationDrawerFragment.getNavigationAdapter().addItem(
+                new NavigationDrawerItem(
                         getString(R.string.drawer_item_forum_list),
                         NavigationType.FRAGMENT_FORUM_LIST,
                         R.drawable.ic_drawer_forum_list,
@@ -91,15 +100,6 @@ public class MainActivity extends AbstractThemeableActivity
                         getString(R.string.drawer_item_at_me),
                         NavigationType.FRAGMENT_MENTIONS,
                         R.drawable.ic_drawer_mentions,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_timeline),
-                        NavigationType.FRAGMENT_TIMELINE,
-                        R.drawable.ic_drawer_timeline,
                         true,
                         true
                 )
