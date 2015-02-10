@@ -140,7 +140,7 @@ public class ForumListFragment extends MainActivityFragment implements ForumList
         mRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_column_count)));
         mListAdapter = new ForumListAdapter(getActivity(), mForumList);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setRefreshListener(() -> getPresenter().getForumList(true));
