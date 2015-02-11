@@ -79,18 +79,18 @@ public class MainActivity extends AbstractThemeableActivity
     public void onInitialNavigationDrawerItems() {
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_notification),
-                        NavigationType.FRAGMENT_NOTIFICATION,
-                        R.drawable.ic_drawer_home,
+                        getString(R.string.drawer_item_timeline),
+                        NavigationType.FRAGMENT_TIMELINE,
+                        R.drawable.ic_drawer_timeline,
                         true,
                         true
                 )
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_timeline),
-                        NavigationType.FRAGMENT_TIMELINE,
-                        R.drawable.ic_drawer_timeline,
+                        getString(R.string.drawer_item_notification),
+                        NavigationType.FRAGMENT_NOTIFICATION,
+                        R.drawable.ic_drawer_notification,
                         true,
                         true
                 )
