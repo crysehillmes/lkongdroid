@@ -52,7 +52,7 @@ public abstract class SimpleCollectionFragment<
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.fragment_timeline_recyclerview)
+    @InjectView(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
     AdapterType mCollectionAdapter;
@@ -66,6 +66,7 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        injectThis();
     }
 
     @Override

@@ -122,13 +122,16 @@ public class NotificationFragment extends MainActivityFragment {
                     args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, false);
                     fragment = TimelineFragment.newInstance(args);
                     break;
+                case 1:
+                    fragment = NoticeFragment.newInstance(args);
+                    break;
             }
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
 
         @Override
@@ -136,6 +139,9 @@ public class NotificationFragment extends MainActivityFragment {
             String title = null;
             switch (position) {
                 case 0:
+                    title = getString(R.string.drawer_item_at_me);
+                    break;
+                case 1:
                     title = getString(R.string.drawer_item_at_me);
                     break;
             }

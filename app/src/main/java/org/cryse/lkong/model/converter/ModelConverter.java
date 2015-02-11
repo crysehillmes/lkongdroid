@@ -279,7 +279,7 @@ public class ModelConverter {
                 model.setDateline(item.getDateline());
                 model.setNoticeId(Long.valueOf(item.getId().substring(7)));
                 model.setNoticeNote(item.getNote());
-                model.setSortkey(item.getSortkey());
+                model.setSortKey(item.getSortkey());
                 model.setUserId(item.getUid());
                 model.setUserName(item.getUsername());
                 noticeModelList.add(model);
