@@ -3,9 +3,9 @@ package org.cryse.lkong.ui.navigation;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
+import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
@@ -33,7 +34,7 @@ public class AndroidNavigation {
 
     public void attachMainActivity(MainActivity mainActivity) {
         this.mMainActivity = mainActivity;
-        this.mMainActivityFragmentManager = mainActivity.getFragmentManager();
+        this.mMainActivityFragmentManager = mainActivity.getSupportFragmentManager();
     }
 
     public void detachMainActivity() {
@@ -60,12 +61,19 @@ public class AndroidNavigation {
         popEntireFragmentBackStack();
         FragmentTransaction fragmentTransaction = mMainActivityFragmentManager
                 .beginTransaction();
-        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in,
-                android.R.animator.fade_out);
+        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                android.R.anim.fade_out);
         if(backStackTag != null)
             fragmentTransaction.addToBackStack(backStackTag);
         fragmentTransaction.replace(R.id.container, targetFragment);
         fragmentTransaction.commit();
+    }
+
+    public void navigateToNotificationFragment() {
+        if(isAttachToMainActivity()) {
+            Fragment fragment = NotificationFragment.newInstance(null);
+            switchContentFragment(fragment, null);
+        }
     }
 
     public void navigateToForumListFragment(Bundle args) {
@@ -86,15 +94,16 @@ public class AndroidNavigation {
         if(isAttachToMainActivity()) {
             Bundle args = new Bundle();
             args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_TIMELINE);
+            args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, true);
             Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }
     }
 
-    public void navigateToAtMeMessagesFragment() {
+    public void navigateToMentionsFragment() {
         if(isAttachToMainActivity()) {
             Bundle args = new Bundle();
-            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_MENTIONS);
             Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }

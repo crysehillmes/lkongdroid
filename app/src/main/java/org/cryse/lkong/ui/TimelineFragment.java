@@ -39,6 +39,7 @@ import butterknife.InjectView;
 public class TimelineFragment extends MainActivityFragment implements TimelineView {
     public static final String LOG_TAG = TimelineFragment.class.getName();
     public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
+    public static final String BUNDLE_IN_MAIN_ACTIVITY = "timeline_in_main_activity";
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
@@ -62,6 +63,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     TimelineAdapter mCollectionAdapter;
 
     List<TimelineModel> mItemList = new ArrayList<TimelineModel>();
+    boolean mInMainActivity = false;
 
     public static TimelineFragment newInstance(Bundle args) {
         TimelineFragment fragment = new TimelineFragment();
@@ -83,6 +85,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         if(args == null)
             throw new IllegalArgumentException();
         mListType = args.getInt(BUNDLE_LIST_TYPE);
+        mInMainActivity = args.getBoolean(BUNDLE_IN_MAIN_ACTIVITY);
     }
 
     @Nullable
@@ -95,7 +98,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     }
 
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, true);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, mInMainActivity);
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(new DefaultItemAnimator());
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -120,13 +123,14 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_favorites, menu);
+        if(mInMainActivity)
+            inflater.inflate(R.menu.menu_favorites, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public String getFragmentTitle() {
-        if(mListType == TimelineListType.TYPE_AT_ME) {
+        if(mListType == TimelineListType.TYPE_MENTIONS) {
             return getString(R.string.drawer_item_at_me);
         } else if(mListType == TimelineListType.TYPE_TIMELINE) {
             return getString(R.string.drawer_item_timeline);
@@ -158,6 +162,12 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
         mEventBus.toObservable().subscribe(event -> {
         });
+    }
+
+    @Override
+    protected void setActivityTitle() {
+        if(mInMainActivity)
+            super.setActivityTitle();
     }
 
     @Override

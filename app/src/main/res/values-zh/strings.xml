@@ -19,6 +19,7 @@
     <string name="dialog_new_post_sending">正在发送…</string>
     <string name="dialog_post_list_choose_page">跳转至</string>
     <string name="drawer_item_favorites">我的收藏</string>
+    <string name="drawer_item_notification">消息通知</string>
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
     <string name="drawer_item_timeline">信息流</string>
@@ -105,4 +106,9 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string name="button_punch">签到</string>
+    <string name="button_punch_complete">签到完成</string>
+    <string name="button_punch_error">签到失败</string>
+    <string name="button_punched">已签到 %1$d 天</string>
 </resources>

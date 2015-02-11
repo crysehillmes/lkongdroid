@@ -17,7 +17,8 @@
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>
 
-    <string name="drawer_item_forum_list">Forum List</string>
+    <string name="drawer_item_notification">Notification</string>
+    <string name="drawer_item_forum_list">Forums</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_timeline">Timeline</string>
     <string name="drawer_item_at_me">Mentions</string>
@@ -122,4 +123,8 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string name="button_punch">Punch</string>
+    <string name="button_punch_complete">Punch Done</string>
+    <string name="button_punch_error">Punch Error</string>
+    <string name="button_punched">Punch Day: %1$d</string>
 </resources>
