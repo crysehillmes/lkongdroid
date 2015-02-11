@@ -14,6 +14,12 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.utils.preference.PreferenceConstant;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
 import timber.log.Timber;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -109,10 +115,27 @@ public class SettingsFragment extends PreferenceFragment {
                         .positiveText(android.R.string.ok)
                         .build();
                 WebView webView = (WebView) dialog.getCustomView().findViewById(R.id.webview);
-                webView.loadUrl("file:///android_asset/changelog.html");
+                try {
+                    String data = readChangelogFromAssets();
+                    webView.loadDataWithBaseURL(null, data, "text/html", "UTF-8", null);
+                } catch (Exception e) {
+                    webView.loadUrl("file:///android_asset/changelog.html");
+                }
                 dialog.show();
                 return true;
             }
         });
+    }
+
+    private String readChangelogFromAssets() throws Exception {
+        StringBuilder buffer = new StringBuilder();
+        InputStream inputStream = getActivity().getAssets().open("changelog.html");
+        BufferedReader textReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        String str;
+        while ((str = textReader.readLine()) != null) {
+            buffer.append(str);
+        }
+        textReader.close();
+        return buffer.toString();
     }
 }
