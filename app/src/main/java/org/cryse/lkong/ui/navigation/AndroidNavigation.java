@@ -15,7 +15,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
-import org.cryse.lkong.ui.HomePageFragment;
+import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
@@ -69,9 +69,9 @@ public class AndroidNavigation {
         fragmentTransaction.commit();
     }
 
-    public void navigateToHomeFragment() {
+    public void navigateToNotificationFragment() {
         if(isAttachToMainActivity()) {
-            Fragment fragment = HomePageFragment.newInstance(null);
+            Fragment fragment = NotificationFragment.newInstance(null);
             switchContentFragment(fragment, null);
         }
     }
@@ -100,10 +100,10 @@ public class AndroidNavigation {
         }
     }
 
-    public void navigateToAtMeMessagesFragment() {
+    public void navigateToMentionsFragment() {
         if(isAttachToMainActivity()) {
             Bundle args = new Bundle();
-            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
+            args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_MENTIONS);
             Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }

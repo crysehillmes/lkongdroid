@@ -130,7 +130,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Override
     public String getFragmentTitle() {
-        if(mListType == TimelineListType.TYPE_AT_ME) {
+        if(mListType == TimelineListType.TYPE_MENTIONS) {
             return getString(R.string.drawer_item_at_me);
         } else if(mListType == TimelineListType.TYPE_TIMELINE) {
             return getString(R.string.drawer_item_timeline);

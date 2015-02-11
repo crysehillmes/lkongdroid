@@ -17,7 +17,7 @@
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>
 
-    <string name="drawer_item_home">Home</string>
+    <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_timeline">Timeline</string>

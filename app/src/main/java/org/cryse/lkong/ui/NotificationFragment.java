@@ -23,17 +23,17 @@ import org.cryse.widget.slidingtabs.SlidingTabLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class HomePageFragment extends MainActivityFragment {
-    private static final String LOG_TAG = HomePageFragment.class.getName();
+public class NotificationFragment extends MainActivityFragment {
+    private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
-    @InjectView(R.id.fragment_home_sliding_tabs)
+    @InjectView(R.id.fragment_notification_sliding_tabs)
     SlidingTabLayout mTabLayout;
-    @InjectView(R.id.fragment_home_viewpager)
+    @InjectView(R.id.fragment_notification_viewpager)
     ViewPager mViewPager;
-    HomeFragmentPagerAdapter mHomePagerAdapter;
+    NotificationFragmentPagerAdapter mHomePagerAdapter;
 
-    public static HomePageFragment newInstance(Bundle args) {
-        HomePageFragment fragment = new HomePageFragment();
+    public static NotificationFragment newInstance(Bundle args) {
+        NotificationFragment fragment = new NotificationFragment();
         if(args != null)
             fragment.setArguments(args);
         return fragment;
@@ -54,7 +54,7 @@ public class HomePageFragment extends MainActivityFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_home_page, null);
+        View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
         ButterKnife.inject(this, contentView);
         return contentView;
     }
@@ -79,7 +79,7 @@ public class HomePageFragment extends MainActivityFragment {
     }
 
     private void initViewPager() {
-        mHomePagerAdapter = new HomeFragmentPagerAdapter(getChildFragmentManager());
+        mHomePagerAdapter = new NotificationFragmentPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mHomePagerAdapter);
         mTabLayout.setTextColor(getResources().getColor(R.color.text_color_secondary_dark));
         mTabLayout.setViewPager(mViewPager);
@@ -93,7 +93,7 @@ public class HomePageFragment extends MainActivityFragment {
 
     @Override
     public String getFragmentTitle() {
-        return getString(R.string.drawer_item_home);
+        return getString(R.string.drawer_item_notification);
     }
 
     @Override
@@ -106,9 +106,9 @@ public class HomePageFragment extends MainActivityFragment {
         AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
-    class HomeFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    class NotificationFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-        HomeFragmentPagerAdapter(FragmentManager fm) {
+        NotificationFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -118,7 +118,7 @@ public class HomePageFragment extends MainActivityFragment {
             Bundle args = new Bundle();
             switch (i) {
                 case 0:
-                    args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
+                    args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_MENTIONS);
                     args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, false);
                     fragment = TimelineFragment.newInstance(args);
                     break;

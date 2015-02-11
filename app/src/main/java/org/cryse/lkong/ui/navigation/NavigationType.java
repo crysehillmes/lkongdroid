@@ -2,7 +2,7 @@ package org.cryse.lkong.ui.navigation;
 
 public enum NavigationType{
     ACTIVITY_SETTINGS(0),
-    FRAGMENT_HOME_PAGE(1),
+    FRAGMENT_NOTIFICATION(1),
     FRAGMENT_FORUM_LIST(2),
     FRAGMENT_FAVORITES(3),
     FRAGMENT_TIMELINE(4),

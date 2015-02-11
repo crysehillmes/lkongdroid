@@ -79,8 +79,8 @@ public class MainActivity extends AbstractThemeableActivity
     public void onInitialNavigationDrawerItems() {
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_home),
-                        NavigationType.FRAGMENT_HOME_PAGE,
+                        getString(R.string.drawer_item_notification),
+                        NavigationType.FRAGMENT_NOTIFICATION,
                         R.drawable.ic_drawer_home,
                         true,
                         true
@@ -129,8 +129,8 @@ public class MainActivity extends AbstractThemeableActivity
         if(fromSavedInstance) return;
         NavigationDrawerItem item = mNavigationDrawerFragment.getNavigationAdapter().getItem(position);
         switch (item.getNavigationType()) {
-            case FRAGMENT_HOME_PAGE:
-                mNavigation.navigateToHomeFragment();
+            case FRAGMENT_NOTIFICATION:
+                mNavigation.navigateToNotificationFragment();
                 break;
             case FRAGMENT_FORUM_LIST:
                 mNavigation.navigateToForumListFragment(null);
@@ -142,7 +142,7 @@ public class MainActivity extends AbstractThemeableActivity
                 mNavigation.navigateToTimelineFragment();
                 break;
             case FRAGMENT_MENTIONS:
-                mNavigation.navigateToAtMeMessagesFragment();
+                mNavigation.navigateToMentionsFragment();
                 break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity(this);

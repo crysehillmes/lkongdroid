@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
     <org.cryse.widget.slidingtabs.SlidingTabLayout
-        android:id="@+id/fragment_home_sliding_tabs"
+        android:id="@+id/fragment_notification_sliding_tabs"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
@@ -14,8 +14,8 @@
         android:elevation="@dimen/toolbar_elevation"/>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/fragment_home_viewpager"
+        android:id="@+id/fragment_notification_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/fragment_home_sliding_tabs" />
+        android:layout_below="@+id/fragment_notification_sliding_tabs" />
 </RelativeLayout>
