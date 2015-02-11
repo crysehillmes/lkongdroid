@@ -94,6 +94,7 @@ public class AndroidNavigation {
         if(isAttachToMainActivity()) {
             Bundle args = new Bundle();
             args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_TIMELINE);
+            args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, true);
             Fragment fragment = TimelineFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }

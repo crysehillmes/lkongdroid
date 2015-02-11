@@ -118,11 +118,8 @@ public class HomePageFragment extends MainActivityFragment {
             Bundle args = new Bundle();
             switch (i) {
                 case 0:
-                    args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_TIMELINE);
-                    fragment = TimelineFragment.newInstance(args);
-                    break;
-                case 1:
                     args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_AT_ME);
+                    args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, false);
                     fragment = TimelineFragment.newInstance(args);
                     break;
             }
@@ -131,7 +128,7 @@ public class HomePageFragment extends MainActivityFragment {
 
         @Override
         public int getCount() {
-            return 2;
+            return 1;
         }
 
         @Override
@@ -139,13 +136,8 @@ public class HomePageFragment extends MainActivityFragment {
             String title = null;
             switch (position) {
                 case 0:
-                    title = getString(R.string.drawer_item_timeline);
-                    break;
-                case 1:
                     title = getString(R.string.drawer_item_at_me);
                     break;
-                default:
-                    title = "sdfsdf";
             }
             return title;
         }

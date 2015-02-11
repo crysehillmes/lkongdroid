@@ -20,7 +20,6 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
-import org.cryse.lkong.ui.common.ViewPagerFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -37,9 +36,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimelineFragment extends ViewPagerFragment implements TimelineView {
+public class TimelineFragment extends MainActivityFragment implements TimelineView {
     public static final String LOG_TAG = TimelineFragment.class.getName();
     public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
+    public static final String BUNDLE_IN_MAIN_ACTIVITY = "timeline_in_main_activity";
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
@@ -63,6 +63,7 @@ public class TimelineFragment extends ViewPagerFragment implements TimelineView 
     TimelineAdapter mCollectionAdapter;
 
     List<TimelineModel> mItemList = new ArrayList<TimelineModel>();
+    boolean mInMainActivity = false;
 
     public static TimelineFragment newInstance(Bundle args) {
         TimelineFragment fragment = new TimelineFragment();
@@ -84,6 +85,7 @@ public class TimelineFragment extends ViewPagerFragment implements TimelineView 
         if(args == null)
             throw new IllegalArgumentException();
         mListType = args.getInt(BUNDLE_LIST_TYPE);
+        mInMainActivity = args.getBoolean(BUNDLE_IN_MAIN_ACTIVITY);
     }
 
     @Nullable
@@ -96,7 +98,7 @@ public class TimelineFragment extends ViewPagerFragment implements TimelineView 
     }
 
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, false);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, mInMainActivity);
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(new DefaultItemAnimator());
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -121,7 +123,8 @@ public class TimelineFragment extends ViewPagerFragment implements TimelineView 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_favorites, menu);
+        if(mInMainActivity)
+            inflater.inflate(R.menu.menu_favorites, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -159,6 +162,12 @@ public class TimelineFragment extends ViewPagerFragment implements TimelineView 
 
         mEventBus.toObservable().subscribe(event -> {
         });
+    }
+
+    @Override
+    protected void setActivityTitle() {
+        if(mInMainActivity)
+            super.setActivityTitle();
     }
 
     @Override

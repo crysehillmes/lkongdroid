@@ -49,6 +49,10 @@ public abstract class MainActivityFragment extends AbstractFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setActivityTitle();
+    }
+
+    protected void setActivityTitle() {
         Activity activity = getActivity();
         if(activity instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity)activity;
