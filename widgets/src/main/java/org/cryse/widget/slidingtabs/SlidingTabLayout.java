@@ -73,6 +73,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
+    private int mTextColor;
 
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
@@ -173,6 +174,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
         textView.setTypeface(Typeface.DEFAULT_BOLD);
+        textView.setTextColor(mTextColor);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // If we're running on Honeycomb or newer, then we can use the Theme's
@@ -311,4 +313,11 @@ public class SlidingTabLayout extends HorizontalScrollView {
         }
     }
 
+    public int getTextColor() {
+        return mTextColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.mTextColor = textColor;
+    }
 }

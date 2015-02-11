@@ -20,6 +20,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.ui.common.ViewPagerFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -36,7 +37,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimelineFragment extends MainActivityFragment implements TimelineView {
+public class TimelineFragment extends ViewPagerFragment implements TimelineView {
     public static final String LOG_TAG = TimelineFragment.class.getName();
     public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
     private boolean isNoMore = false;
@@ -95,7 +96,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     }
 
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, true);
+        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, false);
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(new DefaultItemAnimator());
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));

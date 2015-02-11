@@ -43,7 +43,7 @@ public class MainActivity extends AbstractThemeableActivity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -79,9 +79,9 @@ public class MainActivity extends AbstractThemeableActivity
     public void onInitialNavigationDrawerItems() {
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_timeline),
-                        NavigationType.FRAGMENT_TIMELINE,
-                        R.drawable.ic_drawer_timeline,
+                        getString(R.string.drawer_item_home),
+                        NavigationType.FRAGMENT_HOME_PAGE,
+                        R.drawable.ic_drawer_home,
                         true,
                         true
                 )
@@ -91,15 +91,6 @@ public class MainActivity extends AbstractThemeableActivity
                         getString(R.string.drawer_item_forum_list),
                         NavigationType.FRAGMENT_FORUM_LIST,
                         R.drawable.ic_drawer_forum_list,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_at_me),
-                        NavigationType.FRAGMENT_MENTIONS,
-                        R.drawable.ic_drawer_mentions,
                         true,
                         true
                 )
@@ -129,6 +120,9 @@ public class MainActivity extends AbstractThemeableActivity
         if(fromSavedInstance) return;
         NavigationDrawerItem item = mNavigationDrawerFragment.getNavigationAdapter().getItem(position);
         switch (item.getNavigationType()) {
+            case FRAGMENT_HOME_PAGE:
+                mNavigation.navigateToHomeFragment();
+                break;
             case FRAGMENT_FORUM_LIST:
                 mNavigation.navigateToForumListFragment(null);
                 break;
