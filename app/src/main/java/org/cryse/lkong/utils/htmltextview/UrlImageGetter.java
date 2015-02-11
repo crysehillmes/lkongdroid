@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.cryse.lkong.utils.ConnectionUtils;
+import org.cryse.lkong.application.LKongApplication;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -83,7 +83,7 @@ public class UrlImageGetter implements ImageGetter {
         }
 
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView.get(), mMaxImageWidth);
-        if(ConnectionUtils.shouldDownloadImage(mContext, mImageDownloadPolicy)) {
+        if(LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy)) {
             picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
         } else {
             picasso.load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);

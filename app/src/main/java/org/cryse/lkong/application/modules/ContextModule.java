@@ -2,6 +2,7 @@ package org.cryse.lkong.application.modules;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
@@ -41,6 +42,12 @@ public class ContextModule {
     @Provides
     public RxEventBus provideRxEventBus() {
         return mEventBus;
+    }
+
+    @Singleton
+    @Provides
+    public ConnectivityManager provideConnectivityManager() {
+        return (ConnectivityManager)mApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Provides

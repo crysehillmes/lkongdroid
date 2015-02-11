@@ -5,7 +5,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.umeng.analytics.AnalyticsConfig;
 import com.umeng.update.UmengUpdateAgent;
 
 import org.cryse.lkong.BuildConfig;
@@ -38,6 +37,7 @@ public class LKongApplication extends Application {
     private SendServiceComponet mSendServiceComponet;
     private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
+    private NetworkPolicyManager mNetworkPolicyManager;
     private RxEventBus mEventBus;
 
     @Override
@@ -51,8 +51,9 @@ public class LKongApplication extends Application {
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         mEventBus = new RxEventBus();
+        mNetworkPolicyManager = new NetworkPolicyManager(this);
         initComponents();
-        mUserAccountComponent.inject(mUserAccountManager);
+        userAccountComponent().inject(mUserAccountManager);
         mUserAccountManager.init();
     }
 
@@ -103,6 +104,10 @@ public class LKongApplication extends Application {
 
     public SendServiceComponet sendServiceComponet() {
         return mSendServiceComponet;
+    }
+
+    public NetworkPolicyManager getNetworkPolicyManager() {
+        return mNetworkPolicyManager;
     }
 
     /** A tree which logs important information for crash reporting. */
