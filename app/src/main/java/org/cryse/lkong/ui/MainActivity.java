@@ -196,4 +196,12 @@ public class MainActivity extends AbstractThemeableActivity
 
         new Handler().postDelayed(() -> mDoubleBackToExitPressedOnce = false, 2000);
     }
+
+    @Override
+    protected int getAppTheme() {
+        if(isNightMode())
+            return R.style.LKongDroidTheme_Dark_NoTranslucent;
+        else
+            return R.style.LKongDroidTheme_Light_NoTranslucent;
+    }
 }

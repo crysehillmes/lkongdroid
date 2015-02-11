@@ -27,4 +27,8 @@
         <item name="theme_arrow_backward_drawable">@drawable/ic_arrow_back_white</item>
         <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_white</item>
     </style>
+
+    <style name="LKongDroidTheme.Dark.NoTranslucent" parent="FrameworkRoot.Dark">
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
 </resources>
