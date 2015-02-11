@@ -2,8 +2,13 @@ package org.cryse.lkong.model.converter;
 
 import android.text.TextUtils;
 
+import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
+import org.cryse.lkong.logic.restservice.model.LKNoticeItem;
+import org.cryse.lkong.logic.restservice.model.LKNoticeRateItem;
+import org.cryse.lkong.logic.restservice.model.LKNoticeRateResult;
+import org.cryse.lkong.logic.restservice.model.LKNoticeResult;
 import org.cryse.lkong.logic.restservice.model.LKPostItem;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
@@ -12,6 +17,9 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKTimelineItem;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.NoticeCountModel;
+import org.cryse.lkong.model.NoticeModel;
+import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -26,10 +34,12 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
@@ -248,6 +258,63 @@ public class ModelConverter {
             timelineModels.add(model);
         }
         return timelineModels;
+    }
+
+    public static NoticeCountModel toNoticeCountModel(LKCheckNoticeCountResult result) {
+        NoticeCountModel model = new NoticeCountModel();
+        model.setUpdateTime(utcLongToLocalDate(result.getTime() * 1000));
+        model.setFansNotice(result.getNotice().getFans());
+        model.setMentionNotice(result.getNotice().getAtme());
+        model.setNotice(result.getNotice().getNotice());
+        model.setPrivateMessageNotice(result.getNotice().getPm());
+        model.setRateNotice(result.getNotice().getRate());
+        return model;
+    }
+
+    public static List<NoticeModel> toNoticeModel(LKNoticeResult result) {
+        List<NoticeModel> noticeModelList = new ArrayList<NoticeModel>();
+        if(result.getData() != null)
+            for(LKNoticeItem item : result.getData()) {
+                NoticeModel model = new NoticeModel();
+                model.setDateline(item.getDateline());
+                model.setNoticeId(Long.valueOf(item.getId().substring(7)));
+                model.setNoticeNote(item.getNote());
+                model.setSortkey(item.getSortkey());
+                model.setUserId(item.getUid());
+                model.setUserName(item.getUsername());
+                noticeModelList.add(model);
+            }
+
+        return noticeModelList;
+    }
+
+    public static List<NoticeRateModel> toNoticeRateModel(LKNoticeRateResult result) {
+        List<NoticeRateModel> noticeModelList = new ArrayList<NoticeRateModel>();
+        if(result.getData() != null)
+            for(LKNoticeRateItem item : result.getData()) {
+                NoticeRateModel model = new NoticeRateModel();
+                model.setDateline(item.getDateline());
+                model.setUserId(item.getUid());
+                model.setUserName(item.getUsername());
+                model.setExtCredits(item.getExtcredits());
+                model.setId(item.getId());
+                model.setScore(Integer.valueOf(item.getScore()));
+                model.setMessage(item.getMessage());
+                model.setReason(item.getReason());
+                model.setPid(item.getPid());
+                model.setSortKey(item.getSortkey());
+                noticeModelList.add(model);
+            }
+
+        return noticeModelList;
+    }
+
+    private static Date utcLongToLocalDate(long utcMillisecond) {
+        Calendar calendar = Calendar.getInstance();
+        TimeZone tz = TimeZone.getDefault();
+        calendar.setTimeInMillis(utcMillisecond);
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+        return calendar.getTime();
     }
 
     public static String uidToAvatarUrl(long uid) {

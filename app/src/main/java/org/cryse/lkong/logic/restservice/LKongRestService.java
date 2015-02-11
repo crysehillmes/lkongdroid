@@ -3,7 +3,6 @@ package org.cryse.lkong.logic.restservice;
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,12 +21,15 @@ import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
 import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
+import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
 import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
 import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
+import org.cryse.lkong.logic.restservice.model.LKNoticeRateResult;
+import org.cryse.lkong.logic.restservice.model.LKNoticeResult;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
@@ -35,6 +37,9 @@ import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.model.NoticeCountModel;
+import org.cryse.lkong.model.NoticeModel;
+import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
@@ -420,6 +425,76 @@ public class LKongRestService {
         Collections.reverse(timelineList);
         clearCookies();
         return timelineList;
+    }
+
+    public String forumPunch(LKAuthObject authObject) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + "?mod=ajax&action=punch";
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        return getStringFromGzipResponse(response);
+    }
+
+    public NoticeCountModel checkNoticeCount(LKAuthObject authObject) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + "?mod=ajax&action=langloop";
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKCheckNoticeCountResult lkCheckNoticeCountResult = gson.fromJson(responseString, LKCheckNoticeCountResult.class);
+        NoticeCountModel noticeCountModel = ModelConverter.toNoticeCountModel(lkCheckNoticeCountResult);
+        clearCookies();
+        return noticeCountModel;
+    }
+
+    public List<NoticeModel> getNotice(LKAuthObject authObject, long start) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + "?mod=data&sars=my/notice";
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKNoticeResult lkNoticeResult = gson.fromJson(responseString, LKNoticeResult.class);
+        List<NoticeModel> notices= ModelConverter.toNoticeModel(lkNoticeResult);
+        clearCookies();
+        return notices;
+    }
+
+    public List<NoticeRateModel> getNoticeRateLog(LKAuthObject authObject, long start) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + "?mod=data&sars=my/rate";
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKNoticeRateResult lkNoticeRateResult = gson.fromJson(responseString, LKNoticeRateResult.class);
+        List<NoticeRateModel> noticeRates= ModelConverter.toNoticeRateModel(lkNoticeRateResult);
+        clearCookies();
+        return noticeRates;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {
