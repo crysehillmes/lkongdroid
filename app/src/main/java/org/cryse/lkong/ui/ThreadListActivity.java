@@ -115,12 +115,15 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ThreadModel item = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-            Intent intent = new Intent(this, PostListActivity.class);
-            String idString = item.getId().substring(7);
-            long tid = Long.parseLong(idString);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
-            startActivity(intent);
+            int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+            if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                ThreadModel item = mCollectionAdapter.getItem(itemIndex);
+                Intent intent = new Intent(this, PostListActivity.class);
+                String idString = item.getId().substring(7);
+                long tid = Long.parseLong(idString);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+                startActivity(intent);
+            }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);
         mFab.setOnClickListener(view -> {
