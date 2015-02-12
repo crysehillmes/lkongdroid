@@ -1113,6 +1113,10 @@ public class ViewDragHelper {
                     final float dx = x - mInitialMotionX[pointerId];
                     final float dy = y - mInitialMotionY[pointerId];
 
+                    if(dx < 16f) {
+                        return mDragState == STATE_DRAGGING;
+                    }
+
                     if(Math.abs(dy) > 16f) {
                         return mDragState == STATE_DRAGGING;
                     }

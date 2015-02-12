@@ -15,6 +15,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
+import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
@@ -69,11 +70,9 @@ public class AndroidNavigation {
         fragmentTransaction.commit();
     }
 
-    public void navigateToNotificationFragment() {
-        if(isAttachToMainActivity()) {
-            Fragment fragment = NotificationFragment.newInstance(null);
-            switchContentFragment(fragment, null);
-        }
+    public void navigateToNotificationActivity(Context context) {
+        Intent intent = new Intent(context, NotificationActivity.class);
+        context.startActivity(intent);
     }
 
     public void navigateToForumListFragment(Bundle args) {

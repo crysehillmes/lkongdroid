@@ -115,4 +115,7 @@
     <string name="format_note_rate_log_middle">&#160;被 %1$s 评分：&#160;</string>
     <string name="format_note_rate_log_prefix">你的帖子&#160;</string>
     <string name="format_note_rate_log_suffix">&#160;%1$s %2$d</string>
+    <string name="drawer_item_notice_rate">评分</string>
+    <string name="tb_munion_tip_download_prefix">正在下载:</string>
+    <string name="action_open_notification">消息与通知</string>
 </resources>

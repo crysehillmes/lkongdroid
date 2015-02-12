@@ -1,21 +1,25 @@
 package org.cryse.lkong.ui;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.logic.TimelineListType;
-import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.ColorUtils;
 import org.cryse.widget.slidingtabs.SlidingTabLayout;
@@ -23,7 +27,7 @@ import org.cryse.widget.slidingtabs.SlidingTabLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class NotificationFragment extends MainActivityFragment {
+public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
     @InjectView(R.id.fragment_notification_sliding_tabs)
@@ -67,12 +71,12 @@ public class NotificationFragment extends MainActivityFragment {
 
             @Override
             public int getIndicatorColor(int position) {
-                return mColorAccent;
+                return Color.WHITE;
             }
 
             @Override
             public int getDividerColor(int position) {
-                return mColorAccent;
+                return Color.TRANSPARENT;
             }
 
         });
@@ -81,14 +85,55 @@ public class NotificationFragment extends MainActivityFragment {
     private void initViewPager() {
         mHomePagerAdapter = new NotificationFragmentPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mHomePagerAdapter);
-        mTabLayout.setTextColor(getResources().getColor(R.color.text_color_secondary_dark));
+        mTabLayout.setTextColor(Color.WHITE);
         mTabLayout.setViewPager(mViewPager);
+        mTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if(mViewPager.getCurrentItem() == 0) {
+                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity)getActivity();
+                    DisplayMetrics displaymetrics = new DisplayMetrics();
+                    containerActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                    int width = displaymetrics.widthPixels;
+                    containerActivity.getSwipeBackLayout().setEnableGesture(true);
+                    containerActivity.getSwipeBackLayout().setEdgeSize(width);
+                } else {
+                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity)getActivity();
+                    containerActivity.getSwipeBackLayout().setEnableGesture(false);
+                    containerActivity.getSwipeBackLayout().setEdgeSize(0);
+                }
+            }
+        });
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_home, menu);
+        inflater.inflate(R.menu.menu_notification_fragment, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getThemedActivity().finishCompat();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    protected void setActivityTitle() {
+        getActivity().setTitle(getFragmentTitle());
     }
 
     @Override

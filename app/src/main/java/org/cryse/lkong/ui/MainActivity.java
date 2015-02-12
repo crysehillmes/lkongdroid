@@ -88,15 +88,6 @@ public class MainActivity extends AbstractThemeableActivity
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_notification),
-                        NavigationType.FRAGMENT_NOTIFICATION,
-                        R.drawable.ic_drawer_notification,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
                         getString(R.string.drawer_item_forum_list),
                         NavigationType.FRAGMENT_FORUM_LIST,
                         R.drawable.ic_drawer_forum_list,
@@ -129,9 +120,6 @@ public class MainActivity extends AbstractThemeableActivity
         if(fromSavedInstance) return;
         NavigationDrawerItem item = mNavigationDrawerFragment.getNavigationAdapter().getItem(position);
         switch (item.getNavigationType()) {
-            case FRAGMENT_NOTIFICATION:
-                mNavigation.navigateToNotificationFragment();
-                break;
             case FRAGMENT_FORUM_LIST:
                 mNavigation.navigateToForumListFragment(null);
                 break;

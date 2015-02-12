@@ -19,7 +19,7 @@ import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
-import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimelineFragment extends MainActivityFragment implements TimelineView {
+public class TimelineFragment extends InActivityFragment implements TimelineView {
     public static final String LOG_TAG = TimelineFragment.class.getName();
     public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
     public static final String BUNDLE_IN_MAIN_ACTIVITY = "timeline_in_main_activity";
@@ -50,9 +50,6 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Inject
     RxEventBus mEventBus;
-
-    @Inject
-    AndroidNavigation mAndroidNavigation;
 
     @Inject
     UserAccountManager mUserAccountManager;
@@ -124,7 +121,7 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(mInMainActivity)
-            inflater.inflate(R.menu.menu_favorites, menu);
+            inflater.inflate(R.menu.menu_timeline, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

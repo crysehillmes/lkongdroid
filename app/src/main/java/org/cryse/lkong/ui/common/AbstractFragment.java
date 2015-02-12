@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui.common;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -60,8 +61,18 @@ public abstract class AbstractFragment extends Fragment {
         return ((AbstractActivity)getActionBarActivity()).getActionMode();
     }
 
-    public boolean isNightMode() {
-        return ((AbstractThemeableActivity)getActionBarActivity()).isNightMode();
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        getActivity().invalidateOptionsMenu();
+    }
+
+    public Boolean isNightMode() {
+        if(isAdded())
+            return ((AbstractThemeableActivity)getActionBarActivity()).isNightMode();
+        else
+            return null;
+
     }
 
     protected abstract void analyticsTrackEnter();

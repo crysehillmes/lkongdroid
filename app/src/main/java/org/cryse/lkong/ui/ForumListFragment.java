@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +16,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumListPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
-import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastErrorConstant;
@@ -34,7 +33,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ForumListFragment extends MainActivityFragment implements ForumListView {
+public class ForumListFragment extends InActivityFragment implements ForumListView {
     private static final String LOG_TAG = ForumListFragment.class.getName();
     @InjectView(R.id.fragment_forum_list_recyclerview)
     SuperRecyclerView mRecyclerView;

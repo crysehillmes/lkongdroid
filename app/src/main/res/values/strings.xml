@@ -16,6 +16,7 @@
     <string name="action_insert_image">Insert Image</string>
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>
+    <string name="action_open_notification">Notifications</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
