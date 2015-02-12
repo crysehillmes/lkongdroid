@@ -125,13 +125,16 @@ public class NotificationFragment extends MainActivityFragment {
                 case 1:
                     fragment = NoticeFragment.newInstance(args);
                     break;
+                case 2:
+                    fragment = NoticeRateFragment.newInstance(args);
+                    break;
             }
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -143,6 +146,9 @@ public class NotificationFragment extends MainActivityFragment {
                     break;
                 case 1:
                     title = getString(R.string.drawer_item_notice);
+                    break;
+                case 2:
+                    title = getString(R.string.drawer_item_notice_rate);
                     break;
             }
             return title;

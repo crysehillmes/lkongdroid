@@ -10,6 +10,7 @@ import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.NoticeModel;
+import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
@@ -274,6 +275,18 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 List<NoticeModel> result = mLKongRestService.getNotice(authObject, start);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<NoticeRateModel>> getNoticeRateLog(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<NoticeRateModel> result = mLKongRestService.getNoticeRateLog(authObject, start);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

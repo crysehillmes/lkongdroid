@@ -112,4 +112,7 @@
     <string name="button_punch_complete">签到完成</string>
     <string name="button_punch_error">签到失败</string>
     <string name="button_punched">已签到 %1$d 天</string>
+    <string name="format_note_rate_log_middle">&#160;被 %1$s 评分：&#160;</string>
+    <string name="format_note_rate_log_prefix">你的帖子&#160;</string>
+    <string name="format_note_rate_log_suffix">&#160;%1$s %2$d</string>
 </resources>
