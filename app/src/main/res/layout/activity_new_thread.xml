@@ -28,6 +28,7 @@
         android:scrollbars="vertical"
         android:padding="8dp"
         android:hint="Title"
+        android:textSize="@dimen/text_size_edit"
         android:background="@android:color/transparent"/>
     <EditText
         android:id="@+id/activity_new_thread_edittext_content"
@@ -40,6 +41,7 @@
         android:scrollbars="vertical"
         android:padding="8dp"
         android:hint="Content"
+        android:textSize="@dimen/text_size_edit"
         android:background="@android:color/transparent"/>
     <LinearLayout
         android:layout_width="match_parent"
