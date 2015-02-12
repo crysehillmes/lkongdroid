@@ -71,6 +71,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.GRAY);
         ButterKnife.inject(this);
+        getSwipeBackLayout().setEnableGesture(false);
 
         mSignInButton.setOnClickListener(view -> signIn());
         mSignUpButton.setOnClickListener(view -> {
@@ -205,5 +206,13 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     private void dismissProgressDialog() {
         if(mSignInProgress != null && mSignInProgress.isShowing())
             mSignInProgress.dismiss();
+    }
+
+    @Override
+    protected int getAppTheme() {
+        if(isNightMode())
+            return R.style.LKongDroidTheme_Dark_NoTranslucent;
+        else
+            return R.style.LKongDroidTheme_Light_NoTranslucent;
     }
 }

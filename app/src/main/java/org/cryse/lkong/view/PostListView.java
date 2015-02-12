@@ -1,5 +1,6 @@
 package org.cryse.lkong.view;
 
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 public interface PostListView extends ContentView{
     public void showPostList(int page, List<PostModel> posts, boolean refreshPosition);
+    public void onGetPostLocationComplete(DataItemLocationModel locationModel);
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel);
     public void onAddOrRemoveFavoriteComplete(boolean isFavorite);
 }

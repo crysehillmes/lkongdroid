@@ -19,7 +19,7 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class FavoritesFragment extends MainActivityFragment implements ThreadListView {
+public class FavoritesFragment extends InActivityFragment implements ThreadListView {
     public static final String LOG_TAG = FavoritesFragment.class.getName();
     private static final String BUNDLE_NEED_REFRESH = "bundle_favorites_need_refresh";
     private boolean isNoMore = false;
@@ -48,9 +48,6 @@ public class FavoritesFragment extends MainActivityFragment implements ThreadLis
 
     @Inject
     RxEventBus mEventBus;
-
-    @Inject
-    AndroidNavigation mAndroidNavigation;
 
     @Inject
     UserAccountManager mUserAccountManager;

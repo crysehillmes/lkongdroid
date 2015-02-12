@@ -28,6 +28,7 @@
         <activity android:name=".ui.NewPostActivity"/>
         <activity android:name=".ui.NewThreadActivity"/>
         <activity android:name=".ui.SettingsActivity"/>
+        <activity android:name=".ui.NotificationActivity"/>
         <service android:name=".service.SendPostService"/>
 
         <service

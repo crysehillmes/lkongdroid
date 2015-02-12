@@ -120,3 +120,4 @@
    public <init>(org.json.JSONObject);
 }
 -keep class com.umeng.** { *; }
+-keep class org.apache.** { *; }

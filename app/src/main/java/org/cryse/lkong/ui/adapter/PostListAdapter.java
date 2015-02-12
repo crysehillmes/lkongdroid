@@ -81,6 +81,12 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mMessageTextView.setText(spannedText);
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
+                /*try {
+                    DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
                 autherNameSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, postModel.getAuthorName().length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

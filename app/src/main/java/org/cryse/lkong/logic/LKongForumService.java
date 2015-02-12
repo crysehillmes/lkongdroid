@@ -6,9 +6,12 @@ import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.model.NoticeModel;
+import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
@@ -147,10 +150,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<ThreadInfoModel> getThreadInfo(long tid) {
+    public Observable<ThreadInfoModel> getThreadInfo(LKAuthObject authObject, long tid) {
         return Observable.create(subscriber -> {
             try {
-                ThreadInfoModel threadModel = mLKongRestService.getThreadInfo(tid);
+                ThreadInfoModel threadModel = mLKongRestService.getThreadInfo(authObject, tid);
                 subscriber.onNext(threadModel);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -262,6 +265,42 @@ public class LKongForumService {
             try {
                 List<TimelineModel> result = mLKongRestService.getTimeline(authObject, start, listType);
                 subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<NoticeModel>> getNotice(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<NoticeModel> result = mLKongRestService.getNotice(authObject, start);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<NoticeRateModel>> getNoticeRateLog(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<NoticeRateModel> result = mLKongRestService.getNoticeRateLog(authObject, start);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<DataItemLocationModel> getPostIdLocation(LKAuthObject authObject, long postId) {
+        return Observable.create(subscriber -> {
+            try {
+                DataItemLocationModel locationModel = mLKongRestService.getDataItemLocation(authObject, String.format("post_%d", postId));
+                subscriber.onNext(locationModel);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

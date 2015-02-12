@@ -8,9 +8,14 @@ import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.MainActivity;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 
-public abstract class MainActivityFragment extends AbstractFragment {
-    public abstract String getFragmentTitle();
+import javax.inject.Inject;
+
+public abstract class InActivityFragment extends AbstractFragment {
+    @Inject
+    AndroidNavigation mAndroidNavigation;
+
     protected MenuItem mChangeThemeMenuItem;
 
     @Override
@@ -28,9 +33,11 @@ public abstract class MainActivityFragment extends AbstractFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if(mChangeThemeMenuItem != null) {
-            if(isNightMode())
+            if(isNightMode() == null)
+                mChangeThemeMenuItem.setVisible(false);
+            else if(isNightMode() != null && isNightMode())
                 mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
-            else
+            else if(isNightMode() != null && !isNightMode())
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
         super.onPrepareOptionsMenu(menu);
@@ -40,7 +47,12 @@ public abstract class MainActivityFragment extends AbstractFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_change_theme:
-                getThemedActivity().setNightMode(!isNightMode());
+                if(isNightMode() != null) {
+                    getThemedActivity().setNightMode(!isNightMode());
+                }
+                return true;
+            case R.id.action_open_notification:
+                mAndroidNavigation.navigateToNotificationActivity(getActivity());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -49,10 +61,16 @@ public abstract class MainActivityFragment extends AbstractFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setActivityTitle();
+    }
+
+    protected void setActivityTitle() {
         Activity activity = getActivity();
         if(activity instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity)activity;
             mainActivity.onSectionAttached(getFragmentTitle());
         }
     }
+
+    public abstract String getFragmentTitle();
 }

@@ -11,16 +11,21 @@
     <string name="action_dark_theme">Dark Theme</string>
     <string name="action_light_theme">Light Theme</string>
 
+    <string name="action_thread_goto_floor">Goto floor</string>
     <string name="action_thread_add_favorite">Add Favorite</string>
     <string name="action_thread_remove_favorite">Remove Favorite</string>
     <string name="action_insert_image">Insert Image</string>
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>
+    <string name="action_open_notification">Notifications</string>
 
-    <string name="drawer_item_forum_list">Forum List</string>
+    <string name="drawer_item_notification">Notification</string>
+    <string name="drawer_item_forum_list">Forums</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_timeline">Timeline</string>
-    <string name="drawer_item_at_me">Mentions</string>
+    <string name="drawer_item_mentions">Mentions</string>
+    <string name="drawer_item_notice">Notice</string>
+    <string name="drawer_item_notice_rate">Rate</string>
     <string name="drawer_item_settings">Settings</string>
     <string name="account_email_hint">Your Email</string>
     <string name="account_password_hint">Password</string>
@@ -35,6 +40,9 @@
     <string name="format_timeline_reply_to_reply">\@%1$s replies in %2$s</string>
     <string name="format_timeline_create_thread">Create New Thread: %1$s</string>
     <string name="format_timeline_reply_to_thread">\@%1$s create a new thread:</string>
+    <string name="format_note_rate_log_prefix">Your post&#160;</string>
+    <string name="format_note_rate_log_middle">&#160;is rated by %1$s:&#160;</string>
+    <string name="format_note_rate_log_suffix">&#160;%1$s %2$d</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
@@ -45,6 +53,7 @@
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
+    <string name="toast_error_invalid_floor">No such floor.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
@@ -122,4 +131,8 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string name="button_punch">Punch</string>
+    <string name="button_punch_complete">Punch Done</string>
+    <string name="button_punch_error">Punch Error</string>
+    <string name="button_punched">Punch Day: %1$d</string>
 </resources>

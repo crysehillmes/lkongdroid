@@ -43,7 +43,7 @@ public class MainActivity extends AbstractThemeableActivity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -97,15 +97,6 @@ public class MainActivity extends AbstractThemeableActivity
         );
         mNavigationDrawerFragment.getNavigationAdapter().addItem(
                 new NavigationDrawerItem(
-                        getString(R.string.drawer_item_at_me),
-                        NavigationType.FRAGMENT_MENTIONS,
-                        R.drawable.ic_drawer_mentions,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
                         getString(R.string.drawer_item_favorites),
                         NavigationType.FRAGMENT_FAVORITES,
                         R.drawable.ic_drawer_favorites,
@@ -139,7 +130,7 @@ public class MainActivity extends AbstractThemeableActivity
                 mNavigation.navigateToTimelineFragment();
                 break;
             case FRAGMENT_MENTIONS:
-                mNavigation.navigateToAtMeMessagesFragment();
+                mNavigation.navigateToMentionsFragment();
                 break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity(this);
@@ -195,5 +186,13 @@ public class MainActivity extends AbstractThemeableActivity
         Toast.makeText(this, getString(R.string.toast_double_tap_to_exit), Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(() -> mDoubleBackToExitPressedOnce = false, 2000);
+    }
+
+    @Override
+    protected int getAppTheme() {
+        if(isNightMode())
+            return R.style.LKongDroidTheme_Dark_NoTranslucent;
+        else
+            return R.style.LKongDroidTheme_Light_NoTranslucent;
     }
 }

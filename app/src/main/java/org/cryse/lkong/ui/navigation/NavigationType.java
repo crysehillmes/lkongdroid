@@ -2,10 +2,11 @@ package org.cryse.lkong.ui.navigation;
 
 public enum NavigationType{
     ACTIVITY_SETTINGS(0),
-    FRAGMENT_FORUM_LIST(1),
-    FRAGMENT_FAVORITES(2),
-    FRAGMENT_TIMELINE(3),
-    FRAGMENT_MENTIONS(4);
+    FRAGMENT_NOTIFICATION(1),
+    FRAGMENT_FORUM_LIST(2),
+    FRAGMENT_FAVORITES(3),
+    FRAGMENT_TIMELINE(4),
+    FRAGMENT_MENTIONS(5);
     int navigationType;
 
     private NavigationType(int naviType) {

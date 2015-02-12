@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_thread_goto_floor"
+        android:icon="@drawable/ic_action_goto_floor"
+        android:title="@string/action_thread_goto_floor"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_thread_favorite"
         android:icon="@drawable/ic_action_favorite_outline"
         android:title="@string/action_thread_add_favorite"

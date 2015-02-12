@@ -105,7 +105,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         return mPrefNightMode.get();
     }
 
-    public int getAppTheme() {
+    protected int getAppTheme() {
         if(isNightMode())
             return mDarkTheme;
         else

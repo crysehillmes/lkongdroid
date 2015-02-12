@@ -17,6 +17,13 @@ public class HtmlCleaner {
         for (Element pInLi: fixedDoc.select("li p")) {
             pInLi.unwrap();
         }
+        for (Element pHasImg: fixedDoc.select("p:has(img)")) {
+            pHasImg.unwrap();
+        }
+        /*for (Element img: fixedDoc.select("img")) {
+            if(img.nextElementSibling() != null && !img.nextElementSibling().tagName().equalsIgnoreCase("br"))
+                img.after("<br>");
+        }*/
         for (Element element : fixedDoc.select("*")) {
             if (!element.hasText() && element.isBlock() && !element.tagName().equalsIgnoreCase("img")
                     && !element.tagName().equalsIgnoreCase("ul")
@@ -32,5 +39,21 @@ public class HtmlCleaner {
             brChild.remove();
         }*/
         return fixedDoc.html();
+    }
+
+    public static String[] processNoticeData(String html, Whitelist whitelist) {
+        String[] result = new String[2];
+        Document originalDoc = Jsoup.parse(html);
+        for (Element element : originalDoc.select("a[href]")) {
+            String dataitem = element.attr("dataitem");
+            if(dataitem.startsWith("thread_")) {
+                result[1] = dataitem.substring(7);
+            }
+
+        }
+        Cleaner cleaner = new Cleaner(whitelist);
+        Document fixedDoc = cleaner.clean(originalDoc);
+        result[0] = fixedDoc.html();
+        return result;
     }
 }

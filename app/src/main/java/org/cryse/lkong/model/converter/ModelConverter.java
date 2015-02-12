@@ -2,8 +2,14 @@ package org.cryse.lkong.model.converter;
 
 import android.text.TextUtils;
 
+import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
+import org.cryse.lkong.logic.restservice.model.LKDataItemLocation;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
+import org.cryse.lkong.logic.restservice.model.LKNoticeItem;
+import org.cryse.lkong.logic.restservice.model.LKNoticeRateItem;
+import org.cryse.lkong.logic.restservice.model.LKNoticeRateResult;
+import org.cryse.lkong.logic.restservice.model.LKNoticeResult;
 import org.cryse.lkong.logic.restservice.model.LKPostItem;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
@@ -12,6 +18,10 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKTimelineItem;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.NoticeCountModel;
+import org.cryse.lkong.model.NoticeModel;
+import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -19,6 +29,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -26,10 +37,12 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
@@ -143,6 +156,8 @@ public class ModelConverter {
                         itemUser.getRanktitle()
                 );
                 postModel.setAuthor(author);
+            } else {
+                postModel.setAuthor(new PostModel.PostAuthor());
             }
 
             if(item.getRatelog() != null) {
@@ -164,6 +179,8 @@ public class ModelConverter {
                 }
                 postModel.setRateScore(score);
                 postModel.setRateLog(rateList);
+            } else {
+                postModel.setRateLog(new ArrayList<PostModel.PostRate>());
             }
 
             postModel.setMessage(
@@ -206,7 +223,7 @@ public class ModelConverter {
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
             if(item.isIsquote()) {
                 TimelineModel.ReplyQuote replyQuote = new TimelineModel.ReplyQuote();
-                Document document = Jsoup.parseBodyFragment(item.getMessage());;
+                Document document = Jsoup.parseBodyFragment(item.getMessage());
                 Elements targetElements = document.select("div > div > div > a");
                 if(targetElements.size() > 0) {
                     if(!TextUtils.isEmpty(targetElements.get(0).html()) && targetElements.get(0).html().length() > 2) {
@@ -248,6 +265,82 @@ public class ModelConverter {
             timelineModels.add(model);
         }
         return timelineModels;
+    }
+
+    public static NoticeCountModel toNoticeCountModel(LKCheckNoticeCountResult result) {
+        NoticeCountModel model = new NoticeCountModel();
+        model.setUpdateTime(utcLongToLocalDate(result.getTime() * 1000));
+        model.setFansNotice(result.getNotice().getFans());
+        model.setMentionNotice(result.getNotice().getAtme());
+        model.setNotice(result.getNotice().getNotice());
+        model.setPrivateMessageNotice(result.getNotice().getPm());
+        model.setRateNotice(result.getNotice().getRate());
+        return model;
+    }
+
+    public static List<NoticeModel> toNoticeModel(LKNoticeResult result) {
+        List<NoticeModel> noticeModelList = new ArrayList<NoticeModel>();
+        if(result.getData() != null)
+            for(LKNoticeItem item : result.getData()) {
+                NoticeModel model = new NoticeModel();
+                model.setDateline(item.getDateline());
+                model.setNoticeId(Long.valueOf(item.getId().substring(7)));
+                model.setSortKey(item.getSortkey());
+                model.setUserId(item.getUid());
+                model.setUserName(item.getUsername());
+
+                String[] cleanResult = HtmlCleaner.processNoticeData(
+                        item.getNote(),
+                        Whitelist.basicWithImages()
+                                .addTags("font")
+                                .addAttributes(":all", "style", "color")
+                );
+                model.setNoticeNote(cleanResult[0]);
+                if(!TextUtils.isEmpty(cleanResult[1])) {
+                    model.setThreadId(Long.valueOf(cleanResult[1]));
+                }
+
+                noticeModelList.add(model);
+            }
+
+        return noticeModelList;
+    }
+
+    public static List<NoticeRateModel> toNoticeRateModel(LKNoticeRateResult result) {
+        List<NoticeRateModel> noticeModelList = new ArrayList<NoticeRateModel>();
+        if(result.getData() != null)
+            for(LKNoticeRateItem item : result.getData()) {
+                NoticeRateModel model = new NoticeRateModel();
+                model.setDateline(item.getDateline());
+                model.setUserId(item.getUid());
+                model.setUserName(item.getUsername());
+                model.setExtCredits(item.getExtcredits());
+                model.setId(item.getId());
+                model.setScore(Integer.valueOf(item.getScore()));
+                model.setMessage(item.getMessage());
+                model.setReason(item.getReason());
+                model.setPid(item.getPid());
+                model.setSortKey(item.getSortkey());
+                noticeModelList.add(model);
+            }
+
+        return noticeModelList;
+    }
+
+    public static DataItemLocationModel toNoticeRateModel(LKDataItemLocation result) {
+        DataItemLocationModel locationModel = new DataItemLocationModel();
+        locationModel.setLoad(result.isIsload());
+        locationModel.setLocation(result.getLocation());
+        locationModel.setOrdinal(result.getLou());
+        return locationModel;
+    }
+
+    private static Date utcLongToLocalDate(long utcMillisecond) {
+        Calendar calendar = Calendar.getInstance();
+        TimeZone tz = TimeZone.getDefault();
+        calendar.setTimeInMillis(utcMillisecond);
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
+        return calendar.getTime();
     }
 
     public static String uidToAvatarUrl(long uid) {

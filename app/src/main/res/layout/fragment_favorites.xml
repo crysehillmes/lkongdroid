@@ -13,7 +13,4 @@
         app:srv_scrollbarStyle="outsideOverlay">
 
     </org.cryse.widget.recyclerview.SuperRecyclerView>
-
-    <include
-        layout="@layout/toolbar"/>
 </FrameLayout>
