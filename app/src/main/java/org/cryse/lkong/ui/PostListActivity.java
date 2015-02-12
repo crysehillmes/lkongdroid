@@ -9,12 +9,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -379,6 +381,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 else
                     finish();
                 return true;
+            case R.id.action_thread_goto_floor:
+                onClickGotoFloor();
+                return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
@@ -450,9 +455,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             mIsFavorite = mItemList.get(0).isFavorite();
         }
         if(mTargetOrdinal !=  -1) {
-            int position = mTargetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
-            LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRecyclerView().getLayoutManager();
-            layoutManager.scrollToPositionWithOffset(position - 1 > 0  ? position - 1 : position, UIUtils.calculateActionBarSize(this));
+            scrollToOrdinal(mTargetOrdinal);
             mTargetOrdinal = -1;
         }
         invalidateOptionsMenu();
@@ -550,5 +553,43 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
         mThreadTitleTextView.setText(spannableTitle);
+    }
+
+    private void onClickGotoFloor() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.action_thread_goto_floor)
+                .customView(R.layout.dialog_input_floor, false)
+                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.edit_floor);
+                        String content = editText.getText().toString();
+                        if(TextUtils.isDigitsOnly(content)) {
+                            int floor = Integer.valueOf(content);
+
+                            int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
+                            if(floor > 0 && floor <= replyCount) {
+                                int page = (replyCount - 1 == 0) ? 1 : (int)Math.ceil((double) floor / 20d);
+                                if(page == mCurrentPage)  {
+                                    scrollToOrdinal(floor);
+                                } else {
+                                    mTargetOrdinal = floor;
+                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true);
+                                }
+                            } else {
+                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_invalid_floor), TOAST_ALERT);
+                            }
+                        }
+                    }
+                })
+                .build();
+        dialog.show();
+    }
+
+    private void scrollToOrdinal(int targetOrdinal) {
+        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRecyclerView().getLayoutManager();
+        layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
     }
 }
