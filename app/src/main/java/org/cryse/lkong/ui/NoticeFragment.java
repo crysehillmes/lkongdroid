@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -9,6 +10,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.presenter.NoticePresenter;
 import org.cryse.lkong.ui.adapter.NoticeCollectionAdapter;
+import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.LKAuthObject;
 
 import java.util.List;
@@ -63,7 +65,15 @@ public class NoticeFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-
+        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+            NoticeModel noticeModel = mCollectionAdapter.getItem(itemIndex);
+            if(noticeModel.getThreadId() > 0) {
+                Intent intent = new Intent(getActivity(), PostListActivity.class);
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, noticeModel.getThreadId());
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

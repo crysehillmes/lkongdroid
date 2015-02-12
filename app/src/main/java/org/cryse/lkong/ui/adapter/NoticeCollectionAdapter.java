@@ -10,10 +10,8 @@ import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.NoticeModel;
-import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -45,7 +43,6 @@ public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel
 
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(noticeModel.getNoticeNote(), null, new HtmlTagHandler());
                 viewHolder.mNoticeMessageTextView.setText(spannedText);
-                viewHolder.mNoticeMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
             }
         }
     }

@@ -11,6 +11,7 @@ public class NoticeModel implements SimpleCollectionItem {
     long noticeId;
     long sortKey;
     Date dateline;
+    long threadId;
 
     public long getUserId() {
         return userId;
@@ -61,6 +62,17 @@ public class NoticeModel implements SimpleCollectionItem {
         this.dateline = dateline;
     }
 
+    public long getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(long threadId) {
+        this.threadId = threadId;
+    }
+
+    public NoticeModel() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -74,9 +86,7 @@ public class NoticeModel implements SimpleCollectionItem {
         dest.writeLong(this.noticeId);
         dest.writeLong(this.sortKey);
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
-    }
-
-    public NoticeModel() {
+        dest.writeLong(this.threadId);
     }
 
     private NoticeModel(Parcel in) {
@@ -87,6 +97,7 @@ public class NoticeModel implements SimpleCollectionItem {
         this.sortKey = in.readLong();
         long tmpDateline = in.readLong();
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
+        this.threadId = in.readLong();
     }
 
     public static final Creator<NoticeModel> CREATOR = new Creator<NoticeModel>() {

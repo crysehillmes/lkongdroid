@@ -27,6 +27,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -282,13 +283,16 @@ public class ModelConverter {
                 model.setUserId(item.getUid());
                 model.setUserName(item.getUsername());
 
-                String cleaned = HtmlCleaner.fixTagBalanceAndRemoveEmpty(
+                String[] cleanResult = HtmlCleaner.processNoticeData(
                         item.getNote(),
                         Whitelist.basicWithImages()
                                 .addTags("font")
-                                .addAttributes(":all","style", "color")
+                                .addAttributes(":all", "style", "color")
                 );
-                model.setNoticeNote(cleaned);
+                model.setNoticeNote(cleanResult[0]);
+                if(!TextUtils.isEmpty(cleanResult[1])) {
+                    model.setThreadId(Long.valueOf(cleanResult[1]));
+                }
 
                 noticeModelList.add(model);
             }
