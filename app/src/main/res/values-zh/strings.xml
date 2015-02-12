@@ -40,7 +40,8 @@
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
     <string name="format_forum_item_threads_todayposts">主题数: %1$d \n今日回复: %2$d</string>
     <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
-    <string name="drawer_item_at_me">提及我的</string>
+    <string name="drawer_item_mentions">提及我的</string>
+    <string name="drawer_item_notice">通知</string>
     <string name="toast_double_tap_to_exit">再按一次返回键退出</string>
     <string name="notification_content_network_error">网络错误</string>
     <string name="notification_title_sending_post">正在发送回复…</string>

@@ -33,4 +33,20 @@ public class HtmlCleaner {
         }*/
         return fixedDoc.html();
     }
+
+    public static String[] processNoticeData(String html, Whitelist whitelist) {
+        String[] result = new String[2];
+        Document originalDoc = Jsoup.parse(html);
+        for (Element element : originalDoc.select("a[href]")) {
+            String dataitem = element.attr("dataitem");
+            if(dataitem.startsWith("thread_")) {
+                result[1] = dataitem.substring(7);
+            }
+
+        }
+        Cleaner cleaner = new Cleaner(whitelist);
+        Document fixedDoc = cleaner.clean(originalDoc);
+        result[0] = fixedDoc.html();
+        return result;
+    }
 }

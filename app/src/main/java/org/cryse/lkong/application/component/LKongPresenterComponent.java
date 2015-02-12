@@ -5,6 +5,7 @@ import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
+import org.cryse.lkong.ui.NoticeFragment;
 import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.NavigationDrawerFragment;
 import org.cryse.lkong.ui.NewPostActivity;
@@ -31,4 +32,6 @@ public interface LKongPresenterComponent {
     void inject(FavoritesFragment fragment);
     void inject(TimelineFragment fragment);
     void inject(NotificationFragment fragment);
+    void inject(NoticeFragment fragment);
+
 }

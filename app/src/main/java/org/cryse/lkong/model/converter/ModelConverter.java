@@ -27,6 +27,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -220,7 +221,7 @@ public class ModelConverter {
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
             if(item.isIsquote()) {
                 TimelineModel.ReplyQuote replyQuote = new TimelineModel.ReplyQuote();
-                Document document = Jsoup.parseBodyFragment(item.getMessage());;
+                Document document = Jsoup.parseBodyFragment(item.getMessage());
                 Elements targetElements = document.select("div > div > div > a");
                 if(targetElements.size() > 0) {
                     if(!TextUtils.isEmpty(targetElements.get(0).html()) && targetElements.get(0).html().length() > 2) {
@@ -282,10 +283,21 @@ public class ModelConverter {
                 NoticeModel model = new NoticeModel();
                 model.setDateline(item.getDateline());
                 model.setNoticeId(Long.valueOf(item.getId().substring(7)));
-                model.setNoticeNote(item.getNote());
-                model.setSortkey(item.getSortkey());
+                model.setSortKey(item.getSortkey());
                 model.setUserId(item.getUid());
                 model.setUserName(item.getUsername());
+
+                String[] cleanResult = HtmlCleaner.processNoticeData(
+                        item.getNote(),
+                        Whitelist.basicWithImages()
+                                .addTags("font")
+                                .addAttributes(":all", "style", "color")
+                );
+                model.setNoticeNote(cleanResult[0]);
+                if(!TextUtils.isEmpty(cleanResult[1])) {
+                    model.setThreadId(Long.valueOf(cleanResult[1]));
+                }
+
                 noticeModelList.add(model);
             }
 

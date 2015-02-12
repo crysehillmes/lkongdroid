@@ -1,31 +1,27 @@
 package org.cryse.lkong.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.logic.TimelineListType;
-import org.cryse.lkong.model.TimelineModel;
-import org.cryse.lkong.presenter.TimelinePresenter;
-import org.cryse.lkong.ui.adapter.TimelineAdapter;
-import org.cryse.lkong.ui.common.MainActivityFragment;
+import org.cryse.lkong.model.SimpleCollectionItem;
+import org.cryse.lkong.presenter.BasePresenter;
+import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.view.TimelineView;
+import org.cryse.lkong.view.SimpleCollectionView;
+import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -36,17 +32,16 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimelineFragment extends MainActivityFragment implements TimelineView {
-    public static final String LOG_TAG = TimelineFragment.class.getName();
-    public static final String BUNDLE_LIST_TYPE = "timeline_list_type";
-    public static final String BUNDLE_IN_MAIN_ACTIVITY = "timeline_in_main_activity";
+public abstract class SimpleCollectionFragment<
+        ItemType extends SimpleCollectionItem,
+        AdapterType extends RecyclerViewBaseAdapter<ItemType>,
+        PresenterType extends BasePresenter>
+        extends AbstractFragment
+        implements SimpleCollectionView<ItemType> {
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
-    private int mListType;
-    @Inject
-    TimelinePresenter mPresenter;
 
     @Inject
     RxEventBus mEventBus;
@@ -57,41 +52,26 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.fragment_timeline_recyclerview)
+    @InjectView(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
-    TimelineAdapter mCollectionAdapter;
+    AdapterType mCollectionAdapter;
 
-    List<TimelineModel> mItemList = new ArrayList<TimelineModel>();
+    List<ItemType> mItemList = new ArrayList<ItemType>();
     boolean mInMainActivity = false;
 
-    public static TimelineFragment newInstance(Bundle args) {
-        TimelineFragment fragment = new TimelineFragment();
-        if(args != null)
-            fragment.setArguments(args);
-        return fragment;
-    }
+    @Override
+    protected abstract void injectThis();
 
     @Override
-    protected void injectThis() {
-        LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
-    }
-
-    @Override
-     public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         injectThis();
-        Bundle args = getArguments();
-        if(args == null)
-            throw new IllegalArgumentException();
-        mListType = args.getInt(BUNDLE_LIST_TYPE);
-        mInMainActivity = args.getBoolean(BUNDLE_IN_MAIN_ACTIVITY);
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_timeline, null);
+        View contentView = inflater.inflate(getLayoutId(), null);
         ButterKnife.inject(this, contentView);
         initRecyclerView();
         return contentView;
@@ -102,41 +82,19 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(new DefaultItemAnimator());
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCollectionAdapter = new TimelineAdapter(getActivity(), mItemList);
+        mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
-        mCollectionView.setRefreshListener(() -> getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mListType, false));
+        mCollectionView.setRefreshListener(() ->
+                loadData(mUserAccountManager.getAuthObject(), 0, false));
         mCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mLastItemSortKey, mListType, true);
+                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
             } else {
                 mCollectionView.setLoadingMore(false);
                 mCollectionView.hideMoreProgress();
             }
         });
-        mCollectionView.setOnItemClickListener((view, position, id) -> {
-            TimelineModel item = mCollectionAdapter.getItem(position);
-            Intent intent = new Intent(getActivity(), PostListActivity.class);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, item.getTid());
-            startActivity(intent);
-        });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(mInMainActivity)
-            inflater.inflate(R.menu.menu_favorites, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public String getFragmentTitle() {
-        if(mListType == TimelineListType.TYPE_MENTIONS) {
-            return getString(R.string.drawer_item_mentions);
-        } else if(mListType == TimelineListType.TYPE_TIMELINE) {
-            return getString(R.string.drawer_item_timeline);
-        } else {
-            throw new IllegalStateException("Wrong list type.");
-        }
+        mCollectionView.setOnItemClickListener(this::onItemClick);
     }
 
     @Override
@@ -151,23 +109,16 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         super.onActivityCreated(savedInstanceState);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<TimelineModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
+            ArrayList<ItemType> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
         } else {
             mCollectionView.getSwipeToRefresh().measure(1,1);
             mCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().loadTimeline(mUserAccountManager.getAuthObject(), mListType, false);
+            loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
         }
 
-        mEventBus.toObservable().subscribe(event -> {
-        });
-    }
-
-    @Override
-    protected void setActivityTitle() {
-        if(mInMainActivity)
-            super.setActivityTitle();
+        mEventBus.toObservable().subscribe(this::onEvent);
     }
 
     @Override
@@ -195,35 +146,25 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
 
     @Override
     protected void analyticsTrackEnter() {
-        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG + "." + TimelineListType.typeToTypeName(mListType));
+        AnalyticsUtils.trackFragmentEnter(this, getLogTag());
     }
 
     @Override
     protected void analyticsTrackExit() {
-        AnalyticsUtils.trackFragmentExit(this, LOG_TAG + "." + TimelineListType.typeToTypeName(mListType));
+        AnalyticsUtils.trackFragmentExit(this, getLogTag());
     }
 
     @Override
-    public void showTimeline(List<TimelineModel> timelineItems, boolean loadMore) {
+    public void showSimpleData(List<ItemType> items, boolean loadMore) {
         if(loadMore) {
-            if (timelineItems.size() == 0) isNoMore = true;
-            // isLoadingMore = false;
-            // if (threadList.size() != 0) mCurrentListPageNumber++;
-            // addToListView(novels);
-            mCollectionAdapter.addAll(timelineItems);
+            if (items.size() == 0) isNoMore = true;
+            mCollectionAdapter.addAll(items);
         } else {
             isNoMore = false;
-            // mCurrentListPageNumber = 0;
-            // mNovelList.clear();
-            // addToListView(novels);
-            mCollectionAdapter.replaceWith(timelineItems);
-            /*if (getResources().getBoolean(R.bool.isTablet)) {
-                //isLoadingMore = true;
-                loadMore(mCurrentListPageNumber);
-            }*/
+            mCollectionAdapter.replaceWith(items);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            TimelineModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
+            ItemType lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;
@@ -261,7 +202,17 @@ public class TimelineFragment extends MainActivityFragment implements TimelineVi
         ToastProxy.showToast(getActivity(), getString(text_value), toastType);
     }
 
-    public TimelinePresenter getPresenter() {
-        return mPresenter;
-    }
+    protected abstract String getLogTag();
+
+    protected abstract int getLayoutId();
+
+    protected abstract PresenterType getPresenter();
+
+    protected abstract AdapterType createAdapter(List<ItemType> itemList);
+
+    protected abstract void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs);
+
+    protected abstract void onItemClick(View view, int position, long id);
+
+    protected abstract void onEvent(AbstractEvent event);
 }
