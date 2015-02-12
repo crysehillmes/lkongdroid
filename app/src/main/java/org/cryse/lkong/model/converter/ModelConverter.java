@@ -3,6 +3,7 @@ package org.cryse.lkong.model.converter;
 import android.text.TextUtils;
 
 import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
+import org.cryse.lkong.logic.restservice.model.LKDataItemLocation;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadItem;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKNoticeItem;
@@ -17,6 +18,7 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKTimelineItem;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
@@ -323,6 +325,14 @@ public class ModelConverter {
             }
 
         return noticeModelList;
+    }
+
+    public static DataItemLocationModel toNoticeRateModel(LKDataItemLocation result) {
+        DataItemLocationModel locationModel = new DataItemLocationModel();
+        locationModel.setLoad(result.isIsload());
+        locationModel.setLocation(result.getLocation());
+        locationModel.setOrdinal(result.getLou());
+        return locationModel;
     }
 
     private static Date utcLongToLocalDate(long utcMillisecond) {

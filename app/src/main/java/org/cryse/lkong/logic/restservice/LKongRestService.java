@@ -22,6 +22,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
+import org.cryse.lkong.logic.restservice.model.LKDataItemLocation;
 import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.logic.restservice.model.LKForumListItem;
 import org.cryse.lkong.logic.restservice.model.LKForumNameList;
@@ -34,6 +35,7 @@ import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
@@ -495,6 +497,24 @@ public class LKongRestService {
         List<NoticeRateModel> noticeRates= ModelConverter.toNoticeRateModel(lkNoticeRateResult);
         clearCookies();
         return noticeRates;
+    }
+
+    public DataItemLocationModel getDataItemLocation(LKAuthObject authObject, String dataItem) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + String.format("?mod=ajax&action=panelocation&dataitem=%s", dataItem);
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKDataItemLocation lkDataItemLocation = gson.fromJson(responseString, LKDataItemLocation.class);
+        DataItemLocationModel locationModel= ModelConverter.toNoticeRateModel(lkDataItemLocation);
+        clearCookies();
+        return locationModel;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {
