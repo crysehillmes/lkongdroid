@@ -139,10 +139,10 @@ public class NotificationFragment extends MainActivityFragment {
             String title = null;
             switch (position) {
                 case 0:
-                    title = getString(R.string.drawer_item_at_me);
+                    title = getString(R.string.drawer_item_mentions);
                     break;
                 case 1:
-                    title = getString(R.string.drawer_item_at_me);
+                    title = getString(R.string.drawer_item_notice);
                     break;
             }
             return title;

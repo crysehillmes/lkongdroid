@@ -85,7 +85,7 @@ public abstract class SimpleCollectionFragment<
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
         mCollectionView.setRefreshListener(() ->
-                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false));
+                loadData(mUserAccountManager.getAuthObject(), 0, false));
         mCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
                 loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);

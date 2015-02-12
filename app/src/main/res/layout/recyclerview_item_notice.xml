@@ -13,15 +13,13 @@
             android:id="@+id/message_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:background="?selectableItemBackground">
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_notice_textview_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_margin="16dp"
                 android:textColor="?theme_text_color_primary"
                 android:textSize="@dimen/text_size_subhead"
                 android:lineSpacingMultiplier="1.3"
