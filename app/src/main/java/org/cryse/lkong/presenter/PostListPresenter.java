@@ -1,6 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -23,16 +24,38 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     Subscription mLoadPostListSubscription;
     Subscription mLoadThreadInfoSubscription;
     Subscription mAddOrRemoveFavoriteSubscription;
+    Subscription mDataItemLocationSubscription;
 
     @Inject
     public PostListPresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
     }
 
-    public void loadThreadInfo(long tid) {
+    public void getPostLocation(LKAuthObject authObject, long pid) {
+        SubscriptionUtils.checkAndUnsubscribe(mDataItemLocationSubscription);
+        mView.setLoading(true);
+        mDataItemLocationSubscription = mLKongForumService.getPostIdLocation(authObject, pid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            Timber.d("PostListPresenter::loadThreadInfo() onNext().", LOG_TAG);
+                            mView.onGetPostLocationComplete(result);
+                        },
+                        error -> {
+                            Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
+                            mView.setLoading(false);
+                        },
+                        () -> {
+                            Timber.d("PostListPresenter::loadThreadInfo() onComplete().", LOG_TAG);
+                        }
+                );
+    }
+
+    public void loadThreadInfo(LKAuthObject authObject, long tid) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadInfoSubscription);
         mView.setLoading(true);
-        mLoadThreadInfoSubscription = mLKongForumService.getThreadInfo(tid)
+        mLoadThreadInfoSubscription = mLKongForumService.getThreadInfo(authObject, tid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -106,11 +129,17 @@ public class PostListPresenter implements BasePresenter<PostListView> {
         SubscriptionUtils.checkAndUnsubscribe(mLoadPostListSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadInfoSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mAddOrRemoveFavoriteSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mDataItemLocationSubscription);
     }
 
     private class EmptyPostListView implements PostListView {
         @Override
         public void showPostList(int page, List<PostModel> posts, boolean refreshPosition) {
+
+        }
+
+        @Override
+        public void onGetPostLocationComplete(DataItemLocationModel locationModel) {
 
         }
 
