@@ -153,6 +153,8 @@ public class ModelConverter {
                         itemUser.getRanktitle()
                 );
                 postModel.setAuthor(author);
+            } else {
+                postModel.setAuthor(new PostModel.PostAuthor());
             }
 
             if(item.getRatelog() != null) {
@@ -174,6 +176,8 @@ public class ModelConverter {
                 }
                 postModel.setRateScore(score);
                 postModel.setRateLog(rateList);
+            } else {
+                postModel.setRateLog(new ArrayList<PostModel.PostRate>());
             }
 
             postModel.setMessage(
