@@ -558,6 +558,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void onClickGotoFloor() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title(R.string.action_thread_goto_floor)
+                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                 .customView(R.layout.dialog_input_floor, false)
                 .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
                     @Override
