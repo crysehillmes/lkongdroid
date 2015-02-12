@@ -11,6 +11,7 @@
     <string name="action_dark_theme">Dark Theme</string>
     <string name="action_light_theme">Light Theme</string>
 
+    <string name="action_thread_goto_floor">Goto floor</string>
     <string name="action_thread_add_favorite">Add Favorite</string>
     <string name="action_thread_remove_favorite">Remove Favorite</string>
     <string name="action_insert_image">Insert Image</string>
@@ -52,6 +53,7 @@
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
+    <string name="toast_error_invalid_floor">No such floor.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>

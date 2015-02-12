@@ -225,7 +225,8 @@ public class LKongRestService {
         return threadList;
     }
 
-    public ThreadInfoModel getThreadInfo(long tid) throws Exception {
+    public ThreadInfoModel getThreadInfo(LKAuthObject authObject, long tid) throws Exception {checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
         String url = String.format(LKONG_INDEX_URL + "?mod=ajax&action=threadconfig_%d", tid);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
@@ -237,6 +238,7 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKThreadInfo lkThreadInfo = gson.fromJson(responseString, LKThreadInfo.class);
         ThreadInfoModel threadInfoModel = ModelConverter.toThreadInfoModel(lkThreadInfo);
+        clearCookies();
         return threadInfoModel;
     }
 

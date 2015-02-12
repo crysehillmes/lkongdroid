@@ -9,12 +9,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -26,6 +28,7 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
@@ -93,6 +96,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     List<PostModel> mItemList = new ArrayList<PostModel>();
 
     private long mThreadId = -1;
+    private long mTargetPostId = -1;
+    private int mTargetOrdinal = -1;
     private String mThreadSubject = "";
     private boolean mIsFavorite;
     private int mBaseTranslationY = 0;
@@ -114,8 +119,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
             mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, -1);
+        } else if(intent.hasExtra(DataContract.BUNDLE_POST_ID)) {
+            mTargetPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, -1);
         }
-        if(mThreadId == -1)
+        if(mThreadId == -1 && mTargetPostId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
     }
 
@@ -284,7 +291,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         } else {
             mPostCollectionView.getSwipeToRefresh().measure(1,1);
             mPostCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().loadThreadInfo(mThreadId);
+            if(mThreadId != -1) {
+                getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+            } else if(mTargetPostId != -1) {
+                getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId);
+            }
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
         mEventBus.toObservable().subscribe(event -> {
@@ -370,6 +381,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 else
                     finish();
                 return true;
+            case R.id.action_thread_goto_floor:
+                onClickGotoFloor();
+                return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
@@ -440,7 +454,26 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(page == 1 && posts.size() > 0 && mItemList.get(0).getOrdinal() == 1) {
             mIsFavorite = mItemList.get(0).isFavorite();
         }
+        if(mTargetOrdinal !=  -1) {
+            scrollToOrdinal(mTargetOrdinal);
+            mTargetOrdinal = -1;
+        }
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onGetPostLocationComplete(DataItemLocationModel locationModel) {
+        if(locationModel != null && locationModel.isLoad() && locationModel.getLocation().startsWith("thread_")) {
+            String idString = locationModel.getLocation();
+            int firstIndex = idString.indexOf("_");
+            int lastIndex = idString.lastIndexOf("_");
+            if(lastIndex > firstIndex + 1)
+                mThreadId = Long.valueOf(idString.substring(firstIndex + 1, lastIndex));
+            else
+                mThreadId = Long.valueOf(idString.substring(firstIndex + 1));
+            mTargetOrdinal = locationModel.getOrdinal();
+            getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+        }
     }
 
     @Override
@@ -460,8 +493,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
         }
 
-        if(mPageCount > 0)
-            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true);
+        if(mPageCount > 0) {
+            if(mTargetOrdinal == -1) {
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true);
+            } else {
+                int page = replyCount == 0 ? 1 : (int)Math.ceil((double) mTargetOrdinal / 20d);
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true);
+            }
+        }
     }
 
     @Override
@@ -514,5 +553,43 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
         mThreadTitleTextView.setText(spannableTitle);
+    }
+
+    private void onClickGotoFloor() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.action_thread_goto_floor)
+                .customView(R.layout.dialog_input_floor, false)
+                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.edit_floor);
+                        String content = editText.getText().toString();
+                        if(TextUtils.isDigitsOnly(content)) {
+                            int floor = Integer.valueOf(content);
+
+                            int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
+                            if(floor > 0 && floor <= replyCount) {
+                                int page = (replyCount - 1 == 0) ? 1 : (int)Math.ceil((double) floor / 20d);
+                                if(page == mCurrentPage)  {
+                                    scrollToOrdinal(floor);
+                                } else {
+                                    mTargetOrdinal = floor;
+                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true);
+                                }
+                            } else {
+                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_invalid_floor), TOAST_ALERT);
+                            }
+                        }
+                    }
+                })
+                .build();
+        dialog.show();
+    }
+
+    private void scrollToOrdinal(int targetOrdinal) {
+        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRecyclerView().getLayoutManager();
+        layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
     }
 }

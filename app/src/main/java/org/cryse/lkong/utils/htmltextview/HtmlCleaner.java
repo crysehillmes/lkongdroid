@@ -20,10 +20,10 @@ public class HtmlCleaner {
         for (Element pHasImg: fixedDoc.select("p:has(img)")) {
             pHasImg.unwrap();
         }
-        for (Element img: fixedDoc.select("img")) {
+        /*for (Element img: fixedDoc.select("img")) {
             if(img.nextElementSibling() != null && !img.nextElementSibling().tagName().equalsIgnoreCase("br"))
                 img.after("<br>");
-        }
+        }*/
         for (Element element : fixedDoc.select("*")) {
             if (!element.hasText() && element.isBlock() && !element.tagName().equalsIgnoreCase("img")
                     && !element.tagName().equalsIgnoreCase("ul")

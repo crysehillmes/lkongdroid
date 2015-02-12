@@ -43,6 +43,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
@@ -203,8 +204,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
-                if(!TextUtils.isEmpty(mPostTailText.get()))
-                    sendContentBuilder.append("<br>").append(getString(R.string.format_post_tail_prefix)).append(mPostTailText.get());
+                sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));
                 mSendServiceBinder.sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, sendContentBuilder.toString());
                 // finishCompat();
             }
