@@ -129,9 +129,6 @@ public class MainActivity extends AbstractThemeableActivity
             case FRAGMENT_TIMELINE:
                 mNavigation.navigateToTimelineFragment();
                 break;
-            case FRAGMENT_MENTIONS:
-                mNavigation.navigateToMentionsFragment();
-                break;
             case ACTIVITY_SETTINGS:
                 mNavigation.navigateToSettingsActivity(this);
                 break;

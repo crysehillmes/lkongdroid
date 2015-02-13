@@ -20,7 +20,6 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.InActivityFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
@@ -195,20 +194,10 @@ public class FavoritesFragment extends InActivityFragment implements ThreadListV
     public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
         if(isLoadMore) {
             if (threadList.size() == 0) isNoMore = true;
-            // isLoadingMore = false;
-            // if (threadList.size() != 0) mCurrentListPageNumber++;
-            // addToListView(novels);
             mCollectionAdapter.addAll(threadList);
         } else {
             isNoMore = false;
-            // mCurrentListPageNumber = 0;
-            // mNovelList.clear();
-            // addToListView(novels);
             mCollectionAdapter.replaceWith(threadList);
-            /*if (getResources().getBoolean(R.bool.isTablet)) {
-                //isLoadingMore = true;
-                loadMore(mCurrentListPageNumber);
-            }*/
         }
         if(mCollectionAdapter.getItemCount() > 0) {
             ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);

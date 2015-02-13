@@ -58,7 +58,6 @@ public abstract class SimpleCollectionFragment<
     AdapterType mCollectionAdapter;
 
     List<ItemType> mItemList = new ArrayList<ItemType>();
-    boolean mInMainActivity = false;
 
     @Override
     protected abstract void injectThis();
@@ -78,7 +77,8 @@ public abstract class SimpleCollectionFragment<
     }
 
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mCollectionView, mInMainActivity);
+        getRecyclerViewInsets();
+        UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(new DefaultItemAnimator());
         mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -215,4 +215,8 @@ public abstract class SimpleCollectionFragment<
     protected abstract void onItemClick(View view, int position, long id);
 
     protected abstract void onEvent(AbstractEvent event);
+
+    protected UIUtils.InsetsValue getRecyclerViewInsets() {
+        return UIUtils.getInsets(getActivity(), mCollectionView, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
 }

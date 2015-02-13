@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -163,9 +162,7 @@ public class NotificationFragment extends InActivityFragment {
             Bundle args = new Bundle();
             switch (i) {
                 case 0:
-                    args.putInt(TimelineFragment.BUNDLE_LIST_TYPE, TimelineListType.TYPE_MENTIONS);
-                    args.putBoolean(TimelineFragment.BUNDLE_IN_MAIN_ACTIVITY, false);
-                    fragment = TimelineFragment.newInstance(args);
+                    fragment = MentionsFragment.newInstance(args);
                     break;
                 case 1:
                     fragment = NoticeFragment.newInstance(args);
