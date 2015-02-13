@@ -99,7 +99,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private long mTargetPostId = -1;
     private int mTargetOrdinal = -1;
     private String mThreadSubject = "";
-    private boolean mIsFavorite;
+    private Boolean mIsFavorite = null;
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
     @Override
@@ -256,7 +256,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             mThreadId = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_ID);
             if(savedInstanceState.containsKey(DataContract.BUNDLE_THREAD_INFO_OBJECT)) {
-                mIsFavorite = savedInstanceState.getBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE);
+                if(savedInstanceState.containsKey(DataContract.BUNDLE_THREAD_IS_FAVORITE))
+                    mIsFavorite = savedInstanceState.getBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE);
                 mThreadSubject = savedInstanceState.getString(DataContract.BUNDLE_THREAD_SUBJECT);
                 mThreadModel = savedInstanceState.getParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT);
                 mCurrentPage = savedInstanceState.getInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE);
@@ -329,7 +330,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         super.onSaveInstanceState(outState);
         outState.putLong(DataContract.BUNDLE_THREAD_ID, mThreadId);
         if(mThreadModel != null) {
-            outState.putBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE, mIsFavorite);
+            if(mIsFavorite != null)
+                outState.putBoolean(DataContract.BUNDLE_THREAD_IS_FAVORITE, mIsFavorite);
             outState.putString(DataContract.BUNDLE_THREAD_SUBJECT, mThreadSubject);
             outState.putParcelable(DataContract.BUNDLE_THREAD_INFO_OBJECT, mThreadModel);
             outState.putInt(DataContract.BUNDLE_THREAD_CURRENT_PAGE, mCurrentPage);
@@ -358,7 +360,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
-        else if(mItemList.size() > 0) {
+        else if(mItemList.size() > 0 && mIsFavorite != null) {
             mFavoriteMenuItem.setVisible(true);
             if(mIsFavorite) {
                 mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
@@ -368,6 +370,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
                 mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
             }
+        } else if(mIsFavorite == null) {
+            mFavoriteMenuItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -453,6 +457,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         if(page == 1 && posts.size() > 0 && mItemList.get(0).getOrdinal() == 1) {
             mIsFavorite = mItemList.get(0).isFavorite();
+        } else if(page != 1 && mIsFavorite == null) {
+            mIsFavorite = null;
         }
         if(mTargetOrdinal !=  -1) {
             scrollToOrdinal(mTargetOrdinal);
