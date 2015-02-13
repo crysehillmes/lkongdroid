@@ -52,7 +52,8 @@ public class HtmlCleaner {
             }
         }
         for (Element pInLi: fixedDoc.select("p")) {
-            pInLi.after("<br>");
+            if(pInLi.nextElementSibling() != null)
+                pInLi.after("<br>");
             pInLi.unwrap();
         }
         return fixedDoc.html();
