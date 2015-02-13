@@ -113,7 +113,13 @@ public class TimelineFragment extends InActivityFragment implements TimelineView
         mCollectionView.setOnItemClickListener((view, position, id) -> {
             TimelineModel item = mCollectionAdapter.getItem(position);
             Intent intent = new Intent(getActivity(), PostListActivity.class);
-            intent.putExtra(DataContract.BUNDLE_POST_ID, Long.valueOf(item.getId().substring(5)));
+            if(item.getId().startsWith("thread_")) {
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, Long.valueOf(item.getId().substring(7)));
+            } else if(item.getId().startsWith("post_")) {
+                intent.putExtra(DataContract.BUNDLE_POST_ID, Long.valueOf(item.getId().substring(5)));
+            } else {
+                intent.putExtra(DataContract.BUNDLE_THREAD_ID, item.getTid());
+            }
             startActivity(intent);
         });
     }
