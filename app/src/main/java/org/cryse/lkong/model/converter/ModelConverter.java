@@ -316,7 +316,7 @@ public class ModelConverter {
                 model.setUserName(item.getUsername());
                 model.setExtCredits(item.getExtcredits());
                 model.setId(item.getId());
-                model.setScore(Integer.valueOf(item.getScore()));
+                model.setScore(item.getScore());
                 model.setMessage(item.getMessage());
                 model.setReason(item.getReason());
                 model.setPid(item.getPid());
