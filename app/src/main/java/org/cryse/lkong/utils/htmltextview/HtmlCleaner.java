@@ -41,7 +41,7 @@ public class HtmlCleaner {
 
         }
         // 不确定是否移除所有直属于 body 的 br 换行
-        Element bodyElement = fixedDoc.body();
+        /*Element bodyElement = fixedDoc.body();
         Elements bodyChildren = bodyElement.children();
         for (int i = bodyChildren.size() - 1; i >= 0; i--) {
             Element bodyChild = bodyChildren.get(i);
@@ -50,9 +50,8 @@ public class HtmlCleaner {
             } else {
                 break;
             }
-        }
+        }*/
         for (Element pInLi: fixedDoc.select("p")) {
-            if(pInLi.nextElementSibling() != null)
                 pInLi.after("<br>");
             pInLi.unwrap();
         }

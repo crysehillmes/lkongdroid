@@ -73,20 +73,26 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
-                        .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                        .setPlaceHolder(R.drawable.image_placeholder)
-                        .setMaxImageWidth(mMaxImageWidth)
-                        .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
-                viewHolder.mMessageTextView.setText(spannedText);
+                if(postModel.getSpannedMessage() != null) {
+                    viewHolder.mMessageTextView.setText(postModel.getSpannedMessage());
+                } else {
+                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
+                            .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
+                            .setPlaceHolder(R.drawable.image_placeholder)
+                            .setMaxImageWidth(mMaxImageWidth)
+                            .setError(R.drawable.image_placeholder);
+                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
+                    postModel.setSpannedMessage(spannedText);
+                    viewHolder.mMessageTextView.setText(spannedText);
+                }
+
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                try {
+                /*try {
                     DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
 
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
