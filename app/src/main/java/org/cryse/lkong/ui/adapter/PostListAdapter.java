@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.DebugUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
@@ -81,11 +82,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mMessageTextView.setText(spannedText);
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                /*try {
+                try {
                     DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
 
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
