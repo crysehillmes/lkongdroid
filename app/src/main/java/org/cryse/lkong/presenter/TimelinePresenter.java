@@ -13,7 +13,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel> {
-    private static final String LOG_TAG = NoticePresenter.class.getName();
+    private static final String LOG_TAG = TimelinePresenter.class.getName();
     @Inject
     public TimelinePresenter(LKongForumService forumService) {
         super(forumService);

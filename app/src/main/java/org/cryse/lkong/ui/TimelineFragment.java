@@ -89,7 +89,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_notification_fragment, menu);
+        inflater.inflate(R.menu.menu_timeline, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

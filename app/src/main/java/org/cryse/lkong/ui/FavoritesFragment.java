@@ -1,64 +1,35 @@
 package org.cryse.lkong.ui;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.ui.common.InActivityFragment;
-import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.view.ThreadListView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
-public class FavoritesFragment extends InActivityFragment implements ThreadListView {
-    public static final String LOG_TAG = FavoritesFragment.class.getName();
-    private static final String BUNDLE_NEED_REFRESH = "bundle_favorites_need_refresh";
-    private boolean isNoMore = false;
-    private boolean isLoading = false;
-    private boolean isLoadingMore = false;
-    private long mLastItemSortKey = -1;
-    @Inject
-    FavoritesPresenter mPresenter;
-
-    @Inject
-    RxEventBus mEventBus;
-
-    @Inject
-    UserAccountManager mUserAccountManager;
-
-    @InjectView(R.id.fragment_favorites_recyclerview)
-    SuperRecyclerView mThreadCollectionView;
-
-    ThreadListAdapter mCollectionAdapter;
-
-    List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
+public class FavoritesFragment extends SimpleCollectionFragment<
+        ThreadModel,
+        ThreadListAdapter,
+        FavoritesPresenter> {
+    private static final String LOG_TAG = FavoritesFragment.class.getName();
 
     boolean mNeedRefresh = false;
+    @Inject
+    FavoritesPresenter mPresenter;
 
     public static FavoritesFragment newInstance(Bundle args) {
         FavoritesFragment fragment = new FavoritesFragment();
@@ -68,49 +39,9 @@ public class FavoritesFragment extends InActivityFragment implements ThreadListV
     }
 
     @Override
-    protected void injectThis() {
-        LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
-    }
-
-    @Override
-     public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectThis();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.fragment_favorites, null);
-        ButterKnife.inject(this, contentView);
-        initRecyclerView();
-        return contentView;
-    }
-
-    private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(getActivity(), mThreadCollectionView, true);
-        mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-        mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
-        mThreadCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCollectionAdapter = new ThreadListAdapter(getActivity(), mItemList);
-        mThreadCollectionView.setAdapter(mCollectionAdapter);
-        mThreadCollectionView.setRefreshListener(() -> getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false));
-        mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
-            } else {
-                mThreadCollectionView.setLoadingMore(false);
-                mThreadCollectionView.hideMoreProgress();
-            }
-        });
-        mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            ThreadModel item = mCollectionAdapter.getItem(position);
-            Intent intent = new Intent(getActivity(), PostListActivity.class);
-            String idString = item.getId().substring(7);
-            long tid = Long.parseLong(idString);
-            intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
-            startActivity(intent);
-        });
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -120,37 +51,19 @@ public class FavoritesFragment extends InActivityFragment implements ThreadListV
     }
 
     @Override
-    public String getFragmentTitle() {
-        return getString(R.string.drawer_item_favorites);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY, mLastItemSortKey);
-        outState.putParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE, mCollectionAdapter.getItemArrayList());
-        outState.putBoolean(BUNDLE_NEED_REFRESH, mNeedRefresh);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_open_notification:
+                mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
-            mCollectionAdapter.addAll(list);
-            mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
-            mNeedRefresh = savedInstanceState.getBoolean(BUNDLE_NEED_REFRESH);
-        } else {
-            mThreadCollectionView.getSwipeToRefresh().measure(1,1);
-            mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
-        }
-
-        mEventBus.toObservable().subscribe(event -> {
-           if(event instanceof FavoritesChangedEvent)
-               mNeedRefresh = true;
-        });
+        setActivityTitle();
     }
 
     @Override
@@ -163,82 +76,62 @@ public class FavoritesFragment extends InActivityFragment implements ThreadListV
     }
 
     @Override
-    protected void analyticsTrackEnter() {
-        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
+    protected void injectThis() {
+        LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
     }
 
     @Override
-    protected void analyticsTrackExit() {
-        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
+    protected String getLogTag() {
+        return LOG_TAG;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        getPresenter().bindView(this);
+    protected int getLayoutId() {
+        return R.layout.fragment_simple_collection;
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        getPresenter().unbindView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getPresenter().destroy();
-    }
-
-    @Override
-    public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
-        if(isLoadMore) {
-            if (threadList.size() == 0) isNoMore = true;
-            mCollectionAdapter.addAll(threadList);
-        } else {
-            isNoMore = false;
-            mCollectionAdapter.replaceWith(threadList);
-        }
-        if(mCollectionAdapter.getItemCount() > 0) {
-            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
-            mLastItemSortKey = lastItem.getSortKey();
-        } else {
-            mLastItemSortKey = -1;
-        }
-    }
-
-    @Override
-    public boolean isLoadingMore() {
-        return isLoadingMore;
-    }
-
-    @Override
-    public void setLoadingMore(boolean value) {
-        isLoadingMore = value;
-        mThreadCollectionView.setLoadingMore(value);
-        if(value)
-            mThreadCollectionView.showMoreProgress();
-        else
-            mThreadCollectionView.hideMoreProgress();
-    }
-
-    @Override
-    public void setLoading(Boolean value) {
-        isLoading = value;
-        mThreadCollectionView.getSwipeToRefresh().setRefreshing(value);
-    }
-
-    @Override
-    public Boolean isLoading() {
-        return isLoading;
-    }
-
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(getActivity(), getString(text_value), toastType);
-    }
-
-    public FavoritesPresenter getPresenter() {
+    protected FavoritesPresenter getPresenter() {
         return mPresenter;
+    }
+
+    @Override
+    protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
+        return new ThreadListAdapter(getActivity(), mItemList);
+    }
+
+    @Override
+    protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
+        getPresenter().loadFavorites(authObject, start, isLoadingMore);
+    }
+
+    @Override
+    protected void onItemClick(View view, int position, long id) {
+        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+            ThreadModel item = mCollectionAdapter.getItem(position);
+            String idString = item.getId().substring(7);
+            long tid = Long.parseLong(idString);
+            mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+        }
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        if(event instanceof FavoritesChangedEvent)
+            mNeedRefresh = true;
+    }
+
+    protected void setActivityTitle() {
+        Activity activity = getActivity();
+        if(activity instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity)activity;
+            mainActivity.onSectionAttached(getString(R.string.drawer_item_favorites));
+        }
+    }
+
+    @Override
+    protected UIUtils.InsetsValue getRecyclerViewInsets() {
+        return UIUtils.getInsets(getActivity(), mCollectionView, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
     }
 }
