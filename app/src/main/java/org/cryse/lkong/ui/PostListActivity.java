@@ -566,7 +566,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         super.onPositive(dialog);
                         EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.edit_floor);
                         String content = editText.getText().toString();
-                        if(TextUtils.isDigitsOnly(content)) {
+                        if(!TextUtils.isEmpty(content) && TextUtils.isDigitsOnly(content)) {
                             int floor = Integer.valueOf(content);
 
                             int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
