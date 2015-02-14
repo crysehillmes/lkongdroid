@@ -7,12 +7,10 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.PostListActivity">
 
-    <org.cryse.widget.recyclerview.SuperRecyclerView
+    <org.cryse.widget.recyclerview.PtrRecyclerView
         android:id="@+id/activity_post_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay" />
+        android:layout_height="wrap_content" />
 
 
     <android.support.v7.widget.Toolbar
