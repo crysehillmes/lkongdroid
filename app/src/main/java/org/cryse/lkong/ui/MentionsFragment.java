@@ -65,6 +65,14 @@ public class MentionsFragment extends SimpleCollectionFragment<
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+            TimelineModel item = mCollectionAdapter.getItem(position);
+            if(item.getId().startsWith("thread_")) {
+                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), Long.valueOf(item.getId().substring(7)));
+            } else if(item.getId().startsWith("post_")) {
+                mAndroidNavigation.openActivityForPostListByPostId(getActivity(), Long.valueOf(item.getId().substring(5)));
+            } else {
+                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), item.getTid());
+            }
         }
     }
 
