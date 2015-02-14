@@ -213,13 +213,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<RecyclerView> recyclerViewPullToRefreshBase) {
-                goToPrevPage();
+                goToPrevPage(false);
                 recyclerViewPullToRefreshBase.onRefreshComplete();
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<RecyclerView> recyclerViewPullToRefreshBase) {
-                goToNextPage();
+                goToNextPage(false);
                 recyclerViewPullToRefreshBase.onRefreshComplete();
             }
         });
@@ -236,7 +236,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mOnPagerControlListener = new PagerControl.OnPagerControlListener() {
             @Override
             public void onBackwardClick() {
-                goToPrevPage();
+                goToPrevPage(true);
             }
 
             @Override
@@ -246,7 +246,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
                             if(i + 1 == mCurrentPage) return;
-                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1, true);
+                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1, true, SHOW_MODE_REPLACE);
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -254,19 +254,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
             @Override
             public void onForwardClick() {
-                goToNextPage();
+                goToNextPage(true);
             }
         };
     }
 
-    private void goToNextPage() {
+    private void goToNextPage(boolean resetPosition) {
         if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
-            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1, true);
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1, resetPosition, SHOW_MODE_NEXT_PAGE);
     }
 
-    private void goToPrevPage() {
+    private void goToPrevPage(boolean resetPosition) {
         if(mCurrentPage - 1 >= 1 && mCurrentPage - 1 <= mPageCount)
-            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage - 1, true);
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage - 1, resetPosition, SHOW_MODE_PREV_PAGE);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 // mCollectionAdapter.addAll(list);
                 setThreadSubjectSpanned(mThreadModel);
-                showPostList(mCurrentPage, list, false);
+                showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE);
 
                 // Restore last state for checked position.
                 /*final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
@@ -336,7 +336,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         runOnUiThread(this::updatePageIndicator);
                     }
                     if (newPageCount == mCurrentPage) {
-                        runOnUiThread(() -> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false));
+                        runOnUiThread(() -> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE));
                     }
                 }
 
@@ -465,11 +465,29 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
-    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition) {
+    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         this.mCurrentPage = page;
         updatePageIndicator();
-        // mPostCollectionView.getRecyclerView().stopScroll();
-        mCollectionAdapter.replaceWith(posts);
+        int currentItemCount = mItemList.size();
+        switch (showMode) {
+            case SHOW_MODE_REPLACE:
+                mCollectionAdapter.replaceWith(posts);
+                scrollToPosition(0);
+                break;
+            case SHOW_MODE_PREV_PAGE:
+                mCollectionAdapter.addAll(0, posts);
+                mCollectionAdapter.rangeRemove(posts.size(), posts.size() + currentItemCount);
+                scrollToPosition(posts.size() - 1);
+                break;
+            case SHOW_MODE_NEXT_PAGE:
+                mCollectionAdapter.addAll(posts);
+                mCollectionAdapter.rangeRemove(0, currentItemCount);
+                scrollToPosition(0);
+                break;
+        }
+
+
+
         if(refreshPosition) {
             mPostCollectionView.getRefreshableView().scrollToPosition(0);
             mToolbarQuickReturn.show();
@@ -521,10 +539,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         if(mPageCount > 0) {
             if(mTargetOrdinal == -1) {
-                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true);
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true, SHOW_MODE_REPLACE);
             } else {
                 int page = replyCount == 0 ? 1 : (int)Math.ceil((double) mTargetOrdinal / 20d);
-                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true);
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
             }
         }
     }
@@ -602,7 +620,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                                     scrollToOrdinal(floor);
                                 } else {
                                     mTargetOrdinal = floor;
-                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true);
+                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
                                 }
                             } else {
                                 ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_invalid_floor), TOAST_ALERT);
@@ -616,6 +634,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void scrollToOrdinal(int targetOrdinal) {
         int position = targetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
+        layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
+    }
+
+    private void scrollToPosition(int position) {
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
     }

@@ -3,6 +3,7 @@ package org.cryse.widget.recyclerview;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -92,6 +93,17 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         if(position >= 0 && position < mObjectList.getItemCount()) {
             mObjectList.getItemList().remove(position);
             notifyItemRemoved(currentHeaderCount + position);
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    public void rangeRemove(int start, int end) {
+        Log.d("ADAPTER", String.format("start: %d, end: %d", start, end));
+        int currentHeaderCount = mObjectList.getHeaderViewCount();
+        if(end > start && start >= 0 && end <= mObjectList.getItemCount()) {
+            mObjectList.getItemList().subList(start, end).clear();
+            notifyItemRangeRemoved(currentHeaderCount + start, currentHeaderCount + start + end);
         } else {
             throw new IndexOutOfBoundsException();
         }

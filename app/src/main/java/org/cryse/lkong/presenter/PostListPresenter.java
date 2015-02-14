@@ -73,7 +73,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 );
     }
 
-    public void loadPostList(LKAuthObject authObject, long tid, int page, boolean refreshPosition) {
+    public void loadPostList(LKAuthObject authObject, long tid, int page, boolean refreshPosition, int showMode) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadPostListSubscription);
         mView.setLoading(true);
         mLoadPostListSubscription = mLKongForumService.getPostList(authObject, tid, page)
@@ -82,7 +82,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .subscribe(
                         result -> {
                             Timber.d("PostListPresenter::loadPostList() onNext().", LOG_TAG);
-                            mView.showPostList(page, result, refreshPosition);
+                            mView.showPostList(page, result, refreshPosition, showMode);
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadPostList() onError().", LOG_TAG);
@@ -133,8 +133,9 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     }
 
     private class EmptyPostListView implements PostListView {
+
         @Override
-        public void showPostList(int page, List<PostModel> posts, boolean refreshPosition) {
+        public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
 
         }
 
