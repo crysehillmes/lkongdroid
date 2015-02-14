@@ -135,4 +135,7 @@
     <string name="button_punch_complete">Punch Done</string>
     <string name="button_punch_error">Punch Error</string>
     <string name="button_punched">Punch Day: %1$d</string>
+
+    <string name="text_load_prev_page">Load previous page</string>
+    <string name="text_load_next_page">Load next page</string>
 </resources>

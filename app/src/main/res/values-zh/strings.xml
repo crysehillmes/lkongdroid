@@ -120,4 +120,7 @@
     <string name="action_open_notification">消息与通知</string>
     <string name="action_thread_goto_floor">跳转楼层</string>
     <string name="umeng_common_icon">找不到这一楼啊</string>
+
+    <string name="text_load_prev_page">加载上一页</string>
+    <string name="text_load_next_page">加载下一页</string>
 </resources>
