@@ -645,7 +645,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void scrollToPosition(int position) {
+        position = position + mCollectionAdapter.getHeaderViewCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
-        layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
+        layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
     }
 }
