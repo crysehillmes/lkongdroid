@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -84,6 +85,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     FloatingActionButtonEx mFab;
     @InjectView(R.id.activity_post_list_page_control)
     PagerControl mFooterPagerControl;
+    @InjectView(R.id.loading_progressbar)
+    ProgressBar mProgressBar;
 
     View mTopPaddingHeaderView;
     View mBottomPaddingFooterView;
@@ -560,6 +563,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public void setLoading(Boolean value) {
+        mProgressBar.setVisibility(value ? View.VISIBLE : View.INVISIBLE);
         // this.mPostCollectionView.getRefreshableView().setRefreshing(value);
     }
 
