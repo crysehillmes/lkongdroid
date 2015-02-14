@@ -201,6 +201,9 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         if(spannableContent != null && spannableContent.length() > 0 && !TextUtils.isEmpty(title)) {
             if (mSendServiceBinder != null) {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
+                mProgressDialog.setCancelable(true);
+                mProgressDialog.setCanceledOnTouchOutside(false);
+                mProgressDialog.setOnDismissListener(dialog -> finishCompat());
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
                 sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));

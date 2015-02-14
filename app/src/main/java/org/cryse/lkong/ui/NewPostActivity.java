@@ -3,6 +3,7 @@ package org.cryse.lkong.ui;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -202,6 +203,9 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         if(spannableContent != null && spannableContent.length() > 0) {
             if(mSendServiceBinder != null) {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
+                mProgressDialog.setCancelable(true);
+                mProgressDialog.setCanceledOnTouchOutside(false);
+                mProgressDialog.setOnDismissListener(dialog -> finishCompat());
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
                 sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));

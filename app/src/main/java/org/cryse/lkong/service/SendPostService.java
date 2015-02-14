@@ -121,7 +121,7 @@ public class SendPostService extends Service {
         try {
             postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "sendPost error", e);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
@@ -149,7 +149,7 @@ public class SendPostService extends Service {
         try {
             threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "sendThread error", e);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
