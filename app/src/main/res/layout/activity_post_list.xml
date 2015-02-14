@@ -10,7 +10,13 @@
     <org.cryse.widget.recyclerview.PtrRecyclerView
         android:id="@+id/activity_post_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:ptrPullLabel=""
+        app:ptrRefreshLabel=""
+        app:ptrReleaseLabel=""
+        app:ptrDrawable="@android:color/transparent"
+        app:ptrDrawableStart="@android:color/transparent"
+        app:ptrDrawableEnd="@android:color/transparent"/>
 
 
     <android.support.v7.widget.Toolbar
