@@ -16,6 +16,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_list_drawer_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
@@ -33,7 +34,6 @@
         android:choiceMode="singleChoice"
         android:fitsSystemWindows="true"
         android:divider="@color/nliveo_transparent"
-        android:background="@color/nliveo_white"
         android:dividerHeight="0dp" />
 
 
@@ -48,7 +48,7 @@
         <RelativeLayout
             android:id="@+id/footerDrawer"
             android:layout_width="match_parent"
-            android:background="@drawable/selector_no_check_item_navigation"
+            android:background="?theme_selector_no_check_item_navigation"
             android:layout_height="48dp">
 
             <ImageView

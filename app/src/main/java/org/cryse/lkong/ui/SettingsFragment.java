@@ -165,7 +165,11 @@ public class SettingsFragment extends PreferenceFragment {
                     public void onColorSelection(int index, int color, int darker) {
                         themeColorPrefsValue.set(index);
                         ThemeEngine themeEngine = ((AbstractThemeableActivity)getActivity()).getThemeEngine();
-                        mEventBus.sendEvent(new ThemeColorChangedEvent(themeEngine.getPrimaryColor(getActivity()), themeEngine.getPrimaryDarkColor(getActivity())));
+                        mEventBus.sendEvent(new ThemeColorChangedEvent(
+                                themeEngine.getPrimaryColor(getActivity()),
+                                themeEngine.getPrimaryDarkColor(getActivity()),
+                                themeEngine.getPrimaryColorResId(),
+                                themeEngine.getPrimaryDarkColorResId()));
                     }
                 });
                 return true;

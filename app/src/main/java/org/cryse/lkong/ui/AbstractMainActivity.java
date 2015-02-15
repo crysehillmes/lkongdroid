@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -64,6 +66,8 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
     private DrawerLayout mDrawerLayout;
     private FrameLayout mRelativeDrawer;
     private RelativeLayout mFooterDrawer;
+    private RelativeLayout mFootDrawerContainer;
+    private RelativeLayout mNavigationListDrawerContainer;
 
     private NavigationLiveoAdapter mNavigationAdapter;
     private ActionBarDrawerToggleCompat mDrawerToggle;
@@ -110,6 +114,8 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
         mTitleFooter = (TextView) this.findViewById(R.id.titleFooter);
         mIconFooter = (ImageView) this.findViewById(R.id.iconFooter);
 
+        mNavigationListDrawerContainer = (RelativeLayout) this.findViewById(R.id.navigation_list_drawer_container);
+        mFootDrawerContainer = (RelativeLayout) this.findViewById(R.id.footDrawerContainer);
         mFooterDrawer = (RelativeLayout) this.findViewById(R.id.footerDrawer);
         mFooterDrawer.setOnClickListener(onClickFooterDrawer);
 
@@ -252,7 +258,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
             throw new RuntimeException(getString(R.string.start_navigation_listener));
         }
 
-        List<Integer> mListExtra = new ArrayList<>();
+        List<Integer> mListExtra = new ArrayList<Integer>();
         mListExtra.add(0, mNewSelector);
         mListExtra.add(1, mColorDefault);
         mListExtra.add(2, mColorIcon);
@@ -468,7 +474,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Item color selected in the list - name and icon (use before the setNavigationAdapter)
      * @param colorId color id.
      */
-    public void setColorSelectedItemNavigation(int colorId){
+    public void setColorSelectedItemNavigation(@ColorRes int colorId){
         this.mColorSelected = colorId;
     }
 
@@ -476,7 +482,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Footer icon color
      * @param colorId color id.
      */
-    public void setFooterIconColorNavigation(int colorId){
+    public void setFooterIconColorNavigation(@ColorRes int colorId){
         this.mIconFooter.setColorFilter(getResources().getColor(colorId));
     }
 
@@ -484,7 +490,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Item color default in the list - name and icon (use before the setNavigationAdapter)
      * @param colorId color id.
      */
-    public void setColorDefaultItemNavigation(int colorId){
+    public void setColorDefaultItemNavigation(@ColorRes int colorId){
         this.mColorDefault = colorId;
     }
 
@@ -492,7 +498,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Icon item color in the list - icon (use before the setNavigationAdapter)
      * @param colorId color id.
      */
-    public void setColorIconItemNavigation(int colorId){
+    public void setColorIconItemNavigation(@ColorRes int colorId){
         this.mColorIcon = colorId;
     }
 
@@ -500,7 +506,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Separator item subHeader color in the list - icon (use before the setNavigationAdapter)
      * @param colorId color id.
      */
-    public void setColorSeparatorItemSubHeaderNavigation(int colorId){
+    public void setColorSeparatorItemSubHeaderNavigation(@ColorRes int colorId){
         this.mColorSeparator = colorId;
     }
 
@@ -508,7 +514,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
      * Name item color in the list - name (use before the setNavigationAdapter)
      * @param colorId color id.
      */
-    public void setColorNameItemNavigation(int colorId){
+    public void setColorNameItemNavigation(@ColorRes int colorId){
         this.mColorName = colorId;
     }
 
@@ -722,5 +728,37 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
         } else {
             super.onBackPressed();
         }
+    }
+
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
+    public void setDrawerLayoutBackground(boolean isDarkMode) {
+        if (mFootDrawerContainer != null)
+            mFootDrawerContainer.setBackgroundResource(isDarkMode ? R.color.theme_navigation_drawer_bg_dark : R.color.theme_navigation_drawer_bg_light);
+        if (mFooterDrawer != null)
+            mFooterDrawer.setBackgroundResource(isDarkMode ? R.drawable.selector_no_check_item_navigation_dark : R.drawable.selector_no_check_item_navigation);
+        if (mNavigationListDrawerContainer != null)
+            mNavigationListDrawerContainer.setBackgroundResource(isDarkMode ? R.color.theme_navigation_drawer_bg_dark : R.color.theme_navigation_drawer_bg_light);
+        if (mTitleFooter != null)
+            mTitleFooter.setTextColor(getResources().getColor(isDarkMode ? R.color.text_color_primary_dark : R.color.text_color_primary));
+        if (mIconFooter != null)
+            mIconFooter.setColorFilter(getResources().getColor(isDarkMode ? R.color.text_color_primary_dark : R.color.text_color_primary), PorterDuff.Mode.SRC_IN);
+        if (mNavigationAdapter != null) {
+            mNavigationAdapter.setCheckItemDrawableId(isDarkMode ? R.drawable.selector_check_item_navigation_dark : R.drawable.selector_check_item_navigation);
+            mNavigationAdapter.setNoCheckItemDrawableId(isDarkMode ? R.drawable.selector_no_check_item_navigation_dark : R.drawable.selector_no_check_item_navigation);
+
+            mNavigationAdapter.setColorDefault(isDarkMode ? R.color.text_color_primary_dark : R.color.text_color_primary);
+            mNavigationAdapter.setColorIcon(isDarkMode ? R.color.text_color_primary_dark : R.color.text_color_primary);
+            mNavigationAdapter.setColorSelected(getThemeEngine().getPrimaryColorResId());
+            mNavigationAdapter.setColorName(isDarkMode ? R.color.text_color_primary_dark : R.color.text_color_primary);
+            mNavigationAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setDrawerSelectedItemColor(@ColorRes int colorResId) {
+        mNavigationAdapter.setColorSelected(colorResId);
+        mNavigationAdapter.notifyDataSetChanged();
     }
 }

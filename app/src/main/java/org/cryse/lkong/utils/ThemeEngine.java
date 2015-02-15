@@ -79,4 +79,12 @@ public class ThemeEngine {
     public void setNightMode(boolean isNightMode) {
         mPrefNightMode.set(isNightMode);
     }
+
+    public int getPrimaryColorResId() {
+        return mPrimaryColors[mPrefColorIndex.get()];
+    }
+
+    public int getPrimaryDarkColorResId() {
+        return mPrimaryDarkColors[mPrefColorIndex.get()];
+    }
 }

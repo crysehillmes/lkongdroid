@@ -45,7 +45,6 @@
         app:insetForeground="#4000">
 
         <include
-            android:fitsSystemWindows="true"
             layout="@layout/navigation_list_drawer" />
     </org.cryse.widget.ScrimInsetsFrameLayout>
 </android.support.v4.widget.DrawerLayout>

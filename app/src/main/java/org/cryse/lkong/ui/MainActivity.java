@@ -11,7 +11,10 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +41,11 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
             mNavigation.navigateToSignInActivity(this);
             finishCompat();
         }
-        setIsOverrideStatusBarColor(true);
+        setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
         super.onCreate(savedInstanceState);
+        setDrawerLayoutBackground(isNightMode());
+        getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
         getSwipeBackLayout().setEnableGesture(false);
     }
 
@@ -49,8 +54,8 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
         //User information here
         /*this.mUserName.setText("Rudson Lima");
         this.mUserEmail.setText("rudsonlive@gmail.com");
-        this.mUserPhoto.setImageResource(R.drawable.ic_rudsonlive);
-        this.mUserBackground.setImageResource(R.drawable.ic_user_background);*/
+        this.mUserPhoto.setImageResource(R.drawable.ic_rudsonlive);*/
+        this.mUserBackground.setImageResource(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
         if(mUserAccountManager.isSignedIn()) {
             mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
             if(mCurrentAccount != null) {
@@ -184,5 +189,14 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof ThemeColorChangedEvent) {
+            getDrawerLayout().setStatusBarBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+            setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
+        }
     }
 }

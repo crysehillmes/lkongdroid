@@ -17,6 +17,7 @@
 <resources>
     <color name="nliveo_white">#ffffff</color>
     <color name="nliveo_gray">#e0e0e0</color>
+    <color name="nliveo_gray_dark">#202020</color>
     <color name="nliveo_black">#000000</color>
     <color name="nliveo_transparent">#00000000</color>
 

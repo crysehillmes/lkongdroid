@@ -108,6 +108,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
