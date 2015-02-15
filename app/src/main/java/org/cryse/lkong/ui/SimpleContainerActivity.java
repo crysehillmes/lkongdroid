@@ -34,8 +34,6 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
     protected void setUpFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                 .beginTransaction();
-        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                android.R.anim.fade_out);
         fragmentTransaction.replace(R.id.container, newFragment());
         fragmentTransaction.commit();
     }

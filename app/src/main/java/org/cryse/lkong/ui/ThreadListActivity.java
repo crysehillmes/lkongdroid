@@ -17,6 +17,8 @@ import android.widget.Spinner;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
@@ -38,7 +40,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
 public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
     public static final String LOG_TAG = ThreadListActivity.class.getName();
@@ -130,6 +131,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
+        setPrimaryColorToViews(getThemeEngine().getPrimaryColor(this));
     }
 
     private void setUpHeaderView() {
@@ -192,6 +194,14 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
             }
         });
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof ThemeColorChangedEvent) {
+            setPrimaryColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor());
+        }
     }
 
     @Override
@@ -327,5 +337,9 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     public ThreadListPresenter getPresenter() {
         return mPresenter;
+    }
+
+    private void setPrimaryColorToViews(int primaryColor) {
+        mFab.setBackgroundColor(primaryColor);
     }
 }

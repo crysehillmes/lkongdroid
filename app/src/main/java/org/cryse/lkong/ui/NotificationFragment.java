@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -59,6 +61,7 @@ public class NotificationFragment extends InActivityFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
         ButterKnife.inject(this, contentView);
+        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor(getActivity()));
         return contentView;
     }
 
@@ -196,5 +199,13 @@ public class NotificationFragment extends InActivityFragment {
             return title;
         }
 
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof ThemeColorChangedEvent) {
+            mTabLayout.setBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryColor());
+        }
     }
 }

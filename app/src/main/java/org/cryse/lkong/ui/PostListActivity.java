@@ -30,6 +30,7 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -230,6 +231,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
+        setPrimaryColorToViews(getThemeEngine().getPrimaryColor(this));
     }
 
     private void setupPageControlListener() {
@@ -344,6 +346,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 }
             }
 
+        } else if(event instanceof ThemeColorChangedEvent) {
+            setPrimaryColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor());
         }
     }
 
@@ -648,5 +652,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         position = position + mCollectionAdapter.getHeaderViewCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
+    }
+
+    private void setPrimaryColorToViews(int primaryColor) {
+        mFab.setBackgroundColor(primaryColor);
+        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 }
