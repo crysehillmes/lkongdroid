@@ -5,15 +5,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.utils.ThemeEngine;
-import org.cryse.utils.preference.BooleanPreference;
 
 import javax.inject.Inject;
 
@@ -21,7 +17,6 @@ import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.Utils;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
-import rx.android.schedulers.AndroidSchedulers;
 
 public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
@@ -64,7 +59,6 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mHelper.onPostCreate();
-        mEventBus.toObservable().subscribeOn(AndroidSchedulers.mainThread()).subscribe(this::onEvent);
     }
 
     @Override
@@ -166,6 +160,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     @Override
     protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
         if(event instanceof ThemeColorChangedEvent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(mIsOverrideStatusBarColor)

@@ -21,6 +21,9 @@ import org.cryse.utils.LUtils;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public abstract class AbstractActivity extends ActionBarActivity {
     private LUtils mLUtils;
     private SystemUiHelper mSystemUiHelper;
@@ -35,6 +38,10 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLUtils = LUtils.getInstance(this);
+        mEventBus.toObservable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onEvent);
     }
 
     protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {

@@ -16,6 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public abstract class AbstractFragment extends Fragment {
     private List<Runnable> mDeferredUiOperations = new ArrayList<Runnable>();
@@ -44,7 +45,11 @@ public abstract class AbstractFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mEventBus.toObservable().subscribeOn(AndroidSchedulers.mainThread()).subscribe(this::onEvent);
+
+        mEventBus.toObservable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onEvent);
     }
 
     @Override
