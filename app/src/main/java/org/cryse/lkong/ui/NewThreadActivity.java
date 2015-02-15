@@ -97,6 +97,7 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_thread);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

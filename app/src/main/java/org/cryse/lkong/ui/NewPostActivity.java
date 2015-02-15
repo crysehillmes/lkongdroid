@@ -95,6 +95,7 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

@@ -2,7 +2,6 @@ package org.cryse.lkong.ui;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -22,10 +21,8 @@ import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import javax.inject.Inject;
 
@@ -52,7 +49,7 @@ public class SettingsFragment extends PreferenceFragment {
     }
 
     private void injectThis() {
-        LKongApplication.get(getActivity()).mainActivityComponent().inject(this);
+        LKongApplication.get(getActivity()).simpleActivityComponent().inject(this);
     }
 
     @Override

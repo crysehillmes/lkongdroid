@@ -12,8 +12,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ContextModule.class, PreferenceModule.class})
-public interface MainActivityComponent {
-    void inject(MainActivity mainActivity);
+public interface SimpleActivityComponent {
     void inject(SettingsActivity settingsActivity);
     void inject(SettingsFragment settingsFragment);
 }

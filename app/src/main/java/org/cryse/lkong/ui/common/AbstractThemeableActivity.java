@@ -49,14 +49,15 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     }
 
     @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
+    protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
+        super.setUpToolbar(toolbarLayoutId, customToolbarShadowId);
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if(mIsOverrideStatusBarColor)
                 getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
         }
-        if(getSupportActionBar() != null)
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
     }
 
     @Override

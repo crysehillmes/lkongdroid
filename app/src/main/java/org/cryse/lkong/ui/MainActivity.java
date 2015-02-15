@@ -1,209 +1,188 @@
 package org.cryse.lkong.ui;
 
-import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.util.SparseIntArray;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.Toast;
+import android.view.View;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
-import org.cryse.lkong.ui.navigation.NavigationType;
-import org.cryse.lkong.utils.AnalyticsUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import br.liveo.interfaces.NavigationLiveoListener;
 
-public class MainActivity extends AbstractThemeableActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    public static final String LOG_TAG = MainActivity.class.getName();
-    boolean mDoubleBackToExitPressedOnce = false;
+public class MainActivity extends AbstractMainActivity implements NavigationLiveoListener {
+    private static final String LOG_TAG = MainActivity.class.getName();
+
     @Inject
     AndroidNavigation mNavigation;
-    DrawerLayout mDrawerLayout;
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    @Inject
+    UserAccountManager mUserAccountManager;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
+    public List<String> mListNameItem;
+    UserAccountEntity mCurrentAccount = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
-        super.onCreate(savedInstanceState);
-        setIsOverrideStatusBarColor(false);
-        setContentView(R.layout.activity_main);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                mDrawerLayout);
-        mDrawerLayout.setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
+        if(!mUserAccountManager.isSignedIn()) {
+            mNavigation.navigateToSignInActivity(this);
+            finishCompat();
+        }
+        setIsOverrideStatusBarColor(true);
         mNavigation.attachMainActivity(this);
+        super.onCreate(savedInstanceState);
         getSwipeBackLayout().setEnableGesture(false);
     }
 
     @Override
-    protected void injectThis() {
-        LKongApplication.get(this).mainActivityComponent().inject(this);
-    }
-
-    @Override
-    protected void analyticsTrackEnter() {
-        AnalyticsUtils.trackFragmentActivityEnter(this, LOG_TAG);
-    }
-
-    @Override
-    protected void analyticsTrackExit() {
-        AnalyticsUtils.trackFragmentActivityExit(this, LOG_TAG);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mNavigation.detachMainActivity();
-    }
-
-    @Override
-    protected void onEvent(AbstractEvent event) {
-        super.onEvent(event);
-        if(event instanceof ThemeColorChangedEvent) {
-            mDrawerLayout.setStatusBarBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
-            mDrawerLayout.invalidate();
+    public void onUserInformation() {
+        //User information here
+        /*this.mUserName.setText("Rudson Lima");
+        this.mUserEmail.setText("rudsonlive@gmail.com");
+        this.mUserPhoto.setImageResource(R.drawable.ic_rudsonlive);
+        this.mUserBackground.setImageResource(R.drawable.ic_user_background);*/
+        if(mUserAccountManager.isSignedIn()) {
+            mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+            if(mCurrentAccount != null) {
+                this.mUserName.setText(mCurrentAccount.getUserName());
+                Picasso.with(this)
+                        .load(mCurrentAccount.getUserAvatar())
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(this.mUserPhoto);
+                String secondInfoText = mCurrentAccount.getEmail();
+                this.mUserEmail.setText(secondInfoText);
+            }
+        } else {
+            mNavigation.navigateToSignInActivity(this);
+            finishCompat();
         }
     }
 
     @Override
-    public void onInitialNavigationDrawerItems() {
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_timeline),
-                        NavigationType.FRAGMENT_TIMELINE,
-                        R.drawable.ic_drawer_timeline,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_forum_list),
-                        NavigationType.FRAGMENT_FORUM_LIST,
-                        R.drawable.ic_drawer_forum_list,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_favorites),
-                        NavigationType.FRAGMENT_FAVORITES,
-                        R.drawable.ic_drawer_favorites,
-                        true,
-                        true
-                )
-        );
-        mNavigationDrawerFragment.getNavigationAdapter().addItem(
-                new NavigationDrawerItem(
-                        getString(R.string.drawer_item_settings),
-                        NavigationType.ACTIVITY_SETTINGS,
-                        R.drawable.ic_drawer_settings,
-                        false,
-                        false
-                )
-        );
+    public void onInt(Bundle savedInstanceState) {
+        //Creation of the list items is here
+
+        // set listener {required}
+        this.setNavigationListener(this);
+
+        //First item of the position selected from the list
+        this.setDefaultStartPositionNavigation(0);
+
+        // name of the list items
+        mListNameItem = new ArrayList<>();
+        mListNameItem.add(0, getString(R.string.drawer_item_timeline));
+        mListNameItem.add(1, getString(R.string.drawer_item_forum_list));
+        mListNameItem.add(2, getString(R.string.drawer_item_favorites));
+        /*mListNameItem.add(3, getString(R.string.drafts));
+        mListNameItem.add(4, getString(R.string.more_markers)); //This item will be a subHeader
+        mListNameItem.add(5, getString(R.string.trash));
+        mListNameItem.add(6, getString(R.string.spam));*/
+
+        // icons list items
+        List<Integer> mListIconItem = new ArrayList<>();
+        mListIconItem.add(0, R.drawable.ic_drawer_timeline);
+        mListIconItem.add(1, R.drawable.ic_drawer_forum_list); //Item no icon set 0
+        mListIconItem.add(2, R.drawable.ic_drawer_favorites); //Item no icon set 0
+        /*mListIconItem.add(3, R.drawable.ic_drafts_black_24dp);
+        mListIconItem.add(4, 0); //When the item is a subHeader the value of the icon 0
+        mListIconItem.add(5, R.drawable.ic_delete_black_24dp);
+        mListIconItem.add(6, R.drawable.ic_report_black_24dp);*/
+
+        //{optional} - Among the names there is some subheader, you must indicate it here
+        List<Integer> mListHeaderItem = new ArrayList<>();
+        //mListHeaderItem.add(4);
+
+        //{optional} - Among the names there is any item counter, you must indicate it (position) and the value here
+        SparseIntArray mSparseCounterItem = new SparseIntArray(); //indicate all items that have a counter
+        /*mSparseCounterItem.put(0, 7);
+        mSparseCounterItem.put(1, 123);
+        mSparseCounterItem.put(6, 250);*/
+
+        //If not please use the FooterDrawer use the setFooterVisible(boolean visible) method with value false
+        this.setFooterInformationDrawer(R.string.drawer_item_settings, R.drawable.ic_drawer_settings);
+
+        this.setNavigationAdapter(mListNameItem, mListIconItem, mListHeaderItem, mSparseCounterItem);
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position, boolean fromSavedInstance) {
-        if(fromSavedInstance) return;
-        NavigationDrawerItem item = mNavigationDrawerFragment.getNavigationAdapter().getItem(position);
-        switch (item.getNavigationType()) {
-            case FRAGMENT_FORUM_LIST:
-                mNavigation.navigateToForumListFragment(null);
-                break;
-            case FRAGMENT_FAVORITES:
-                mNavigation.navigateToFavoritesFragment(null);
-                break;
-            case FRAGMENT_TIMELINE:
+    public String getLogTag() {
+        return LOG_TAG;
+    }
+
+    @Override
+    public int getToolbarLayoutId() {
+        return R.id.my_awesome_toolbar;
+    }
+
+    @Override
+    public int getToolbarCustomShadowLayoutId() {
+        return R.id.toolbar_shadow;
+    }
+
+    @Override
+    public void onItemClickNavigation(int position, int layoutContainerId) {
+        switch (position) {
+            case 0:
                 mNavigation.navigateToTimelineFragment();
                 break;
-            case ACTIVITY_SETTINGS:
-                mNavigation.navigateToSettingsActivity(this);
+            case 1:
+                mNavigation.navigateToForumListFragment(null);
+                break;
+            case 2:
+                mNavigation.navigateToFavoritesFragment(null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown NavigationDrawerItem position.");
         }
     }
 
-    public void onSectionAttached(String title) {
-        mTitle = title;
-        setTitle(mTitle);
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                mNavigationDrawerFragment.toggleDrawer();
+    public void onPrepareOptionsMenuNavigation(Menu menu, int position, boolean visible) {
+        /*
+        //hide the menu when the navigation is opens
+        switch (position) {
+            case 0:
+                menu.findItem(R.id.menu_add).setVisible(!visible);
+                menu.findItem(R.id.menu_search).setVisible(!visible);
                 break;
-        }
-        return super.onOptionsItemSelected(item);
+
+            case 1:
+                menu.findItem(R.id.menu_add).setVisible(!visible);
+                menu.findItem(R.id.menu_search).setVisible(!visible);
+                break;
+        }*/
     }
 
     @Override
-    public void onBackPressed() {
-        if (mDoubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
-        }
-
-        this.mDoubleBackToExitPressedOnce = true;
-        Toast.makeText(this, getString(R.string.toast_double_tap_to_exit), Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(() -> mDoubleBackToExitPressedOnce = false, 2000);
+    public void onClickUserPhotoNavigation(View v) {
+        // user photo onClick
+        // Toast.makeText(this, R.string.open_user_profile, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    protected int getAppTheme() {
-        if(isNightMode())
-            return R.style.LKongDroidTheme_Dark_NoTranslucent;
-        else
-            return R.style.LKongDroidTheme_Light_NoTranslucent;
+    public void onClickFooterItemNavigation(View v) {
+        // footer onClick
+        // startActivity(new Intent(this, SettingsActivity.class));
+        mNavigation.navigateToSettingsActivity(this);
+    }
+
+    public void onSectionAttached(String title) {
+        setTitle(title);
+    }
+
+    @Override
+    protected void injectThis() {
+        LKongApplication.get(this).lKongPresenterComponent().inject(this);
     }
 }

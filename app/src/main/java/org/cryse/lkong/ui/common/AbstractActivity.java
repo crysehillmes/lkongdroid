@@ -2,6 +2,7 @@ package org.cryse.lkong.ui.common;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,12 +37,10 @@ public abstract class AbstractActivity extends ActionBarActivity {
         mLUtils = LUtils.getInstance(this);
     }
 
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
+    protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
         if (mToolbar == null) {
-            mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
-            View mPreLShadow = findViewById(R.id.toolbar_shadow);
+            mToolbar = (Toolbar) findViewById(toolbarLayoutId);
+            View mPreLShadow = findViewById(customToolbarShadowId);
             if (mToolbar != null) {
                 //UIUtils.setInsets(this, mToolbar, false);
                 if(Build.VERSION.SDK_INT < 21 && mPreLShadow != null) {

@@ -19,7 +19,7 @@ public class SettingsActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         FragmentManager fragmentManager = getFragmentManager();
@@ -43,7 +43,7 @@ public class SettingsActivity extends AbstractThemeableActivity {
 
     @Override
     protected void injectThis() {
-        LKongApplication.get(this).mainActivityComponent().inject(this);
+        LKongApplication.get(this).simpleActivityComponent().inject(this);
     }
 
     @Override
