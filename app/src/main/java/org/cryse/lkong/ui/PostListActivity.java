@@ -48,7 +48,6 @@ import org.cryse.lkong.widget.PagerControl;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,8 +114,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
@@ -481,12 +478,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 break;
             case SHOW_MODE_PREV_PAGE:
                 mCollectionAdapter.addAll(0, posts);
-                mCollectionAdapter.rangeRemove(posts.size(), posts.size() + currentItemCount);
+                if(currentItemCount > 0)
+                    mCollectionAdapter.rangeRemove(posts.size(), posts.size() + currentItemCount);
                 scrollToPosition(posts.size() - 1);
                 break;
             case SHOW_MODE_NEXT_PAGE:
                 mCollectionAdapter.addAll(posts);
-                mCollectionAdapter.rangeRemove(0, currentItemCount);
+                if(currentItemCount > 0)
+                    mCollectionAdapter.rangeRemove(0, currentItemCount);
                 scrollToPosition(0);
                 break;
         }

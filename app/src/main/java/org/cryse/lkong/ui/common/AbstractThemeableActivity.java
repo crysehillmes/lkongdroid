@@ -1,11 +1,15 @@
 package org.cryse.lkong.ui.common;
 
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
+import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.BooleanPreference;
 
 import javax.inject.Inject;
@@ -18,13 +22,13 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
     @Inject
-    @PrefsNightMode
-    BooleanPreference mPrefNightMode;
+    ThemeEngine mThemeEngine;
 
 
     private int mDarkTheme = R.style.LKongDroidTheme_Dark;
     private int mLightTheme = R.style.LKongDroidTheme_Light;
     private int mTheme;
+    private boolean mIsOverrideStatusBarColor = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,17 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         getSwipeBackLayout().setEdgeSize(width);
         getSwipeBackLayout().setSensitivity(this, 0.5f);
         getSwipeBackLayout().setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(mIsOverrideStatusBarColor)
+                getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+        }
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
     }
 
     @Override
@@ -102,7 +117,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     }
 
     public boolean isNightMode() {
-        return mPrefNightMode.get();
+        return mThemeEngine.isNightMode();
     }
 
     protected int getAppTheme() {
@@ -114,7 +129,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     public void setNightMode(boolean isNightMode) {
         if(isNightMode != isNightMode()) {
-            mPrefNightMode.set(isNightMode);
+            mThemeEngine.setNightMode(isNightMode);
             //mTheme = getAppTheme();
             reloadTheme();
         }
@@ -134,5 +149,13 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     public void scrollToFinishActivity() {
         Utils.convertActivityToTranslucent(this);
         getSwipeBackLayout().scrollToFinishActivity();
+    }
+
+    public void setIsOverrideStatusBarColor(boolean isOverrideStatusBarColor) {
+        this.mIsOverrideStatusBarColor = isOverrideStatusBarColor;
+    }
+
+    public ThemeEngine getThemeEngine() {
+        return mThemeEngine;
     }
 }

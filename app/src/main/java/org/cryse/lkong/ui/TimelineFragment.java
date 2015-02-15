@@ -29,6 +29,8 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Inject
     TimelinePresenter mPresenter;
 
+    protected MenuItem mChangeThemeMenuItem;
+
     public static TimelineFragment newInstance(Bundle args) {
         TimelineFragment fragment = new TimelineFragment();
         if(args != null)
@@ -45,6 +47,41 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void injectThis() {
         LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_timeline, menu);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(mChangeThemeMenuItem != null) {
+            if(isNightMode() == null)
+                mChangeThemeMenuItem.setVisible(false);
+            else if(isNightMode() != null && isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else if(isNightMode() != null && !isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_open_notification:
+                mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                return true;
+            case R.id.action_change_theme:
+                if(isNightMode() != null) {
+                    getThemedActivity().setNightMode(!isNightMode());
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -85,22 +122,6 @@ public class TimelineFragment extends SimpleCollectionFragment<
                 mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), item.getTid());
             }
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_timeline, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_open_notification:
-                mAndroidNavigation.navigateToNotificationActivity(getActivity());
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,21 +1,19 @@
 package org.cryse.lkong.application.modules;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.application.qualifier.PrefsThemeColor;
 import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.LongPreference;
 import org.cryse.utils.preference.PreferenceConstant;
 import org.cryse.utils.preference.StringPreference;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -55,5 +53,11 @@ public class PreferenceModule {
     @PrefsImageDownloadPolicy
     StringPreference provideImageDownloadPolicy(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE);
+    }
+
+    @Provides
+    @PrefsThemeColor
+    IntegerPreference provideThemeColorIndex(SharedPreferences preferences) {
+        return new IntegerPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
     }
 }

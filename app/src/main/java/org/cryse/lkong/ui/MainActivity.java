@@ -25,7 +25,7 @@ public class MainActivity extends AbstractThemeableActivity
     boolean mDoubleBackToExitPressedOnce = false;
     @Inject
     AndroidNavigation mNavigation;
-
+    DrawerLayout mDrawerLayout;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -40,16 +40,19 @@ public class MainActivity extends AbstractThemeableActivity
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        setIsOverrideStatusBarColor(false);
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+                mDrawerLayout);
+        mDrawerLayout.setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
         mNavigation.attachMainActivity(this);
         getSwipeBackLayout().setEnableGesture(false);
     }

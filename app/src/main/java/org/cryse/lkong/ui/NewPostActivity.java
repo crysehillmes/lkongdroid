@@ -48,7 +48,6 @@ import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
-import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
 
 import java.io.File;
@@ -104,8 +103,6 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         ButterKnife.inject(this);
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {

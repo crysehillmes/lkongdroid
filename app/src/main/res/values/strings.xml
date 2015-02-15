@@ -62,6 +62,7 @@
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending…</string>
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
+    <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
 
     <string name="button_sign_up">Sign Up</string>
@@ -114,6 +115,8 @@
     <string name="settings_item_email_address_title">Author Email</string>
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
+    <string name="settings_item_theme_color_title">Theme</string>
+    <string name="settings_item_theme_color_summary">Choose your theme color.</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>

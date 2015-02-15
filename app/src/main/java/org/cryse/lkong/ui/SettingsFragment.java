@@ -2,6 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -12,6 +13,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.dialog.ColorChooserDialog;
+import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
 
 import java.io.BufferedReader;
@@ -33,6 +36,7 @@ public class SettingsFragment extends PreferenceFragment {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_settings);
 
+        setUpThemeColorPreference();
         setImagePolicySummary();
         setupVersionPrefs();
     }
@@ -137,5 +141,22 @@ public class SettingsFragment extends PreferenceFragment {
         }
         textReader.close();
         return buffer.toString();
+    }
+
+    private void setUpThemeColorPreference() {
+        Preference themeColorPreference = (Preference) findPreference("prefs_theme_color");
+        IntegerPreference themeColorPrefsValue = new IntegerPreference(getPreferenceManager().getSharedPreferences(), PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
+
+        themeColorPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                new ColorChooserDialog().show(getActivity(), themeColorPrefsValue.get(), new ColorChooserDialog.Callback() {
+                    @Override
+                    public void onColorSelection(int index, int color, int darker) {
+                        themeColorPrefsValue.set(index);
+                    }
+                });
+                return true;
+            }
+        });
     }
 }

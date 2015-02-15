@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +29,6 @@ import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ThreadListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
-import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -82,8 +80,6 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         initRecyclerView();
         setUpHeaderView();
         Intent intent = getIntent();

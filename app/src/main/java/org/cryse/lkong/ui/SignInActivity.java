@@ -2,9 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.WindowManager;
@@ -68,8 +66,6 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_signin);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(Color.GRAY);
         ButterKnife.inject(this);
         getSwipeBackLayout().setEnableGesture(false);
 

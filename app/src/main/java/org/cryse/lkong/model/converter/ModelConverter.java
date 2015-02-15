@@ -117,81 +117,83 @@ public class ModelConverter {
 
     public static List<PostModel> toPostModelList(LKPostList lkPostList) {
         List<PostModel> itemList = new ArrayList<PostModel>();
-        for(LKPostItem item : lkPostList.getData()) {
-            PostModel postModel = new PostModel();
-            postModel.setAdmin(item.getIsadmin() != 0);
-            //postModel.setAuthor(item.getAuthor());
-            postModel.setAuthorId(item.getAuthorid());
-            postModel.setAuthorName(item.getAuthor());
-            postModel.setFavorite(item.isFavorite());
-            postModel.setDateline(item.getDateline());
-            postModel.setFid(item.getFid());
-            postModel.setFirst(item.getFirst() != 0);
-            postModel.setId(item.getId());
-            postModel.setMe(item.getIsme() != 0);
-            // postModel.setMessage(item.getMessage());
-            postModel.setNotGroup(item.getNotgroup() != 0);
-            postModel.setOrdinal(item.getLou());
-            postModel.setPid(Long.parseLong(item.getPid()));
-            //postModel.setRateLog();
-            postModel.setSortKey(item.getSortkey());
-            postModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
-            postModel.setStatus(item.getStatus());
-            postModel.setTid(item.getTid());
-            postModel.setTsAdmin(item.isTsadmin());
+        if (lkPostList.getData() != null) {
+            for (LKPostItem item : lkPostList.getData()) {
+                PostModel postModel = new PostModel();
+                postModel.setAdmin(item.getIsadmin() != 0);
+                //postModel.setAuthor(item.getAuthor());
+                postModel.setAuthorId(item.getAuthorid());
+                postModel.setAuthorName(item.getAuthor());
+                postModel.setFavorite(item.isFavorite());
+                postModel.setDateline(item.getDateline());
+                postModel.setFid(item.getFid());
+                postModel.setFirst(item.getFirst() != 0);
+                postModel.setId(item.getId());
+                postModel.setMe(item.getIsme() != 0);
+                // postModel.setMessage(item.getMessage());
+                postModel.setNotGroup(item.getNotgroup() != 0);
+                postModel.setOrdinal(item.getLou());
+                postModel.setPid(Long.parseLong(item.getPid()));
+                //postModel.setRateLog();
+                postModel.setSortKey(item.getSortkey());
+                postModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
+                postModel.setStatus(item.getStatus());
+                postModel.setTid(item.getTid());
+                postModel.setTsAdmin(item.isTsadmin());
 
-            if(item.getAlluser() != null) {
-                LKPostUser itemUser = item.getAlluser();
-                PostModel.PostAuthor author = new PostModel.PostAuthor(
-                        itemUser.getAdminid(),
-                        itemUser.getCustomstatus(),
-                        itemUser.getGender(),
-                        new Date(itemUser.getRegdate()),
-                        itemUser.getUid(),
-                        itemUser.getUsername(),
-                        itemUser.isVerify(),
-                        itemUser.getVerifymessage(),
-                        itemUser.getColor(),
-                        itemUser.getStars(),
-                        itemUser.getRanktitle()
-                );
-                postModel.setAuthor(author);
-            } else {
-                postModel.setAuthor(new PostModel.PostAuthor());
-            }
-
-            if(item.getRatelog() != null) {
-                int score = 0;
-                List<LKPostRateItem> lkRateLog = item.getRatelog();
-                List<PostModel.PostRate> rateList = new ArrayList<PostModel.PostRate>(lkRateLog.size());
-                for(LKPostRateItem rateItem : lkRateLog) {
-                    PostModel.PostRate newRate = new PostModel.PostRate(
-                            rateItem.getDateline(),
-                            rateItem.getExtcredits(),
-                            rateItem.getPid(),
-                            rateItem.getReason(),
-                            rateItem.getScore(),
-                            rateItem.getUid(),
-                            rateItem.getUsername()
+                if (item.getAlluser() != null) {
+                    LKPostUser itemUser = item.getAlluser();
+                    PostModel.PostAuthor author = new PostModel.PostAuthor(
+                            itemUser.getAdminid(),
+                            itemUser.getCustomstatus(),
+                            itemUser.getGender(),
+                            new Date(itemUser.getRegdate()),
+                            itemUser.getUid(),
+                            itemUser.getUsername(),
+                            itemUser.isVerify(),
+                            itemUser.getVerifymessage(),
+                            itemUser.getColor(),
+                            itemUser.getStars(),
+                            itemUser.getRanktitle()
                     );
-                    score = score + rateItem.getScore();
-                    rateList.add(newRate);
+                    postModel.setAuthor(author);
+                } else {
+                    postModel.setAuthor(new PostModel.PostAuthor());
                 }
-                postModel.setRateScore(score);
-                postModel.setRateLog(rateList);
-            } else {
-                postModel.setRateLog(new ArrayList<PostModel.PostRate>());
-            }
 
-            postModel.setMessage(
-                    HtmlCleaner.fixTagBalanceAndRemoveEmpty(
-                            item.getMessage(),
-                            Whitelist.basicWithImages()
-                                    .addTags("font")
-                                    .addAttributes(":all","style", "color")
-                    )
-            );
-            itemList.add(postModel);
+                if (item.getRatelog() != null) {
+                    int score = 0;
+                    List<LKPostRateItem> lkRateLog = item.getRatelog();
+                    List<PostModel.PostRate> rateList = new ArrayList<PostModel.PostRate>(lkRateLog.size());
+                    for (LKPostRateItem rateItem : lkRateLog) {
+                        PostModel.PostRate newRate = new PostModel.PostRate(
+                                rateItem.getDateline(),
+                                rateItem.getExtcredits(),
+                                rateItem.getPid(),
+                                rateItem.getReason(),
+                                rateItem.getScore(),
+                                rateItem.getUid(),
+                                rateItem.getUsername()
+                        );
+                        score = score + rateItem.getScore();
+                        rateList.add(newRate);
+                    }
+                    postModel.setRateScore(score);
+                    postModel.setRateLog(rateList);
+                } else {
+                    postModel.setRateLog(new ArrayList<PostModel.PostRate>());
+                }
+
+                postModel.setMessage(
+                        HtmlCleaner.fixTagBalanceAndRemoveEmpty(
+                                item.getMessage(),
+                                Whitelist.basicWithImages()
+                                        .addTags("font")
+                                        .addAttributes(":all", "style", "color")
+                        )
+                );
+                itemList.add(postModel);
+            }
         }
         return itemList;
     }
