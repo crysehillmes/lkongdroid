@@ -14,7 +14,11 @@ import android.view.View;
 import com.example.android.systemuivis.SystemUiHelper;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.utils.LUtils;
+
+import javax.inject.Inject;
 
 public abstract class AbstractActivity extends ActionBarActivity {
     private LUtils mLUtils;
@@ -22,6 +26,9 @@ public abstract class AbstractActivity extends ActionBarActivity {
     private Toolbar mToolbar;
     private View mPreLShadow;
     private ActionMode mActionMode;
+
+    @Inject
+    RxEventBus mEventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,4 +168,9 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected abstract void analyticsTrackEnter();
 
     protected abstract void analyticsTrackExit();
+
+
+    protected void onEvent(AbstractEvent event) {
+
+    }
 }

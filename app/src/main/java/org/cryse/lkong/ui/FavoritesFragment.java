@@ -139,6 +139,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
         if(event instanceof FavoritesChangedEvent)
             mNeedRefresh = true;
     }

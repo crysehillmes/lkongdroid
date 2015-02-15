@@ -28,8 +28,8 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -70,9 +70,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Inject
     UserAccountManager mUserAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     @Inject
     @PrefsImageDownloadPolicy
@@ -320,30 +317,33 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
-        mEventBus.toObservable().subscribe(event -> {
-            if (event instanceof NewPostDoneEvent) {
-                NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
-                long tid = doneEvent.getPostResult().getTid();
-                if (tid == mThreadId) {
-                    int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
-                    if (newReplyCount > mThreadModel.getReplies())
-                        mThreadModel.setReplies(newReplyCount);
-                    int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
-                    if (newPageCount > mPageCount) {
-                        mPageCount = newPageCount;
-                        mPageIndicatorItems = new String[mPageCount];
-                        for (int i = 1; i <= mPageCount; i++) {
-                            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
-                        }
-                        runOnUiThread(this::updatePageIndicator);
-                    }
-                    if (newPageCount == mCurrentPage) {
-                        runOnUiThread(() -> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE));
-                    }
-                }
+    }
 
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof NewPostDoneEvent) {
+            NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
+            long tid = doneEvent.getPostResult().getTid();
+            if (tid == mThreadId) {
+                int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
+                if (newReplyCount > mThreadModel.getReplies())
+                    mThreadModel.setReplies(newReplyCount);
+                int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
+                if (newPageCount > mPageCount) {
+                    mPageCount = newPageCount;
+                    mPageIndicatorItems = new String[mPageCount];
+                    for (int i = 1; i <= mPageCount; i++) {
+                        mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+                    }
+                    updatePageIndicator();
+                }
+                if (newPageCount == mCurrentPage) {
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE);
+                }
             }
-        });
+
+        }
     }
 
     @Override

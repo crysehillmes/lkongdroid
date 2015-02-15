@@ -1,16 +1,28 @@
 package org.cryse.lkong.ui.common;
 
 import android.app.Activity;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.RxEventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+
 public abstract class AbstractFragment extends Fragment {
     private List<Runnable> mDeferredUiOperations = new ArrayList<Runnable>();
+
+    @Inject
+    RxEventBus mEventBus;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +40,12 @@ public abstract class AbstractFragment extends Fragment {
     }
 
     protected abstract void injectThis();
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mEventBus.toObservable().subscribeOn(AndroidSchedulers.mainThread()).subscribe(this::onEvent);
+    }
 
     @Override
     public void onResume() {
@@ -78,4 +96,8 @@ public abstract class AbstractFragment extends Fragment {
     protected abstract void analyticsTrackEnter();
 
     protected abstract void analyticsTrackExit();
+
+    protected void onEvent(AbstractEvent event) {
+
+    }
 }

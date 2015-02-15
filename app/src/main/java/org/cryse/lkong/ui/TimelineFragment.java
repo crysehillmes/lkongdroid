@@ -126,7 +126,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onEvent(AbstractEvent event) {
-
+        super.onEvent(event);
     }
 
     @Override

@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -32,8 +31,8 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewThreadDoneEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.presenter.NewThreadPresenter;
 import org.cryse.lkong.service.SendPostService;
@@ -70,9 +69,6 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
 
     @Inject
     UserAccountManager mUserAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     @Inject
     @PrefsPostTail
@@ -123,11 +119,15 @@ public class NewThreadActivity extends AbstractThemeableActivity implements NewT
             }
         };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
-        mInsertImageButton.setOnClickListener(view -> openImageIntent());mEventBus.toObservable().subscribe(event -> {
-            if (event instanceof NewThreadDoneEvent) {
-                runOnUiThread(() -> onPostThreadComplete(((NewThreadDoneEvent) event).getNewThreadResult()));
-            }
-        });
+        mInsertImageButton.setOnClickListener(view -> openImageIntent());
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof NewThreadDoneEvent) {
+            onPostThreadComplete(((NewThreadDoneEvent) event).getNewThreadResult());
+        }
     }
 
     @Override

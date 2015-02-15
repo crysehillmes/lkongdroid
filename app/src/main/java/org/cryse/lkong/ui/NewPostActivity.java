@@ -3,7 +3,6 @@ package org.cryse.lkong.ui;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -13,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -33,8 +31,8 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.presenter.NewPostPresenter;
 import org.cryse.lkong.service.SendPostService;
@@ -71,9 +69,6 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     @Inject
     UserAccountManager mUserAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     @Inject
     @PrefsPostTail
@@ -127,11 +122,14 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
-        mEventBus.toObservable().subscribe(event -> {
-            if(event instanceof NewPostDoneEvent) {
-                runOnUiThread(() -> onPostComplete(((NewPostDoneEvent)event).getPostResult()));
-            }
-        });
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof NewPostDoneEvent) {
+            runOnUiThread(() -> onPostComplete(((NewPostDoneEvent)event).getPostResult()));
+        }
     }
 
     @Override

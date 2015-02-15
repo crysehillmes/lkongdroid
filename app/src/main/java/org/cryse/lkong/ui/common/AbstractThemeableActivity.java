@@ -9,6 +9,8 @@ import android.view.WindowManager;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.BooleanPreference;
 
@@ -18,12 +20,12 @@ import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.Utils;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
+import rx.android.schedulers.AndroidSchedulers;
 
 public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
     @Inject
     ThemeEngine mThemeEngine;
-
 
     private int mDarkTheme = R.style.LKongDroidTheme_Dark;
     private int mLightTheme = R.style.LKongDroidTheme_Light;
@@ -60,6 +62,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mHelper.onPostCreate();
+        mEventBus.toObservable().subscribeOn(AndroidSchedulers.mainThread()).subscribe(this::onEvent);
     }
 
     @Override
