@@ -11,6 +11,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.BooleanPreference;
 
@@ -160,5 +161,17 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     public ThemeEngine getThemeEngine() {
         return mThemeEngine;
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        if(event instanceof ThemeColorChangedEvent) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if(mIsOverrideStatusBarColor)
+                    getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+            }
+            if(getSupportActionBar() != null)
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+        }
     }
 }

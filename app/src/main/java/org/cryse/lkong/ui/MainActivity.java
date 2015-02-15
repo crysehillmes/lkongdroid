@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.NavigationDrawerItem;
@@ -76,6 +78,15 @@ public class MainActivity extends AbstractThemeableActivity
     protected void onDestroy() {
         super.onDestroy();
         mNavigation.detachMainActivity();
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof ThemeColorChangedEvent) {
+            mDrawerLayout.setStatusBarBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+            mDrawerLayout.invalidate();
+        }
     }
 
     @Override

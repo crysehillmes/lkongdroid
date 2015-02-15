@@ -12,8 +12,12 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.ColorChooserDialog;
+import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
 
@@ -23,15 +27,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 public class SettingsFragment extends PreferenceFragment {
     private static final String LOG_TAG = SettingsFragment.class.getName();
     private OnConcisePreferenceChangedListener mOnConcisePreferenceChangedListener = null;
 
+    @Inject
+    RxEventBus mEventBus;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        injectThis();
         mOnConcisePreferenceChangedListener = new OnConcisePreferenceChangedListener();
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_settings);
@@ -39,6 +49,10 @@ public class SettingsFragment extends PreferenceFragment {
         setUpThemeColorPreference();
         setImagePolicySummary();
         setupVersionPrefs();
+    }
+
+    private void injectThis() {
+        LKongApplication.get(getActivity()).mainActivityComponent().inject(this);
     }
 
     @Override
@@ -153,6 +167,8 @@ public class SettingsFragment extends PreferenceFragment {
                     @Override
                     public void onColorSelection(int index, int color, int darker) {
                         themeColorPrefsValue.set(index);
+                        ThemeEngine themeEngine = ((AbstractThemeableActivity)getActivity()).getThemeEngine();
+                        mEventBus.sendEvent(new ThemeColorChangedEvent(themeEngine.getPrimaryColor(getActivity()), themeEngine.getPrimaryDarkColor(getActivity())));
                     }
                 });
                 return true;

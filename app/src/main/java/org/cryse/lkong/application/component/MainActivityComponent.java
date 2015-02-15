@@ -4,6 +4,7 @@ import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.SettingsActivity;
+import org.cryse.lkong.ui.SettingsFragment;
 
 import javax.inject.Singleton;
 
@@ -14,4 +15,5 @@ import dagger.Component;
 public interface MainActivityComponent {
     void inject(MainActivity mainActivity);
     void inject(SettingsActivity settingsActivity);
+    void inject(SettingsFragment settingsFragment);
 }
