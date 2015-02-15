@@ -1,4 +1,4 @@
-package org.cryse.lkong.service;
+package org.cryse.lkong.service.task;
 
 public class SendThreadTask extends SendTask {
     private String title;

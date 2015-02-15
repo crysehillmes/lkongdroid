@@ -1,4 +1,4 @@
-package org.cryse.lkong.service;
+package org.cryse.lkong.service.task;
 
 public class SendPostTask extends SendTask {
     private long tid;

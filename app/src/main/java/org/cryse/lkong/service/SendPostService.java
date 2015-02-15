@@ -19,6 +19,9 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.service.task.SendPostTask;
+import org.cryse.lkong.service.task.SendTask;
+import org.cryse.lkong.service.task.SendThreadTask;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
