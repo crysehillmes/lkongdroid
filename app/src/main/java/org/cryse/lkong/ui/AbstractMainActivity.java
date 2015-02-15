@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +35,7 @@ import br.liveo.interfaces.NavigationLiveoListener;
 import br.liveo.navigationliveo.NavigationLiveoList;
 
 public abstract class AbstractMainActivity extends AbstractThemeableActivity{
+    public static final String CURRENT_POSITION = "CURRENT_POSITION";
 
     public TextView mUserName;
     public TextView mUserEmail;
@@ -73,7 +75,12 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
     private ActionBarDrawerToggleCompat mDrawerToggle;
     private NavigationLiveoListener mNavigationListener;
 
-    public static final String CURRENT_POSITION = "CURRENT_POSITION";
+
+    /**
+     * Used to post delay navigation action to improve UX
+     */
+    private Handler mHandler = new Handler();
+    private Runnable mPendingRunnable = null;
 
     /**
      * User information
@@ -194,6 +201,11 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
         @Override
         public void onDrawerClosed(View view) {
             supportInvalidateOptionsMenu();
+            // If mPendingRunnable is not null, then add to the message queue
+            if (mPendingRunnable != null) {
+                mHandler.post(mPendingRunnable);
+                mPendingRunnable = null;
+            }
         }
 
         @Override
@@ -219,7 +231,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
             int mPosition = (position - 1);
 
             if (position != 0) {
-                mNavigationListener.onItemClickNavigation(mPosition, R.id.container);
+                mPendingRunnable = () ->  mNavigationListener.onItemClickNavigation(mPosition, R.id.container);
                 setCurrentPosition(mPosition);
                 setCheckedItemNavigation(mPosition, true);
             }
