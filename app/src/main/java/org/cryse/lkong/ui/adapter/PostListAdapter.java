@@ -36,7 +36,7 @@ import butterknife.InjectView;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
-    private OnItemReplyClickListener mOnItemReplyClickListener;
+    private OnItemButtonClickListener mOnItemButtonClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
@@ -52,8 +52,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mImageDownloadPolicy = imageDownloadPolicy;
     }
 
-    public void setOnItemReplyClickListener(OnItemReplyClickListener onItemReplyClickListener) {
-        this.mOnItemReplyClickListener = onItemReplyClickListener;
+    public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
+        this.mOnItemButtonClickListener = onItemButtonClickListener;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_post, parent, false);
-        return new ViewHolder(v, mOnItemReplyClickListener);
+        return new ViewHolder(v, mOnItemButtonClickListener);
     }
 
     @Override
@@ -148,8 +148,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         @InjectView(R.id.recyclerview_item_post_button_replay)
         Button mReplyButton;
 
-        OnItemReplyClickListener mOnItemReplyClickListener;
-        public ViewHolder(View v, OnItemReplyClickListener onItemReplyClickListener) {
+        OnItemButtonClickListener mOnItemReplyClickListener;
+        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener) {
             super(v);
             ButterKnife.inject(this, v);
             mOnItemReplyClickListener = onItemReplyClickListener;
@@ -158,10 +158,16 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     mOnItemReplyClickListener.onReplyClick(view, getPosition());
                 }
             });
+            mRateButton.setOnClickListener(view -> {
+                if(mOnItemReplyClickListener != null) {
+                    mOnItemReplyClickListener.onRateClick(view, getPosition());
+                }
+            });
         }
     }
 
-    public interface OnItemReplyClickListener {
+    public interface OnItemButtonClickListener {
+        public void onRateClick(View view, int position);
         public void onReplyClick(View view, int position);
     }
 }

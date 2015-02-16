@@ -32,6 +32,7 @@ import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
 import org.cryse.lkong.logic.restservice.model.LKNoticeRateResult;
 import org.cryse.lkong.logic.restservice.model.LKNoticeResult;
 import org.cryse.lkong.logic.restservice.model.LKPostList;
+import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
@@ -517,6 +518,32 @@ public class LKongRestService {
         DataItemLocationModel locationModel= ModelConverter.toNoticeRateModel(lkDataItemLocation);
         clearCookies();
         return locationModel;
+    }
+
+    public PostModel.PostRate ratePost(LKAuthObject authObject, long postId, int score, String reaseon) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = "http://lkong.cn/thread/index.php?mod=ajax&action=submitbox";
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("request", String.format("rate_post_%d", postId))
+                .add("num", Integer.toString(score))
+                .add("reason", reaseon);
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        JSONObject rootObj = new JSONObject(responseString);
+        JSONObject ratelogObj = rootObj.getJSONObject("ratelog");
+        LKPostRateItem lkPostRateItem = gson.fromJson(ratelogObj.toString(), LKPostRateItem.class);
+        PostModel.PostRate postRate = ModelConverter.toPostRate(lkPostRateItem);
+        clearCookies();
+        return postRate;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {

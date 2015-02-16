@@ -6,6 +6,8 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.ToastErrorConstant;
+import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.PostListView;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     Subscription mLoadThreadInfoSubscription;
     Subscription mAddOrRemoveFavoriteSubscription;
     Subscription mDataItemLocationSubscription;
+    Subscription mRatePostSubscription;
 
     @Inject
     public PostListPresenter(LKongForumService forumService) {
@@ -114,6 +117,26 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 );
     }
 
+    public void ratePost(LKAuthObject authObject, long postId, int score, String reaseon) {
+        SubscriptionUtils.checkAndUnsubscribe(mRatePostSubscription);
+        mRatePostSubscription = mLKongForumService.ratePost(authObject, postId, score, reaseon)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            Timber.d("PostListPresenter::ratePost() onNext().", LOG_TAG);
+                            mView.onRatePostComplete(result);
+                        },
+                        error -> {
+                            mView.showToast(ToastErrorConstant.errorCodeToStringRes(ToastErrorConstant.TOAST_FAILURE_RATE_POST), ToastSupport.TOAST_ALERT);
+                            Timber.e(error, "PostListPresenter::ratePost() onError().", LOG_TAG);
+                        },
+                        () -> {
+                            Timber.d("PostListPresenter::ratePost() onComplete().", LOG_TAG);
+                        }
+                );
+    }
+
     @Override
     public void bindView(PostListView view) {
         this.mView = view;
@@ -130,6 +153,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadInfoSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mAddOrRemoveFavoriteSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mDataItemLocationSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mRatePostSubscription);
     }
 
     private class EmptyPostListView implements PostListView {
@@ -151,6 +175,11 @@ public class PostListPresenter implements BasePresenter<PostListView> {
 
         @Override
         public void onAddOrRemoveFavoriteComplete(boolean isFavorite) {
+
+        }
+
+        @Override
+        public void onRatePostComplete(PostModel.PostRate postRate) {
 
         }
 

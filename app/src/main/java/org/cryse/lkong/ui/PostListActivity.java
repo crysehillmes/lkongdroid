@@ -202,13 +202,20 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 }
             }
         });
+        mCollectionAdapter.setOnItemButtonClickListener(new PostListAdapter.OnItemButtonClickListener() {
+            @Override
+            public void onRateClick(View view, int position) {
+                openRateDialog(position - mCollectionAdapter.getHeaderViewCount());
+            }
 
-        mCollectionAdapter.setOnItemReplyClickListener((view, position) -> {
-            if (mUserAccountManager.isSignedIn()) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-                mAndroidNavigation.openActivityForReplyToPost(this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
-            } else {
-                mAndroidNavigation.navigateToSignInActivity(this);
+            @Override
+            public void onReplyClick(View view, int position) {
+                if (mUserAccountManager.isSignedIn()) {
+                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    mAndroidNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
+                } else {
+                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
+                }
             }
         });
         mPostCollectionView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
@@ -566,6 +573,20 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
+    public void onRatePostComplete(PostModel.PostRate postRate) {
+        long pid = postRate.getPid();
+        List<PostModel> itemList = mCollectionAdapter.getItemList();
+        for (int i = 0; i < itemList.size(); i++) {
+            PostModel postModel = itemList.get(i);
+            if(postModel.getPid() == pid) {
+                postModel.getRateLog().add(0, postRate);
+                postModel.setRateScore(postModel.getRateScore() + postRate.getScore());
+                mCollectionAdapter.notifyItemChanged(i + mCollectionAdapter.getHeaderViewCount());
+            }
+        }
+    }
+
+    @Override
     public void setLoading(Boolean value) {
         mProgressBar.setVisibility(value ? View.VISIBLE : View.INVISIBLE);
         // this.mPostCollectionView.getRefreshableView().setRefreshing(value);
@@ -658,5 +679,31 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mFab.setColorNormal(primaryColor);
         mFab.setColorPressed(primaryDarkColor);
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
+    }
+
+    private void openRateDialog(int itemPosition) {
+        PostModel postModel = mCollectionAdapter.getItem(itemPosition);
+        if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
+            MaterialDialog dialog = new MaterialDialog.Builder(this)
+                    .title(R.string.dialog_title_rate)
+                    .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                    .customView(R.layout.dialog_input_score, false)
+                    .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            EditText reasonEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_reason);
+                            EditText scoreEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_score);
+                            String reason = reasonEditText.getText().toString();
+                            String scoreText = scoreEditText.getText().toString();
+                            if(!TextUtils.isEmpty(scoreText) && TextUtils.isDigitsOnly(scoreText) && !TextUtils.isEmpty(reason)) {
+                                int score = Integer.valueOf(scoreText);
+                                getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
+                            }
+                        }
+                    })
+                    .build();
+            dialog.show();
+        }
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">龙的天空 (测试版)</string>
-    <string name="account_email_hint">注册邮箱</string>
-    <string name="account_password_hint">密码</string>
+    <string name="hint_account_email">注册邮箱</string>
+    <string name="hint_account_password">密码</string>
     <string name="action_dark_theme">夜间模式</string>
     <string name="action_insert_emoji">插入表情</string>
     <string name="action_insert_image">插入图片</string>
@@ -127,4 +127,10 @@
     <string name="toast_error_invalid_floor">没有这一楼啊</string>
     <string name="settings_item_theme_color_summary">选择你喜欢的主题颜色</string>
     <string name="settings_item_theme_color_title">主题</string>
+    <string name="custom_header_not_created"></string>
+    <string name="hint_rate_reason">评分理由</string>
+    <string name="hint_rate_score">数值</string>
+    <string name="header_not_created">Header 创建失败</string>
+    <string name="dialog_title_rate">评分</string>
+    <string name="drawer_close"></string>
 </resources>

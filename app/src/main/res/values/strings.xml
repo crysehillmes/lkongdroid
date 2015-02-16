@@ -27,8 +27,10 @@
     <string name="drawer_item_notice">Notice</string>
     <string name="drawer_item_notice_rate">Rate</string>
     <string name="drawer_item_settings">Settings</string>
-    <string name="account_email_hint">Your Email</string>
-    <string name="account_password_hint">Password</string>
+    <string name="hint_account_email">Your Email</string>
+    <string name="hint_account_password">Password</string>
+    <string name="hint_rate_reason">Reason</string>
+    <string name="hint_rate_score">Score</string>
 
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
@@ -48,6 +50,7 @@
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
+    <string name="toast_failure_rate_post">Failed to rate post.</string>
 
     <string name="toast_failure_new_post">Failed to post, please try again.</string>
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
@@ -64,6 +67,7 @@
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
+    <string name="dialog_title_rate">Add a rate</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>

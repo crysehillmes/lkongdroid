@@ -14,4 +14,5 @@ public interface PostListView extends ContentView{
     public void onGetPostLocationComplete(DataItemLocationModel locationModel);
     public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel);
     public void onAddOrRemoveFavoriteComplete(boolean isFavorite);
+    public void onRatePostComplete(PostModel.PostRate postRate);
 }

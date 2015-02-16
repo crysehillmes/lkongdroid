@@ -166,15 +166,7 @@ public class ModelConverter {
                     List<LKPostRateItem> lkRateLog = item.getRatelog();
                     List<PostModel.PostRate> rateList = new ArrayList<PostModel.PostRate>(lkRateLog.size());
                     for (LKPostRateItem rateItem : lkRateLog) {
-                        PostModel.PostRate newRate = new PostModel.PostRate(
-                                rateItem.getDateline(),
-                                rateItem.getExtcredits(),
-                                rateItem.getPid(),
-                                rateItem.getReason(),
-                                rateItem.getScore(),
-                                rateItem.getUid(),
-                                rateItem.getUsername()
-                        );
+                        PostModel.PostRate newRate = toPostRate(rateItem);
                         score = score + rateItem.getScore();
                         rateList.add(newRate);
                     }
@@ -335,6 +327,19 @@ public class ModelConverter {
         locationModel.setLocation(result.getLocation());
         locationModel.setOrdinal(result.getLou());
         return locationModel;
+    }
+
+    public static PostModel.PostRate toPostRate(LKPostRateItem rateItem) {
+        PostModel.PostRate newRate = new PostModel.PostRate(
+                rateItem.getDateline(),
+                rateItem.getExtcredits(),
+                rateItem.getPid(),
+                rateItem.getReason(),
+                rateItem.getScore(),
+                rateItem.getUid(),
+                rateItem.getUsername()
+        );
+        return newRate;
     }
 
     private static Date utcLongToLocalDate(long utcMillisecond) {
