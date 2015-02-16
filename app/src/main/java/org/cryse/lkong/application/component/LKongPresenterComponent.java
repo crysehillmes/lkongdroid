@@ -5,12 +5,12 @@ import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumListFragment;
+import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.MentionsFragment;
 import org.cryse.lkong.ui.NoticeFragment;
 import org.cryse.lkong.ui.NoticeRateFragment;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.NotificationFragment;
-import org.cryse.lkong.ui.NavigationDrawerFragment;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.PostListActivity;
@@ -25,8 +25,8 @@ import dagger.Component;
 @Singleton
 @Component(modules = {ContextModule.class, LKongModule.class, PreferenceModule.class})
 public interface LKongPresenterComponent {
+    void inject(MainActivity mainActivity);
     void inject(SignInActivity activity);
-    void inject(NavigationDrawerFragment fragment);
     void inject(ForumListFragment fragment);
     void inject(ThreadListActivity activity);
     void inject(PostListActivity activity);

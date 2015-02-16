@@ -6,8 +6,13 @@ import android.net.ConnectivityManager;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
+import org.cryse.lkong.application.qualifier.PrefsNightMode;
+import org.cryse.lkong.application.qualifier.PrefsThemeColor;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.ThemeEngine;
+import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.IntegerPreference;
 
 import javax.inject.Singleton;
 
@@ -53,5 +58,10 @@ public class ContextModule {
     @Provides
     public AndroidNavigation provideAndroidNavigation() {
         return mNavigation;
+    }
+
+    @Provides
+    public ThemeEngine provideThemeEngine(@PrefsNightMode BooleanPreference nightModePrefs, @PrefsThemeColor IntegerPreference themeColorPrefs) {
+        return new ThemeEngine(nightModePrefs, themeColorPrefs);
     }
 }

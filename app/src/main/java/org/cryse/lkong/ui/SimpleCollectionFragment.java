@@ -44,9 +44,6 @@ public abstract class SimpleCollectionFragment<
     private long mLastItemSortKey = -1;
 
     @Inject
-    RxEventBus mEventBus;
-
-    @Inject
     AndroidNavigation mAndroidNavigation;
 
     @Inject
@@ -117,8 +114,6 @@ public abstract class SimpleCollectionFragment<
             mCollectionView.getSwipeToRefresh().setRefreshing(true);
             loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
         }
-
-        mEventBus.toObservable().subscribe(this::onEvent);
     }
 
     @Override
@@ -214,7 +209,9 @@ public abstract class SimpleCollectionFragment<
 
     protected abstract void onItemClick(View view, int position, long id);
 
-    protected abstract void onEvent(AbstractEvent event);
+    protected void onEvent(AbstractEvent event) {
+
+    }
 
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));

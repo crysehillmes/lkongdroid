@@ -1,4 +1,4 @@
-package org.cryse.lkong.service;
+package org.cryse.lkong.service.task;
 
 import org.cryse.lkong.utils.LKAuthObject;
 

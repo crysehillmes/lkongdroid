@@ -15,6 +15,7 @@
         <item name="theme_navigation_drawer_top_drawable">@drawable/drawer_top_image_light</item>
         <item name="theme_navigation_drawer_text_color">@android:color/black</item>
         <item name="theme_navigation_drawer_icon_color">@android:color/darker_gray</item>
+        <item name="theme_selector_no_check_item_navigation">@drawable/selector_no_check_item_navigation</item>
 
         <item name="theme_float_label_layout_text_appearence">@style/TextAppearance.LKongDroid.FloatLabel.Light</item>
         <item name="theme_float_label_layout_selector">@color/float_label_selector_light</item>

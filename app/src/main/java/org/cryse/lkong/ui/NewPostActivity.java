@@ -3,7 +3,6 @@ package org.cryse.lkong.ui;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -13,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -33,8 +31,8 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.presenter.NewPostPresenter;
 import org.cryse.lkong.service.SendPostService;
@@ -48,7 +46,6 @@ import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.NewPostView;
-import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
 
 import java.io.File;
@@ -72,9 +69,6 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
 
     @Inject
     UserAccountManager mUserAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     @Inject
     @PrefsPostTail
@@ -101,11 +95,10 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         ButterKnife.inject(this);
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
@@ -130,11 +123,14 @@ public class NewPostActivity extends AbstractThemeableActivity implements NewPos
         };
         mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
-        mEventBus.toObservable().subscribe(event -> {
-            if(event instanceof NewPostDoneEvent) {
-                runOnUiThread(() -> onPostComplete(((NewPostDoneEvent)event).getPostResult()));
-            }
-        });
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof NewPostDoneEvent) {
+            runOnUiThread(() -> onPostComplete(((NewPostDoneEvent)event).getPostResult()));
+        }
     }
 
     @Override

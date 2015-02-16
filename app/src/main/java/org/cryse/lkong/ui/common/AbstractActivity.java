@@ -2,6 +2,7 @@ package org.cryse.lkong.ui.common;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +15,14 @@ import android.view.View;
 import com.example.android.systemuivis.SystemUiHelper;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.RxEventBus;
 import org.cryse.utils.LUtils;
+
+import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public abstract class AbstractActivity extends ActionBarActivity {
     private LUtils mLUtils;
@@ -23,18 +31,23 @@ public abstract class AbstractActivity extends ActionBarActivity {
     private View mPreLShadow;
     private ActionMode mActionMode;
 
+    @Inject
+    RxEventBus mEventBus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLUtils = LUtils.getInstance(this);
+        mEventBus.toObservable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onEvent);
     }
 
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
+    protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
         if (mToolbar == null) {
-            mToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
-            View mPreLShadow = findViewById(R.id.toolbar_shadow);
+            mToolbar = (Toolbar) findViewById(toolbarLayoutId);
+            View mPreLShadow = findViewById(customToolbarShadowId);
             if (mToolbar != null) {
                 //UIUtils.setInsets(this, mToolbar, false);
                 if(Build.VERSION.SDK_INT < 21 && mPreLShadow != null) {
@@ -161,4 +174,9 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected abstract void analyticsTrackEnter();
 
     protected abstract void analyticsTrackExit();
+
+
+    protected void onEvent(AbstractEvent event) {
+
+    }
 }

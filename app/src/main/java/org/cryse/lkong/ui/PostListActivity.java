@@ -28,8 +28,9 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
-import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -48,7 +49,6 @@ import org.cryse.lkong.widget.PagerControl;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +71,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Inject
     UserAccountManager mUserAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     @Inject
     @PrefsImageDownloadPolicy
@@ -112,11 +109,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
@@ -235,6 +231,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
+        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
     }
 
     private void setupPageControlListener() {
@@ -323,30 +320,35 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
-        mEventBus.toObservable().subscribe(event -> {
-            if (event instanceof NewPostDoneEvent) {
-                NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
-                long tid = doneEvent.getPostResult().getTid();
-                if (tid == mThreadId) {
-                    int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
-                    if (newReplyCount > mThreadModel.getReplies())
-                        mThreadModel.setReplies(newReplyCount);
-                    int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
-                    if (newPageCount > mPageCount) {
-                        mPageCount = newPageCount;
-                        mPageIndicatorItems = new String[mPageCount];
-                        for (int i = 1; i <= mPageCount; i++) {
-                            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
-                        }
-                        runOnUiThread(this::updatePageIndicator);
-                    }
-                    if (newPageCount == mCurrentPage) {
-                        runOnUiThread(() -> getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE));
-                    }
-                }
+    }
 
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof NewPostDoneEvent) {
+            NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
+            long tid = doneEvent.getPostResult().getTid();
+            if (tid == mThreadId) {
+                int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
+                if (newReplyCount > mThreadModel.getReplies())
+                    mThreadModel.setReplies(newReplyCount);
+                int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
+                if (newPageCount > mPageCount) {
+                    mPageCount = newPageCount;
+                    mPageIndicatorItems = new String[mPageCount];
+                    for (int i = 1; i <= mPageCount; i++) {
+                        mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+                    }
+                    updatePageIndicator();
+                }
+                if (newPageCount == mCurrentPage) {
+                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE);
+                }
             }
-        });
+
+        } else if(event instanceof ThemeColorChangedEvent) {
+            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+        }
     }
 
     @Override
@@ -481,12 +483,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 break;
             case SHOW_MODE_PREV_PAGE:
                 mCollectionAdapter.addAll(0, posts);
-                mCollectionAdapter.rangeRemove(posts.size(), posts.size() + currentItemCount);
+                if(currentItemCount > 0)
+                    mCollectionAdapter.rangeRemove(posts.size(), posts.size() + currentItemCount);
                 scrollToPosition(posts.size() - 1);
                 break;
             case SHOW_MODE_NEXT_PAGE:
                 mCollectionAdapter.addAll(posts);
-                mCollectionAdapter.rangeRemove(0, currentItemCount);
+                if(currentItemCount > 0)
+                    mCollectionAdapter.rangeRemove(0, currentItemCount);
                 scrollToPosition(0);
                 break;
         }
@@ -648,5 +652,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         position = position + mCollectionAdapter.getHeaderViewCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
+    }
+
+    private void setColorToViews(int primaryColor, int primaryDarkColor) {
+        mFab.setColorNormal(primaryColor);
+        mFab.setColorPressed(primaryDarkColor);
+        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 }

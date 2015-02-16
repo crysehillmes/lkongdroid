@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,10 +13,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
@@ -30,7 +32,6 @@ import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ThreadListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
-import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
 public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
     public static final String LOG_TAG = ThreadListActivity.class.getName();
@@ -63,6 +63,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
+    View mTopPaddingHeaderView;
     Spinner mListTypeSpinner;
 
     ThreadListAdapter mCollectionAdapter;
@@ -79,11 +80,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
         initRecyclerView();
         setUpHeaderView();
         Intent intent = getIntent();
@@ -99,12 +99,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     }
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mThreadCollectionView, true);
-        mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        // UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mThreadCollectionView, true);
+        // mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
+
+        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
+        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
+        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
+
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
@@ -116,7 +124,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
             int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-            if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+            if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                 ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                 Intent intent = new Intent(this, PostListActivity.class);
                 String idString = item.getId().substring(7);
@@ -133,6 +141,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
+        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
     }
 
     private void setUpHeaderView() {
@@ -195,6 +204,14 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
             }
         });
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof ThemeColorChangedEvent) {
+            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+        }
     }
 
     @Override
@@ -330,5 +347,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     public ThreadListPresenter getPresenter() {
         return mPresenter;
+    }
+
+    private void setColorToViews(int primaryColor, int primaryDarkColor) {
+        mFab.setColorNormal(primaryColor);
+        mFab.setColorPressed(primaryDarkColor);
     }
 }

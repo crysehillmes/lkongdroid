@@ -13,6 +13,7 @@
     <attr name="theme_navigation_drawer_top_drawable" format="reference"/>
     <attr name="theme_navigation_drawer_text_color" format="reference|color"/>
     <attr name="theme_navigation_drawer_icon_color" format="reference|color"/>
+    <attr name="theme_selector_no_check_item_navigation" format="reference"/>
     <attr name="theme_float_label_layout_text_appearence" format="reference"/>
     <attr name="theme_float_label_layout_selector" format="reference" />
     <attr name="theme_card_bg_color" format="reference|color"/>

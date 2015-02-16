@@ -31,6 +31,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     @Inject
     FavoritesPresenter mPresenter;
 
+    protected MenuItem mChangeThemeMenuItem;
+
     public static FavoritesFragment newInstance(Bundle args) {
         FavoritesFragment fragment = new FavoritesFragment();
         if(args != null)
@@ -47,7 +49,21 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_favorites, menu);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(mChangeThemeMenuItem != null) {
+            if(isNightMode() == null)
+                mChangeThemeMenuItem.setVisible(false);
+            else if(isNightMode() != null && isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else if(isNightMode() != null && !isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -55,6 +71,11 @@ public class FavoritesFragment extends SimpleCollectionFragment<
         switch (item.getItemId()) {
             case R.id.action_open_notification:
                 mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                return true;
+            case R.id.action_change_theme:
+                if(isNightMode() != null) {
+                    getThemedActivity().setNightMode(!isNightMode());
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,6 +139,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
         if(event instanceof FavoritesChangedEvent)
             mNeedRefresh = true;
     }
