@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -62,6 +63,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
+    View mTopPaddingHeaderView;
     Spinner mListTypeSpinner;
 
     ThreadListAdapter mCollectionAdapter;
@@ -97,12 +99,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     }
     private void initRecyclerView() {
-        UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mThreadCollectionView, true);
-        mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        // UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mThreadCollectionView, true);
+        // mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
+
+        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
+        ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
+        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
+        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
+
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
@@ -114,7 +124,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         });
         mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
             int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-            if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+            if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                 ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                 Intent intent = new Intent(this, PostListActivity.class);
                 String idString = item.getId().substring(7);
@@ -131,7 +141,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
-        setPrimaryColorToViews(getThemeEngine().getPrimaryColor(this));
+        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
     }
 
     private void setUpHeaderView() {
@@ -200,7 +210,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
         if(event instanceof ThemeColorChangedEvent) {
-            setPrimaryColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor());
+            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
         }
     }
 
@@ -339,7 +349,8 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         return mPresenter;
     }
 
-    private void setPrimaryColorToViews(int primaryColor) {
-        mFab.setBackgroundColor(primaryColor);
+    private void setColorToViews(int primaryColor, int primaryDarkColor) {
+        mFab.setColorNormal(primaryColor);
+        mFab.setColorPressed(primaryDarkColor);
     }
 }

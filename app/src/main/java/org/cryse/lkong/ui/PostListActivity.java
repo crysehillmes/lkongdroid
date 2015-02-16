@@ -231,7 +231,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mAndroidNavigation.navigateToSignInActivity(this);
             }
         });
-        setPrimaryColorToViews(getThemeEngine().getPrimaryColor(this));
+        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
     }
 
     private void setupPageControlListener() {
@@ -347,7 +347,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
 
         } else if(event instanceof ThemeColorChangedEvent) {
-            setPrimaryColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor());
+            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
         }
     }
 
@@ -654,8 +654,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
     }
 
-    private void setPrimaryColorToViews(int primaryColor) {
-        mFab.setBackgroundColor(primaryColor);
+    private void setColorToViews(int primaryColor, int primaryDarkColor) {
+        mFab.setColorNormal(primaryColor);
+        mFab.setColorPressed(primaryDarkColor);
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 }
