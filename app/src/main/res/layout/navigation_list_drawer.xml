@@ -19,9 +19,7 @@
     android:id="@+id/navigation_list_drawer_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="start"
     android:background="@color/nliveo_white"
-    android:fitsSystemWindows="true"
     tools:ignore="MissingPrefix">
 
     <ListView
@@ -32,7 +30,6 @@
         android:layout_above="@+id/layoutFooter"
         android:cacheColorHint="@color/nliveo_transparent"
         android:choiceMode="singleChoice"
-        android:fitsSystemWindows="true"
         android:divider="@color/nliveo_transparent"
         android:dividerHeight="0dp" />
 
