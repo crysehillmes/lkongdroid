@@ -147,4 +147,7 @@
 
     <string name="text_load_prev_page">Load previous page</string>
     <string name="text_load_next_page">Load next page</string>
+
+    <string name="text_extcredits_lb">龙币</string>
+    <string name="text_extcredits_lj">龙晶</string>
 </resources>
