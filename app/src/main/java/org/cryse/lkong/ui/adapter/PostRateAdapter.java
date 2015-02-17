@@ -16,10 +16,13 @@ import java.util.List;
 public class PostRateAdapter extends BaseAdapter {
     private final Context mContext;
     private final List<PostModel.PostRate> mItems;
-
+    private final String mLBLabel;
+    private final String mLJLabel;
     public PostRateAdapter(Context context, List<PostModel.PostRate> items) {
         this.mContext = context;
         this.mItems = items;
+        this.mLBLabel = context.getString(R.string.text_extcredits_lb);
+        this.mLJLabel = context.getString(R.string.text_extcredits_lj);
     }
 
     @Override
@@ -57,9 +60,9 @@ public class PostRateAdapter extends BaseAdapter {
         viewHolder.userNameTextView.setText(rateItem.getUserName());
         String scoreText = Integer.toString(rateItem.getScore()) + " ";
         if (rateItem.getExtCredits() == 2) {
-            scoreText = scoreText + "龙币";
+            scoreText = scoreText + mLBLabel;
         } else if (rateItem.getExtCredits() == 3) {
-            scoreText = scoreText + "龙晶";
+            scoreText = scoreText + mLJLabel;
         }
         viewHolder.scoreTextView.setText(scoreText);
         if(TextUtils.isEmpty(rateItem.getReason())) {
