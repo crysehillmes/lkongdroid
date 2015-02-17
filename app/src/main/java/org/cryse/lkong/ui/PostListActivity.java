@@ -139,14 +139,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
+        // ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
         RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
         mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
         mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
 
         mBottomPaddingFooterView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        ((TextView)mBottomPaddingFooterView).setText(getString(R.string.text_load_next_page));
+        // ((TextView)mBottomPaddingFooterView).setText(getString(R.string.text_load_next_page));
         RecyclerView.LayoutParams bottomPaddingLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + UIUtils.dp2px(this, 16f * 2));
         mBottomPaddingFooterView.setLayoutParams(bottomPaddingLP);

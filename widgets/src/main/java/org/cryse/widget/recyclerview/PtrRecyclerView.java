@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.internal.LoadingLayout;
@@ -37,8 +39,7 @@ public class PtrRecyclerView extends PullToRefreshBase<RecyclerView> {
 
     @Override
     protected RecyclerView createRefreshableView(Context context, AttributeSet attributeSet) {
-        RecyclerView recyclerView = new RecyclerView(context, attributeSet);
-        recyclerView.setId(R.id.ptr_recyclerview);
+        RecyclerView recyclerView = (RecyclerView)LayoutInflater.from(context).inflate(R.layout.recyclerview, null);
         return recyclerView;
     }
 

@@ -25,6 +25,7 @@ import android.text.style.ImageSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -59,7 +60,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import timber.log.Timber;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
 
@@ -97,6 +97,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
