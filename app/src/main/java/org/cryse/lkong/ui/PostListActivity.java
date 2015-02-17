@@ -36,6 +36,7 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
+import org.cryse.lkong.ui.adapter.PostRateAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -205,7 +206,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.setOnItemButtonClickListener(new PostListAdapter.OnItemButtonClickListener() {
             @Override
             public void onRateClick(View view, int position) {
-                openRateDialog(position - mCollectionAdapter.getHeaderViewCount());
+                view.post(() -> openRateDialog(position - mCollectionAdapter.getHeaderViewCount()));
             }
 
             @Override
@@ -683,27 +684,44 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void openRateDialog(int itemPosition) {
         PostModel postModel = mCollectionAdapter.getItem(itemPosition);
-        if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
-            MaterialDialog dialog = new MaterialDialog.Builder(this)
+            MaterialDialog rateListDialog = new MaterialDialog.Builder(this)
                     .title(R.string.dialog_title_rate)
+                    .adapter(new PostRateAdapter(this, postModel.getRateLog()))
                     .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                    .customView(R.layout.dialog_input_score, false)
-                    .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                    .positiveText(android.R.string.ok)
+                    .neutralText(R.string.button_rate).callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            EditText reasonEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_reason);
-                            EditText scoreEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_score);
-                            String reason = reasonEditText.getText().toString();
-                            String scoreText = scoreEditText.getText().toString();
-                            if(!TextUtils.isEmpty(scoreText) && TextUtils.isDigitsOnly(scoreText) && !TextUtils.isEmpty(reason)) {
-                                int score = Integer.valueOf(scoreText);
-                                getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
+                        public void onNeutral(MaterialDialog rateListDialogRef) {
+                            super.onNeutral(rateListDialogRef);
+                            if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
+                                MaterialDialog ratePostDialog = new MaterialDialog.Builder(PostListActivity.this)
+                                        .title(R.string.dialog_title_rate)
+                                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                                        .customView(R.layout.dialog_input_score, false)
+                                        .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                                            @Override
+                                            public void onPositive(MaterialDialog ratePostDialogRef) {
+                                                super.onPositive(ratePostDialogRef);
+                                                EditText reasonEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_reason);
+                                                EditText scoreEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_score);
+                                                String reason = reasonEditText.getText().toString();
+                                                String scoreText = scoreEditText.getText().toString();
+                                                if(!TextUtils.isEmpty(scoreText) && TextUtils.isDigitsOnly(scoreText)) {
+                                                    int score = Integer.valueOf(scoreText);
+                                                    getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
+                                                } else {
+                                                    ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_score_empty), TOAST_ALERT);
+                                                }
+                                            }
+                                        })
+                                        .build();
+                                ratePostDialog.show();
+                            } else {
+                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_self), TOAST_ALERT);
                             }
                         }
                     })
                     .build();
-            dialog.show();
-        }
+        rateListDialog.show();
     }
 }

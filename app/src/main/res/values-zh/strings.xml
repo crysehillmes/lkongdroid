@@ -133,4 +133,7 @@
     <string name="header_not_created">Header 创建失败</string>
     <string name="dialog_title_rate">评分</string>
     <string name="drawer_close"></string>
+    <string name="toast_error_rate_self">你不能为自己评分</string>
+    <string name="toast_failure_rate_post">评分失败</string>
+    <string name="toast_error_rate_score_empty">评分数值不能为0</string>
 </resources>

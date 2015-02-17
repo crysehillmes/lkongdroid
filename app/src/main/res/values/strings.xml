@@ -57,6 +57,8 @@
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
     <string name="toast_error_invalid_floor">No such floor.</string>
+    <string name="toast_error_rate_self">You cannot rate to your own post.</string>
+    <string name="toast_error_rate_score_empty">Score could not be empty.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
@@ -67,7 +69,7 @@
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
-    <string name="dialog_title_rate">Add a rate</string>
+    <string name="dialog_title_rate">Rate</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>
