@@ -10,6 +10,8 @@ import android.view.View;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.NoticeCountEvent;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
@@ -26,6 +28,8 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
 
+    private MenuItem mNotificationMenuItem;
+    private boolean mHasNotification = false;
     @Inject
     TimelinePresenter mPresenter;
 
@@ -53,6 +57,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_timeline, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
+        mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -65,6 +70,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
                 mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
             else if(isNightMode() != null && !isNightMode())
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        if(mNotificationMenuItem != null) {
+            if(mHasNotification) mNotificationMenuItem.setIcon(R.drawable.ic_action_notification_red_dot);
+            else mNotificationMenuItem.setIcon(R.drawable.ic_action_notification);
         }
         super.onPrepareOptionsMenu(menu);
     }
@@ -127,6 +136,20 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+        if(event instanceof NoticeCountEvent) {
+            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
+            if(model.getFansNotice() != 0
+                    || model.getMentionNotice()  != 0
+                    || model.getNotice()  != 0
+                    || model.getPrivateMessageNotice()  != 0
+                    || model.getRateNotice() != 0
+                    ) {
+                mHasNotification = true;
+            } else {
+                mHasNotification = false;
+            }
+            getActivity().invalidateOptionsMenu();
+        }
     }
 
     @Override
