@@ -99,8 +99,9 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     }
     private void initRecyclerView() {
-        // UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mThreadCollectionView, true);
-        // mThreadCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        int actionBarSize = UIUtils.calculateActionBarSize(this);
+        int statusBarSize = UIUtils.calculateStatusBarSize(this);
+        mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
         mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mItemList);

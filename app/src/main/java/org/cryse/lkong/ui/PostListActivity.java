@@ -129,9 +129,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void initRecyclerView() {
-        // UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mPostCollectionView.getRefreshableView(), true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        // mPostCollectionView.getRefreshableView().setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom() + UIUtils.calculateActionBarSize(this));
-
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int width = displaymetrics.widthPixels;
