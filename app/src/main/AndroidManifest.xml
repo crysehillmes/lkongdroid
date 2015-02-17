@@ -30,6 +30,7 @@
         <activity android:name=".ui.SettingsActivity"/>
         <activity android:name=".ui.NotificationActivity"/>
         <service android:name=".service.SendPostService"/>
+        <service android:name=".service.CheckNoticeService"/>
 
         <service
             android:name="com.umeng.update.net.DownloadingService"

@@ -461,6 +461,15 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
+        if(responseString.contains("\"error\":")) {
+            NoticeCountModel errorModel = new NoticeCountModel();
+            JSONObject jsonObject = new JSONObject(responseString);
+            String errorMessage = jsonObject.getString("error");
+            errorModel.setSuccess(false);
+            errorModel.setErrorMessage(errorMessage);
+            return errorModel;
+        }
+
         LKCheckNoticeCountResult lkCheckNoticeCountResult = gson.fromJson(responseString, LKCheckNoticeCountResult.class);
         NoticeCountModel noticeCountModel = ModelConverter.toNoticeCountModel(lkCheckNoticeCountResult);
         clearCookies();

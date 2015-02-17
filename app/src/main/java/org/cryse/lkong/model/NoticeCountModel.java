@@ -10,6 +10,9 @@ public class NoticeCountModel {
     private int fansNotice;
     private int privateMessageNotice;
 
+    private boolean success;
+    private String errorMessage;
+
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -56,5 +59,21 @@ public class NoticeCountModel {
 
     public void setPrivateMessageNotice(int privateMessageNotice) {
         this.privateMessageNotice = privateMessageNotice;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
