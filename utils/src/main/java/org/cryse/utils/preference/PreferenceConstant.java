@@ -15,5 +15,5 @@ public class PreferenceConstant {
 
 
     public static final String SHARED_PREFERENCE_THEME_COLOR = "prefs_theme_color";
-    public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 0;
+    public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 4;
 }
