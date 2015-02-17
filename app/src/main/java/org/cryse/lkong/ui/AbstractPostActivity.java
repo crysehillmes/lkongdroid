@@ -17,9 +17,10 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
+import android.text.Editable;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ImageSpan;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,6 +80,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @InjectView(R.id.action_insert_image)
     ImageButton mInsertImageButton;
 
+    ImageEditTextHandler mContentEditTextHandler;
     ProgressDialog mProgressDialog;
     ServiceConnection mBackgroundServiceConnection;
     private SendPostService.SendPostServiceBinder mSendServiceBinder;
@@ -107,8 +109,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             int actionBarSize = UIUtils.calculateActionBarSize(this);
             layoutParams.setMargins(0, actionBarSize, 0, actionBarSize);
         }
-        Intent intent = getIntent();
-        readDataFromIntent(intent);
+        mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
+        readDataFromIntent(getIntent());
         setTitle(getTitleString());
         mBackgroundServiceConnection = new ServiceConnection() {
             @Override
@@ -189,7 +191,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mTitleEditText.clearFocus();
         mContentEditText.clearFocus();
         String title = mTitleEditText.getText().toString();
-        Spannable spannableContent = mContentEditText.getText();
+        Editable spannableContent = mContentEditText.getText();
         if(!TextUtils.isEmpty(spannableContent)) {
             if(hasTitleField() && TextUtils.isEmpty(title)) {
                 ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
@@ -227,12 +229,9 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
 
     private void addImageBetweenText(Drawable drawable, int type, String src, int width, int height) {
         drawable .setBounds(0, 0, width == 0 ? drawable.getIntrinsicWidth() : width, height == 0 ? drawable.getIntrinsicHeight() : height);
-        Timber.d(src, "addImageBetweenText");
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
-        int selectionCursor = mContentEditText.getSelectionStart();
-        SpannableStringBuilder builder = new SpannableStringBuilder(imageTag);
-        builder.setSpan(new ImageSpan(drawable, imageTag), 0, imageTag.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mContentEditText.getText().insert(selectionCursor, builder);
+
+        mContentEditTextHandler.insert(imageTag, drawable);
     }
 
     private static final int SELECT_PICTURE = 1;
@@ -321,5 +320,77 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
 
     public SendPostService.SendPostServiceBinder getSendServiceBinder() {
         return mSendServiceBinder;
+    }
+
+    private static class ImageEditTextHandler implements TextWatcher {
+
+        private final EditText mEditor;
+        private final ArrayList<ImageSpan> mEmoticonsToRemove = new ArrayList<ImageSpan>();
+
+        public ImageEditTextHandler(EditText editor) {
+            // Attach the handler to listen for text changes.
+            mEditor = editor;
+            mEditor.addTextChangedListener(this);
+        }
+
+        public void insert(String emoticon, Drawable drawable) {
+            // Create the ImageSpan
+            ImageSpan span = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+
+            // Get the selected text.
+            int start = mEditor.getSelectionStart();
+            int end = mEditor.getSelectionEnd();
+            Editable message = mEditor.getEditableText();
+
+            // Insert the emoticon.
+            message.replace(start, end, emoticon);
+            message.setSpan(span, start, start + emoticon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence text, int start, int count, int after) {
+            // Check if some text will be removed.
+            if (count > 0) {
+                int end = start + count;
+                Editable message = mEditor.getEditableText();
+                ImageSpan[] list = message.getSpans(start, end, ImageSpan.class);
+
+                for (ImageSpan span : list) {
+                    // Get only the emoticons that are inside of the changed
+                    // region.
+                    int spanStart = message.getSpanStart(span);
+                    int spanEnd = message.getSpanEnd(span);
+                    if ((spanStart < end) && (spanEnd > start)) {
+                        // Add to remove list
+                        mEmoticonsToRemove.add(span);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable text) {
+            Editable message = mEditor.getEditableText();
+
+            // Commit the emoticons to be removed.
+            for (ImageSpan span : mEmoticonsToRemove) {
+                int start = message.getSpanStart(span);
+                int end = message.getSpanEnd(span);
+
+                // Remove the span
+                message.removeSpan(span);
+
+                // Remove the remaining emoticon text.
+                if (start != end) {
+                    message.delete(start, end);
+                }
+            }
+            mEmoticonsToRemove.clear();
+        }
+
+        @Override
+        public void onTextChanged(CharSequence text, int start, int before, int count) {
+        }
+
     }
 }
