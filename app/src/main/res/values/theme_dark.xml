@@ -2,8 +2,8 @@
 <resources>
     <!-- Base application theme. -->
     <style name="LKongDroidTheme.Dark" parent="FrameworkRoot.Dark">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/md_grey_500</item>
+        <item name="colorPrimaryDark">@color/md_grey_700</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowIsTranslucent">true</item>
@@ -15,6 +15,7 @@
         <item name="theme_navigation_drawer_top_drawable">@drawable/drawer_top_image_dark</item>
         <item name="theme_navigation_drawer_text_color">@android:color/white</item>
         <item name="theme_navigation_drawer_icon_color">@android:color/white</item>
+        <item name="theme_selector_no_check_item_navigation">@drawable/selector_no_check_item_navigation_dark</item>
 
         <item name="theme_float_label_layout_text_appearence">@style/TextAppearance.LKongDroid.FloatLabel.Dark</item>
         <item name="theme_float_label_layout_selector">@color/float_label_selector_dark</item>

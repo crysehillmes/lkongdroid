@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   ~ Copyright 2015 Rudson Lima
+
+   ~ Licensed under the Apache License, Version 2.0 (the "License");
+   ~ you may not use this file except in compliance with the License.
+   ~ You may obtain a copy of the License at
+
+   ~ http://www.apache.org/licenses/LICENSE-2.0
+
+   ~ Unless required by applicable law or agreed to in writing, software
+   ~ distributed under the License is distributed on an "AS IS" BASIS,
+   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   ~ See the License for the specific language governing permissions and
+   ~ limitations under the License.
+-->
+<resources>
+
+    <string name="clear">""</string>
+
+    <string name="drawer_open">Open drawer navigation</string>
+    <string name="drawer_close">Navigation drawer Close</string>
+
+
+    <string name="header_not_created">Header was not created</string>
+    <string name="custom_header_not_created">Custom header was not created</string>
+    <string name="start_navigation_listener">You must start the NavigationListener in onInit() method of its main activity. Example: this.setNavigationListener(this);</string>
+    <string name="title_null_or_empty">The title can not be null or empty</string>
+    <string name="remove_selector_navigation">The option to remove the select is active. Please remove the removeSelectorNavigation method so you can use the setNewSelectorNavigation</string>
+    <string name="list_null_or_empty">List of null or empty names. Solution: mListNameItem = new ArrayList &#60;&#62; (); mListNameItem.add (position, R.string.name);</string>
+    <string name="value_icon_should_be_0">The value of the icon for a subHeader item should be 0</string>
+    <string name="enter_item_name_position">Enter the item name position </string>
+
+
+</resources>

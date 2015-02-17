@@ -7,12 +7,16 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.PostListActivity">
 
-    <org.cryse.widget.recyclerview.SuperRecyclerView
+    <org.cryse.widget.recyclerview.PtrRecyclerView
         android:id="@+id/activity_post_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay" />
+        android:layout_height="match_parent"
+        app:ptrPullLabel=""
+        app:ptrRefreshLabel=""
+        app:ptrReleaseLabel=""
+        app:ptrDrawable="@drawable/ic_action_refresh_48"
+        app:ptrDrawableStart="@drawable/ic_action_refresh_48"
+        app:ptrDrawableEnd="@drawable/ic_action_refresh_48"/>
 
 
     <android.support.v7.widget.Toolbar
@@ -46,4 +50,13 @@
         android:layout_toLeftOf="@+id/fab"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"/>
+
+    <ProgressBar
+        android:id="@+id/loading_progressbar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerInParent="true"
+        android:padding="8dp"
+        android:background="@drawable/loading_progress_bg"
+        android:visibility="invisible"/>
 </RelativeLayout>

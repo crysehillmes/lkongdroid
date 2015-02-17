@@ -11,7 +11,7 @@ public class NoticeRateModel implements SimpleCollectionItem {
     private String userName;
     private String message;
     private String extCredits;
-    private int score;
+    private String score;
     private String reason;
     private Date dateline;
     private long pid;
@@ -58,11 +58,11 @@ public class NoticeRateModel implements SimpleCollectionItem {
         this.extCredits = extCredits;
     }
 
-    public int getScore() {
+    public String getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(String score) {
         this.score = score;
     }
 
@@ -110,7 +110,7 @@ public class NoticeRateModel implements SimpleCollectionItem {
         dest.writeString(this.userName);
         dest.writeString(this.message);
         dest.writeString(this.extCredits);
-        dest.writeInt(this.score);
+        dest.writeString(this.score);
         dest.writeString(this.reason);
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
         dest.writeLong(this.pid);
@@ -126,7 +126,7 @@ public class NoticeRateModel implements SimpleCollectionItem {
         this.userName = in.readString();
         this.message = in.readString();
         this.extCredits = in.readString();
-        this.score = in.readInt();
+        this.score = in.readString();
         this.reason = in.readString();
         long tmpDateline = in.readLong();
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);

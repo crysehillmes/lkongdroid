@@ -97,6 +97,16 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         }
     }
 
+    public void rangeRemove(int start, int end) {
+        int currentHeaderCount = mObjectList.getHeaderViewCount();
+        if(end > start && start >= 0 && end <= mObjectList.getItemCount()) {
+            mObjectList.getItemList().subList(start, end).clear();
+            notifyItemRangeRemoved(currentHeaderCount + start, end - start);
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
     public void replaceWith(Collection<S> items) {
         replaceWith(items, false);
     }

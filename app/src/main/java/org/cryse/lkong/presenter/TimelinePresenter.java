@@ -1,110 +1,60 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
-import org.cryse.lkong.view.TimelineView;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class TimelinePresenter implements BasePresenter<TimelineView> {
-    public static final String LOG_TAG = TimelinePresenter.class.getName();
-    LKongForumService mLKongForumService;
-    TimelineView mView;
-    Subscription mLoadTimelineSubscription;
-
+public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel> {
+    private static final String LOG_TAG = TimelinePresenter.class.getName();
     @Inject
     public TimelinePresenter(LKongForumService forumService) {
-        this.mLKongForumService = forumService;
-        this.mView = new EmptyTimelineView();
+        super(forumService);
     }
 
-    public void loadTimeline(LKAuthObject authObject, int listType, boolean loadingMore) {
-        loadTimeline(authObject, -1, listType, loadingMore);
+    public void loadTimeline(LKAuthObject authObject, boolean isLoadingMore) {
+        loadTimeline(authObject, -1, isLoadingMore);
     }
 
-    public void loadTimeline(LKAuthObject authObject, long start, int listType, boolean loadingMore) {
-        SubscriptionUtils.checkAndUnsubscribe(mLoadTimelineSubscription);
-        setLoadingStatus(loadingMore, true);
-        mLoadTimelineSubscription = mLKongForumService.getTimeline(authObject, start, listType)
+    public void loadTimeline(LKAuthObject authObject, long start, boolean isLoadingMore) {
+        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_TIMELINE);
+    }
+
+    public void loadMentions(LKAuthObject authObject, boolean isLoadingMore) {
+        loadMentions(authObject, -1, isLoadingMore);
+    }
+
+    public void loadMentions(LKAuthObject authObject, long start, boolean isLoadingMore) {
+        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_MENTIONS);
+    }
+
+    @Override
+    protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
+        SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
+        setLoadingStatus(isLoadingMore, true);
+        mLoadDataSubscription = mLKongForumService.getTimeline(authObject, start, (Integer)extraArgs[0])
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("ThreadListPresenter::loadTimeline() onNext().", LOG_TAG);
-                            mView.showTimeline(result, loadingMore);
+                            Timber.d("TimelinePresenter::loadData() onNext().", LOG_TAG);
+                            mView.showSimpleData(result, isLoadingMore);
                         },
                         error -> {
-                            Timber.e(error, "ThreadListPresenter::loadTimeline() onError().", LOG_TAG);
-                            setLoadingStatus(loadingMore, false);
+                            Timber.e(error, "TimelinePresenter::loadData() onError().", LOG_TAG);
+                            setLoadingStatus(isLoadingMore, false);
                         },
                         () -> {
-                            Timber.d("ThreadListPresenter::loadTimeline() onComplete().", LOG_TAG);
-                            setLoadingStatus(loadingMore, false);
+                            Timber.d("TimelinePresenter::loadData() onComplete().", LOG_TAG);
+                            setLoadingStatus(isLoadingMore, false);
                         }
                 );
-    }
-
-
-    @Override
-    public void bindView(TimelineView view) {
-        this.mView = view;
-    }
-
-    @Override
-    public void unbindView() {
-        this.mView = new EmptyTimelineView();
-    }
-
-    @Override
-    public void destroy() {
-        SubscriptionUtils.checkAndUnsubscribe(mLoadTimelineSubscription);
-    }
-
-    private void setLoadingStatus(boolean loadingMore, boolean isLoading) {
-        if (loadingMore)
-            mView.setLoadingMore(isLoading);
-        else
-            mView.setLoading(isLoading);
-    }
-
-    private class EmptyTimelineView implements TimelineView {
-        @Override
-        public void showTimeline(List<TimelineModel> timelineItems, boolean loadMore) {
-
-        }
-
-        @Override
-        public boolean isLoadingMore() {
-            return false;
-        }
-
-        @Override
-        public void setLoadingMore(boolean value) {
-
-        }
-
-        @Override
-        public void setLoading(Boolean value) {
-
-        }
-
-        @Override
-        public Boolean isLoading() {
-            return null;
-        }
-
-        @Override
-        public void showToast(int text_value, int toastType) {
-
-        }
     }
 }

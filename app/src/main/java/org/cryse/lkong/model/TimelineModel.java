@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
-public class TimelineModel implements Parcelable {
+public class TimelineModel implements SimpleCollectionItem {
     private boolean isQuote;
     private long userId;
     private String userName;
@@ -118,6 +118,7 @@ public class TimelineModel implements Parcelable {
         this.id = id;
     }
 
+    @Override
     public long getSortKey() {
         return sortKey;
     }

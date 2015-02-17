@@ -10,11 +10,11 @@ import com.umeng.update.UmengUpdateAgent;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.component.Dagger_LKongPresenterComponent;
-import org.cryse.lkong.application.component.Dagger_MainActivityComponent;
+import org.cryse.lkong.application.component.Dagger_SimpleActivityComponent;
 import org.cryse.lkong.application.component.Dagger_SendServiceComponet;
 import org.cryse.lkong.application.component.Dagger_UserAccountComponent;
 import org.cryse.lkong.application.component.LKongPresenterComponent;
-import org.cryse.lkong.application.component.MainActivityComponent;
+import org.cryse.lkong.application.component.SimpleActivityComponent;
 import org.cryse.lkong.application.component.SendServiceComponet;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
@@ -31,7 +31,7 @@ import timber.log.Timber;
 @Singleton
 public class LKongApplication extends Application {
     private static final String TAG = LKongApplication.class.getName();
-    private MainActivityComponent mainActivityComponent;
+    private SimpleActivityComponent simpleActivityComponent;
     private LKongPresenterComponent mLKongPresenterComponent;
     private UserAccountComponent mUserAccountComponent;
     private SendServiceComponet mSendServiceComponet;
@@ -58,7 +58,7 @@ public class LKongApplication extends Application {
     }
 
     private void initComponents() {
-        mainActivityComponent = Dagger_MainActivityComponent
+        simpleActivityComponent = Dagger_SimpleActivityComponent
                 .builder()
                 .contextModule(new ContextModule(this, mNavigation, mEventBus))
                 .preferenceModule(new PreferenceModule(this))
@@ -90,8 +90,8 @@ public class LKongApplication extends Application {
         return mUserAccountManager;
     }
 
-    public MainActivityComponent mainActivityComponent() {
-        return mainActivityComponent;
+    public SimpleActivityComponent simpleActivityComponent() {
+        return simpleActivityComponent;
     }
 
     public LKongPresenterComponent lKongPresenterComponent() {

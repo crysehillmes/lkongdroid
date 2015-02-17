@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">龙的天空 (测试版)</string>
-    <string name="account_email_hint">注册邮箱</string>
-    <string name="account_password_hint">密码</string>
+    <string name="hint_account_email">注册邮箱</string>
+    <string name="hint_account_password">密码</string>
     <string name="action_dark_theme">夜间模式</string>
     <string name="action_insert_emoji">插入表情</string>
     <string name="action_insert_image">插入图片</string>
@@ -114,10 +114,26 @@
     <string name="button_punched">已签到 %1$d 天</string>
     <string name="format_note_rate_log_middle">&#160;被 %1$s 评分：&#160;</string>
     <string name="format_note_rate_log_prefix">你的帖子&#160;</string>
-    <string name="format_note_rate_log_suffix">&#160;%1$s %2$d</string>
+    <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
     <string name="drawer_item_notice_rate">评分</string>
     <string name="tb_munion_tip_download_prefix">正在下载:</string>
     <string name="action_open_notification">消息与通知</string>
     <string name="action_thread_goto_floor">跳转楼层</string>
     <string name="umeng_common_icon">找不到这一楼啊</string>
+
+    <string name="text_load_prev_page">加载上一页</string>
+    <string name="text_load_next_page">加载下一页</string>
+    <string name="dialog_choose_color_title">选择主题：</string>
+    <string name="toast_error_invalid_floor">没有这一楼啊</string>
+    <string name="settings_item_theme_color_summary">选择你喜欢的主题颜色</string>
+    <string name="settings_item_theme_color_title">主题</string>
+    <string name="custom_header_not_created"></string>
+    <string name="hint_rate_reason">评分理由</string>
+    <string name="hint_rate_score">数值</string>
+    <string name="header_not_created">Header 创建失败</string>
+    <string name="dialog_title_rate">评分</string>
+    <string name="drawer_close"></string>
+    <string name="toast_error_rate_self">你不能为自己评分</string>
+    <string name="toast_failure_rate_post">评分失败</string>
+    <string name="toast_error_rate_score_empty">评分数值不能为0</string>
 </resources>

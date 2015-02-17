@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -8,7 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.utils.ColorUtils;
 
 public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
     @Override
@@ -16,8 +14,7 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simple_container);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(ColorUtils.getColorFromAttr(this, R.attr.colorPrimaryDark));
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         setUpFragment();
     }
 
@@ -37,8 +34,6 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
     protected void setUpFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                 .beginTransaction();
-        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                android.R.anim.fade_out);
         fragmentTransaction.replace(R.id.container, newFragment());
         fragmentTransaction.commit();
     }

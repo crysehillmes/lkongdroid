@@ -19,6 +19,9 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.service.task.SendPostTask;
+import org.cryse.lkong.service.task.SendTask;
+import org.cryse.lkong.service.task.SendThreadTask;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
@@ -121,7 +124,7 @@ public class SendPostService extends Service {
         try {
             postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "sendPost error", e);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
@@ -149,7 +152,7 @@ public class SendPostService extends Service {
         try {
             threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "sendThread error", e);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);

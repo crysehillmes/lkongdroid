@@ -7,6 +7,10 @@
             android:key="is_night_mode"
             android:summary="@string/settings_item_is_night_mode_summary"
             android:title="@string/settings_item_is_night_mode_title" />
+        <Preference
+            android:key="prefs_theme_color"
+            android:summary="@string/settings_item_theme_color_summary"
+            android:title="@string/settings_item_theme_color_title"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
         <ListPreference

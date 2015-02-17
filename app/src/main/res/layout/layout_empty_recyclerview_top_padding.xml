@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?actionBarSize">
+    android:layout_height="?actionBarSize"
+    android:gravity="center"
+    android:textSize="@dimen/text_size_title"
+    android:textColor="?theme_text_color_primary">
 
-</FrameLayout>
+</TextView>

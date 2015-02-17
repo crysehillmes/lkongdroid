@@ -78,6 +78,6 @@ public class NoticeFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onEvent(AbstractEvent event) {
-
+        super.onEvent(event);
     }
 }

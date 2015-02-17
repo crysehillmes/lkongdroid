@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ThreadModel implements Serializable, Parcelable {
+public class ThreadModel implements Serializable, SimpleCollectionItem {
     private long sortKey;
     private Date sortKeyTime;
     private Date dateline;
@@ -20,6 +20,7 @@ public class ThreadModel implements Serializable, Parcelable {
     private long fid;
     private String userIcon;
 
+    @Override
     public long getSortKey() {
         return sortKey;
     }

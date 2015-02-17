@@ -307,4 +307,16 @@ public class LKongForumService {
             }
         });
     }
+
+    public Observable<PostModel.PostRate> ratePost(LKAuthObject authObject, long postId, int score, String reaseon) {
+        return Observable.create(subscriber -> {
+            try {
+                PostModel.PostRate postRate = mLKongRestService.ratePost(authObject, postId, score, reaseon);
+                subscriber.onNext(postRate);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
 }

@@ -12,4 +12,8 @@ public class PreferenceConstant {
 
     public static final String SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY = "prefs_image_download_policy";
     public static final String SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE = "0";
+
+
+    public static final String SHARED_PREFERENCE_THEME_COLOR = "prefs_theme_color";
+    public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 4;
 }

@@ -8,13 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_gravity="center"
-        app:cardBackgroundColor="?colorPrimary"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
         app:contentPadding="0dp">
 
         <LinearLayout
+            android:id="@+id/widget_pager_control_container"
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

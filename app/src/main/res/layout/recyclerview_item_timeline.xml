@@ -14,71 +14,55 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground">
 
-        <RelativeLayout
-            android:id="@+id/author_container"
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/recyclerview_item_timeline_imageview_author_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="16dp"
+            app:border_color="@android:color/transparent"
+            app:border_width="0dp"
+            app:shadow="false" />
+
+        <TextView
+            android:id="@+id/recyclerview_item_timeline_textview_author_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_marginRight="72dp"
+            android:layout_marginTop="16dp"
+            android:text="placeholder"
+            android:textColor="?theme_text_color_primary"
+            android:textSize="@dimen/text_size_subhead" />
 
-            <com.pkmmte.view.CircularImageView
-                android:id="@+id/recyclerview_item_timeline_imageview_author_avatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_margin="16dp"
-                app:border_color="@android:color/transparent"
-                app:border_width="0dp"
-                app:shadow="false" />
+        <TextView
+            android:id="@+id/recyclerview_item_timeline_textview_dateline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_timeline_textview_author_name"
+            android:layout_marginLeft="72dp"
+            android:layout_marginRight="72dp"
+            android:text="placeholder"
+            android:textColor="?theme_text_color_secondary"
+            android:textSize="@dimen/text_size_body1" />
 
-            <LinearLayout
-                android:id="@+id/author_text_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="72dp"
-                android:layout_marginRight="72dp"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/recyclerview_item_timeline_textview_author_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="?theme_text_color_primary"
-                    android:textSize="@dimen/text_size_subhead"
-                    android:text="placeholder"/>
-
-                <TextView
-                    android:id="@+id/recyclerview_item_timeline_textview_dateline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="?theme_text_color_secondary"
-                    android:textSize="@dimen/text_size_body1"
-                    android:text="placeholder"/>
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/message_container"
+        <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
+            android:id="@+id/recyclerview_item_timeline_textview_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_below="@+id/author_container">
-
-            <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
-                android:id="@+id/recyclerview_item_timeline_textview_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textColor="?theme_text_color_primary"
-                android:textSize="@dimen/text_size_subhead"
-                android:lineSpacingMultiplier="1.3"
-                android:text="placeholder"/>
-
-        </RelativeLayout>
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="72dp"
+            android:lineSpacingMultiplier="1.3"
+            android:text="placeholder"
+            android:textColor="?theme_text_color_primary"
+            android:textSize="@dimen/text_size_subhead" />
 
         <RelativeLayout
             android:id="@+id/secondary_message_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/message_container"
+            android:layout_below="@+id/recyclerview_item_timeline_textview_message"
             android:layout_marginBottom="16dp"
             android:visibility="gone">
 
@@ -87,30 +71,31 @@
                 android:layout_height="1dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="?theme_card_divier_color"/>
+                android:background="?theme_card_divier_color" />
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_timeline_secondary_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="17dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="17dp"
+                android:ellipsize="end"
                 android:lineSpacingMultiplier="1.3"
                 android:maxLines="1"
-                android:ellipsize="end"
                 android:text="placeholder"
                 android:textColor="?theme_text_color_secondary"
                 android:textSize="@dimen/text_size_subhead" />
+
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_timeline_third_message"
-                android:layout_below="@+id/recyclerview_item_timeline_secondary_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
+                android:layout_below="@+id/recyclerview_item_timeline_secondary_message"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="1dp"
                 android:lineSpacingMultiplier="1.3"
                 android:text="placeholder"
                 android:textColor="?theme_text_color_primary"

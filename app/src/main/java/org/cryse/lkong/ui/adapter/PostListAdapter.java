@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.DebugUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
@@ -35,7 +36,7 @@ import butterknife.InjectView;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
-    private OnItemReplyClickListener mOnItemReplyClickListener;
+    private OnItemButtonClickListener mOnItemButtonClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
@@ -51,8 +52,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mImageDownloadPolicy = imageDownloadPolicy;
     }
 
-    public void setOnItemReplyClickListener(OnItemReplyClickListener onItemReplyClickListener) {
-        this.mOnItemReplyClickListener = onItemReplyClickListener;
+    public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
+        this.mOnItemButtonClickListener = onItemButtonClickListener;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_post, parent, false);
-        return new ViewHolder(v, mOnItemReplyClickListener);
+        return new ViewHolder(v, mOnItemButtonClickListener);
     }
 
     @Override
@@ -72,13 +73,19 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
-                        .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                        .setPlaceHolder(R.drawable.image_placeholder)
-                        .setMaxImageWidth(mMaxImageWidth)
-                        .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
-                viewHolder.mMessageTextView.setText(spannedText);
+                if(postModel.getSpannedMessage() != null) {
+                    viewHolder.mMessageTextView.setText(postModel.getSpannedMessage());
+                } else {
+                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
+                            .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
+                            .setPlaceHolder(R.drawable.image_placeholder)
+                            .setMaxImageWidth(mMaxImageWidth)
+                            .setError(R.drawable.image_placeholder);
+                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
+                    postModel.setSpannedMessage(spannedText);
+                    viewHolder.mMessageTextView.setText(spannedText);
+                }
+
                 viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
                 /*try {
@@ -141,8 +148,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         @InjectView(R.id.recyclerview_item_post_button_replay)
         Button mReplyButton;
 
-        OnItemReplyClickListener mOnItemReplyClickListener;
-        public ViewHolder(View v, OnItemReplyClickListener onItemReplyClickListener) {
+        OnItemButtonClickListener mOnItemReplyClickListener;
+        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener) {
             super(v);
             ButterKnife.inject(this, v);
             mOnItemReplyClickListener = onItemReplyClickListener;
@@ -151,10 +158,16 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     mOnItemReplyClickListener.onReplyClick(view, getPosition());
                 }
             });
+            mRateButton.setOnClickListener(view -> {
+                if(mOnItemReplyClickListener != null) {
+                    mOnItemReplyClickListener.onRateClick(view, getPosition());
+                }
+            });
         }
     }
 
-    public interface OnItemReplyClickListener {
+    public interface OnItemButtonClickListener {
+        public void onRateClick(View view, int position);
         public void onReplyClick(View view, int position);
     }
 }

@@ -13,7 +13,7 @@
     <Spinner
         android:id="@+id/layout_forum_header_spinner_list_type"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"/>
 </android.support.v7.widget.CardView>

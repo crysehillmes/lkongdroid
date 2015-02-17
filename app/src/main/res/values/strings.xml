@@ -27,8 +27,10 @@
     <string name="drawer_item_notice">Notice</string>
     <string name="drawer_item_notice_rate">Rate</string>
     <string name="drawer_item_settings">Settings</string>
-    <string name="account_email_hint">Your Email</string>
-    <string name="account_password_hint">Password</string>
+    <string name="hint_account_email">Your Email</string>
+    <string name="hint_account_password">Password</string>
+    <string name="hint_rate_reason">Reason</string>
+    <string name="hint_rate_score">Score</string>
 
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
@@ -42,18 +44,21 @@
     <string name="format_timeline_reply_to_thread">\@%1$s create a new thread:</string>
     <string name="format_note_rate_log_prefix">Your post&#160;</string>
     <string name="format_note_rate_log_middle">&#160;is rated by %1$s:&#160;</string>
-    <string name="format_note_rate_log_suffix">&#160;%1$s %2$d</string>
+    <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
+    <string name="toast_failure_rate_post">Failed to rate post.</string>
 
     <string name="toast_failure_new_post">Failed to post, please try again.</string>
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
     <string name="toast_error_invalid_floor">No such floor.</string>
+    <string name="toast_error_rate_self">You cannot rate to your own post.</string>
+    <string name="toast_error_rate_score_empty">Score could not be empty.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
@@ -62,7 +67,9 @@
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending…</string>
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
+    <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
+    <string name="dialog_title_rate">Rate</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>
@@ -114,6 +121,8 @@
     <string name="settings_item_email_address_title">Author Email</string>
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
+    <string name="settings_item_theme_color_title">Theme</string>
+    <string name="settings_item_theme_color_summary">Choose your theme color.</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
@@ -135,4 +144,7 @@
     <string name="button_punch_complete">Punch Done</string>
     <string name="button_punch_error">Punch Error</string>
     <string name="button_punched">Punch Day: %1$d</string>
+
+    <string name="text_load_prev_page">Load previous page</string>
+    <string name="text_load_next_page">Load next page</string>
 </resources>
