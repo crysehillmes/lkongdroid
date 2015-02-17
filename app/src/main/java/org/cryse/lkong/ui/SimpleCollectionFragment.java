@@ -1,8 +1,10 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,20 +79,13 @@ public abstract class SimpleCollectionFragment<
         getRecyclerViewInsets();
         UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-        mCollectionView.setItemAnimator(new DefaultItemAnimator());
-        mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
+        mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
-        mCollectionView.setRefreshListener(() ->
-                loadData(mUserAccountManager.getAuthObject(), 0, false));
-        mCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
-            } else {
-                mCollectionView.setLoadingMore(false);
-                mCollectionView.hideMoreProgress();
-            }
-        });
+        initHeaderView();
+        mCollectionView.setRefreshListener(getRefreshListener());
+        mCollectionView.setOnMoreListener(getOnMoreListener());
         mCollectionView.setOnItemClickListener(this::onItemClick);
     }
 
@@ -209,8 +204,36 @@ public abstract class SimpleCollectionFragment<
 
     protected abstract void onItemClick(View view, int position, long id);
 
+    protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
+        return new DefaultItemAnimator();
+    }
+
+    protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
+        return new LinearLayoutManager(getActivity());
+    }
+
+    protected void initHeaderView() {
+
+    }
+
     protected void onEvent(AbstractEvent event) {
 
+    }
+
+    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
+        return () ->
+                loadData(mUserAccountManager.getAuthObject(), 0, false);
+    }
+
+    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+        return (numberOfItems, numberBeforeMore, currentItemPos) -> {
+            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
+                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
+            } else {
+                mCollectionView.setLoadingMore(false);
+                mCollectionView.hideMoreProgress();
+            }
+        };
     }
 
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
