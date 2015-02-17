@@ -244,7 +244,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
         @Override
         public void onClick(View v) {
             // TODO Auto-generated method stub
-            mNavigationListener.onClickUserPhotoNavigation(v);
+            mPendingRunnable = () ->  mNavigationListener.onClickUserPhotoNavigation(v);
             mDrawerLayout.closeDrawer(mRelativeDrawer);
         }
     };
@@ -252,7 +252,7 @@ public abstract class AbstractMainActivity extends AbstractThemeableActivity{
     private View.OnClickListener onClickFooterDrawer = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mNavigationListener.onClickFooterItemNavigation(v);
+            mPendingRunnable = () ->  mNavigationListener.onClickFooterItemNavigation(v);
             mDrawerLayout.closeDrawer(mRelativeDrawer);
         }
     };
