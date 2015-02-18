@@ -337,7 +337,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
 
         public void insert(String emoticon, Drawable drawable) {
             // Create the ImageSpan
-            ImageSpan span = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+            ImageSpan span = new ImageSpan(drawable, emoticon, ImageSpan.ALIGN_BASELINE);
 
             // Get the selected text.
             int start = mEditor.getSelectionStart();
