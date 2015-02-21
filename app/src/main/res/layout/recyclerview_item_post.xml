@@ -57,7 +57,7 @@
             android:textColor="?theme_text_color_secondary"
             android:textSize="@dimen/text_size_caption" />
 
-        <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
+        <EditText
             android:id="@+id/recyclerview_item_post_textview_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,7 +67,8 @@
             android:lineSpacingMultiplier="1.3"
             android:text="placeholder"
             android:textColor="?theme_text_color_primary"
-            android:textIsSelectable="true"
+            android:editable="false"
+            android:background="@android:color/transparent"
             android:textSize="@dimen/text_size_subhead" />
 
         <Button

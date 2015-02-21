@@ -21,7 +21,6 @@ import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;
-    WeakReference<TextView> mTargetTextView;
     Picasso picasso;
     final Resources mResources;
     int mEmoticonSize  = 0;
@@ -33,11 +32,9 @@ public class UrlImageGetter implements ImageGetter {
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      *
      * @param context
-     * @param targetTextView
      */
-    public UrlImageGetter(Context context, TextView targetTextView, int downloadPolicy) {
+    public UrlImageGetter(Context context, int downloadPolicy) {
         this.mContext = context;
-        this.mTargetTextView = new WeakReference<TextView>(targetTextView);
         this.picasso = Picasso.with(context);
         this.mResources = context.getResources();
         this.mImageDownloadPolicy = downloadPolicy;
@@ -82,7 +79,7 @@ public class UrlImageGetter implements ImageGetter {
             }
         }
 
-        UrlDrawable urlDrawable = new UrlDrawable(mContext, mTargetTextView.get(), mMaxImageWidth);
+        UrlDrawable urlDrawable = new UrlDrawable(mContext, mMaxImageWidth);
         if(LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy)) {
             picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
         } else {
@@ -95,11 +92,9 @@ public class UrlImageGetter implements ImageGetter {
         protected Context mContext;
         protected Drawable mDrawable;
         protected int mMaxWidth = 0;
-        protected WeakReference<TextView> mTargetView;
-        public UrlDrawable(Context context, TextView targetTextView, int maxWidth) {
+        public UrlDrawable(Context context, int maxWidth) {
             super(context.getResources(), (Bitmap)null);
             this.mContext = context;
-            this.mTargetView = new WeakReference<TextView>(targetTextView);
             this.mMaxWidth = maxWidth;
         }
 
@@ -131,11 +126,6 @@ public class UrlImageGetter implements ImageGetter {
         }
 
         private void invalidateTargetTextView() {
-            TextView textView = mTargetView.get();
-            if(textView != null) {
-                textView.invalidate();
-                textView.setText(textView.getText());
-            }
         }
 
         public void setDrawableAndSelfBounds(Drawable newDrawable) {

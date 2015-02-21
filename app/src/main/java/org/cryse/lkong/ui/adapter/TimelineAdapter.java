@@ -102,7 +102,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mainContent = timelineModel.getMessage();
                 }
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
+                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);

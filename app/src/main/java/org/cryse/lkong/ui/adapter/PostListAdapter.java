@@ -76,7 +76,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 if(postModel.getSpannedMessage() != null) {
                     viewHolder.mMessageTextView.setText(postModel.getSpannedMessage());
                 } else {
-                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
+                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), mImageDownloadPolicy)
                             .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                             .setPlaceHolder(R.drawable.image_placeholder)
                             .setMaxImageWidth(mMaxImageWidth)
