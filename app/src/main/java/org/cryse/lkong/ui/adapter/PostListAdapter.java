@@ -24,6 +24,7 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
+import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -73,9 +74,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                if(postModel.getSpannedMessage() != null) {
-                    viewHolder.mMessageTextView.setText(postModel.getSpannedMessage());
-                } else {
+                if(postModel.getSpannedMessage() == null) {
                     UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), mImageDownloadPolicy)
                             .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                             .setPlaceHolder(R.drawable.image_placeholder)
@@ -83,16 +82,17 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                             .setError(R.drawable.image_placeholder);
                     Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
                     postModel.setSpannedMessage(spannedText);
-                    viewHolder.mMessageTextView.setText(spannedText);
                 }
 
-                viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                viewHolder.mPostItemView.setAuthor(postModel.getAuthorName(), getContext().getResources().getDrawable(R.drawable.ic_default_avatar));
+                viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
+                /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                /*try {
+                *//*try {
                     DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }*//*
 
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
@@ -119,7 +119,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
-                        .into(viewHolder.mAuthorAvatarImageView);
+                        .into(viewHolder.mAuthorAvatarImageView);*/
             }
         }
     }
@@ -133,16 +133,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_post_textview_author_name)
-        TextView mAuthorTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_dateline)
-        TextView mDatelineTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_ordinal)
-        TextView mOrdinalTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_message)
-        TextView mMessageTextView;
-        @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)
-        ImageView mAuthorAvatarImageView;
+        @InjectView(R.id.recyclerview_item_post_view_item)
+        PostItemView mPostItemView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         Button mRateButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)
