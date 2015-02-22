@@ -84,7 +84,17 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     postModel.setSpannedMessage(spannedText);
                 }
 
-                viewHolder.mPostItemView.setAuthorInfo(postModel.getAuthorName(), DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
+                SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
+                autherNameSpannable.append(postModel.getAuthorName());
+                if(postModel.getAuthorId() == mThreadAuthorId) {
+                    String threadAuthorIndicator = getString(R.string.indicator_thread_author);
+                    autherNameSpannable.append(threadAuthorIndicator);
+                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
+                            postModel.getAuthorName().length(),
+                            postModel.getAuthorName().length() + threadAuthorIndicator.length(),
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
                 /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
