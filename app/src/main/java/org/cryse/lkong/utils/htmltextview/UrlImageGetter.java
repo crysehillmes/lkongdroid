@@ -70,7 +70,7 @@ public class UrlImageGetter implements ImageGetter {
         if(source.startsWith(EMOJI_PREFIX)) {
             String emojiFileName = source.substring(EMOJI_PREFIX.length());
             try {
-                Drawable emojiDrawable = Drawable.createFromStream(mContext.getAssets().open(EMOJI_PATH_WITH_SLASH + emojiFileName), null);
+                Drawable emojiDrawable = Drawable.createFromStream(mContext.getAssets().open(EMOJI_PATH_WITH_SLASH + emojiFileName + ".png"), null);
                 emojiDrawable.setBounds(0, 0, mEmoticonSize == 0 ? emojiDrawable.getIntrinsicWidth() : mEmoticonSize,
                         mEmoticonSize == 0 ? emojiDrawable.getIntrinsicHeight() : mEmoticonSize);
                 return emojiDrawable;
