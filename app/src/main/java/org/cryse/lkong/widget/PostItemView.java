@@ -199,9 +199,8 @@ public class PostItemView extends FrameLayout implements Target {
     private void generateAuthorTextLayout() {
         int width = getMeasuredWidth();
         if(width > 0) {
-            mAuthorInfoLayout = new StaticLayout(mAuthorInfo, mTextPaint, width - px_margin_72 * 2, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false); ;
-            requestLayout();
-            invalidate();
+            mAuthorInfoLayout = new StaticLayout(mAuthorInfo, mTextPaint, width - px_margin_72 * 2, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+            invalidate(px_margin_72, px_margin_16, width - px_margin_72, px_margin_16 + mAuthorInfoLayout.getHeight());
         } else {
             requestLayout();
             invalidate();
@@ -211,6 +210,7 @@ public class PostItemView extends FrameLayout implements Target {
     public void setAuthorAvatar(Drawable authorAvatar) {
         mAvatarDrawable = authorAvatar;
         mAvatarDrawable.setBounds(0, 0, px_width_40, px_width_40);
+        invalidate(px_margin_16, px_margin_16, px_margin_16 + px_width_40, px_margin_16 + px_width_40);
     }
 
     public void setTextColor(int textColor) {
@@ -235,19 +235,17 @@ public class PostItemView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        mAvatarDrawable = new BitmapDrawable(getContext().getResources(), bitmap);
-        mAvatarDrawable.setBounds(0, 0, px_width_40, px_width_40);
-        invalidate();
+        setAuthorAvatar(new BitmapDrawable(getContext().getResources(), bitmap));
     }
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-        mAvatarDrawable = errorDrawable;
+        setAuthorAvatar(errorDrawable);
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
-        mAvatarDrawable = placeHolderDrawable;
+        setAuthorAvatar(placeHolderDrawable);
     }
 
     @Override
