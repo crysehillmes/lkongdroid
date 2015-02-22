@@ -14,23 +14,21 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
 
-public class PostItemView extends RelativeLayout {
+public class PostItemView extends FrameLayout {
     private CharSequence mMessageText = null;
     private CharSequence mAuthorName = null;
     private CharSequence mDateline = null;
     private DynamicLayout mDynamicLayout = null;
     private Drawable mAvatarDrawable = null;
     private TextPaint mTextPaint = null;
-
+    private Handler mHandler;
     private int px_margin_16 = 0;
     private int px_margin_72 = 0;
     private int px_width_40 = 0;
@@ -72,6 +70,7 @@ public class PostItemView extends RelativeLayout {
         mTextPaint.setTextSize(textSize);
         mTextPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_primary));
         mTextPaint.linkColor = Color.RED;
+        mHandler = new Handler();
     }
 
     @Override
@@ -117,17 +116,17 @@ public class PostItemView extends RelativeLayout {
         if(width > 0) {
             Log.d("TAGTAG", "generateMessageTextLayout11111");
             mDynamicLayout = makeNewLayout(width - px_margin_16 * 2);
-            requestLayout();
-            invalidate();
+            Log.d("TAGTAG", String.format("generateMessageTextLayout height %d", mDynamicLayout.getHeight()));
         } else {
             Log.d("TAGTAG", "generateMessageTextLayout22222");
-            requestLayout();
-            invalidate();
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        if (changed) {
+            mHandler.post(this::requestLayout);
+        }
         final int count = getChildCount();
         int viewWidth = getWidth();
         int viewHeight = getHeight();
