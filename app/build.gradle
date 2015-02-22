@@ -73,7 +73,6 @@ dependencies {
     compile 'com.nispok:snackbar:2.7.3'
     compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'com.jakewharton.timber:timber:2.5.0'
-    compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'org.jsoup:jsoup:1.8.1'
     compile 'com.afollestad:material-dialogs:0.6.0'
     compile 'com.melnykov:floatingactionbutton:1.1.0'

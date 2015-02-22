@@ -84,7 +84,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     postModel.setSpannedMessage(spannedText);
                 }
 
-                viewHolder.mPostItemView.setAuthor(postModel.getAuthorName(), getContext().getResources().getDrawable(R.drawable.ic_default_avatar));
+                viewHolder.mPostItemView.setAuthorInfo(postModel.getAuthorName(), DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
                 /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -113,13 +113,13 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
                 } else {
                     viewHolder.mRateButton.setText(R.string.button_rate);
-                }
+                }*/
 
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
-                        .into(viewHolder.mAuthorAvatarImageView);*/
+                        .into(viewHolder.mPostItemView);
             }
         }
     }

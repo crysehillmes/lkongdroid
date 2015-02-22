@@ -14,14 +14,11 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground">
 
-        <com.pkmmte.view.CircularImageView
+        <ImageView
             android:id="@+id/recyclerview_item_timeline_imageview_author_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="16dp"
-            app:border_color="@android:color/transparent"
-            app:border_width="0dp"
-            app:shadow="false" />
+            android:layout_margin="16dp"/>
 
         <TextView
             android:id="@+id/recyclerview_item_timeline_textview_author_name"
