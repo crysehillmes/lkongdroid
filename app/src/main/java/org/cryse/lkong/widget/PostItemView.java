@@ -4,9 +4,10 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -19,7 +20,10 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -28,7 +32,10 @@ import com.squareup.picasso.Target;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.gesture.Pointer;
 import org.cryse.utils.ColorUtils;
+
+import java.util.ArrayList;
 
 public class PostItemView extends FrameLayout implements Target {
     private CharSequence mMessageText = null;
@@ -83,13 +90,14 @@ public class PostItemView extends FrameLayout implements Target {
         float textSize =  getResources().getDimension(R.dimen.text_size_subhead);
         mTextPaint.setTextSize(textSize);
         mTextPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_primary));
-        mTextPaint.linkColor = Color.RED;
+        mTextPaint.linkColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         mHandler = new Handler();
 
         mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mOrdinalPaint.setTextSize(getResources().getDimension(R.dimen.text_size_caption));
         mOrdinalPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary));
         mOrdinalFontMetrics = mOrdinalPaint.getFontMetrics();
+        initTouchHandler();
     }
 
     @Override
@@ -270,5 +278,206 @@ public class PostItemView extends FrameLayout implements Target {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return super.onInterceptTouchEvent(ev);
+    }
+
+
+
+
+    // The amount of time (in milliseconds) a gesture has to be performed.
+    private static final int TIME_LIMIT = 300;
+
+    // The amount of distance (in density-independent pixels) a Pointer has to move to trigger a gesture.
+    private static final int MOVEMENT_LIMIT_DP = 12;
+
+    // The gesture id for an invalid gesture.
+    public static final int INVALID_GESTURE = -1;
+
+    // Gesture ids for one-finger gestures.
+    public static final int TAP = 0;
+    public static final int SWIPE_UP = 1;
+    public static final int SWIPE_DOWN = 2;
+    public static final int SWIPE_LEFT = 3;
+    public static final int SWIPE_RIGHT = 4;
+
+    // Gesture ids for two-finger gestures.
+    public static final int TWO_FINGER_TAP = 5;
+    public static final int TWO_FINGER_SWIPE_UP = 6;
+    public static final int TWO_FINGER_SWIPE_DOWN = 7;
+    public static final int TWO_FINGER_SWIPE_LEFT = 8;
+    public static final int TWO_FINGER_SWIPE_RIGHT = 9;
+    public static final int TWO_FINGER_PINCH_IN = 10;
+    public static final int TWO_FINGER_PINCH_OUT = 11;
+
+    // The amount of distance (in pixels) a Pointer has to move, to trigger a gesture.
+    private float mMovementLimitPx;
+
+    // A list of Pointers involved in a gesture.
+    private ArrayList<Pointer> mPointers;
+
+    public void initTouchHandler() {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        float mDisplayDensity = displayMetrics.density;
+
+        mMovementLimitPx = MOVEMENT_LIMIT_DP * mDisplayDensity;
+    }
+
+    private int getGestureId() {
+        int mTotalPointerCount = mPointers.size();
+
+        if (mTotalPointerCount == 1) {
+            Pointer mPointer = mPointers.get(0);
+
+            if (mPointer.existedWithinTimeLimit(TIME_LIMIT)) {
+                if (mPointer.tapped() && mPointer.existedWithinTimeLimit(100)) {
+                    return TAP;
+                } else if (mPointer.swipedUp()) {
+                    return SWIPE_UP;
+                } else if (mPointer.swipedDown()) {
+                    return SWIPE_DOWN;
+                } else if (mPointer.swipedLeft()) {
+                    return SWIPE_LEFT;
+                } else if (mPointer.swipedRight()) {
+                    return SWIPE_RIGHT;
+                } else {
+                    return INVALID_GESTURE;
+                }
+            } else {
+                return INVALID_GESTURE;
+            }
+        } else if (mTotalPointerCount == 2) {
+            Pointer mPointerI = mPointers.get(0);
+            Pointer mPointerII = mPointers.get(1);
+
+            if (mPointerI.existedWithinTimeLimit(TIME_LIMIT) &&
+                    mPointerII.existedWithinTimeLimit(TIME_LIMIT)) {
+
+                if (mPointerI.tapped() &&
+                        mPointerII.tapped()) {
+
+                    return TWO_FINGER_TAP;
+                } else if (mPointerI.swipedUp() &&
+                        mPointerII.swipedUp()) {
+
+                    return TWO_FINGER_SWIPE_UP;
+                } else if (mPointerI.swipedDown() &&
+                        mPointerII.swipedDown()) {
+
+                    return TWO_FINGER_SWIPE_DOWN;
+                } else if (mPointerI.swipedLeft() &&
+                        mPointerII.swipedLeft()) {
+
+                    return TWO_FINGER_SWIPE_LEFT;
+                } else if (mPointerI.swipedRight() &&
+                        mPointerII.swipedRight()) {
+
+                    return TWO_FINGER_SWIPE_RIGHT;
+                } else if (mPointerI.pinchedIn(mPointerII, mMovementLimitPx)) {
+                    return TWO_FINGER_PINCH_IN;
+                } else if (mPointerI.pinchedOut(mPointerII, mMovementLimitPx)) {
+                    return TWO_FINGER_PINCH_OUT;
+                } else {
+                    return INVALID_GESTURE;
+                }
+            } else {
+                return INVALID_GESTURE;
+            }
+        } else {
+            return INVALID_GESTURE;
+        }
+    }
+
+    public boolean onGesture(int gestureId, MotionEvent motionEvent) {
+        if(gestureId == TAP) {
+            int viewWidth = getWidth();
+            int viewHeight = getHeight();
+            int x = (int)motionEvent.getX();
+            int y = (int)motionEvent.getY();
+            if((x > (px_margin_16 ) && x < (viewWidth - px_margin_16)) && (y > (px_margin_72) && y < (px_margin_72 + (mMessageLayout == null ? 0 : mMessageLayout.getHeight())))) {
+                return onTextTouched(x, y);
+            }
+        }
+        return false;
+    }
+
+    public boolean onTextTouched(int x, int y)
+    {
+        //If the text contains an url, we check its location and if it is touched: fire the click event.
+        Spanned spanned = (Spanned)mMessageText;
+        URLSpan[] urls = spanned.getSpans(0,spanned.length(),URLSpan.class);
+        for(int i=0;i<urls.length;i++)
+        {
+            //get the start and end points of url span
+            int start=spanned.getSpanStart(urls[i]);
+            int end=spanned.getSpanEnd(urls[i]);
+
+            Path dest = new Path();
+            mMessageLayout.getSelectionPath(start, end, dest);
+
+            RectF rectF = new RectF();
+            dest.computeBounds(rectF, true);
+
+            //Add the left and top margins of your staticLayout here.
+            rectF.offset(px_margin_16 , px_margin_72);
+
+            if(rectF.contains(x, y))
+            {
+                urls[i].onClick(this);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        int mActionIndex = motionEvent.getActionIndex();
+
+        int mPointerId = motionEvent.getPointerId(mActionIndex);
+        long mEventTime = motionEvent.getEventTime();
+        float mX = motionEvent.getX(mActionIndex);
+        float mY = motionEvent.getY(mActionIndex);
+
+        switch (motionEvent.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                mPointers = new ArrayList<Pointer>();
+
+                mPointers.add(new Pointer(mPointerId,
+                        mEventTime,
+                        mX, mY,
+                        mMovementLimitPx));
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                mPointers.add(new Pointer(mPointerId,
+                        mEventTime,
+                        mX, mY,
+                        mMovementLimitPx));
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                for (int pIndex = mPointers.size() - 1 ; pIndex >= 0; pIndex--) {
+                    if (mPointers.get(pIndex).getId() == mPointerId) {
+                        mPointers.get(pIndex).setUpTime(mEventTime);
+                        mPointers.get(pIndex).setUpX(mX);
+                        mPointers.get(pIndex).setUpY(mY);
+                        break;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                for (int pIndex = mPointers.size() - 1 ; pIndex >= 0; pIndex--) {
+                    if (mPointers.get(pIndex).getId() == mPointerId) {
+                        mPointers.get(pIndex).setUpTime(mEventTime);
+                        mPointers.get(pIndex).setUpX(mX);
+                        mPointers.get(pIndex).setUpY(mY);
+                        break;
+                    }
+                }
+
+                return onGesture(getGestureId(), motionEvent);
+        }
+        return motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN || motionEvent.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN;
     }
 }
