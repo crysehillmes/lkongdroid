@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -57,7 +56,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                     spannableTitle.append(digestIndicator);
                     spannableTitle.setSpan(new ForegroundColorSpan(mColorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
-                spannableTitle.append(android.text.Html.fromHtml(threadModel.getSubject()));
+                spannableTitle.append(threadModel.getSubject());
                 viewHolder.mThreadTitleTextView.setText(spannableTitle);
                 viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
                 viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
