@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -39,6 +40,9 @@ public class PostItemView extends FrameLayout implements Target {
     private Drawable mAvatarDrawable = null;
     private TextPaint mTextPaint = null;
     private Handler mHandler;
+    private CharSequence mOrdinalText = null;
+    private TextPaint mOrdinalPaint = null;
+    Paint.FontMetrics mOrdinalFontMetrics = null;
     private int px_margin_16 = 0;
     private int px_margin_72 = 0;
     private int px_width_40 = 0;
@@ -81,6 +85,11 @@ public class PostItemView extends FrameLayout implements Target {
         mTextPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_primary));
         mTextPaint.linkColor = Color.RED;
         mHandler = new Handler();
+
+        mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mOrdinalPaint.setTextSize(getResources().getDimension(R.dimen.text_size_caption));
+        mOrdinalPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary));
+        mOrdinalFontMetrics = mOrdinalPaint.getFontMetrics();
     }
 
     @Override
@@ -130,6 +139,7 @@ public class PostItemView extends FrameLayout implements Target {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        int canvasWidth = canvas.getWidth();
         if(mAvatarDrawable != null) {
             canvas.save();
             canvas.translate(px_margin_16, px_margin_16);
@@ -148,6 +158,11 @@ public class PostItemView extends FrameLayout implements Target {
             canvas.translate(px_margin_16, px_margin_72);
             mMessageLayout.draw(canvas);
             canvas.restore();
+        }
+        if(!TextUtils.isEmpty(mOrdinalText)) {
+            Rect bounds = new Rect() ;
+            mOrdinalPaint.getTextBounds(mOrdinalText.toString(), 0, mOrdinalText.length(), bounds);
+            canvas.drawText(mOrdinalText, 0, mOrdinalText.length(), canvasWidth - px_margin_16 - bounds.width(), px_margin_16 + (-mOrdinalFontMetrics.top), mOrdinalPaint );
         }
     }
 
@@ -226,6 +241,10 @@ public class PostItemView extends FrameLayout implements Target {
     public void setTextSize(float textSize) {
         mTextPaint.setTextSize(textSize);
         generateMessageTextLayout();
+    }
+
+    public void setOrdinal(CharSequence ordinal) {
+        this.mOrdinalText = ordinal;
     }
 
     private DynamicLayout makeNewLayout(int wantWidth) {

@@ -96,6 +96,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 }
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
+                viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
                 /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
                 *//*try {
