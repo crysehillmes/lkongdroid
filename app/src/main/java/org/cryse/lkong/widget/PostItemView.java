@@ -80,7 +80,6 @@ public class PostItemView extends FrameLayout implements Target {
 
     private void init() {
         setWillNotDraw(false);
-        setLayerType(LAYER_TYPE_HARDWARE, new Paint(Paint.ANTI_ALIAS_FLAG));
         px_margin_16 = UIUtils.dp2px(getContext(), 16f);
         px_margin_72 = UIUtils.dp2px(getContext(), 72f);
         px_width_40 = UIUtils.dp2px(getContext(), 40f);
@@ -103,16 +102,16 @@ public class PostItemView extends FrameLayout implements Target {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // Log.d("ViewSize", String.format("getMeasuredWidth %d, getMeasuredHeight %d", getMeasuredWidth(), getMeasuredHeight()));
-        //Get the width measurement
+        int widthSize = MeasureUtils.getMeasurement(widthMeasureSpec, 0);
+        int heightSize = MeasureUtils.getMeasurement(heightMeasureSpec, getDesiredHeight());
 
-        int widthSize = getMeasuredWidth();
+        int childHeight = px_height_48 - px_margin_6 * 2;
+        int childLeft = this.getPaddingLeft();
+        int childRight = this.getMeasuredWidth() - this.getPaddingRight();
+        int childWidth = childRight - childLeft;
 
-        //Get the height measurement
-        int heightSize = getDesiredHeight() + getMeasuredHeight() + (getMeasuredHeight() != 0 ? px_margin_6 * 2 : 0);
-
-        //MUST call this to store the measurements
+        measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
+                MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
         setMeasuredDimension(widthSize, heightSize);
         if((mMessageLayout != null && mMessageLayout.getWidth() - px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
             generateMessageTextLayout();
@@ -145,6 +144,7 @@ public class PostItemView extends FrameLayout implements Target {
         }
     }
 
+    private Rect mOrdinalBounds = new Rect();
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -169,14 +169,13 @@ public class PostItemView extends FrameLayout implements Target {
             canvas.restore();
         }
         if(!TextUtils.isEmpty(mOrdinalText)) {
-            Rect bounds = new Rect() ;
-            mOrdinalPaint.getTextBounds(mOrdinalText.toString(), 0, mOrdinalText.length(), bounds);
-            canvas.drawText(mOrdinalText, 0, mOrdinalText.length(), canvasWidth - px_margin_16 - bounds.width(), px_margin_16 + (-mOrdinalFontMetrics.top), mOrdinalPaint );
+            mOrdinalPaint.getTextBounds(mOrdinalText.toString(), 0, mOrdinalText.length(), mOrdinalBounds);
+            canvas.drawText(mOrdinalText, 0, mOrdinalText.length(), canvasWidth - px_margin_16 - mOrdinalBounds.width(), px_margin_16 + (-mOrdinalFontMetrics.top), mOrdinalPaint );
         }
     }
 
     private int getDesiredHeight() {
-        int height = px_margin_72;
+        int height = px_margin_72 + px_height_48;
         if(mMessageLayout != null) {
             height = height + mMessageLayout.getHeight();
         }
