@@ -80,16 +80,6 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                if(postModel.getSpannedMessage() == null) {
-                    SimpleImageGetter imageGetter = new SimpleImageGetter(getContext(), mImageDownloadPolicy)
-                            .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                            .setPlaceHolder(R.drawable.image_placeholder)
-                            .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
-                            .setError(R.drawable.image_placeholder);
-                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                    postModel.setSpannedMessage(spannedText);
-                }
-
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
                 if(postModel.getAuthorId() == mThreadAuthorId) {
