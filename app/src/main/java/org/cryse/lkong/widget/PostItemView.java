@@ -104,6 +104,9 @@ public class PostItemView extends FrameLayout implements Target {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSize = MeasureUtils.getMeasurement(widthMeasureSpec, 0);
         int heightSize = MeasureUtils.getMeasurement(heightMeasureSpec, getDesiredHeight());
+        if((mMessageLayout != null && mMessageLayout.getWidth() + px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
+            generateMessageTextLayout(widthSize);
+        }
 
         int childHeight = px_height_48 - px_margin_6 * 2;
         int childLeft = this.getPaddingLeft();
@@ -112,10 +115,11 @@ public class PostItemView extends FrameLayout implements Target {
 
         measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
-        setMeasuredDimension(widthSize, heightSize);
-        if((mMessageLayout != null && mMessageLayout.getWidth() + px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
-            generateMessageTextLayout();
+        int height = heightSize;
+        if(mMessageLayout != null) {
+            height = height + mMessageLayout.getHeight();
         }
+        setMeasuredDimension(widthSize, height);
         if((mAuthorInfoLayout != null && !TextUtils.equals(mAuthorInfoLayout.getText(), mAuthorInfo)) || mAuthorInfoLayout == null) {
             generateAuthorTextLayout();
         }
@@ -176,9 +180,6 @@ public class PostItemView extends FrameLayout implements Target {
 
     private int getDesiredHeight() {
         int height = px_margin_72 + px_height_48;
-        if(mMessageLayout != null) {
-            height = height + mMessageLayout.getHeight();
-        }
         return height;
     }
 
@@ -188,7 +189,10 @@ public class PostItemView extends FrameLayout implements Target {
         }
 
         mMessageText = messageText;
-        generateMessageTextLayout();
+        if(mMessageLayout != null) {
+            generateMessageTextLayout(getMeasuredWidth());
+        }
+        // generateMessageTextLayout();
     }
 
     public void setAuthorInfo(CharSequence authorName, CharSequence dateline) {
@@ -207,10 +211,9 @@ public class PostItemView extends FrameLayout implements Target {
         generateAuthorTextLayout();
     }
 
-    private void generateMessageTextLayout() {
-        int width = getMeasuredWidth();
-        if(width > 0) {
-            mMessageLayout = makeNewLayout(width - px_margin_16 * 2);
+    private void generateMessageTextLayout(int wantWidth) {
+        if(wantWidth > 0) {
+            mMessageLayout = makeNewLayout(wantWidth - px_margin_16 * 2);
             requestLayout();
             invalidate();
         } else {
@@ -238,17 +241,17 @@ public class PostItemView extends FrameLayout implements Target {
 
     public void setTextColor(int textColor) {
         mTextPaint.setColor(textColor);
-        generateMessageTextLayout();
+        generateMessageTextLayout(getMeasuredWidth());
     }
 
     public void setLinkColor(int linkColor) {
         mTextPaint.linkColor = linkColor;
-        generateMessageTextLayout();
+        generateMessageTextLayout(getMeasuredWidth());
     }
 
     public void setTextSize(float textSize) {
         mTextPaint.setTextSize(textSize);
-        generateMessageTextLayout();
+        generateMessageTextLayout(getMeasuredWidth());
     }
 
     public void setOrdinal(CharSequence ordinal) {
