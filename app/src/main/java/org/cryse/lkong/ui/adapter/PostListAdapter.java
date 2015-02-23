@@ -20,6 +20,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.DebugUtils;
+import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
@@ -36,16 +37,18 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
+    private static final String LOG_TAG = PostListAdapter.class.getName();
+    public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
     private final String mTodayPrefix;
     private OnItemButtonClickListener mOnItemButtonClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy, int maxImageWidth) {
+    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
-        mMaxImageWidth = maxImageWidth;
+        mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
     }
 
@@ -75,12 +78,12 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 PostModel postModel = (PostModel)item;
 
                 if(postModel.getSpannedMessage() == null) {
-                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), mImageDownloadPolicy)
+                    SimpleImageGetter imageGetter = new SimpleImageGetter(getContext(), mImageDownloadPolicy)
                             .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                             .setPlaceHolder(R.drawable.image_placeholder)
-                            .setMaxImageWidth(mMaxImageWidth)
+                            .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
                             .setError(R.drawable.image_placeholder);
-                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
+                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
                     postModel.setSpannedMessage(spannedText);
                 }
 
@@ -128,6 +131,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+                        .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
                         .into(viewHolder.mPostItemView);

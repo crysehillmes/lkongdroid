@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -129,13 +130,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void initRecyclerView() {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int width = displaymetrics.widthPixels;
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()), (width * 4 / 5));
+        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -173,6 +171,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
+                }
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(PostListActivity.this).resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                } else {
+                    Picasso.with(PostListActivity.this).pauseTag(PostListAdapter.POST_PICASSO_TAG);
                 }
             }
 

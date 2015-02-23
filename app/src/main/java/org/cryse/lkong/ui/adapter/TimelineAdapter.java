@@ -20,10 +20,10 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.ConnectionUtils;
+import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -102,11 +102,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mainContent = timelineModel.getMessage();
                 }
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
+                SimpleImageGetter imageGetter = new SimpleImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, urlImageGetter, new HtmlTagHandler());
+                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
                 SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
                 mainSpannable.append(mainPrefixSpannable).append(spannedText);
                 viewHolder.mMessageTextView.setText(mainSpannable);
