@@ -1,7 +1,10 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -20,6 +23,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = MentionsFragment.class.getName();
+    private static final String LOAD_IMAGE_TASK_TAG = "mentions_load_image_tag";
 
     @Inject
     TimelinePresenter mPresenter;
@@ -53,7 +57,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList);
+        return new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
     }
 
     @Override
@@ -79,5 +83,26 @@ public class MentionsFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+    }
+
+    @Override
+    protected void onCollectionViewInitComplete() {
+        super.onCollectionViewInitComplete();
+        mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(getActivity()).resumeTag(LOAD_IMAGE_TASK_TAG);
+                } else {
+                    Picasso.with(getActivity()).pauseTag(LOAD_IMAGE_TASK_TAG);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 }

@@ -1,31 +1,20 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CircleTransform;
-import org.cryse.lkong.utils.DebugUtils;
-import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
-import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
@@ -45,6 +34,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
+    private final CircleTransform mCircleTransform = new CircleTransform();
     private final int mAvatarSize;
 
     public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
@@ -52,7 +42,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
-        mAvatarSize = UIUtils.dp2px(context, 40f);
+        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -128,7 +118,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
                         .resize(mAvatarSize, mAvatarSize)
-                        .transform(new CircleTransform())
+                        .transform(mCircleTransform)
                         .into(viewHolder.mPostItemView);
             }
         }

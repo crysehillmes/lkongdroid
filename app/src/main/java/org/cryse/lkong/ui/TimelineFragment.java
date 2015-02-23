@@ -2,10 +2,13 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -25,6 +28,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
+    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
 
     @Inject
     TimelinePresenter mPresenter;
@@ -101,7 +105,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList);
+        return new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
     }
 
     @Override
@@ -146,5 +150,27 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
+
+
+    @Override
+    protected void onCollectionViewInitComplete() {
+        super.onCollectionViewInitComplete();
+        mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(getActivity()).resumeTag(LOAD_IMAGE_TASK_TAG);
+                } else {
+                    Picasso.with(getActivity()).pauseTag(LOAD_IMAGE_TASK_TAG);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 }

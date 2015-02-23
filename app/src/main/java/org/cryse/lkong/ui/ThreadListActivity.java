@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
@@ -143,6 +145,18 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             }
         });
         setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
+
+        mThreadCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(ThreadListActivity.this).resumeTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                } else {
+                    Picasso.with(ThreadListActivity.this).pauseTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                }
+            }
+        });
     }
 
     private void setUpHeaderView() {

@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
@@ -35,10 +36,16 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
+    private static final String LOG_TAG = TimelineAdapter.class.getName();
     private final String mTodayPrefix;
-    public TimelineAdapter(Context context, List<TimelineModel> items) {
+    private final String mImageTaskTag;
+    private final int mAvatarSize;
+    private CircleTransform mCircleTransform = new CircleTransform();
+    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
+        mImageTaskTag = imgTaskTag;
+        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     @Override
@@ -115,8 +122,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
+                        .tag(mImageTaskTag)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
+                        .resize(mAvatarSize, mAvatarSize)
+                        .transform(mCircleTransform)
                         .into(viewHolder.mAuthorAvatarImageView);
             }
         }

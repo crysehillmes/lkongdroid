@@ -150,6 +150,10 @@ public class UIUtils {
         return (int)(sp * scale + 0.5f);
     }
 
+    public static int getDefaultAvatarSize(Context context) {
+        return dp2px(context, 40f);
+    }
+
     public static class InsetsValue {
         private int left;
         private int top;
