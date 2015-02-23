@@ -80,6 +80,7 @@ public class PostItemView extends FrameLayout implements Target {
 
     private void init() {
         setWillNotDraw(false);
+        setLayerType(LAYER_TYPE_HARDWARE, new Paint(Paint.ANTI_ALIAS_FLAG));
         px_margin_16 = UIUtils.dp2px(getContext(), 16f);
         px_margin_72 = UIUtils.dp2px(getContext(), 72f);
         px_width_40 = UIUtils.dp2px(getContext(), 40f);

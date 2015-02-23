@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.DebugUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
@@ -44,12 +45,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
+    private final int mAvatarSize;
 
     public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
+        mAvatarSize = UIUtils.dp2px(context, 40f);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -134,6 +137,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                         .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
+                        .resize(mAvatarSize, mAvatarSize)
+                        .transform(new CircleTransform())
                         .into(viewHolder.mPostItemView);
             }
         }
