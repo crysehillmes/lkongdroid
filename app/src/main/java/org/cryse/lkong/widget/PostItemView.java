@@ -113,7 +113,7 @@ public class PostItemView extends FrameLayout implements Target {
         measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
         setMeasuredDimension(widthSize, heightSize);
-        if((mMessageLayout != null && mMessageLayout.getWidth() - px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
+        if((mMessageLayout != null && mMessageLayout.getWidth() + px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
             generateMessageTextLayout();
         }
         if((mAuthorInfoLayout != null && !TextUtils.equals(mAuthorInfoLayout.getText(), mAuthorInfo)) || mAuthorInfoLayout == null) {
