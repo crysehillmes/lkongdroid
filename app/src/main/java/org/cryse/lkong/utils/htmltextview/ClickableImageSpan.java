@@ -17,6 +17,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
     private Drawable mDrawable;
     private WeakReference<Context> mContext;
     private String mSource;
+    private String mSourceMiddle;
     private int mPlaceHolderRes;
     private int mErrorRes;
     private int mMaxWidth;
@@ -56,12 +57,13 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
         mSource = source;
+        mSourceMiddle = source.replace("/large/", "/bmiddle/");
         mPlaceHolderRes = placeholderRes;
         mErrorRes = errorRes;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
         mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight);
-        Picasso.with(context).load(source).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into((AsyncTargetDrawable) mDrawable);
+        Picasso.with(context).load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into((AsyncTargetDrawable) mDrawable);
     }
 
     @Override
