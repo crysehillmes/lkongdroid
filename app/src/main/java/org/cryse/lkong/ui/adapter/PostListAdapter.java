@@ -80,6 +80,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                             postModel.getAuthorName().length() + threadAuthorIndicator.length(),
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
+                viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
+                viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));

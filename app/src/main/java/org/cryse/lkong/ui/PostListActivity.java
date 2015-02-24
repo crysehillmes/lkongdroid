@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -743,7 +744,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
 
     public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
-        int mMaxImageWidth = UIUtils.dp2px(this, 128f);
+        int mMaxImageWidth = 256;
         SimpleImageGetter imageGetter = new SimpleImageGetter(PostListActivity.this, Integer.valueOf(mImageDownloadPolicy.get()))
                 .setEmoticonSize(UIUtils.getSpDimensionPixelSize(PostListActivity.this, R.dimen.text_size_body1))
                 .setPlaceHolder(R.drawable.image_placeholder)
@@ -752,7 +753,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(spannedText);
+                postModel.setSpannedMessage(new SpannableString(spannedText));
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
