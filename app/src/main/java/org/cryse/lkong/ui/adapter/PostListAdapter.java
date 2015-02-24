@@ -1,29 +1,21 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.DebugUtils;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
-import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
+import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -35,17 +27,22 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
+    private static final String LOG_TAG = PostListAdapter.class.getName();
+    public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
     private final String mTodayPrefix;
     private OnItemButtonClickListener mOnItemButtonClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
+    private final CircleTransform mCircleTransform = new CircleTransform();
+    private final int mAvatarSize;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy, int maxImageWidth) {
+    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
         mTodayPrefix = getString(R.string.datetime_today);
-        mMaxImageWidth = maxImageWidth;
+        mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
+        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -73,26 +70,28 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                if(postModel.getSpannedMessage() != null) {
-                    viewHolder.mMessageTextView.setText(postModel.getSpannedMessage());
-                } else {
-                    UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, mImageDownloadPolicy)
-                            .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                            .setPlaceHolder(R.drawable.image_placeholder)
-                            .setMaxImageWidth(mMaxImageWidth)
-                            .setError(R.drawable.image_placeholder);
-                    Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), urlImageGetter, new HtmlTagHandler());
-                    postModel.setSpannedMessage(spannedText);
-                    viewHolder.mMessageTextView.setText(spannedText);
+                SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
+                autherNameSpannable.append(postModel.getAuthorName());
+                if(postModel.getAuthorId() == mThreadAuthorId) {
+                    String threadAuthorIndicator = getString(R.string.indicator_thread_author);
+                    autherNameSpannable.append(threadAuthorIndicator);
+                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
+                            postModel.getAuthorName().length(),
+                            postModel.getAuthorName().length() + threadAuthorIndicator.length(),
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
+                viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
+                viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
+                viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
+                viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
+                viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+                /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-                viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-                /*try {
+                *//*try {
                     DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }*//*
 
                 SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
                 autherNameSpannable.append(postModel.getAuthorName());
@@ -113,13 +112,16 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
                 } else {
                     viewHolder.mRateButton.setText(R.string.button_rate);
-                }
+                }*/
 
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+                        .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
-                        .into(viewHolder.mAuthorAvatarImageView);
+                        .resize(mAvatarSize, mAvatarSize)
+                        .transform(mCircleTransform)
+                        .into(viewHolder.mPostItemView);
             }
         }
     }
@@ -133,16 +135,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_post_textview_author_name)
-        TextView mAuthorTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_dateline)
-        TextView mDatelineTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_ordinal)
-        TextView mOrdinalTextView;
-        @InjectView(R.id.recyclerview_item_post_textview_message)
-        TextView mMessageTextView;
-        @InjectView(R.id.recyclerview_item_post_imageview_author_avatar)
-        ImageView mAuthorAvatarImageView;
+        @InjectView(R.id.recyclerview_item_post_view_item)
+        PostItemView mPostItemView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         Button mRateButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)

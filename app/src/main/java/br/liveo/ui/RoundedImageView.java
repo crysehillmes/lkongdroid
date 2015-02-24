@@ -17,35 +17,40 @@
 package br.liveo.ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Path;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class RoundedImageView extends ImageView {
-
+    Path mCirclePath = new Path();
+    int mPathWidth = 0;
     public RoundedImageView(Context context) {
         super(context);
         // TODO Auto-generated constructor stub
+        init();
     }
 
     public RoundedImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public RoundedImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init();
+    }
+
+    private void init() {
+        super.setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
 
         Drawable drawable = getDrawable();
 
@@ -57,42 +62,21 @@ public class RoundedImageView extends ImageView {
             return;
         }
 
-        Bitmap b = ((BitmapDrawable) drawable).getBitmap();
-        Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
-
         int w = getWidth();
-
-        Bitmap roundBitmap = getCroppedBitmap(bitmap, w);
-        canvas.drawBitmap(roundBitmap, 0, 0, null);
+        drawable.setBounds(0, 0, w, w);
+        if(mPathWidth != w) {
+            mCirclePath.reset();
+            mCirclePath.addCircle(w / 2f, w / 2f, w / 2f, Path.Direction.CW);
+            mPathWidth = w;
+        }
+        canvas.clipPath(mCirclePath, Region.Op.REPLACE);
+        drawable.draw(canvas);
+        canvas.save();
+        canvas.restore();
     }
 
-    public static Bitmap getCroppedBitmap(Bitmap bmp, int radius) {
-
-        Bitmap sbmp;
-
-        if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
-            sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
-        }else {
-            sbmp = bmp;
-        }
-
-        Bitmap output = Bitmap.createBitmap(sbmp.getWidth(),
-                sbmp.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
-
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-        paint.setDither(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(Color.parseColor("#BAB399"));
-        canvas.drawCircle(sbmp.getWidth() / 2 + 0.7f, sbmp.getHeight() / 2 + 0.7f,
-                sbmp.getWidth() / 2 + 0.1f, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(sbmp, rect, rect, paint);
-
-        return output;
+    @Override
+    public void setLayerType(int layerType, Paint paint) {
+        super.setLayerType(LAYER_TYPE_SOFTWARE, paint);
     }
 }

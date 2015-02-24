@@ -80,7 +80,9 @@ public class ModelConverter {
             threadModel.setFid(item.getFid());
             threadModel.setId(item.getId());
             threadModel.setReplyCount(item.getReplynum());
-            threadModel.setSubject(item.getSubject());
+            Document document = Jsoup.parseBodyFragment(item.getSubject());
+            HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+            threadModel.setSubject(htmlToPlainText.getPlainText(document));
             threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
             if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
                 nextSortKeyItem = threadModel;

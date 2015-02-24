@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -42,8 +44,13 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.QuickReturnUtils;
+import org.cryse.lkong.utils.SimpleImageGetter;
+import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
+import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
@@ -58,6 +65,12 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PostListActivity extends AbstractThemeableActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
@@ -129,13 +142,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void initRecyclerView() {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int width = displaymetrics.widthPixels;
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()), (width * 4 / 5));
+        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -173,6 +183,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
+                }
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(PostListActivity.this).resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                } else {
+                    Picasso.with(PostListActivity.this).pauseTag(PostListAdapter.POST_PICASSO_TAG);
                 }
             }
 
@@ -478,6 +493,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
+        setLoading(true);
+        createSpan(page, posts, refreshPosition, showMode);
+    }
+
+    private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
+        setLoading(false);
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
@@ -499,7 +520,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 scrollToPosition(0);
                 break;
         }
-
 
 
         if(refreshPosition) {
@@ -720,5 +740,37 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     })
                     .build();
         rateListDialog.show();
+    }
+
+
+    public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
+        int mMaxImageWidth = 256;
+        SimpleImageGetter imageGetter = new SimpleImageGetter(PostListActivity.this, Integer.valueOf(mImageDownloadPolicy.get()))
+                .setEmoticonSize(UIUtils.getSpDimensionPixelSize(PostListActivity.this, R.dimen.text_size_body1))
+                .setPlaceHolder(R.drawable.image_placeholder)
+                .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
+                .setError(R.drawable.image_placeholder);
+        Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
+            for (PostModel postModel : posts) {
+                Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
+                postModel.setSpannedMessage(new SpannableString(spannedText));
+            }
+            subscriber.onNext(posts);
+            subscriber.onCompleted();
+        });
+        createSpanObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            showPostListInternal(page, posts, refreshPosition, showMode);
+                        },
+                        error -> {
+                            showToast(R.string.notification_content_network_error, ToastSupport.TOAST_ALERT);
+                            Timber.e(error, "PostListActivity::createSpan() onError().", LOG_TAG);
+                        },
+                        () -> {
+                            Timber.d("PostListActivity::createSpan() onComplete().", LOG_TAG);
+                        }
+                );
     }
 }

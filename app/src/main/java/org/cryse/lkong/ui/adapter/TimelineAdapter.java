@@ -19,11 +19,12 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
+import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.lkong.utils.htmltextview.UrlImageGetter;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -35,10 +36,16 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
+    private static final String LOG_TAG = TimelineAdapter.class.getName();
     private final String mTodayPrefix;
-    public TimelineAdapter(Context context, List<TimelineModel> items) {
+    private final String mImageTaskTag;
+    private final int mAvatarSize;
+    private CircleTransform mCircleTransform = new CircleTransform();
+    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
+        mImageTaskTag = imgTaskTag;
+        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     @Override
@@ -102,11 +109,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mainContent = timelineModel.getMessage();
                 }
 
-                UrlImageGetter urlImageGetter = new UrlImageGetter(getContext(), viewHolder.mMessageTextView, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
+                SimpleImageGetter imageGetter = new SimpleImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                         .setEmoticonSize(UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
                         .setPlaceHolder(R.drawable.image_placeholder)
                         .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, urlImageGetter, new HtmlTagHandler());
+                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
                 SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
                 mainSpannable.append(mainPrefixSpannable).append(spannedText);
                 viewHolder.mMessageTextView.setText(mainSpannable);
@@ -115,8 +122,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
+                        .tag(mImageTaskTag)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
+                        .resize(mAvatarSize, mAvatarSize)
+                        .transform(mCircleTransform)
                         .into(viewHolder.mAuthorAvatarImageView);
             }
         }

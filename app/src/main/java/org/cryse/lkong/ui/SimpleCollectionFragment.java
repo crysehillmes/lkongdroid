@@ -92,6 +92,7 @@ public abstract class SimpleCollectionFragment<
             }
         });
         mCollectionView.setOnItemClickListener(this::onItemClick);
+        onCollectionViewInitComplete();
     }
 
     @Override
@@ -208,6 +209,10 @@ public abstract class SimpleCollectionFragment<
     protected abstract void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs);
 
     protected abstract void onItemClick(View view, int position, long id);
+
+    protected void onCollectionViewInitComplete() {
+
+    }
 
     protected void onEvent(AbstractEvent event) {
 
