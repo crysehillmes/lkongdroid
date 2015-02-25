@@ -1,8 +1,11 @@
 package org.cryse.lkong.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +15,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,11 +53,13 @@ import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
+import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
@@ -229,6 +235,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
                 }
+            }
+        });
+        mCollectionAdapter.setOnSpanClickListener(new PostItemView.OnSpanClickListener() {
+            @Override
+            public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl) {
+                Intent intent = new Intent(PostListActivity.this, PhotoViewPagerActivity.class);
+                intent.putExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST, urls);
+                intent.putExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL, initUrl);
+                startActivity(intent);
+                return true;
+            }
+
+            @Override
+            public boolean onUrlSpanClick(long postId, URLSpan span, String target) {
+                Uri uri = Uri.parse(target);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
+                startActivity(intent);
+                return true;
             }
         });
         mPostCollectionView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {

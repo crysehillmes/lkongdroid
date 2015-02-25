@@ -21,6 +21,7 @@ import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -31,6 +32,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
     private final String mTodayPrefix;
     private OnItemButtonClickListener mOnItemButtonClickListener;
+    private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
     private int mImageDownloadPolicy;
@@ -52,13 +54,16 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
         this.mOnItemButtonClickListener = onItemButtonClickListener;
     }
+    public void setOnSpanClickListener(PostItemView.OnSpanClickListener onSpanClickListener) {
+        this.mOnSpanClickListener = onSpanClickListener;
+    }
 
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_post, parent, false);
-        return new ViewHolder(v, mOnItemButtonClickListener);
+        return new ViewHolder(v, mOnItemButtonClickListener, mOnSpanClickListener);
     }
 
     @Override
@@ -80,6 +85,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                             postModel.getAuthorName().length() + threadAuthorIndicator.length(),
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
+                viewHolder.mPostItemView.setPostId(postModel.getPid());
                 viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
                 viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
@@ -143,7 +149,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         Button mReplyButton;
 
         OnItemButtonClickListener mOnItemReplyClickListener;
-        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener) {
+        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
             super(v);
             ButterKnife.inject(this, v);
             mOnItemReplyClickListener = onItemReplyClickListener;
@@ -157,6 +163,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     mOnItemReplyClickListener.onRateClick(view, getPosition());
                 }
             });
+            if(mOnSpanClickListener != null)
+                mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
         }
     }
 

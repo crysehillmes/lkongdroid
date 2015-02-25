@@ -21,7 +21,6 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.CharacterStyle;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
@@ -32,7 +31,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -46,8 +44,10 @@ import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class PostItemView extends FrameLayout implements Target, ImageSpanContainer {
+    private long mPostId;
     private CharSequence mMessageText = null;
     private CharSequence mAuthorName = null;
     private CharSequence mDateline = null;
@@ -70,6 +70,8 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
     private int px_margin_6 = 0;
 
     private ArrayList<Object> mCachedClickableSpans;
+    private ArrayList<String> mImageUrls;
+    private OnSpanClickListener mOnSpanClickListener;
 
     public PostItemView(Context context) {
         super(context);
@@ -101,6 +103,7 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         px_margin_8 = UIUtils.dp2px(getContext(), 8f);
         px_margin_6 = UIUtils.dp2px(getContext(), 6f);
         mCachedClickableSpans = new ArrayList<>();
+        mImageUrls = new ArrayList<>();
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         float textSize =  getResources().getDimension(R.dimen.text_size_subhead);
         mTextPaint.setTextSize(textSize);
@@ -194,8 +197,16 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
     }
 
     private int getDesiredHeight() {
-        int height = px_margin_72 + px_height_48;
-        return height;
+        return px_margin_72 + px_height_48;
+    }
+
+
+    public long getPostId() {
+        return mPostId;
+    }
+
+    public void setPostId(long postId) {
+        this.mPostId = postId;
     }
 
     public void setMessageText(CharSequence messageText) {
@@ -210,6 +221,10 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         mCachedClickableSpans.clear();
         mCachedClickableSpans.addAll(Arrays.asList(urlSpans));
         mCachedClickableSpans.addAll(Arrays.asList(clickableImageSpans));
+        mImageUrls.clear();
+        for(ClickableImageSpan span : clickableImageSpans) {
+            mImageUrls.add(span.getSource());
+        }
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());
         }
@@ -227,7 +242,7 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
             int spanStart = spannable.getSpanStart(imageSpan);
             int spanEnd = spannable.getSpanEnd(imageSpan);
             int spanFlags = spannable.getSpanFlags(imageSpan);
-            if (!imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
+            if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
                 Log.d("replaceImageSpan", imageSpan.getSource());
                 spannable.removeSpan(imageSpan);
                 spannable.setSpan(new ClickableImageSpan(
@@ -485,12 +500,13 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
             if(rectF.contains(x, y))
             {
                 if(span instanceof URLSpan) {
-                    ((URLSpan)span).onClick(this);
-                    return true;
+                    if(mOnSpanClickListener != null)
+                        return mOnSpanClickListener.onUrlSpanClick(mPostId, (URLSpan)span, ((URLSpan) span).getURL());
+                    return false;
                 } else if(span instanceof ClickableImageSpan){
-                    String source =  ((ClickableImageSpan)span).getSource();
-                    Toast.makeText(getContext(), source, Toast.LENGTH_SHORT).show();
-                    return true;
+                    if(mOnSpanClickListener != null)
+                        return mOnSpanClickListener.onImageSpanClick(mPostId, (ClickableImageSpan)span, mImageUrls, ((ClickableImageSpan)span).getSource());
+                    return false;
                 } else
                     return false;
             }
@@ -562,11 +578,20 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         }
     }
 
+    public void setOnSpanClickListener(OnSpanClickListener listener) {
+        this.mOnSpanClickListener = listener;
+    }
+
     public Object getPicassoTag() {
         return mPicassoTag;
     }
 
     public void setPicassoTag(Object picassoTag) {
         this.mPicassoTag = picassoTag;
+    }
+
+    public interface OnSpanClickListener {
+        public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl);
+        public boolean onUrlSpanClick(long postId, URLSpan span, String target);
     }
 }
