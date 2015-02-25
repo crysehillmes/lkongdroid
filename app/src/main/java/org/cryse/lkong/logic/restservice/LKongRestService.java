@@ -66,6 +66,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
@@ -83,6 +84,8 @@ public class LKongRestService {
     @Inject
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
+        this.okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
+        this.okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
         this.cookieManager = new CookieManager(
         );
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
@@ -458,6 +461,15 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
+        if(responseString.contains("\"error\":")) {
+            NoticeCountModel errorModel = new NoticeCountModel();
+            JSONObject jsonObject = new JSONObject(responseString);
+            String errorMessage = jsonObject.getString("error");
+            errorModel.setSuccess(false);
+            errorModel.setErrorMessage(errorMessage);
+            return errorModel;
+        }
+
         LKCheckNoticeCountResult lkCheckNoticeCountResult = gson.fromJson(responseString, LKCheckNoticeCountResult.class);
         NoticeCountModel noticeCountModel = ModelConverter.toNoticeCountModel(lkCheckNoticeCountResult);
         clearCookies();

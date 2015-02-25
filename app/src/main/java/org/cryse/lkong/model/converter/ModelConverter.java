@@ -271,6 +271,7 @@ public class ModelConverter {
         model.setNotice(result.getNotice().getNotice());
         model.setPrivateMessageNotice(result.getNotice().getPm());
         model.setRateNotice(result.getNotice().getRate());
+        model.setSuccess(result.isOk());
         return model;
     }
 

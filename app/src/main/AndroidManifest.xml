@@ -31,6 +31,7 @@
         <activity android:name=".ui.NotificationActivity"/>
         <activity android:name=".ui.PhotoViewPagerActivity"/>
         <service android:name=".service.SendPostService"/>
+        <service android:name=".service.CheckNoticeService"/>
 
         <service
             android:name="com.umeng.update.net.DownloadingService"

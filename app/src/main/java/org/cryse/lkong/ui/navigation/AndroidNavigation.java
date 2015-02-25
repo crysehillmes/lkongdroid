@@ -13,7 +13,7 @@ import android.os.Bundle;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.ui.FavoritesFragment;
-import org.cryse.lkong.ui.ForumListFragment;
+import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
@@ -76,7 +76,7 @@ public class AndroidNavigation {
 
     public void navigateToForumListFragment(Bundle args) {
         if(isAttachToMainActivity()) {
-            Fragment fragment = ForumListFragment.newInstance(args);
+            Fragment fragment = ForumsFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }
     }
