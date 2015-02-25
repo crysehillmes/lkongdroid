@@ -14,6 +14,7 @@ import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
                         .load(mCurrentAccount.getUserAvatar())
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
+                        .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
+                        .transform(new CircleTransform())
                         .into(this.mUserPhoto);
                 String secondInfoText = mCurrentAccount.getEmail();
                 this.mUserEmail.setText(secondInfoText);

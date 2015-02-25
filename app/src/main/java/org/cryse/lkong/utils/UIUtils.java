@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import org.cryse.lkong.R;
+
 import java.util.regex.Pattern;
 
 public class UIUtils {
@@ -151,7 +153,7 @@ public class UIUtils {
     }
 
     public static int getDefaultAvatarSize(Context context) {
-        return dp2px(context, 40f);
+        return dp2px(context, context.getResources().getDimension(R.dimen.size_avatar_default));
     }
 
     public static class InsetsValue {

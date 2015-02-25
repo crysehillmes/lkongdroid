@@ -27,4 +27,6 @@
 
     <dimen name="text_size_edit">18sp</dimen><!-- Regular -->
     <dimen name="height_activity_post_list_toolbar">104dp</dimen>
+    <dimen name="size_avatar_large">64dp</dimen>
+    <dimen name="size_avatar_default">40dp</dimen>
 </resources>
