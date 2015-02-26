@@ -91,6 +91,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+
+
+                if(postModel.getRateScore() != 0) {
+                    viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
+                } else {
+                    viewHolder.mRateButton.setText(R.string.button_rate);
+                }
+
                 /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
                 *//*try {
@@ -113,12 +121,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mAuthorTextView.setText(autherNameSpannable);
 
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
-                viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
-                if(postModel.getRateScore() != 0) {
-                    viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
-                } else {
-                    viewHolder.mRateButton.setText(R.string.button_rate);
-                }*/
+                viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));*/
 
                 Picasso.with(getContext())
                         .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
