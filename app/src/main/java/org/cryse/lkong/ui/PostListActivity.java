@@ -15,7 +15,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -866,9 +865,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             Matcher matcher = sNewLKongThreadPattern.matcher(url);
             if(matcher.find()) {
                 int groupCount = matcher.groupCount();
-                for(int i = 1; i <= groupCount; i++) {
-                    Log.d("REGEX_MATECHER", String.format("Group(%d): %s", i, matcher.group(i)));
-                }
                 String tidString = matcher.group(1);
                 String pageString = null;
                 String pidString = null;
@@ -885,7 +881,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     else if(page != -1)
                         goToPage(page);
                     else
-                        openUrlIntent(url);
+                        showToast(R.string.toast_error_link_to_current_thread, TOAST_INFO);
                 } else {
                     if(pid != -1l)
                         mAndroidNavigation.openActivityForPostListByPostId(this, pid);

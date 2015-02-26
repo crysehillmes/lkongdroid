@@ -136,4 +136,5 @@
     <string name="toast_error_rate_self">你不能为自己评分</string>
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
+    <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
 </resources>
