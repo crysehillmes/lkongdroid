@@ -98,6 +98,12 @@ public class TimelineFragment extends SimpleCollectionFragment<
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        checkNewNoticeCount();
+    }
+
+    @Override
     protected String getLogTag() {
         return LOG_TAG;
     }
@@ -152,7 +158,8 @@ public class TimelineFragment extends SimpleCollectionFragment<
             } else {
                 mHasNotification = false;
             }
-            getActivity().invalidateOptionsMenu();
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
         }
     }
 
@@ -195,5 +202,13 @@ public class TimelineFragment extends SimpleCollectionFragment<
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+    }
+
+    protected void checkNewNoticeCount() {
+        if (isAdded()) {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).checkNewNoticeCount();
+            }
+        }
     }
 }

@@ -239,7 +239,10 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     @Override
     protected void onResume() {
         super.onResume();
-        if(mCheckNoticeServiceBinder != null)
+    }
+
+    public void checkNewNoticeCount() {
+        if(mCheckNoticeServiceBinder != null && mCheckNoticeServiceBinder.isBinderAlive())
             mCheckNoticeServiceBinder.checkNoticeCount(mUserAccountManager.getAuthObject());
     }
 }

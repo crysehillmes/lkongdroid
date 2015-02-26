@@ -14,7 +14,9 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
+import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.presenter.ForumsPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.utils.DataContract;
@@ -38,6 +40,8 @@ public class ForumsFragment extends SimpleCollectionFragment<
     ForumsPresenter mPresenter;
 
     protected MenuItem mChangeThemeMenuItem;
+    private MenuItem mNotificationMenuItem;
+    private boolean mHasNotification = false;
 
     public static ForumsFragment newInstance(Bundle args) {
         ForumsFragment fragment = new ForumsFragment();
@@ -56,6 +60,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_forum_list, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
+        mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -68,6 +73,10 @@ public class ForumsFragment extends SimpleCollectionFragment<
                 mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
             else if(isNightMode() != null && !isNightMode())
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        if(mNotificationMenuItem != null) {
+            if(mHasNotification) mNotificationMenuItem.setIcon(R.drawable.ic_action_notification_red_dot);
+            else mNotificationMenuItem.setIcon(R.drawable.ic_action_notification);
         }
         super.onPrepareOptionsMenu(menu);
     }
@@ -96,6 +105,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Override
     public void onResume() {
         super.onResume();
+        checkNewNoticeCount();
         if(mNeedRefresh) {
             mNeedRefresh = false;
             getPresenter().loadForums(mUserAccountManager.getAuthObject(), false);
@@ -150,6 +160,21 @@ public class ForumsFragment extends SimpleCollectionFragment<
         super.onEvent(event);
         if(event instanceof FavoritesChangedEvent)
             mNeedRefresh = true;
+        else if(event instanceof NoticeCountEvent) {
+            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
+            if(model.getFansNotice() != 0
+                    || model.getMentionNotice()  != 0
+                    || model.getNotice()  != 0
+                    || model.getPrivateMessageNotice()  != 0
+                    || model.getRateNotice() != 0
+                    ) {
+                mHasNotification = true;
+            } else {
+                mHasNotification = false;
+            }
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
+        }
     }
 
     protected void setActivityTitle() {
@@ -173,5 +198,13 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
+
+    protected void checkNewNoticeCount() {
+        if (isAdded()) {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).checkNewNoticeCount();
+            }
+        }
     }
 }
