@@ -15,6 +15,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -805,8 +806,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 );
     }
 
-    Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");
-    Pattern sOldLKongThreadPattern = Pattern.compile("thread\\-(\\d+)\\-(\\d+)\\-(\\d+)\\.html");
+    static final Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");
+    static final Pattern sOldLKongThreadPattern = Pattern.compile("thread\\-(\\d+)\\-(\\d+)\\-(\\d+)\\.html");
+    static final Pattern sNewLKongThreadPattern = Pattern.compile("lkong.cn/thread/(\\d+)(/(\\d+))?(\\.p_(\\d+))?");
     private void urlParse(String url) {
         if(url.contains("lkong.net")) {
             if(url.contains("forum.php")) {
@@ -861,6 +863,38 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
         } else if(url.contains("lkong.cn")) {
             // 新版地址
+            Matcher matcher = sNewLKongThreadPattern.matcher(url);
+            if(matcher.find()) {
+                int groupCount = matcher.groupCount();
+                for(int i = 1; i <= groupCount; i++) {
+                    Log.d("REGEX_MATECHER", String.format("Group(%d): %s", i, matcher.group(i)));
+                }
+                String tidString = matcher.group(1);
+                String pageString = null;
+                String pidString = null;
+                if(groupCount >= 3)
+                    pageString = matcher.group(3);
+                if(groupCount >= 5)
+                    pidString = matcher.group(5);
+                long tid = Long.valueOf(tidString);
+                int page = !TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString) ? Integer.valueOf(pageString) : -1;
+                long pid = !TextUtils.isEmpty(pidString) && TextUtils.isDigitsOnly(pidString) ?  Integer.valueOf(pidString) : -1l;
+                if(tid == mThreadId) {
+                    if(pid != -1)
+                        getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), pid, false);
+                    else if(page != -1)
+                        goToPage(page);
+                    else
+                        openUrlIntent(url);
+                } else {
+                    if(pid != -1l)
+                        mAndroidNavigation.openActivityForPostListByPostId(this, pid);
+                    else if(page != -1)
+                        mAndroidNavigation.openActivityForPostListByThreadId(this, tid, page);
+                    else
+                        mAndroidNavigation.openActivityForPostListByThreadId(this, tid);
+                }
+            }
         } else {
             openUrlIntent(url);
         }
