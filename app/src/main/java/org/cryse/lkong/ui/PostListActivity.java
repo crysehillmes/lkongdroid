@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -16,7 +15,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +47,6 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
-import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
@@ -66,15 +63,15 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -143,6 +140,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         } else if(intent.hasExtra(DataContract.BUNDLE_POST_ID)) {
             mTargetPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, -1);
         }
+        mCurrentPage = intent.getIntExtra(DataContract.BUNDLE_THREAD_CURRENT_PAGE, 1);
         if(mThreadId == -1 && mTargetPostId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
     }
@@ -249,10 +247,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
             @Override
             public boolean onUrlSpanClick(long postId, URLSpan span, String target) {
-                Uri uri = Uri.parse(target);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
-                startActivity(intent);
+                urlParse(target);
                 return true;
             }
         });
@@ -292,8 +287,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         .items(mPageIndicatorItems)
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
-                            if(i + 1 == mCurrentPage) return;
-                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1, true, SHOW_MODE_REPLACE);
+                            goToPage(i + 1);
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -304,6 +298,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 goToNextPage(true);
             }
         };
+    }
+
+    private void goToPage(int page) {
+        if(page == mCurrentPage || page < 1 || page > mPageCount) return;
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
     }
 
     private void goToNextPage(boolean resetPosition) {
@@ -361,7 +360,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             if(mThreadId != -1) {
                 getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
             } else if(mTargetPostId != -1) {
-                getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId);
+                getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, true);
             }
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
@@ -565,7 +564,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
-    public void onGetPostLocationComplete(DataItemLocationModel locationModel) {
+    public void onGetPostLocationComplete(DataItemLocationModel locationModel, boolean loadThreadInfo) {
         if(locationModel != null && locationModel.isLoad() && locationModel.getLocation().startsWith("thread_")) {
             String idString = locationModel.getLocation();
             int firstIndex = idString.indexOf("_");
@@ -575,7 +574,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             else
                 mThreadId = Long.valueOf(idString.substring(firstIndex + 1));
             mTargetOrdinal = locationModel.getOrdinal();
-            getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+            if(loadThreadInfo)
+                getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+            else
+                calculatePageAndLoad();
         }
     }
 
@@ -587,6 +589,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.notifyItemChanged(1);
         mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
+        calculatePageAndLoad();
+    }
+
+    private void calculatePageAndLoad() {
         // Calculate page here.
         int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
         mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
@@ -598,7 +604,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         if(mPageCount > 0) {
             if(mTargetOrdinal == -1) {
-                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true, SHOW_MODE_REPLACE);
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, ((mCurrentPage >= 1 && mCurrentPage <= mPageCount) ? mCurrentPage : 1), true, SHOW_MODE_REPLACE);
             } else {
                 int page = replyCount == 0 ? 1 : (int)Math.ceil((double) mTargetOrdinal / 20d);
                 getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
@@ -797,5 +803,73 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                             Timber.d("PostListActivity::createSpan() onComplete().", LOG_TAG);
                         }
                 );
+    }
+
+    Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");
+    Pattern sOldLKongThreadPattern = Pattern.compile("thread\\-(\\d+)\\-(\\d+)\\-(\\d+)\\.html");
+    private void urlParse(String url) {
+        if(url.contains("lkong.net")) {
+            if(url.contains("forum.php")) {
+                Uri uri = Uri.parse(url);
+                String tidString = uri.getQueryParameter("tid");
+                String pageString = uri.getQueryParameter("page");
+                String pidString = null;
+                Matcher mPidMacher = sOldLKongPidPattern.matcher(url);
+                if (mPidMacher.find( )) {
+                    pidString = mPidMacher.group(1);
+                }
+                if(!TextUtils.isEmpty(tidString)) {
+                    long tid = Long.valueOf(tidString);
+                    if(!TextUtils.isEmpty(pidString)) {
+                        long pid = Long.valueOf(pidString);
+                        if(tid == mThreadId) {
+                            // 就在本帖
+                            mTargetPostId = pid;
+                            getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
+                        } else {
+                            // 别的帖子
+                            mAndroidNavigation.openActivityForPostListByPostId(this, pid);
+                        }
+                    } else if(!TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString)) {
+                        // 楼层未知但是知道页数
+                        int page = Integer.valueOf(pageString);
+                        if(page >= 1 && page < mPageCount) {
+                            goToPage(page);
+                        }
+                    } else {
+                        // 解析失败
+                        openUrlIntent(url);
+                    }
+                }
+            } else if(url.contains("thread-")) {
+                Matcher matcher = sOldLKongThreadPattern.matcher(url);
+                String tidString = null;
+                String pageString = null;
+                if(matcher.find()) {
+                    tidString = matcher.group(1);
+                    pageString = matcher.group(2);
+                    if(!TextUtils.isEmpty(tidString) && TextUtils.isDigitsOnly(tidString) && !TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString)) {
+                        long tid = Long.valueOf(tidString);
+                        int page = Integer.valueOf(pageString);
+                        if(tid == mThreadId) {
+                            goToPage(page);
+                        } else {
+                            mAndroidNavigation.openActivityForPostListByThreadId(this, tid, page);
+                        }
+                    }
+                }
+            }
+        } else if(url.contains("lkong.cn")) {
+            // 新版地址
+        } else {
+            openUrlIntent(url);
+        }
+    }
+
+    private void openUrlIntent(String url) {
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
+        startActivity(intent);
     }
 }

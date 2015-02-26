@@ -133,9 +133,15 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_POST_ID, postId);
         context.startActivity(intent);
     }
+
     public void openActivityForPostListByThreadId(Context context, long threadId) {
+        openActivityForPostListByThreadId(context, threadId, 1);
+    }
+
+    public void openActivityForPostListByThreadId(Context context, long threadId, int page) {
         Intent intent = new Intent(context, PostListActivity.class);
         intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
+        intent.putExtra(DataContract.BUNDLE_THREAD_CURRENT_PAGE, page);
         context.startActivity(intent);
     }
 }

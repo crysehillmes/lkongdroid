@@ -34,7 +34,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
         this.mLKongForumService = forumService;
     }
 
-    public void getPostLocation(LKAuthObject authObject, long pid) {
+    public void getPostLocation(LKAuthObject authObject, long pid, boolean loadThreadInfo) {
         SubscriptionUtils.checkAndUnsubscribe(mDataItemLocationSubscription);
         mView.setLoading(true);
         mDataItemLocationSubscription = mLKongForumService.getPostIdLocation(authObject, pid)
@@ -43,7 +43,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .subscribe(
                         result -> {
                             Timber.d("PostListPresenter::loadThreadInfo() onNext().", LOG_TAG);
-                            mView.onGetPostLocationComplete(result);
+                            mView.onGetPostLocationComplete(result, loadThreadInfo);
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
@@ -164,7 +164,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
         }
 
         @Override
-        public void onGetPostLocationComplete(DataItemLocationModel locationModel) {
+        public void onGetPostLocationComplete(DataItemLocationModel locationModel, boolean loadThreadInfo) {
 
         }
 
