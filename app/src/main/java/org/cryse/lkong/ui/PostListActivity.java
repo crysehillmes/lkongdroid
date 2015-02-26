@@ -9,6 +9,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -45,6 +46,7 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.ToastProxy;
@@ -776,11 +778,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
         int mMaxImageWidth = 256;
-        SimpleImageGetter imageGetter = new SimpleImageGetter(PostListActivity.this, Integer.valueOf(mImageDownloadPolicy.get()))
+        Html.ImageGetter imageGetter = new EmptyImageGetter();
+        /*SimpleImageGetter imageGetter = new SimpleImageGetter(PostListActivity.this, Integer.valueOf(mImageDownloadPolicy.get()))
                 .setEmoticonSize(UIUtils.getSpDimensionPixelSize(PostListActivity.this, R.dimen.text_size_body1))
                 .setPlaceHolder(R.drawable.image_placeholder)
                 .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
-                .setError(R.drawable.image_placeholder);
+                .setError(R.drawable.image_placeholder);*/
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
@@ -859,6 +862,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         }
                     }
                 }
+            } else {
+                openUrlIntent(url);
             }
         } else if(url.contains("lkong.cn")) {
             // 新版地址

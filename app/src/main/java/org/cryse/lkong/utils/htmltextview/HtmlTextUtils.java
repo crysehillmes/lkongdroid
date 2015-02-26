@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 public class HtmlTextUtils {
     public static Spanned htmlToSpanned(String html, Html.ImageGetter imageGetter, Html.TagHandler tagHandler) {
-        return Html.fromHtml(html, imageGetter, tagHandler);
+        return HtmlToSpannedConverter.fromHtml(html, imageGetter, tagHandler);
     }
 
     public static String spannedToHtml(Spanned text) {

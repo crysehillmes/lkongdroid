@@ -11,6 +11,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -138,18 +139,18 @@ public class UIUtils {
         return value;
     }
 
-    public static int getSpDimensionPixelSize(Context context, @DimenRes int resId) {
-        return sp2px(context, context.getResources().getDimension(resId));
+    public static float getSpDimensionPixelSize(Context context, @DimenRes int resId) {
+        return context.getResources().getDimension(resId);
     }
 
     public static int dp2px(Context context, float dp){
-        float scale = context.getResources().getDisplayMetrics().density;
-        return (int)(dp * scale + 0.5f);
+        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dp, context.getResources().getDisplayMetrics());
     }
 
-    public static int sp2px(Context context, float sp){
-        float scale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int)(sp * scale + 0.5f);
+    public static float sp2px(Context context, float sp){
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                sp, context.getResources().getDisplayMetrics());
     }
 
     public static int getDefaultAvatarSize(Context context) {

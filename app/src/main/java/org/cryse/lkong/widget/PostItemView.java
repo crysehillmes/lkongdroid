@@ -39,6 +39,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.gesture.Pointer;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.utils.ColorUtils;
 
@@ -105,7 +106,7 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         mCachedClickableSpans = new ArrayList<>();
         mImageUrls = new ArrayList<>();
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        float textSize =  getResources().getDimension(R.dimen.text_size_subhead);
+        float textSize =  UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_subhead);
         mTextPaint.setTextSize(textSize);
         mTextPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_primary));
         mTextPaint.linkColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
@@ -256,6 +257,21 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
                                 256,
                                 256,
                                 DynamicDrawableSpan.ALIGN_BOTTOM),
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+            } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
+                spannable.removeSpan(imageSpan);
+                spannable.setSpan(new EmoticonImageSpan(
+                                getContext(),
+                                this,
+                                getIdentityTag(),
+                                getPicassoTag(),
+                                imageSpan.getSource(),
+                                R.drawable.image_placeholder,
+                                R.drawable.image_placeholder,
+                                (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                        ),
                         spanStart,
                         spanEnd,
                         spanFlags);

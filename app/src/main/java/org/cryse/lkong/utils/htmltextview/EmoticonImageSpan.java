@@ -1,7 +1,6 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
@@ -9,19 +8,20 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
-import org.cryse.lkong.utils.ScaleTransformation;
-
 import java.lang.ref.WeakReference;
 
-public class ClickableImageSpan extends DynamicDrawableSpan {
+public class EmoticonImageSpan extends DynamicDrawableSpan {
+
+    private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
+    private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
+
     private Drawable mDrawable;
     private WeakReference<Context> mContext;
     private String mSource;
-    private String mSourceMiddle;
+    private String mLocalSource;
     private int mPlaceHolderRes;
     private int mErrorRes;
-    private int mMaxWidth;
-    private int mMaxHeight;
+    private int mEmoticonSize;
     private Object mIdentityTag;
     private Object mPicassoTag;
     private WeakReference<ImageSpanContainer> mContainer;
@@ -29,17 +29,13 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
      * @param verticalAlignment one of {@link android.text.style.DynamicDrawableSpan#ALIGN_BOTTOM} or
      * {@link android.text.style.DynamicDrawableSpan#ALIGN_BASELINE}.
      */
-    public ClickableImageSpan(Drawable d, String source, int verticalAlignment) {
+    public EmoticonImageSpan(Drawable d, String source, int verticalAlignment) {
         super(verticalAlignment);
         mDrawable = d;
         mSource = source;
     }
 
-    /**
-     * @param verticalAlignment one of {@link android.text.style.DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link android.text.style.DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    public ClickableImageSpan(
+    public EmoticonImageSpan(
             Context context,
             ImageSpanContainer container,
             Object identityTag,
@@ -47,26 +43,20 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
             String source,
             @DrawableRes int placeholderRes,
             @DrawableRes int errorRes,
-            int maxWidth,
-            int maxHeight,
-            int verticalAlignment
+            int emoticonSize
     ) {
-        super(verticalAlignment);
+        super(ALIGN_BASELINE);
         mContext = new WeakReference<Context>(context);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
         mSource = source;
-        if(source.contains("sinaimg"))
-            mSourceMiddle = source.replace("/large/", "/bmiddle/");
-        else
-            mSourceMiddle = source;
+        mLocalSource = getEmoticonLocalSource(mSource);
         mPlaceHolderRes = placeholderRes;
         mErrorRes = errorRes;
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
-        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight);
-        Picasso.with(context).load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into((AsyncTargetDrawable) mDrawable);
+        mEmoticonSize = emoticonSize;
+        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mEmoticonSize, mEmoticonSize);
+        Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
     }
 
     @Override
@@ -76,7 +66,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
         if (mDrawable != null) {
             drawable = mDrawable;
         } else {
-            Log.e("ClickableImageSpan", "drawable is null");
+            Log.e("EmoticonImageSpan", "drawable is null");
         }
         return drawable;
     }
@@ -86,5 +76,20 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
      */
     public String getSource() {
         return mSource;
+    }
+
+    private String getEmoticonLocalSource(String source) {
+        String localSource;
+        if(source.startsWith(EMOJI_PREFIX)) {
+            try {
+                String emojiFileName = source.substring(EMOJI_PREFIX.length());
+                localSource = "file:///android_asset/" + EMOJI_PATH_WITH_SLASH + emojiFileName + ".png";
+            } catch (RuntimeException e) {
+                localSource = source;
+            }
+        } else {
+            localSource = source;
+        }
+        return localSource;
     }
 }
