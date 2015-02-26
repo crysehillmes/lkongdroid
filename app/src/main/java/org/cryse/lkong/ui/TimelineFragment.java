@@ -148,11 +148,11 @@ public class TimelineFragment extends SimpleCollectionFragment<
         super.onEvent(event);
         if(event instanceof NoticeCountEvent) {
             NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
-            if(model.getFansNotice() != 0
-                    || model.getMentionNotice()  != 0
-                    || model.getNotice()  != 0
-                    || model.getPrivateMessageNotice()  != 0
+            if (model.getMentionNotice() != 0
+                    || model.getNotice() != 0
                     || model.getRateNotice() != 0
+                    /*|| model.getPrivateMessageNotice() != 0
+                    || model.getFansNotice() != 0*/
                     ) {
                 mHasNotification = true;
             } else {
