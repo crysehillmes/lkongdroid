@@ -10,12 +10,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +57,7 @@ import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.view.PostListView;
@@ -787,7 +792,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(new SpannableString(spannedText));
+                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel.getPid()));
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
@@ -806,6 +811,54 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                             Timber.d("PostListActivity::createSpan() onComplete().", LOG_TAG);
                         }
                 );
+    }
+
+    private CharSequence replaceImageSpan(CharSequence sequence, long postId) {
+        Spannable spannable;
+        if(sequence instanceof SpannableString)
+            spannable = (SpannableString)sequence;
+        else
+            spannable = new SpannableString(sequence);
+        ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
+        for(ImageSpan imageSpan : imageSpans) {
+            int spanStart = spannable.getSpanStart(imageSpan);
+            int spanEnd = spannable.getSpanEnd(imageSpan);
+            int spanFlags = spannable.getSpanFlags(imageSpan);
+            if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
+                Log.d("replaceImageSpan", imageSpan.getSource());
+                spannable.removeSpan(imageSpan);
+                spannable.setSpan(new ClickableImageSpan(
+                                this,
+                                null,
+                                Long.toString(postId),
+                                PostListAdapter.POST_PICASSO_TAG,
+                                imageSpan.getSource(),
+                                R.drawable.image_placeholder,
+                                R.drawable.image_placeholder,
+                                256,
+                                256,
+                                DynamicDrawableSpan.ALIGN_BOTTOM),
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+            } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
+                spannable.removeSpan(imageSpan);
+                spannable.setSpan(new EmoticonImageSpan(
+                                this,
+                                null,
+                                Long.toString(postId),
+                                PostListAdapter.POST_PICASSO_TAG,
+                                imageSpan.getSource(),
+                                R.drawable.image_placeholder,
+                                R.drawable.image_placeholder,
+                                (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                        ),
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+            }
+        }
+        return spannable;
     }
 
     static final Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");

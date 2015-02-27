@@ -30,7 +30,7 @@ public class ScaleTransformation implements Transformation {
         m.postScale(scale, scale);
         Bitmap transformed = Bitmap.createBitmap(source, 0, 0, width, height, m, true);
         source.recycle();
-        Bitmap result = Bitmap.createBitmap(mMaxWidth, mMaxHeight, Bitmap.Config.ARGB_8888);
+        Bitmap result = Bitmap.createBitmap(mMaxWidth, mMaxHeight, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(result);
         int left = mMaxWidth / 2 - transformed.getWidth() / 2;
         int top = mMaxHeight / 2 - transformed.getHeight() / 2;

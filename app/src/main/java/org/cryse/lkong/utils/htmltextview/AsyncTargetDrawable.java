@@ -54,7 +54,8 @@ public class AsyncTargetDrawable extends Drawable implements Target{
 
     @Override
     public void draw(Canvas canvas) {
-        mInnerDrawable.draw(canvas);
+        if(mInnerDrawable != null)
+            mInnerDrawable.draw(canvas);
     }
 
     @Override
@@ -65,6 +66,10 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public int getOpacity() {
         return mInnerDrawable.getOpacity();
+    }
+
+    public void setContainer(ImageSpanContainer container) {
+        this.mContainer = new WeakReference<ImageSpanContainer>(container);
     }
 
     @Override

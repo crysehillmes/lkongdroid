@@ -1,12 +1,15 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
 import com.squareup.picasso.Picasso;
+
+import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
 
@@ -15,7 +18,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
     private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
 
-    private Drawable mDrawable;
+    private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
     private String mSource;
     private String mLocalSource;
@@ -25,15 +28,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
     private Object mIdentityTag;
     private Object mPicassoTag;
     private WeakReference<ImageSpanContainer> mContainer;
-    /**
-     * @param verticalAlignment one of {@link android.text.style.DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link android.text.style.DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    public EmoticonImageSpan(Drawable d, String source, int verticalAlignment) {
-        super(verticalAlignment);
-        mDrawable = d;
-        mSource = source;
-    }
 
     public EmoticonImageSpan(
             Context context,
@@ -56,7 +50,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
         mErrorRes = errorRes;
         mEmoticonSize = emoticonSize;
         mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mEmoticonSize, mEmoticonSize);
-        Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
+        // Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
     }
 
     @Override
@@ -91,5 +85,11 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
             localSource = source;
         }
         return localSource;
+    }
+
+    public void loadImage(ImageSpanContainer container) {
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mDrawable.setContainer(container);
+        Picasso.with(mContext.get()).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into(mDrawable);
     }
 }

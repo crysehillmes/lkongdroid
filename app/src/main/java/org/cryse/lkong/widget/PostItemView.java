@@ -216,15 +216,20 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         }
 
 
-        mMessageText = replaceImageSpan(messageText);
+        mMessageText = messageText;
         URLSpan[] urlSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), URLSpan.class);
         ClickableImageSpan[] clickableImageSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), ClickableImageSpan.class);
+        EmoticonImageSpan[] emoticonImageSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), EmoticonImageSpan.class);
         mCachedClickableSpans.clear();
         mCachedClickableSpans.addAll(Arrays.asList(urlSpans));
         mCachedClickableSpans.addAll(Arrays.asList(clickableImageSpans));
         mImageUrls.clear();
+        for (EmoticonImageSpan span : emoticonImageSpans) {
+            span.loadImage(this);
+        }
         for(ClickableImageSpan span : clickableImageSpans) {
             mImageUrls.add(span.getSource());
+            span.loadImage(this);
         }
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());
