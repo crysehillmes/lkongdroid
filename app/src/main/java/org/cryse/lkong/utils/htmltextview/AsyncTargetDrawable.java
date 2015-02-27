@@ -43,6 +43,17 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         this.mMaxHeight = mMaxHeight;
     }
 
+    public AsyncTargetDrawable(Context mContext, ImageSpanContainer mContainer, Object mIdentityTag, int mMaxWidth, int mMaxHeight, Drawable placeHolderDrawable) {
+        this.mContext = new WeakReference<Context>(mContext);
+        this.mContainer = new WeakReference<ImageSpanContainer>(mContainer);
+        this.mIdentityTag = mIdentityTag;
+        this.mMaxWidth = mMaxWidth;
+        this.mMaxHeight = mMaxHeight;
+        this.mInnerDrawable = placeHolderDrawable;
+        this.mInnerDrawable.setBounds(0, 0, mMaxWidth, mMaxHeight);
+        this.setBounds(0, 0, mMaxWidth, mMaxHeight);
+    }
+
     @Override
     public void setAlpha(int alpha) {
         final int oldAlpha = 0xFF; // Const in super.getAlpha()

@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -790,9 +791,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
                 .setError(R.drawable.image_placeholder);*/
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
+            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel.getPid()));
+                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel.getPid(), drawable));
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
@@ -813,7 +815,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 );
     }
 
-    private CharSequence replaceImageSpan(CharSequence sequence, long postId) {
+    private CharSequence replaceImageSpan(CharSequence sequence, long postId, Drawable initPlaceHolder) {
         Spannable spannable;
         if(sequence instanceof SpannableString)
             spannable = (SpannableString)sequence;
@@ -837,7 +839,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                                 R.drawable.image_placeholder,
                                 256,
                                 256,
-                                DynamicDrawableSpan.ALIGN_BOTTOM),
+                                DynamicDrawableSpan.ALIGN_BOTTOM,
+                                initPlaceHolder),
                         spanStart,
                         spanEnd,
                         spanFlags);

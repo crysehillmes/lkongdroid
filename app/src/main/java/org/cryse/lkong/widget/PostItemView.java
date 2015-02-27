@@ -73,6 +73,7 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
     private ArrayList<Object> mCachedClickableSpans;
     private ArrayList<String> mImageUrls;
     private OnSpanClickListener mOnSpanClickListener;
+    private boolean mShowImages = true;
 
     public PostItemView(Context context) {
         super(context);
@@ -210,6 +211,10 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         this.mPostId = postId;
     }
 
+    public void setShowImages(boolean show) {
+        this.mShowImages = show;
+    }
+
     public void setMessageText(CharSequence messageText) {
         if(TextUtils.equals(mMessageText, messageText)) {
             return;
@@ -229,7 +234,9 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         }
         for(ClickableImageSpan span : clickableImageSpans) {
             mImageUrls.add(span.getSource());
-            span.loadImage(this);
+            if(mShowImages) {
+                span.loadImage(this);
+            }
         }
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());

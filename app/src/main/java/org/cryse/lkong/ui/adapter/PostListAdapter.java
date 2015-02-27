@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CircleTransform;
@@ -38,6 +39,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private int mImageDownloadPolicy;
     private final CircleTransform mCircleTransform = new CircleTransform();
     private final int mAvatarSize;
+    private boolean mShouldShowImages;
 
     public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
@@ -45,10 +47,12 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
         mImageDownloadPolicy = imageDownloadPolicy;
+        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
     }
 
     public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
@@ -88,6 +92,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mPostItemView.setPostId(postModel.getPid());
                 viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
                 viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
+                viewHolder.mPostItemView.setShowImages(mShouldShowImages);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));

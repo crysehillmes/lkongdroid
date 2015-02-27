@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.squareup.picasso.Picasso;
 
+import org.cryse.lkong.R;
 import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
@@ -61,6 +62,36 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
         // Picasso.with(context).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).into(mDrawable);
     }
 
+    public ClickableImageSpan(
+            Context context,
+            ImageSpanContainer container,
+            Object identityTag,
+            Object picassoTag,
+            String source,
+            @DrawableRes int placeholderRes,
+            @DrawableRes int errorRes,
+            int maxWidth,
+            int maxHeight,
+            int verticalAlignment,
+            Drawable initDrawable
+    ) {
+        super(verticalAlignment);
+        mContext = new WeakReference<Context>(context);
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mIdentityTag = identityTag;
+        mPicassoTag = picassoTag;
+        mSource = source;
+        if(source.contains("sinaimg"))
+            mSourceMiddle = source.replace("/large/", "/bmiddle/");
+        else
+            mSourceMiddle = source;
+        mPlaceHolderRes = placeholderRes;
+        mErrorRes = errorRes;
+        mMaxWidth = maxWidth;
+        mMaxHeight = maxHeight;
+        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight, initDrawable);
+    }
+
     @Override
     public Drawable getDrawable() {
         Drawable drawable = null;
@@ -83,6 +114,12 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        Picasso.with(mContext.get()).load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into((AsyncTargetDrawable) mDrawable);
+        Picasso.with(mContext.get()).load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into(mDrawable);
+    }
+
+    public void loadPlaceHolder(ImageSpanContainer container) {
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mDrawable.setContainer(container);
+        Picasso.with(mContext.get()).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).into( mDrawable);
     }
 }
