@@ -30,7 +30,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -45,9 +45,8 @@ import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class PostItemView extends FrameLayout implements Target, ImageSpanContainer {
+public class PostItemView extends ViewGroup implements Target, ImageSpanContainer {
     private long mPostId;
     private CharSequence mMessageText = null;
     private CharSequence mAuthorName = null;
@@ -219,7 +218,7 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         if(TextUtils.equals(mMessageText, messageText)) {
             return;
         }
-
+        long startTime = System.nanoTime();
 
         mMessageText = messageText;
         URLSpan[] urlSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), URLSpan.class);
@@ -238,6 +237,10 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
                 span.loadImage(this);
             }
         }
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        Log.d("setMessageText", String.format("duration: %d", duration / 1000000));
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());
         }
@@ -313,9 +316,6 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
             mMessageLayout = makeNewLayout(wantWidth - px_margin_16 * 2);
             requestLayout();
             invalidate();
-        } else {
-            requestLayout();
-            invalidate();
         }
     }
 
@@ -324,9 +324,6 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         if(width > 0) {
             mAuthorInfoLayout = new StaticLayout(mAuthorInfo, mTextPaint, width - px_margin_72 * 2, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
             invalidate(px_margin_72, px_margin_16, width - px_margin_72, px_margin_16 + mAuthorInfoLayout.getHeight());
-        } else {
-            requestLayout();
-            invalidate();
         }
     }
 
@@ -598,11 +595,20 @@ public class PostItemView extends FrameLayout implements Target, ImageSpanContai
         return mIdentityTag;
     }
 
+    Runnable mInvalidateRunnable;
     @Override
     public void notifyImageSpanLoaded(Object identityTag) {
         if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
             // TODO: re-layout and invalidate
-            invalidate();
+            if(mInvalidateRunnable == null) {
+                mInvalidateRunnable = () -> {
+                    if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
+                        invalidate();
+                    }
+                    mInvalidateRunnable = null;
+                };
+                mHandler.postDelayed(mInvalidateRunnable, 750);
+            }
         }
     }
 

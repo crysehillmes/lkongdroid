@@ -15,7 +15,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -88,7 +87,6 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         if(mContext.get() == null) throw new IllegalStateException("Context is null, cannot create bitmap drawable.");
         Drawable drawable = new BitmapDrawable(mContext.get().getResources(), bitmap);
         setDrawable(drawable);
-        Log.d("onBitmapLoaded", String.format("draw originWidth: %d draw originHeight: %d", drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
         if(mContainer.get() != null) {
             mContainer.get().notifyImageSpanLoaded(mIdentityTag);
@@ -98,14 +96,12 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
         setDrawable(errorDrawable);
-        Log.d("ClickableImageSpan", String.format("onBitmapFailed draw originWidth: %d draw originHeight: %d", errorDrawable.getIntrinsicWidth(), errorDrawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
         setDrawable(placeHolderDrawable);
-        Log.d("ClickableImageSpan", String.format("onPrepareLoad draw originWidth: %d draw originHeight: %d", placeHolderDrawable.getIntrinsicWidth(), placeHolderDrawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
     }
 

@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.squareup.picasso.Transformation;
 
@@ -21,7 +20,6 @@ public class ScaleTransformation implements Transformation {
     public Bitmap transform(Bitmap source) {
         int width = source.getWidth();
         int height = source.getHeight();
-        Log.d("BITMAP_TRANSFORMATION", String.format("source width %d, source height %d", source.getWidth(), source.getHeight()));
         Matrix m = new Matrix();
         float xScale = ((float) mMaxWidth) / width;
         float yScale = ((float) mMaxHeight) / height;
