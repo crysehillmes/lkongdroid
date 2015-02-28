@@ -14,16 +14,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.text.DynamicLayout;
 import android.text.Layout;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -146,18 +142,17 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (changed) {
-            mHandler.post(this::requestLayout);
-        }
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         final int count = getChildCount();
-        int viewWidth = getWidth();
-        int viewHeight = getHeight();
         int startTop = px_margin_72 + (mMessageLayout == null ? 0 : mMessageLayout.getHeight());
         int startMarginRight = px_margin_16;
         for (int i = count - 1; i >= 0; i--) {
             View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                int left = viewWidth - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
+                int left = width - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
                 int top = startTop + px_margin_6;
                 int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
@@ -247,54 +242,6 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         // generateMessageTextLayout();
     }
 
-    private CharSequence replaceImageSpan(CharSequence sequence) {
-        Spannable spannable;
-        if(sequence instanceof SpannableString)
-            spannable = (SpannableString)sequence;
-        else
-            spannable = new SpannableString(sequence);
-        ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
-        for(ImageSpan imageSpan : imageSpans) {
-            int spanStart = spannable.getSpanStart(imageSpan);
-            int spanEnd = spannable.getSpanEnd(imageSpan);
-            int spanFlags = spannable.getSpanFlags(imageSpan);
-            if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
-                Log.d("replaceImageSpan", imageSpan.getSource());
-                spannable.removeSpan(imageSpan);
-                spannable.setSpan(new ClickableImageSpan(
-                                getContext(),
-                                this,
-                                getIdentityTag(),
-                                getPicassoTag(),
-                                imageSpan.getSource(),
-                                R.drawable.image_placeholder,
-                                R.drawable.image_placeholder,
-                                256,
-                                256,
-                                DynamicDrawableSpan.ALIGN_BOTTOM),
-                        spanStart,
-                        spanEnd,
-                        spanFlags);
-            } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
-                spannable.removeSpan(imageSpan);
-                spannable.setSpan(new EmoticonImageSpan(
-                                getContext(),
-                                this,
-                                getIdentityTag(),
-                                getPicassoTag(),
-                                imageSpan.getSource(),
-                                R.drawable.image_placeholder,
-                                R.drawable.image_placeholder,
-                                (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
-                        ),
-                        spanStart,
-                        spanEnd,
-                        spanFlags);
-            }
-        }
-        return spannable;
-    }
-
     public void setAuthorInfo(CharSequence authorName, CharSequence dateline) {
         if(TextUtils.equals(mAuthorName, authorName) &&  TextUtils.equals(mDateline, dateline)) {
             return;
@@ -354,7 +301,12 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
 
     private DynamicLayout makeNewLayout(int wantWidth) {
         if(isInEditMode()) return null;
-        return new DynamicLayout(mMessageText, mTextPaint, wantWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        DynamicLayout dynamicLayout = new DynamicLayout(mMessageText, mTextPaint, wantWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        if(dynamicLayout.getLineCount() > 50)
+            setLayerType(LAYER_TYPE_NONE, null);
+        else
+            setLayerType(LAYER_TYPE_HARDWARE, null);
+        return dynamicLayout;
     }
 
     @Override
