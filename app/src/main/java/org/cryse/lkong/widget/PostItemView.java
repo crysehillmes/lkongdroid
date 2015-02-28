@@ -23,7 +23,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,7 +212,6 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         if(TextUtils.equals(mMessageText, messageText)) {
             return;
         }
-        long startTime = System.nanoTime();
 
         mMessageText = messageText;
         URLSpan[] urlSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), URLSpan.class);
@@ -232,14 +230,9 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
                 span.loadImage(this);
             }
         }
-        long endTime = System.nanoTime();
-
-        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-        Log.d("setMessageText", String.format("duration: %d", duration / 1000000));
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());
         }
-        // generateMessageTextLayout();
     }
 
     public void setAuthorInfo(CharSequence authorName, CharSequence dateline) {
