@@ -14,6 +14,7 @@ public class PostModel implements Parcelable {
     private Date dateline;
     private String message;
     private CharSequence spannedMessage;
+    private PostSpanCache postSpanCache;
     private String authorName;
     private long authorId;
     private boolean favorite;
@@ -80,6 +81,14 @@ public class PostModel implements Parcelable {
 
     public void setSpannedMessage(CharSequence spannedMessage) {
         this.spannedMessage = spannedMessage;
+    }
+
+    public PostSpanCache getPostSpanCache() {
+        return postSpanCache;
+    }
+
+    public void setPostSpanCache(PostSpanCache postSpanCache) {
+        this.postSpanCache = postSpanCache;
     }
 
     public String getAuthorName() {

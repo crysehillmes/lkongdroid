@@ -15,7 +15,7 @@ import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
 
-public class ClickableImageSpan extends DynamicDrawableSpan {
+public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
     private String mSource;
@@ -111,6 +111,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan {
         return mSource;
     }
 
+    @Override
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);

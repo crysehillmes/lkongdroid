@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.text.DynamicLayout;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -31,11 +30,13 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.model.PostSpanCache;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.gesture.Pointer;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
+import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
 import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     private CharSequence mAuthorInfo = null;
     private String mIdentityTag = null;
     private Object mPicassoTag = null;
-    private DynamicLayout mMessageLayout = null;
+    private StaticLayout mMessageLayout = null;
     private StaticLayout mAuthorInfoLayout = null;
     private Drawable mAvatarDrawable = null;
     private TextPaint mTextPaint = null;
@@ -141,17 +142,15 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    }
-
-    @Override
-    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+        if(changed)
+            mHandler.post(this::requestLayout);
         final int count = getChildCount();
         int startTop = px_margin_72 + (mMessageLayout == null ? 0 : mMessageLayout.getHeight());
         int startMarginRight = px_margin_16;
         for (int i = count - 1; i >= 0; i--) {
             View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                int left = width - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
+                int left = r - l - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
                 int top = startTop + px_margin_6;
                 int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
@@ -214,24 +213,20 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         }
 
         mMessageText = messageText;
-        URLSpan[] urlSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), URLSpan.class);
-        ClickableImageSpan[] clickableImageSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), ClickableImageSpan.class);
-        EmoticonImageSpan[] emoticonImageSpans = ((Spanned)mMessageText).getSpans(0, mMessageText.length(), EmoticonImageSpan.class);
-        mCachedClickableSpans.clear();
-        mCachedClickableSpans.addAll(Arrays.asList(urlSpans));
-        mCachedClickableSpans.addAll(Arrays.asList(clickableImageSpans));
-        mImageUrls.clear();
-        for (EmoticonImageSpan span : emoticonImageSpans) {
-            span.loadImage(this);
-        }
-        for(ClickableImageSpan span : clickableImageSpans) {
-            mImageUrls.add(span.getSource());
-            if(mShowImages) {
-                span.loadImage(this);
-            }
-        }
         if(mMessageLayout != null) {
             generateMessageTextLayout(getMeasuredWidth());
+        }
+    }
+
+    PostSpanCache mPostSpanCache;
+
+    public void setPostSpanCache(PostSpanCache postSpanCache) {
+        mPostSpanCache = postSpanCache;
+        this.mCachedClickableSpans = postSpanCache.cachedClickableSpans;
+        this.mImageUrls = postSpanCache.imageUrls;
+        for(int i = postSpanCache.urlSpanCount; i < mCachedClickableSpans.size(); i++) {
+            PendingImageSpan pendingImageSpan = (PendingImageSpan) mCachedClickableSpans.get(i);
+            pendingImageSpan.loadImage(this);
         }
     }
 
@@ -292,14 +287,14 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         this.mOrdinalText = ordinal;
     }
 
-    private DynamicLayout makeNewLayout(int wantWidth) {
+    private StaticLayout makeNewLayout(int wantWidth) {
         if(isInEditMode()) return null;
-        DynamicLayout dynamicLayout = new DynamicLayout(mMessageText, mTextPaint, wantWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
-        if(dynamicLayout.getLineCount() > 50)
+        StaticLayout layout = new StaticLayout(mMessageText, mTextPaint, wantWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        if(layout.getLineCount() > 50)
             setLayerType(LAYER_TYPE_NONE, null);
         else
             setLayerType(LAYER_TYPE_HARDWARE, null);
-        return dynamicLayout;
+        return layout;
     }
 
     @Override
@@ -552,7 +547,7 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
                     }
                     mInvalidateRunnable = null;
                 };
-                mHandler.postDelayed(mInvalidateRunnable, 750);
+                mHandler.postDelayed(mInvalidateRunnable, 1000);
             }
         }
     }

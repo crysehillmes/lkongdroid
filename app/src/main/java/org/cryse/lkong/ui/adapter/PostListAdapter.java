@@ -22,7 +22,6 @@ import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -40,6 +39,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final CircleTransform mCircleTransform = new CircleTransform();
     private final int mAvatarSize;
     private boolean mShouldShowImages;
+    private int mAccentColor;
 
     public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
@@ -48,6 +48,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
+        mAccentColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -84,7 +85,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 if(postModel.getAuthorId() == mThreadAuthorId) {
                     String threadAuthorIndicator = getString(R.string.indicator_thread_author);
                     autherNameSpannable.append(threadAuthorIndicator);
-                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
+                    autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
                             postModel.getAuthorName().length(),
                             postModel.getAuthorName().length() + threadAuthorIndicator.length(),
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -95,6 +96,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mPostItemView.setShowImages(mShouldShowImages);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
+                viewHolder.mPostItemView.setPostSpanCache(postModel.getPostSpanCache());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
 
 

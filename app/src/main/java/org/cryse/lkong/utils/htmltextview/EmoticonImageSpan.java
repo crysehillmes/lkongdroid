@@ -13,7 +13,7 @@ import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
 
-public class EmoticonImageSpan extends DynamicDrawableSpan {
+public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
 
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
     private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
@@ -87,6 +87,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
         return localSource;
     }
 
+    @Override
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);

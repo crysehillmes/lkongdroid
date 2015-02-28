@@ -20,7 +20,7 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +43,7 @@ import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.PostSpanCache;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
@@ -53,7 +54,6 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
-import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
@@ -67,9 +67,11 @@ import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
+import org.cryse.widget.recyclerview.PreCachingLinearLayoutManager;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -156,7 +158,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
-        mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        mPostCollectionView.getRefreshableView().setLayoutManager(new PreCachingLinearLayoutManager(this, dm.heightPixels));
         mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
@@ -794,7 +798,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel.getPid(), drawable));
+                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel, drawable));
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
@@ -815,52 +819,66 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 );
     }
 
-    private CharSequence replaceImageSpan(CharSequence sequence, long postId, Drawable initPlaceHolder) {
+    private CharSequence replaceImageSpan(CharSequence sequence, PostModel postModel, Drawable initPlaceHolder) {
         Spannable spannable;
         if(sequence instanceof SpannableString)
             spannable = (SpannableString)sequence;
         else
             spannable = new SpannableString(sequence);
         ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
+        URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
+
+        PostSpanCache postSpanCache = new PostSpanCache();
+        postSpanCache.cachedClickableSpans = new ArrayList<>(urlSpans.length);
+        postSpanCache.imageUrls = new ArrayList<>();
+        postSpanCache.cachedClickableSpans.addAll(Arrays.asList(urlSpans));
+        postSpanCache.urlSpanCount = urlSpans.length;
+
+
         for(ImageSpan imageSpan : imageSpans) {
             int spanStart = spannable.getSpanStart(imageSpan);
             int spanEnd = spannable.getSpanEnd(imageSpan);
             int spanFlags = spannable.getSpanFlags(imageSpan);
             if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
-                Log.d("replaceImageSpan", imageSpan.getSource());
                 spannable.removeSpan(imageSpan);
-                spannable.setSpan(new ClickableImageSpan(
-                                this,
-                                null,
-                                Long.toString(postId),
-                                PostListAdapter.POST_PICASSO_TAG,
-                                imageSpan.getSource(),
-                                R.drawable.image_placeholder,
-                                R.drawable.image_placeholder,
-                                256,
-                                256,
-                                DynamicDrawableSpan.ALIGN_BOTTOM,
-                                initPlaceHolder),
+                ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
+                        this,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        256,
+                        256,
+                        DynamicDrawableSpan.ALIGN_BOTTOM,
+                        initPlaceHolder);
+                spannable.setSpan(clickableImageSpan,
                         spanStart,
                         spanEnd,
                         spanFlags);
+                postSpanCache.cachedClickableSpans.add(clickableImageSpan);
+                postSpanCache.imageUrls.add(imageSpan.getSource());
             } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
                 spannable.removeSpan(imageSpan);
-                spannable.setSpan(new EmoticonImageSpan(
-                                this,
-                                null,
-                                Long.toString(postId),
-                                PostListAdapter.POST_PICASSO_TAG,
-                                imageSpan.getSource(),
-                                R.drawable.image_placeholder,
-                                R.drawable.image_placeholder,
-                                (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
-                        ),
+                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+                        this,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                );
+                spannable.setSpan(emoticonImageSpan,
                         spanStart,
                         spanEnd,
                         spanFlags);
+                postSpanCache.cachedClickableSpans.add(emoticonImageSpan);
             }
         }
+        postModel.setPostSpanCache(postSpanCache);
         return spannable;
     }
 
