@@ -17,10 +17,12 @@ import com.example.android.systemuivis.SystemUiHelper;
 import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.utils.LUtils;
 
 import javax.inject.Inject;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -30,7 +32,7 @@ public abstract class AbstractActivity extends ActionBarActivity {
     private Toolbar mToolbar;
     private View mPreLShadow;
     private ActionMode mActionMode;
-
+    private Subscription mEventBusSubscription;
     @Inject
     RxEventBus mEventBus;
 
@@ -38,7 +40,7 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLUtils = LUtils.getInstance(this);
-        mEventBus.toObservable()
+        mEventBusSubscription = mEventBus.toObservable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onEvent);
@@ -70,6 +72,12 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         analyticsTrackExit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SubscriptionUtils.checkAndUnsubscribe(mEventBusSubscription);
     }
 
     /**

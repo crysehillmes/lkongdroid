@@ -35,14 +35,16 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
+    private Picasso mPicasso;
     private int mImageDownloadPolicy;
     private final CircleTransform mCircleTransform = new CircleTransform();
     private final int mAvatarSize;
     private boolean mShouldShowImages;
     private int mAccentColor;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
+        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
@@ -130,8 +132,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));*/
 
-                Picasso.with(getContext())
-                        .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+                mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)

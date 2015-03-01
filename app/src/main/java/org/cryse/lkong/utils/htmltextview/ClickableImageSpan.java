@@ -1,23 +1,18 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
-import android.view.View;
-
 import com.squareup.picasso.Picasso;
-
-import org.cryse.lkong.R;
-import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
 
 public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
+    private WeakReference<Picasso> mPicasso;
     private String mSource;
     private String mSourceMiddle;
     private int mPlaceHolderRes;
@@ -34,6 +29,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
      */
     public ClickableImageSpan(
             Context context,
+            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -46,6 +42,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
+        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -64,6 +61,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
 
     public ClickableImageSpan(
             Context context,
+            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -77,6 +75,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
+        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -115,12 +114,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        Picasso.with(mContext.get()).load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).transform(new ScaleTransformation(mMaxWidth, mMaxHeight, Color.WHITE)).into(mDrawable);
-    }
-
-    public void loadPlaceHolder(ImageSpanContainer container) {
-        mContainer = new WeakReference<ImageSpanContainer>(container);
-        mDrawable.setContainer(container);
-        Picasso.with(mContext.get()).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).into( mDrawable);
+        if(mPicasso.get() != null)
+            mPicasso.get().load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).centerCrop().into(mDrawable);
     }
 }

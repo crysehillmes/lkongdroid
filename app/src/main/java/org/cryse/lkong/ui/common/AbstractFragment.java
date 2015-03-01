@@ -9,12 +9,14 @@ import android.support.v7.view.ActionMode;
 
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.utils.SubscriptionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -24,6 +26,7 @@ public abstract class AbstractFragment extends Fragment {
     @Inject
     RxEventBus mEventBus;
 
+    private Subscription mEventBusSubscription;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,12 @@ public abstract class AbstractFragment extends Fragment {
     public void onPause() {
         super.onPause();
         analyticsTrackExit();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SubscriptionUtils.checkAndUnsubscribe(mEventBusSubscription);
     }
 
     public ActionBarActivity getActionBarActivity() {

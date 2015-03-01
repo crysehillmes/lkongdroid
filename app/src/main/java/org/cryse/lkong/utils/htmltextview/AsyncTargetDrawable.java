@@ -40,6 +40,7 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         this.mIdentityTag = mIdentityTag;
         this.mMaxWidth = mMaxWidth;
         this.mMaxHeight = mMaxHeight;
+        this.setBounds(0, 0, mMaxWidth, mMaxHeight);
     }
 
     public AsyncTargetDrawable(Context mContext, ImageSpanContainer mContainer, Object mIdentityTag, int mMaxWidth, int mMaxHeight, Drawable placeHolderDrawable) {

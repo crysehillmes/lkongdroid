@@ -73,6 +73,7 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,6 +91,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
+    Picasso mPicasso;
     @Inject
     PostListPresenter mPresenter;
 
@@ -134,6 +136,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
@@ -160,8 +163,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        mPostCollectionView.getRefreshableView().setLayoutManager(new PreCachingLinearLayoutManager(this, dm.heightPixels));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
+        mPostCollectionView.getRefreshableView().setLayoutManager(new PreCachingLinearLayoutManager(this, dm.heightPixels / 2));
+        mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -201,9 +204,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mToolbarQuickReturn.show();
                 }
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Picasso.with(PostListActivity.this).resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                    mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
                 } else {
-                    Picasso.with(PostListActivity.this).pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                    mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
                 }
             }
 
@@ -525,6 +528,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.cancelTag(PostListAdapter.POST_PICASSO_TAG);
+        mPicasso.shutdown();
     }
 
     @Override
@@ -843,6 +848,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 spannable.removeSpan(imageSpan);
                 ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
                         this,
+                        mPicasso,
                         null,
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
@@ -863,6 +869,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 spannable.removeSpan(imageSpan);
                 EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
                         this,
+                        mPicasso,
                         null,
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
