@@ -113,13 +113,15 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public void setBounds(int left, int top, int right, int bottom) {
         super.setBounds(left, top, right, bottom);
-        mInnerDrawable.setBounds(left, top, right, bottom);
+        if(mInnerDrawable != null)
+            mInnerDrawable.setBounds(left, top, right, bottom);
     }
 
     @Override
     public void setBounds(Rect bounds) {
         super.setBounds(bounds);
-        mInnerDrawable.setBounds(bounds);
+        if(mInnerDrawable != null)
+            mInnerDrawable.setBounds(bounds);
     }
 
     @Override
