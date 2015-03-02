@@ -64,7 +64,6 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectThis();
     }
 
     @Override

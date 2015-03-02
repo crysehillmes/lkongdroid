@@ -51,8 +51,8 @@ public class NotificationFragment extends InActivityFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         injectThis();
+        super.onCreate(savedInstanceState);
         mColorAccent = ColorUtils.getColorFromAttr(getActivity(), R.attr.colorAccent);
     }
 

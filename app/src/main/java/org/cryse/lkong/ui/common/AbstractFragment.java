@@ -30,6 +30,10 @@ public abstract class AbstractFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mEventBusSubscription = mEventBus.toObservable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onEvent);
     }
 
     protected List<Runnable> getDeferredUiOperations() {
@@ -48,11 +52,6 @@ public abstract class AbstractFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mEventBus.toObservable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onEvent);
     }
 
     @Override

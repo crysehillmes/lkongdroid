@@ -36,6 +36,12 @@ public class MentionsFragment extends SimpleCollectionFragment<
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        injectThis();
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     protected void injectThis() {
         LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
     }
