@@ -114,7 +114,8 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null)
+        if(mPicasso.get() != null) {
             mPicasso.get().load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).centerCrop().noFade().into(mDrawable);
+        }
     }
 }

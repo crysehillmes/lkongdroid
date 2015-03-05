@@ -214,6 +214,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
@@ -804,7 +805,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(replaceImageSpan(new SpannableString(spannedText), postModel, drawable));
+                replaceImageSpan(new SpannableString(spannedText), postModel, drawable);
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
@@ -884,6 +885,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
             }
         }
+        postDisplayCache.setSpannableString((SpannableString)spannable);
+
+        TextPaint contentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float textSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
+        contentTextPaint.setTextSize(textSize);
+        contentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        contentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
+        int width = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
+        StaticLayout layout = new StaticLayout(spannable, contentTextPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        postDisplayCache.setTextLayout(layout);
         postModel.setPostDisplayCache(postDisplayCache);
         return spannable;
     }

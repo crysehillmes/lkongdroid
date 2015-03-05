@@ -13,7 +13,6 @@ public class PostModel implements Parcelable {
     private Date sortKeyTime;
     private Date dateline;
     private String message;
-    private CharSequence spannedMessage;
     private PostDisplayCache postDisplayCache;
     private String authorName;
     private long authorId;
@@ -73,14 +72,6 @@ public class PostModel implements Parcelable {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public CharSequence getSpannedMessage() {
-        return spannedMessage;
-    }
-
-    public void setSpannedMessage(CharSequence spannedMessage) {
-        this.spannedMessage = spannedMessage;
     }
 
     public PostDisplayCache getPostDisplayCache() {

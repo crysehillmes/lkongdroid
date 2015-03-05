@@ -1,15 +1,12 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
 import com.squareup.picasso.Picasso;
-
-import org.cryse.lkong.utils.ScaleTransformation;
 
 import java.lang.ref.WeakReference;
 
@@ -94,7 +91,8 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null)
+        if(mPicasso.get() != null) {
             mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).noFade().into(mDrawable);
+        }
     }
 }
