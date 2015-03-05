@@ -52,6 +52,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }

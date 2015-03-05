@@ -1,21 +1,30 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +46,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
@@ -48,11 +58,11 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
-import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.view.PostListView;
@@ -64,7 +74,9 @@ import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,6 +94,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
+    Picasso mPicasso;
     @Inject
     PostListPresenter mPresenter;
 
@@ -126,6 +139,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
@@ -149,9 +163,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
-        mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
+        mPostCollectionView.getRefreshableView().setItemAnimator(null);
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
+        mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -191,15 +205,16 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mToolbarQuickReturn.show();
                 }
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Picasso.with(PostListActivity.this).resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                    mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
                 } else {
-                    Picasso.with(PostListActivity.this).pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                    mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
@@ -515,6 +530,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.cancelTag(PostListAdapter.POST_PICASSO_TAG);
+        mPicasso.shutdown();
     }
 
     @Override
@@ -785,9 +802,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
                 .setError(R.drawable.image_placeholder);*/
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
+            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
-                postModel.setSpannedMessage(new SpannableString(spannedText));
+                replaceImageSpan(new SpannableString(spannedText), postModel, drawable);
             }
             subscriber.onNext(posts);
             subscriber.onCompleted();
@@ -806,6 +824,82 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                             Timber.d("PostListActivity::createSpan() onComplete().", LOG_TAG);
                         }
                 );
+    }
+
+    private CharSequence replaceImageSpan(CharSequence sequence, PostModel postModel, Drawable initPlaceHolder) {
+        Spannable spannable;
+        if(sequence instanceof SpannableString)
+            spannable = (SpannableString)sequence;
+        else
+            spannable = new SpannableString(sequence);
+        ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
+        URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
+
+        PostDisplayCache postDisplayCache = new PostDisplayCache();
+        postDisplayCache.getImportantSpans().addAll(Arrays.asList(urlSpans));
+        postDisplayCache.setUrlSpanCount(urlSpans.length);
+
+
+        for(ImageSpan imageSpan : imageSpans) {
+            int spanStart = spannable.getSpanStart(imageSpan);
+            int spanEnd = spannable.getSpanEnd(imageSpan);
+            int spanFlags = spannable.getSpanFlags(imageSpan);
+            if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
+                spannable.removeSpan(imageSpan);
+                ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
+                        this,
+                        mPicasso,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        256,
+                        256,
+                        DynamicDrawableSpan.ALIGN_BOTTOM,
+                        initPlaceHolder);
+                spannable.setSpan(clickableImageSpan,
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+                postDisplayCache.getImportantSpans().add(clickableImageSpan);
+                postDisplayCache.getImageUrls().add(imageSpan.getSource());
+            } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
+                spannable.removeSpan(imageSpan);
+                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+                        this,
+                        mPicasso,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                );
+                spannable.setSpan(emoticonImageSpan,
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+                postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
+            }
+        }
+        postDisplayCache.setSpannableString((SpannableString)spannable);
+
+        TextPaint contentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float textSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
+        contentTextPaint.setTextSize(textSize);
+        contentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        contentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
+        int width = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
+        StaticLayout layout = new StaticLayout(spannable, contentTextPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        postDisplayCache.setTextLayout(layout);
+        postModel.setPostDisplayCache(postDisplayCache);
+        return spannable;
     }
 
     static final Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");

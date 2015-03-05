@@ -15,7 +15,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -41,6 +40,18 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         this.mIdentityTag = mIdentityTag;
         this.mMaxWidth = mMaxWidth;
         this.mMaxHeight = mMaxHeight;
+        this.setBounds(0, 0, mMaxWidth, mMaxHeight);
+    }
+
+    public AsyncTargetDrawable(Context mContext, ImageSpanContainer mContainer, Object mIdentityTag, int mMaxWidth, int mMaxHeight, Drawable placeHolderDrawable) {
+        this.mContext = new WeakReference<Context>(mContext);
+        this.mContainer = new WeakReference<ImageSpanContainer>(mContainer);
+        this.mIdentityTag = mIdentityTag;
+        this.mMaxWidth = mMaxWidth;
+        this.mMaxHeight = mMaxHeight;
+        this.mInnerDrawable = placeHolderDrawable;
+        this.mInnerDrawable.setBounds(0, 0, mMaxWidth, mMaxHeight);
+        this.setBounds(0, 0, mMaxWidth, mMaxHeight);
     }
 
     @Override
@@ -54,7 +65,8 @@ public class AsyncTargetDrawable extends Drawable implements Target{
 
     @Override
     public void draw(Canvas canvas) {
-        mInnerDrawable.draw(canvas);
+        if(mInnerDrawable != null)
+            mInnerDrawable.draw(canvas);
     }
 
     @Override
@@ -67,12 +79,15 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         return mInnerDrawable.getOpacity();
     }
 
+    public void setContainer(ImageSpanContainer container) {
+        this.mContainer = new WeakReference<ImageSpanContainer>(container);
+    }
+
     @Override
      public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         if(mContext.get() == null) throw new IllegalStateException("Context is null, cannot create bitmap drawable.");
         Drawable drawable = new BitmapDrawable(mContext.get().getResources(), bitmap);
         setDrawable(drawable);
-        Log.d("onBitmapLoaded", String.format("draw originWidth: %d draw originHeight: %d", drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
         if(mContainer.get() != null) {
             mContainer.get().notifyImageSpanLoaded(mIdentityTag);
@@ -82,14 +97,12 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
         setDrawable(errorDrawable);
-        Log.d("ClickableImageSpan", String.format("onBitmapFailed draw originWidth: %d draw originHeight: %d", errorDrawable.getIntrinsicWidth(), errorDrawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
         setDrawable(placeHolderDrawable);
-        Log.d("ClickableImageSpan", String.format("onPrepareLoad draw originWidth: %d draw originHeight: %d", placeHolderDrawable.getIntrinsicWidth(), placeHolderDrawable.getIntrinsicHeight()));
         setBounds(0,0, mMaxWidth, mMaxHeight);
     }
 
@@ -100,13 +113,15 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public void setBounds(int left, int top, int right, int bottom) {
         super.setBounds(left, top, right, bottom);
-        mInnerDrawable.setBounds(left, top, right, bottom);
+        if(mInnerDrawable != null)
+            mInnerDrawable.setBounds(left, top, right, bottom);
     }
 
     @Override
     public void setBounds(Rect bounds) {
         super.setBounds(bounds);
-        mInnerDrawable.setBounds(bounds);
+        if(mInnerDrawable != null)
+            mInnerDrawable.setBounds(bounds);
     }
 
     @Override

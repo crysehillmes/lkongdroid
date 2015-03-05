@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="?attr/theme_card_bg_color"
-    app:cardCornerRadius="0dp"
+    app:cardCornerRadius="2dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="0dp">
@@ -14,6 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/recyclerview_item_post_imageview_avatar"
+            android:layout_width="@dimen/size_avatar_default"
+            android:layout_height="@dimen/size_avatar_default" />
 
         <Button
             android:id="@+id/recyclerview_item_post_button_rate"

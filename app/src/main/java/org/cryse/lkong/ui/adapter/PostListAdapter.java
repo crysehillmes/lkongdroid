@@ -8,9 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CircleTransform;
@@ -21,7 +24,6 @@ import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -35,20 +37,27 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mThreadAuthorId;
     private int mMaxImageWidth;
+    private Picasso mPicasso;
     private int mImageDownloadPolicy;
     private final CircleTransform mCircleTransform = new CircleTransform();
     private final int mAvatarSize;
+    private boolean mShouldShowImages;
+    private int mAccentColor;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, int imageDownloadPolicy) {
         super(context, mItemList);
+        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
+        mAccentColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
         mImageDownloadPolicy = imageDownloadPolicy;
+        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
     }
 
     public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
@@ -80,7 +89,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 if(postModel.getAuthorId() == mThreadAuthorId) {
                     String threadAuthorIndicator = getString(R.string.indicator_thread_author);
                     autherNameSpannable.append(threadAuthorIndicator);
-                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
+                    autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
                             postModel.getAuthorName().length(),
                             postModel.getAuthorName().length() + threadAuthorIndicator.length(),
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -88,8 +97,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mPostItemView.setPostId(postModel.getPid());
                 viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
                 viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
+                viewHolder.mPostItemView.setShowImages(mShouldShowImages);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
-                viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
+                viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
 
 
@@ -123,14 +133,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));*/
 
-                Picasso.with(getContext())
-                        .load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+                mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
                         .resize(mAvatarSize, mAvatarSize)
                         .transform(mCircleTransform)
-                        .into(viewHolder.mPostItemView);
+                        .noFade()
+                        .into(viewHolder.mAvatarImageView);
             }
         }
     }
@@ -146,6 +156,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         // each data item is just a string in this case
         @InjectView(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
+        @InjectView(R.id.recyclerview_item_post_imageview_avatar)
+        ImageView mAvatarImageView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         Button mRateButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)

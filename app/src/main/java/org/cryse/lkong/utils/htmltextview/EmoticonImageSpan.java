@@ -10,13 +10,14 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 
-public class EmoticonImageSpan extends DynamicDrawableSpan {
+public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
 
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
     private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
 
-    private Drawable mDrawable;
+    private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
+    private WeakReference<Picasso> mPicasso;
     private String mSource;
     private String mLocalSource;
     private int mPlaceHolderRes;
@@ -25,18 +26,10 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
     private Object mIdentityTag;
     private Object mPicassoTag;
     private WeakReference<ImageSpanContainer> mContainer;
-    /**
-     * @param verticalAlignment one of {@link android.text.style.DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link android.text.style.DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    public EmoticonImageSpan(Drawable d, String source, int verticalAlignment) {
-        super(verticalAlignment);
-        mDrawable = d;
-        mSource = source;
-    }
 
     public EmoticonImageSpan(
             Context context,
+            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -47,6 +40,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
     ) {
         super(ALIGN_BASELINE);
         mContext = new WeakReference<Context>(context);
+        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -56,7 +50,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
         mErrorRes = errorRes;
         mEmoticonSize = emoticonSize;
         mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mEmoticonSize, mEmoticonSize);
-        Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
+        // Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
     }
 
     @Override
@@ -91,5 +85,14 @@ public class EmoticonImageSpan extends DynamicDrawableSpan {
             localSource = source;
         }
         return localSource;
+    }
+
+    @Override
+    public void loadImage(ImageSpanContainer container) {
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mDrawable.setContainer(container);
+        if(mPicasso.get() != null) {
+            mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).noFade().into(mDrawable);
+        }
     }
 }
