@@ -1,26 +1,30 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,8 +46,8 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.model.PostModel;
-import org.cryse.lkong.model.PostSpanCache;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
@@ -67,7 +71,6 @@ import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.preference.StringPreference;
-import org.cryse.widget.recyclerview.PreCachingLinearLayoutManager;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -160,10 +163,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
-        mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        mPostCollectionView.getRefreshableView().setLayoutManager(new PreCachingLinearLayoutManager(this, dm.heightPixels / 2));
+        mPostCollectionView.getRefreshableView().setItemAnimator(null);
+        mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
@@ -833,11 +834,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
         URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
 
-        PostSpanCache postSpanCache = new PostSpanCache();
-        postSpanCache.cachedClickableSpans = new ArrayList<>(urlSpans.length);
-        postSpanCache.imageUrls = new ArrayList<>();
-        postSpanCache.cachedClickableSpans.addAll(Arrays.asList(urlSpans));
-        postSpanCache.urlSpanCount = urlSpans.length;
+        PostDisplayCache postDisplayCache = new PostDisplayCache();
+        postDisplayCache.getImportantSpans().addAll(Arrays.asList(urlSpans));
+        postDisplayCache.setUrlSpanCount(urlSpans.length);
 
 
         for(ImageSpan imageSpan : imageSpans) {
@@ -863,8 +862,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         spanStart,
                         spanEnd,
                         spanFlags);
-                postSpanCache.cachedClickableSpans.add(clickableImageSpan);
-                postSpanCache.imageUrls.add(imageSpan.getSource());
+                postDisplayCache.getImportantSpans().add(clickableImageSpan);
+                postDisplayCache.getImageUrls().add(imageSpan.getSource());
             } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
                 spannable.removeSpan(imageSpan);
                 EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
@@ -882,10 +881,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         spanStart,
                         spanEnd,
                         spanFlags);
-                postSpanCache.cachedClickableSpans.add(emoticonImageSpan);
+                postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
             }
         }
-        postModel.setPostSpanCache(postSpanCache);
+        postModel.setPostDisplayCache(postDisplayCache);
         return spannable;
     }
 

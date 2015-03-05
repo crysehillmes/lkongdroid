@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.text.Html;
@@ -155,6 +156,15 @@ public class UIUtils {
 
     public static int getDefaultAvatarSize(Context context) {
         return dp2px(context, context.getResources().getDimension(R.dimen.size_avatar_default));
+    }
+
+    public static InsetsValue getCardViewPadding(int cardElevation, int cornerRadius) {
+        // This padding amount is equal to maxCardElevation + (1 - cos45) * cornerRadius on the sides
+        // and maxCardElevation * 1.5 + (1 - cos45) * cornerRadius on top and bottom.
+        // 1 - cos(45) = 0.29289321881345247
+        int horizontalPadding = (int) Math.ceil((double) cardElevation + 0.29289321881345247d * (double) cornerRadius);
+        int verticalPadding = (int) Math.ceil((double) cardElevation * 1.5d + 0.29289321881345247d * (double) cornerRadius);
+        return new InsetsValue(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
     }
 
     public static class InsetsValue {

@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -98,7 +100,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mPostItemView.setShowImages(mShouldShowImages);
                 viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setMessageText(postModel.getSpannedMessage());
-                viewHolder.mPostItemView.setPostSpanCache(postModel.getPostSpanCache());
+                viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
 
 
@@ -138,7 +140,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                         .placeholder(R.drawable.ic_default_avatar)
                         .resize(mAvatarSize, mAvatarSize)
                         .transform(mCircleTransform)
-                        .into(viewHolder.mPostItemView);
+                        .noFade()
+                        .into(viewHolder.mAvatarImageView);
             }
         }
     }
@@ -154,6 +157,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         // each data item is just a string in this case
         @InjectView(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
+        @InjectView(R.id.recyclerview_item_post_imageview_avatar)
+        ImageView mAvatarImageView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         Button mRateButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)

@@ -2,14 +2,11 @@ package org.cryse.lkong.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.text.Layout;
@@ -22,27 +19,23 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
 import org.cryse.lkong.R;
-import org.cryse.lkong.model.PostSpanCache;
+import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.gesture.Pointer;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
-import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
 import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class PostItemView extends ViewGroup implements Target, ImageSpanContainer {
+public class PostItemView extends ViewGroup implements ImageSpanContainer {
     private long mPostId;
     private CharSequence mMessageText = null;
     private CharSequence mAuthorName = null;
@@ -52,7 +45,6 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     private Object mPicassoTag = null;
     private StaticLayout mMessageLayout = null;
     private StaticLayout mAuthorInfoLayout = null;
-    private Drawable mAvatarDrawable = null;
     private TextPaint mTextPaint = null;
     private Handler mHandler;
     private CharSequence mOrdinalText = null;
@@ -65,8 +57,6 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     private int px_margin_8 = 0;
     private int px_margin_6 = 0;
 
-    private ArrayList<Object> mCachedClickableSpans;
-    private ArrayList<String> mImageUrls;
     private OnSpanClickListener mOnSpanClickListener;
     private boolean mShowImages = true;
 
@@ -93,14 +83,17 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
 
     private void init() {
         setWillNotDraw(false);
+        setDrawingCacheEnabled(true);
+        setChildrenDrawingCacheEnabled(true);
+        setAnimationCacheEnabled(true);
+        setChildrenDrawnWithCacheEnabled(true);
+        setAlwaysDrawnWithCacheEnabled(true);
         px_margin_16 = UIUtils.dp2px(getContext(), 16f);
         px_margin_72 = UIUtils.dp2px(getContext(), 72f);
         px_width_40 = UIUtils.dp2px(getContext(), 40f);
         px_height_48 = UIUtils.dp2px(getContext(), 48f);
         px_margin_8 = UIUtils.dp2px(getContext(), 8f);
         px_margin_6 = UIUtils.dp2px(getContext(), 6f);
-        mCachedClickableSpans = new ArrayList<>();
-        mImageUrls = new ArrayList<>();
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         float textSize =  UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_subhead);
         mTextPaint.setTextSize(textSize);
@@ -119,13 +112,13 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSize = MeasureUtils.getMeasurement(widthMeasureSpec, 0);
         int heightSize = MeasureUtils.getMeasurement(heightMeasureSpec, getDesiredHeight());
-        if((mMessageLayout != null && mMessageLayout.getWidth() + px_margin_16 * 2 != widthSize) || mMessageLayout == null) {
-            generateMessageTextLayout(widthSize);
+        if(mMessageLayout == null) {
+            generateMessageTextLayout(widthSize, true);
         }
 
         int childHeight = px_height_48 - px_margin_6 * 2;
         int childLeft = this.getPaddingLeft();
-        int childRight = this.getMeasuredWidth() - this.getPaddingRight();
+        int childRight = widthSize - this.getPaddingRight();
         int childWidth = childRight - childLeft;
 
         measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
@@ -134,28 +127,32 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         if(mMessageLayout != null) {
             height = height + mMessageLayout.getHeight();
         }
+        Log.d("PostItemView", String.format("onMeasure for pid: %d, width = %d, height = %d", mPostId, widthSize, height));
         setMeasuredDimension(widthSize, height);
-        if((mAuthorInfoLayout != null && !TextUtils.equals(mAuthorInfoLayout.getText(), mAuthorInfo)) || mAuthorInfoLayout == null) {
+        if(mAuthorInfoLayout == null) {
             generateAuthorTextLayout();
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if(changed)
-            mHandler.post(this::requestLayout);
         final int count = getChildCount();
+        Log.d("PostItemView", String.format("onLayout for pid: %d,l = %d, t = %d, r = %d, b = %d, item count = %d", mPostId, l, t, r, b, count));
         int startTop = px_margin_72 + (mMessageLayout == null ? 0 : mMessageLayout.getHeight());
         int startMarginRight = px_margin_16;
         for (int i = count - 1; i >= 0; i--) {
             View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                int left = r - l - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
-                int top = startTop + px_margin_6;
-                int right = left + child.getMeasuredWidth();
-                int bottom = top + child.getMeasuredHeight();
-                startMarginRight = startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i);
-                child.layout(left, top, right, bottom);
+                if(i == 0) {
+                    child.layout(px_margin_16, px_margin_16, px_margin_16 + px_width_40, px_margin_16 + px_width_40);
+                } else {
+                    int left = r - l - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
+                    int top = startTop + px_margin_6;
+                    int right = left + child.getMeasuredWidth();
+                    int bottom = top + child.getMeasuredHeight();
+                    startMarginRight = startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i);
+                    child.layout(left, top, right, bottom);
+                }
             }
         }
     }
@@ -164,13 +161,8 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d("PostItemView", String.format("onDraw for pid: %d", mPostId));
         int canvasWidth = canvas.getWidth();
-        if(mAvatarDrawable != null) {
-            canvas.save();
-            canvas.translate(px_margin_16, px_margin_16);
-            mAvatarDrawable.draw(canvas);
-            canvas.restore();
-        }
         if(mAuthorInfoLayout != null) {
             canvas.save();
             int layoutHeight = mAuthorInfoLayout.getHeight();
@@ -214,19 +206,19 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
 
         mMessageText = messageText;
         if(mMessageLayout != null) {
-            generateMessageTextLayout(getMeasuredWidth());
+            generateMessageTextLayout(getMeasuredWidth(), false);
         }
     }
 
-    PostSpanCache mPostSpanCache;
+    PostDisplayCache mPostDisplayCache;
 
-    public void setPostSpanCache(PostSpanCache postSpanCache) {
-        mPostSpanCache = postSpanCache;
-        this.mCachedClickableSpans = postSpanCache.cachedClickableSpans;
-        this.mImageUrls = postSpanCache.imageUrls;
-        for(int i = postSpanCache.urlSpanCount; i < mCachedClickableSpans.size(); i++) {
-            PendingImageSpan pendingImageSpan = (PendingImageSpan) mCachedClickableSpans.get(i);
-            pendingImageSpan.loadImage(this);
+    public void setPostDisplayCache(PostDisplayCache postDisplayCache) {
+        mPostDisplayCache = postDisplayCache;
+        if(mShowImages) {
+            for(int i = postDisplayCache.getUrlSpanCount(); i < postDisplayCache.getImportantSpans().size(); i++) {
+                PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
+                pendingImageSpan.loadImage(this);
+            }
         }
     }
 
@@ -246,41 +238,41 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         generateAuthorTextLayout();
     }
 
-    private void generateMessageTextLayout(int wantWidth) {
+    private void generateMessageTextLayout(int wantWidth, boolean fromMeasure) {
         if(wantWidth > 0) {
+            long startTime = System.nanoTime();
             mMessageLayout = makeNewLayout(wantWidth - px_margin_16 * 2);
-            requestLayout();
-            invalidate();
+            long stopTime = System.nanoTime();
+            Log.d("PostItemView", String.format("make TextLayout for pid: %d time: %d, from Measure? %b", mPostId, (stopTime - startTime) / 1000000, fromMeasure));
+            if(!fromMeasure) {
+                // requestLayout();
+                // invalidate();
+            }
         }
     }
 
     private void generateAuthorTextLayout() {
         int width = getMeasuredWidth();
+        if(isInEditMode()) return;
         if(width > 0) {
             mAuthorInfoLayout = new StaticLayout(mAuthorInfo, mTextPaint, width - px_margin_72 * 2, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-            invalidate(px_margin_72, px_margin_16, width - px_margin_72, px_margin_16 + mAuthorInfoLayout.getHeight());
+            //invalidate(px_margin_72, px_margin_16, width - px_margin_72, px_margin_16 + mAuthorInfoLayout.getHeight());
         }
-    }
-
-    public void setAuthorAvatar(Drawable authorAvatar) {
-        mAvatarDrawable = authorAvatar;
-        mAvatarDrawable.setBounds(0, 0, px_width_40, px_width_40);
-        invalidate(px_margin_16, px_margin_16, px_margin_16 + px_width_40, px_margin_16 + px_width_40);
     }
 
     public void setTextColor(int textColor) {
         mTextPaint.setColor(textColor);
-        generateMessageTextLayout(getMeasuredWidth());
+        generateMessageTextLayout(getMeasuredWidth(), false);
     }
 
     public void setLinkColor(int linkColor) {
         mTextPaint.linkColor = linkColor;
-        generateMessageTextLayout(getMeasuredWidth());
+        generateMessageTextLayout(getMeasuredWidth(), false);
     }
 
     public void setTextSize(float textSize) {
         mTextPaint.setTextSize(textSize);
-        generateMessageTextLayout(getMeasuredWidth());
+        generateMessageTextLayout(getMeasuredWidth(), false);
     }
 
     public void setOrdinal(CharSequence ordinal) {
@@ -290,26 +282,12 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     private StaticLayout makeNewLayout(int wantWidth) {
         if(isInEditMode()) return null;
         StaticLayout layout = new StaticLayout(mMessageText, mTextPaint, wantWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
-        if(layout.getLineCount() > 50)
+        // setLayerType(LAYER_TYPE_NONE, null);
+        /*if(layout.getLineCount() > 50)
             setLayerType(LAYER_TYPE_NONE, null);
         else
-            setLayerType(LAYER_TYPE_HARDWARE, null);
+            setLayerType(LAYER_TYPE_HARDWARE, null);*/
         return layout;
-    }
-
-    @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        setAuthorAvatar(new BitmapDrawable(getContext().getResources(), bitmap));
-    }
-
-    @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-        setAuthorAvatar(errorDrawable);
-    }
-
-    @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
-        setAuthorAvatar(placeHolderDrawable);
     }
 
     @Override
@@ -317,10 +295,10 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         super.onDetachedFromWindow();
     }
 
-    @Override
+    /*@Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return super.onInterceptTouchEvent(ev);
-    }
+    }*/
 
 
 
@@ -446,35 +424,41 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
         //If the text contains an url, we check its location and if it is touched: fire the click event.
         Spanned spanned = (Spanned)mMessageText;
 
-        for(int i = 0; i < mCachedClickableSpans.size(); i++)
-        {
-            Object span = mCachedClickableSpans.get(i);
+        int textLayoutX = x - px_margin_16;
+        int textLayoutY = y - px_margin_72;
+        int touchLine = mMessageLayout.getLineForVertical(textLayoutY);
+        int lineStart = mMessageLayout.getLineStart(touchLine);
+        int lineEnd = mMessageLayout.getLineEnd(touchLine);
+        Object[] spans = spanned.getSpans(lineStart, lineEnd, Object.class);
+        for (Object span : spans) {
             //get the start and end points of url span
-            int start=spanned.getSpanStart(span);
-            int end=spanned.getSpanEnd(span);
+            if(span instanceof URLSpan || span instanceof ClickableImageSpan) {
+                int start = spanned.getSpanStart(span);
+                int end = spanned.getSpanEnd(span);
 
-            Path dest = new Path();
-            mMessageLayout.getSelectionPath(start, end, dest);
+                Path dest = new Path();
+                mMessageLayout.getSelectionPath(start, end, dest);
 
-            RectF rectF = new RectF();
-            dest.computeBounds(rectF, true);
+                RectF rectF = new RectF();
+                dest.computeBounds(rectF, true);
 
-            //Add the left and top margins of your staticLayout here.
-            rectF.offset(px_margin_16 , px_margin_72);
+                //Add the left and top margins of your staticLayout here.
+                rectF.offset(px_margin_16, px_margin_72);
 
-            if(rectF.contains(x, y))
-            {
-                if(span instanceof URLSpan) {
-                    if(mOnSpanClickListener != null)
-                        return mOnSpanClickListener.onUrlSpanClick(mPostId, (URLSpan)span, ((URLSpan) span).getURL());
-                    return false;
-                } else if(span instanceof ClickableImageSpan){
-                    if(mOnSpanClickListener != null)
-                        return mOnSpanClickListener.onImageSpanClick(mPostId, (ClickableImageSpan)span, mImageUrls, ((ClickableImageSpan)span).getSource());
-                    return false;
-                } else
-                    return false;
+                if (rectF.contains(x, y)) {
+                    if (span instanceof URLSpan) {
+                        if (mOnSpanClickListener != null)
+                            return mOnSpanClickListener.onUrlSpanClick(mPostId, (URLSpan) span, ((URLSpan) span).getURL());
+                        return false;
+                    } else if (span instanceof ClickableImageSpan) {
+                        if (mOnSpanClickListener != null)
+                            return mOnSpanClickListener.onImageSpanClick(mPostId, (ClickableImageSpan) span, mPostDisplayCache.getImageUrls(), ((ClickableImageSpan) span).getSource());
+                        return false;
+                    } else
+                        return false;
+                }
             }
+
         }
         return false;
     }
@@ -540,7 +524,7 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
     public void notifyImageSpanLoaded(Object identityTag) {
         if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
             // TODO: re-layout and invalidate
-            if(mInvalidateRunnable == null) {
+            /*if(mInvalidateRunnable == null) {
                 mInvalidateRunnable = () -> {
                     if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
                         invalidate();
@@ -548,7 +532,7 @@ public class PostItemView extends ViewGroup implements Target, ImageSpanContaine
                     mInvalidateRunnable = null;
                 };
                 mHandler.postDelayed(mInvalidateRunnable, 1000);
-            }
+            }*/
         }
     }
 

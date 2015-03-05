@@ -95,6 +95,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
         if(mPicasso.get() != null)
-            mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into(mDrawable);
+            mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).noFade().into(mDrawable);
     }
 }
