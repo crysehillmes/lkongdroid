@@ -1,33 +1,40 @@
 package org.cryse.lkong.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import com.squareup.picasso.Picasso;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.OriginImageDownloader;
+import org.cryse.lkong.utils.SubscriptionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import uk.co.senab.photoview.PhotoView;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     private static final String LOG_TAG = PhotoViewPagerActivity.class.getName();
@@ -43,6 +50,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
+        setIsOverrideToolbarColor(false);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
         ButterKnife.inject(this);
@@ -61,10 +70,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
                 break;
             }
         }
-
-        mPagerAdapter = new PhotoPagerAdapter(this, mPhotoUrls);
+        mPagerAdapter = new PhotoPagerAdapter(getSupportFragmentManager(), mPhotoUrls);
         mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setCurrentItem(initPosition);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -73,11 +80,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
 
             @Override
             public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
+                setTitle(mPagerAdapter.getPageTitle(position));
                 if(mViewPager.getCurrentItem() == 0) {
                     DisplayMetrics displaymetrics = new DisplayMetrics();
                     PhotoViewPagerActivity.this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -89,7 +92,13 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
                     PhotoViewPagerActivity.this.getSwipeBackLayout().setEdgeSize(0);
                 }
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
+        mViewPager.setCurrentItem(initPosition);
     }
 
     @Override
@@ -107,11 +116,11 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         AnalyticsUtils.trackActivityExit(this, LOG_TAG);
     }
 
-    static class PhotoPagerAdapter extends PagerAdapter {
-        private Context mContext;
+    static class PhotoPagerAdapter extends FragmentStatePagerAdapter {
         private List<String> mPhotoUrls = new ArrayList<>();
-        public PhotoPagerAdapter(Context context, List<String> photoUrls) {
-            mContext = context;
+
+        public PhotoPagerAdapter(FragmentManager fm, List<String> photoUrls) {
+            super(fm);
             mPhotoUrls.addAll(photoUrls);
         }
 
@@ -121,39 +130,77 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         }
 
         @Override
-        public View instantiateItem(ViewGroup container, int position) {
-            FrameLayout rootView = (FrameLayout)LayoutInflater.from(mContext).inflate(R.layout.viewpager_item_photo, container, false);
-            ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.viewpager_item_photo_progressbar);
-            PhotoView photoView = (PhotoView) rootView.findViewById(R.id.viewpager_item_photo_photoview);
-            Picasso.with(mContext).load(mPhotoUrls.get(position)).fit().centerInside().into(photoView, new com.squareup.picasso.Callback() {
-                @Override
-                public void onSuccess() {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    photoView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onError() {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    photoView.setVisibility(View.VISIBLE);
-                }
-            });
-
-            // Now just add PhotoView to ViewPager and return it
-            container.addView(rootView);
-
-            return rootView;
+        public Fragment getItem(int position) {
+            return ImageFragment.newInstance(mPhotoUrls.get(position));
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
+        public CharSequence getPageTitle(int position) {
+            return String.format("%d / %d", position + 1, getCount());
+        }
+    }
+
+    public static class ImageFragment extends Fragment {
+        private static final String ARGS_IMAGE_URL = "IMAGE_URL";
+        private Subscription mLoadImageSubscription;
+        private String mImageUrl;
+        @InjectView(R.id.viewpager_item_photo_progressbar)
+        ProgressBar mProgressBar;
+        @InjectView(R.id.viewpager_item_photo_photoview)
+        SubsamplingScaleImageView mPhotoView;
+
+        public static ImageFragment newInstance(String url) {
+            ImageFragment fragment = new ImageFragment();
+            Bundle args = new Bundle();
+            args.putString(ARGS_IMAGE_URL, url);
+            fragment.setArguments(args);
+            return fragment;
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Bundle args = getArguments();
+            if(args != null && args.containsKey(ARGS_IMAGE_URL)) {
+                mImageUrl = args.getString(ARGS_IMAGE_URL);
+            } else {
+                throw new IllegalArgumentException("Wrong args pass to ImageFragment.");
+            }
         }
 
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View contentView = inflater.inflate(R.layout.viewpager_item_photo, container, false);
+            ButterKnife.inject(this, contentView);
+            return contentView;
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            OkHttpClient client = new OkHttpClient();
+            OriginImageDownloader originImageDownloader = new OriginImageDownloader(client, getActivity().getCacheDir(), "img-origin-cache");
+            SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
+            mLoadImageSubscription = originImageDownloader.downloadImage(mImageUrl).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            result -> {
+                                mPhotoView.setImageUri(result);
+                            },
+                            error -> {
+                                Timber.e(error, "OriginImageDownloader::downloadImage() onError().", LOG_TAG);
+                                mProgressBar.setVisibility(View.INVISIBLE);
+                            },
+                            () -> {
+                                mProgressBar.setVisibility(View.INVISIBLE);
+                            }
+                    );
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
+        }
     }
 }

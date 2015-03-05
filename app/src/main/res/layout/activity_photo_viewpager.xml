@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/photo_viewpager"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"/>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/photo_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:orientation="vertical" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_awesome_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@android:color/transparent"
+        android:layout_gravity="top"
+        app:contentInsetStart="72dp"
+        app:contentInsetLeft="72dp"
+        app:contentInsetEnd="0dp"
+        app:popupTheme="?theme_toolbar_popup_theme"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+</FrameLayout>

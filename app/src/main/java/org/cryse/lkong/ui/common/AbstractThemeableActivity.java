@@ -27,6 +27,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     private int mLightTheme = R.style.LKongDroidTheme_Light;
     private int mTheme;
     private boolean mIsOverrideStatusBarColor = true;
+    private boolean mIsOverrideToolbarColor = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     @Override
     protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
         super.setUpToolbar(toolbarLayoutId, customToolbarShadowId);
-        if(getSupportActionBar() != null)
+        if(getSupportActionBar() != null && mIsOverrideToolbarColor)
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -152,6 +153,10 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     public void setIsOverrideStatusBarColor(boolean isOverrideStatusBarColor) {
         this.mIsOverrideStatusBarColor = isOverrideStatusBarColor;
+    }
+
+    public void setIsOverrideToolbarColor(boolean isOverrideToolbarColor) {
+        this.mIsOverrideToolbarColor = isOverrideToolbarColor;
     }
 
     public ThemeEngine getThemeEngine() {
