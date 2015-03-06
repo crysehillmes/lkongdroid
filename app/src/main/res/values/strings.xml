@@ -108,11 +108,11 @@
 
 
     <string name="settings_item_font_size_title">Font Size</string>
-    <string name="settings_item_font_size_summary">Set font size of forum content.</string>
+    <string name="settings_item_font_size_summary">Set font size of forum content</string>
     <string name="settings_item_font_size_dialog_title">Font Size</string>
     <string name="settings_item_image_download_policy_title">Image download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
-    <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post.</string>
+    <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post</string>
     <string name="format_post_tail_prefix">&#160;——&#160;</string>
     <string name="settings_item_post_extra_tail_text_default">Post By LKongDroid App</string>
 
