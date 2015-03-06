@@ -25,7 +25,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -307,7 +306,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
 
             @Override
-            public void onPageIndicatorClick() {MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
+            public void onPageIndicatorClick() {
+                MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
                         .title(R.string.dialog_post_list_choose_page)
                         .items(mPageIndicatorItems)
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
@@ -359,12 +359,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE);
 
                 // Restore last state for checked position.
-                /*final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
-                final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);*/
+                final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
+                final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);
 
-               /* mPostCollectionView.getRefreshableView().post(() -> {
+                mPostCollectionView.getRefreshableView().post(() -> {
                     if (firstVisibleItemPosition != -1) {
-                        RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRecyclerView().getLayoutManager();
+                        RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRefreshableView().getLayoutManager();
                         if (layoutManager instanceof GridLayoutManager) {
                             GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
                             gridLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
@@ -374,9 +374,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         } else {
                             throw new IllegalStateException();
                         }
-                        mPostCollectionView.getRecyclerView().stopScroll();
+                        mPostCollectionView.getRefreshableView().stopScroll();
                     }
-                });*/
+                });
 
             }
         } else {
@@ -436,13 +436,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
 
         // 保存列表位置
-        /*int firstVisiblePosition = mPostCollectionView.getFirstVisiblePosition();
-        RecyclerView.ViewHolder firstVisibleViewHolder = mPostCollectionView.getRecyclerView().findViewHolderForPosition(firstVisiblePosition);
+        int firstVisiblePosition = mPostCollectionView.getFirstVisiblePosition();
+        RecyclerView.ViewHolder firstVisibleViewHolder = mPostCollectionView.getRefreshableView().findViewHolderForPosition(firstVisiblePosition);
         View firstView = firstVisibleViewHolder.itemView;
         int top = (firstView == null) ? 0 : firstView.getTop();
 
         outState.putInt("listview_index", firstVisiblePosition);
-        outState.putInt("listview_top", top);*/
+        outState.putInt("listview_top", top);
     }
 
     @Override
