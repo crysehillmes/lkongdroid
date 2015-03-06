@@ -37,6 +37,7 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
@@ -557,6 +558,40 @@ public class LKongRestService {
         clearCookies();
         return postRate;
     }
+
+    public EditPostResult editPost(LKAuthObject authObject, long tid, long pid, String action, String title, String content) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("type", "edit")
+                .add("tid", Long.toString(tid))
+                .add("pid", Long.toString(pid))
+                .add("ac", action)
+                .add("content", content);
+        if(!TextUtils.isEmpty(title) && action.equalsIgnoreCase("thread")) {
+            builder.add("title", title);
+        }
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url("http://lkong.cn/post/edit/index.php?mod=post")
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseBody = getStringFromGzipResponse(response);
+        JSONObject jsonObject = new JSONObject(responseBody);
+        EditPostResult editPostResult = new EditPostResult();
+        editPostResult.setTid(jsonObject.getLong("tid"));
+        editPostResult.setSuccess(jsonObject.getBoolean("success"));
+        if(jsonObject.has("errorMessage"))
+            editPostResult.setErrorMessage(jsonObject.getString("errorMessage"));
+        clearCookies();
+
+        return editPostResult;
+    }
+
 
     public void saveToSDCard(String filename, String content)throws Exception {
         File file = new File(Environment.getExternalStorageDirectory(), filename);//指定文件存储目录为SD卡，文件名

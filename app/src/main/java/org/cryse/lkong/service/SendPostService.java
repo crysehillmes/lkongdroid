@@ -13,12 +13,15 @@ import android.util.Log;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.NewThreadDoneEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.service.task.EditPostTask;
 import org.cryse.lkong.service.task.SendPostTask;
 import org.cryse.lkong.service.task.SendTask;
 import org.cryse.lkong.service.task.SendThreadTask;
@@ -67,6 +70,8 @@ public class SendPostService extends Service {
                             sendPost((SendPostTask) mCurrentTask);
                         } else if (mCurrentTask instanceof SendThreadTask) {
                             sendThread((SendThreadTask) mCurrentTask);
+                        } else if (mCurrentTask instanceof EditPostTask) {
+                            editPost((EditPostTask) mCurrentTask);
                         }
                         mCurrentTask = null;
                     }
@@ -163,6 +168,33 @@ public class SendPostService extends Service {
         }
     }
 
+    public void editPost(EditPostTask task) {
+        Log.d(LOG_TAG, "editPost");
+        NotificationCompat.Builder progressNotificationBuilder;
+
+        progressNotificationBuilder = new NotificationCompat.Builder(SendPostService.this);
+        progressNotificationBuilder.setContentTitle(getResources().getString(R.string.notification_title_sending_post))
+                .setContentText("")
+                .setSmallIcon(R.drawable.ic_action_send)
+                .setOngoing(true);
+
+        startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
+        mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
+        EditPostResult editPostResult = null;
+        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
+        try {
+            editPostResult = mLKRestService.editPost(task.getAuthObject(), task.getTid(), task.getPid(), task.getAction(), task.getTitle(), replaceResult);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "editPost error", e);
+        } finally {
+            mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
+            stopForeground(true);
+            if(editPostResult != null && editPostResult.isSuccess()) {
+                mEventBus.sendEvent(new EditPostDoneEvent(editPostResult));
+            }
+        }
+    }
+
     private String preprocessContent(LKAuthObject authObject, String content) {
         String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
         ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
@@ -250,6 +282,27 @@ public class SendPostService extends Service {
             task.setFid(fid);
             task.setContent(content);
             task.setFollow(follow);
+            mTaskQueue.add(task);
+        }
+
+        public void editThread(LKAuthObject authObject, long tid, long pid, String action, String title, String content) {
+            EditPostTask task = new EditPostTask();
+            task.setAuthObject(authObject);
+            task.setAction("thread");
+            task.setTid(tid);
+            task.setPid(pid);
+            task.setTitle(title);
+            task.setContent(content);
+            mTaskQueue.add(task);
+        }
+
+        public void editPost(LKAuthObject authObject, long tid, long pid, String content) {
+            EditPostTask task = new EditPostTask();
+            task.setAuthObject(authObject);
+            task.setAction("post");
+            task.setTid(tid);
+            task.setPid(pid);
+            task.setContent(content);
             mTaskQueue.add(task);
         }
     }
