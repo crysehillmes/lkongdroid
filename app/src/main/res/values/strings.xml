@@ -76,6 +76,7 @@
     <string name="button_sign_in">Sign In</string>
     <string name="button_reply">Reply</string>
     <string name="button_rate">Rate</string>
+    <string name="button_edit">Edit</string>
 
     <string name="input_error_email">Please enter your email here.</string>
     <string name="input_error_password">Please enter your password here.</string>

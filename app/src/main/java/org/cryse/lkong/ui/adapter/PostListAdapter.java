@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -35,7 +36,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final String mTodayPrefix;
     private OnItemButtonClickListener mOnItemButtonClickListener;
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
-    private long mThreadAuthorId;
+    private long mUserId;
     private int mMaxImageWidth;
     private Picasso mPicasso;
     private int mImageDownloadPolicy;
@@ -44,11 +45,12 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private boolean mShouldShowImages;
     private int mAccentColor;
 
-    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
         super(context, mItemList);
         mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
+        mUserId = userId;
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
@@ -97,6 +99,12 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     viewHolder.mRateButton.setText(R.string.button_rate);
                 }
 
+                if(postModel.getAuthorId() == mUserId) {
+                    viewHolder.mEditButton.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.mEditButton.setVisibility(View.INVISIBLE);
+                }
+
                 mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .tag(POST_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
@@ -109,9 +117,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         }
     }
 
-    public void setThreadAuthorId(long threadAuthorId) {
-        if(threadAuthorId != mThreadAuthorId) {
-            this.mThreadAuthorId = threadAuthorId;
+    public void setUserId(long userId) {
+        if(userId != mUserId) {
+            this.mUserId = userId;
             notifyDataSetChanged();
         }
     }
@@ -124,8 +132,10 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         ImageView mAvatarImageView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         Button mRateButton;
+        @InjectView(R.id.recyclerview_item_post_button_edit)
+        ImageButton mEditButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)
-        Button mReplyButton;
+        ImageButton mReplyButton;
 
         OnItemButtonClickListener mOnItemReplyClickListener;
         public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {

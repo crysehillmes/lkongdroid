@@ -41,9 +41,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     private int px_margin_16 = 0;
     private int px_margin_72 = 0;
     private int px_width_40 = 0;
-    private int px_height_48 = 0;
+    private int px_height_68 = 0;
     private int px_margin_8 = 0;
-    private int px_margin_6 = 0;
 
     private OnSpanClickListener mOnSpanClickListener;
     private boolean mShowImages = true;
@@ -74,9 +73,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         px_margin_16 = UIUtils.dp2px(getContext(), 16f);
         px_margin_72 = UIUtils.dp2px(getContext(), 72f);
         px_width_40 = UIUtils.dp2px(getContext(), 40f);
-        px_height_48 = UIUtils.dp2px(getContext(), 48f);
+        px_height_68 = UIUtils.dp2px(getContext(), 68f);
         px_margin_8 = UIUtils.dp2px(getContext(), 8f);
-        px_margin_6 = UIUtils.dp2px(getContext(), 6f);
         mHandler = new Handler();
 
         mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -91,7 +89,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         int widthSize = MeasureUtils.getMeasurement(widthMeasureSpec, 0);
         int heightSize = MeasureUtils.getMeasurement(heightMeasureSpec, getDesiredHeight());
 
-        int childHeight = px_height_48 - px_margin_6 * 2;
+        int childHeight = px_height_68 - px_margin_16 * 2;
         int childLeft = this.getPaddingLeft();
         int childRight = widthSize - this.getPaddingRight();
         int childWidth = childRight - childLeft;
@@ -99,7 +97,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
         int height = heightSize;
-        if(mPostDisplayCache.getTextLayout() != null) {
+        if(!isInEditMode() && mPostDisplayCache.getTextLayout() != null) {
             height = height + mPostDisplayCache.getTextLayout().getHeight();
         }
         setMeasuredDimension(widthSize, height);
@@ -108,19 +106,25 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int count = getChildCount();
-        int startTop = px_margin_72 + (mPostDisplayCache.getTextLayout() == null ? 0 : mPostDisplayCache.getTextLayout().getHeight());
+        int startTop = px_margin_72 + (isInEditMode() ? 0 : (mPostDisplayCache.getTextLayout() == null ? 0 : mPostDisplayCache.getTextLayout().getHeight()));
         int startMarginRight = px_margin_16;
-        for (int i = count - 1; i >= 0; i--) {
+        for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
                 if(i == 0) {
                     child.layout(px_margin_16, px_margin_16, px_margin_16 + px_width_40, px_margin_16 + px_width_40);
-                } else {
-                    int left = r - l - (startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i));
-                    int top = startTop + px_margin_6;
+                } else if(i == 1) {
+                    int left = px_margin_16;
+                    int top = startTop + px_margin_16;
                     int right = left + child.getMeasuredWidth();
                     int bottom = top + child.getMeasuredHeight();
-                    startMarginRight = startMarginRight + child.getMeasuredWidth() + px_margin_8 * (count - 1 - i);
+                    child.layout(left, top, right, bottom);
+                } else {
+                    int left = r - l - (startMarginRight + child.getMeasuredWidth());
+                    int top = startTop + px_margin_16;
+                    int right = left + child.getMeasuredWidth();
+                    int bottom = top + child.getMeasuredHeight();
+                    startMarginRight = startMarginRight + child.getMeasuredWidth() + px_margin_16;
                     child.layout(left, top, right, bottom);
                 }
             }
@@ -131,6 +135,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     @Override
     protected void onDraw(Canvas canvas) {
         int canvasWidth = canvas.getWidth();
+        if(isInEditMode()) return;
         if(mPostDisplayCache.getAuthorLayout() != null) {
             canvas.save();
             canvas.translate(px_margin_72, px_margin_16);
@@ -150,7 +155,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     private int getDesiredHeight() {
-        return px_margin_72 + px_height_48;
+        return px_margin_72 + px_height_68;
     }
 
 
