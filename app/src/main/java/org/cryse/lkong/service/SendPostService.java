@@ -285,7 +285,7 @@ public class SendPostService extends Service {
             mTaskQueue.add(task);
         }
 
-        public void editThread(LKAuthObject authObject, long tid, long pid, String action, String title, String content) {
+        public void editThread(LKAuthObject authObject, long tid, long pid, String title, String content) {
             EditPostTask task = new EditPostTask();
             task.setAuthObject(authObject);
             task.setAction("thread");

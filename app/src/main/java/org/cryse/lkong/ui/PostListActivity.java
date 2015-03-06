@@ -25,6 +25,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -256,6 +257,24 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 if (mUserAccountManager.isSignedIn()) {
                     PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
                     mAndroidNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
+                } else {
+                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
+                }
+            }
+
+            @Override
+            public void onEditClick(View view, int position) {
+                if (mUserAccountManager.isSignedIn()) {
+                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    String content;
+                    if(postItem.getMessage().contains("</blockquote>")) {
+                        int indexOfQuota = postItem.getMessage().indexOf("</blockquote>");
+                        content = postItem.getMessage().substring(indexOfQuota + 13);
+                    } else {
+                        content = postItem.getMessage();
+                    }
+                    Log.d("onEditClick", content);
+                    mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
                 }

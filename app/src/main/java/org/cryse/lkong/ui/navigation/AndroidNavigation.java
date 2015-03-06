@@ -128,6 +128,26 @@ public class AndroidNavigation {
         activity.startActivity(intent);
     }
 
+    public void openActivityForEditPost(Activity activity, long threadId, String postAuthorName, long postId, String htmlContent) {
+        Intent intent = new Intent(activity, NewPostActivity.class);
+        intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
+        intent.putExtra(DataContract.BUNDLE_POST_ID, postId);
+        intent.putExtra(DataContract.BUNDLE_POST_REPLY_TITLE, activity.getString(R.string.format_post_reply_title, postAuthorName));
+        intent.putExtra(DataContract.BUNDLE_IS_EDIT_MODE, true);
+        intent.putExtra(DataContract.BUNDLE_EDIT_CONTENT, htmlContent);
+        activity.startActivity(intent);
+    }
+
+    public void openActivityForEditThread(Activity activity, long tid, long pid, String title, String htmlContent) {
+        Intent intent = new Intent(activity, NewThreadActivity.class);
+        intent.putExtra(DataContract.BUNDLE_IS_EDIT_MODE, true);
+        intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
+        intent.putExtra(DataContract.BUNDLE_POST_ID, pid);
+        intent.putExtra(DataContract.BUNDLE_EDIT_TITLE, title);
+        intent.putExtra(DataContract.BUNDLE_EDIT_CONTENT, htmlContent);
+        activity.startActivity(intent);
+    }
+
     public void openActivityForPostListByPostId(Context context, long postId) {
         Intent intent = new Intent(context, PostListActivity.class);
         intent.putExtra(DataContract.BUNDLE_POST_ID, postId);

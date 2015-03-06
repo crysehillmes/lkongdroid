@@ -158,6 +158,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     mOnItemReplyClickListener.onRateClick(view, getPosition());
                 }
             });
+            mEditButton.setOnClickListener(view -> {
+                if(mOnItemReplyClickListener != null) {
+                    mOnItemReplyClickListener.onEditClick(view, getPosition());
+                }
+            });
             if(mOnSpanClickListener != null)
                 mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
         }
@@ -166,5 +171,6 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public interface OnItemButtonClickListener {
         public void onRateClick(View view, int position);
         public void onReplyClick(View view, int position);
+        public void onEditClick(View view, int position);
     }
 }
