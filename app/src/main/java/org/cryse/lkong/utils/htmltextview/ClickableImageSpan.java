@@ -22,6 +22,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     private Object mIdentityTag;
     private Object mPicassoTag;
     private WeakReference<ImageSpanContainer> mContainer;
+    private boolean mIsLoaded = false;
 
     /**
      * @param verticalAlignment one of {@link android.text.style.DynamicDrawableSpan#ALIGN_BOTTOM} or
@@ -114,8 +115,9 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null) {
+        if(mPicasso.get() != null && !mIsLoaded) {
             mPicasso.get().load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).centerCrop().noFade().into(mDrawable);
+            mIsLoaded = true;
         }
     }
 }

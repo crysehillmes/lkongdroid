@@ -12,6 +12,7 @@ public class PostDisplayCache {
     private ArrayList<String> imageUrls;
     private int urlSpanCount;
     private StaticLayout textLayout = null;
+    private StaticLayout authorLayout = null;
 
     public PostDisplayCache() {
         importantSpans = new ArrayList<>();
@@ -71,5 +72,13 @@ public class PostDisplayCache {
 
     public void setTextLayout(StaticLayout textLayout) {
         this.textLayout = textLayout;
+    }
+
+    public StaticLayout getAuthorLayout() {
+        return authorLayout;
+    }
+
+    public void setAuthorLayout(StaticLayout authorLayout) {
+        this.authorLayout = authorLayout;
     }
 }

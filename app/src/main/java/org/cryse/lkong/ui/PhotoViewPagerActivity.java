@@ -99,6 +99,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
             }
         });
         mViewPager.setCurrentItem(initPosition);
+        setTitle(mPagerAdapter.getPageTitle(initPosition));
     }
 
     @Override

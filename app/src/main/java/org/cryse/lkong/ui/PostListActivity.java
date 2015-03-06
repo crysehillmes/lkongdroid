@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
@@ -70,6 +71,7 @@ import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
+import org.cryse.utils.DateFormatUtils;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
@@ -136,6 +138,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private Boolean mIsFavorite = null;
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
+    private int mAccentColor;
+    private int mTextSecondaryColor;
+    private String mTodayPrefix;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -149,6 +154,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
+        mTextSecondaryColor = ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_secondary);
+        mAccentColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mTodayPrefix = getString(R.string.datetime_today);
         initRecyclerView();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
@@ -895,9 +903,33 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
-        int width = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
-        StaticLayout layout = new StaticLayout(spannable, contentTextPaint, width, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
+        StaticLayout layout = new StaticLayout(spannable, contentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
         postDisplayCache.setTextLayout(layout);
+
+
+        SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
+        autherNameSpannable.append(postModel.getAuthorName());
+        if(postModel.getAuthorId() == mThreadModel.getAuthorId()) {
+            String threadAuthorIndicator = getString(R.string.indicator_thread_author);
+            autherNameSpannable.append(threadAuthorIndicator);
+            autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
+                    postModel.getAuthorName().length(),
+                    postModel.getAuthorName().length() + threadAuthorIndicator.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        autherNameSpannable.append('\n');
+        String datelineString = DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix);
+        int start = autherNameSpannable.length();
+        int end = autherNameSpannable.length() + datelineString.length();
+        autherNameSpannable.append(datelineString);
+        autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        float datelineTextSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_body1);
+        autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)datelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        int authorWidth = dm.widthPixels - UIUtils.dp2px(this, 72f) - padding.getLeft() - padding.getRight();
+        StaticLayout authorLayout = new StaticLayout(autherNameSpannable, contentTextPaint, authorWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+        postDisplayCache.setAuthorLayout(authorLayout);
         postModel.setPostDisplayCache(postDisplayCache);
         return spannable;
     }

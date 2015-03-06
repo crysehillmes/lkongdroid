@@ -1,28 +1,18 @@
 package org.cryse.lkong.utils.htmltextview;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.Outline;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.util.AttributeSet;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 public class AsyncTargetDrawable extends Drawable implements Target{
@@ -134,12 +124,6 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         return mInnerDrawable.getIntrinsicHeight();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public Rect getDirtyBounds() {
-        return mInnerDrawable.getDirtyBounds();
-    }
-
     @Override
     public void setChangingConfigurations(int configs) {
         mInnerDrawable.setChangingConfigurations(configs);
@@ -171,16 +155,6 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     }
 
     @Override
-    public void scheduleSelf(Runnable what, long when) {
-        mInnerDrawable.scheduleSelf(what, when);
-    }
-
-    @Override
-    public void unscheduleSelf(Runnable what) {
-        mInnerDrawable.unscheduleSelf(what);
-    }
-
-    @Override
     public int getAlpha() {
         return 0xFF;
     }
@@ -190,45 +164,9 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         mInnerDrawable.setColorFilter(color, mode);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void setTint(int tint) {
-        mInnerDrawable.setTint(tint);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void setTintList(ColorStateList tint) {
-        mInnerDrawable.setTintList(tint);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void setTintMode(PorterDuff.Mode tintMode) {
-        mInnerDrawable.setTintMode(tintMode);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public ColorFilter getColorFilter() {
-        return mInnerDrawable.getColorFilter();
-    }
-
     @Override
     public void clearColorFilter() {
         mInnerDrawable.clearColorFilter();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void setHotspot(float x, float y) {
-        mInnerDrawable.setHotspot(x, y);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void setHotspotBounds(int left, int top, int right, int bottom) {
-        mInnerDrawable.setHotspotBounds(left, top, right, bottom);
     }
 
     @Override
@@ -261,30 +199,6 @@ public class AsyncTargetDrawable extends Drawable implements Target{
         return mInnerDrawable.setVisible(visible, restart);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    @Override
-    public void setAutoMirrored(boolean mirrored) {
-        mInnerDrawable.setAutoMirrored(mirrored);
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    @Override
-    public boolean isAutoMirrored() {
-        return mInnerDrawable.isAutoMirrored();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void applyTheme(Resources.Theme t) {
-        mInnerDrawable.applyTheme(t);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public boolean canApplyTheme() {
-        return mInnerDrawable.canApplyTheme();
-    }
-
     @Override
     public Region getTransparentRegion() {
         return mInnerDrawable.getTransparentRegion();
@@ -303,32 +217,5 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public boolean getPadding(Rect padding) {
         return mInnerDrawable.getPadding(padding);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void getOutline(Outline outline) {
-        mInnerDrawable.getOutline(outline);
-    }
-
-    @Override
-    public Drawable mutate() {
-        return mInnerDrawable.mutate();
-    }
-
-    @Override
-    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs) throws XmlPullParserException, IOException {
-        mInnerDrawable.inflate(r, parser, attrs);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs, Resources.Theme theme) throws XmlPullParserException, IOException {
-        mInnerDrawable.inflate(r, parser, attrs, theme);
-    }
-
-    @Override
-    public ConstantState getConstantState() {
-        return mInnerDrawable.getConstantState();
     }
 }

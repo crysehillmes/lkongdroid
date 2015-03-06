@@ -84,54 +84,18 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             if(item instanceof PostModel) {
                 PostModel postModel = (PostModel)item;
 
-                SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
-                autherNameSpannable.append(postModel.getAuthorName());
-                if(postModel.getAuthorId() == mThreadAuthorId) {
-                    String threadAuthorIndicator = getString(R.string.indicator_thread_author);
-                    autherNameSpannable.append(threadAuthorIndicator);
-                    autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
-                            postModel.getAuthorName().length(),
-                            postModel.getAuthorName().length() + threadAuthorIndicator.length(),
-                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
                 viewHolder.mPostItemView.setPostId(postModel.getPid());
                 viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
                 viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
                 viewHolder.mPostItemView.setShowImages(mShouldShowImages);
-                viewHolder.mPostItemView.setAuthorInfo(autherNameSpannable, DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
                 viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
                 viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
-
 
                 if(postModel.getRateScore() != 0) {
                     viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
                 } else {
                     viewHolder.mRateButton.setText(R.string.button_rate);
                 }
-
-                /*viewHolder.mMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-                *//*try {
-                    DebugUtils.saveToSDCard("lkdata", Long.toString(postModel.getPid()), postModel.getMessage());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*//*
-
-                SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
-                autherNameSpannable.append(postModel.getAuthorName());
-                autherNameSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, postModel.getAuthorName().length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                if(postModel.getAuthorId() == mThreadAuthorId) {
-                    String threadAuthorIndicator = getString(R.string.indicator_thread_author);
-                    autherNameSpannable.append(threadAuthorIndicator);
-                    autherNameSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent)),
-                            postModel.getAuthorName().length(),
-                            postModel.getAuthorName().length() + threadAuthorIndicator.length(),
-                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
-                viewHolder.mAuthorTextView.setText(autherNameSpannable);
-
-                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix));
-                viewHolder.mOrdinalTextView.setText(getString(R.string.format_post_ordinal, postModel.getOrdinal()));*/
 
                 mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
                         .tag(POST_PICASSO_TAG)

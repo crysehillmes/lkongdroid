@@ -26,6 +26,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     private Object mIdentityTag;
     private Object mPicassoTag;
     private WeakReference<ImageSpanContainer> mContainer;
+    private boolean mIsLoaded = false;
 
     public EmoticonImageSpan(
             Context context,
@@ -91,8 +92,9 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null) {
+        if(mPicasso.get() != null && !mIsLoaded) {
             mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).noFade().into(mDrawable);
+            mIsLoaded = true;
         }
     }
 }

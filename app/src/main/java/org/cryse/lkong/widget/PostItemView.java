@@ -9,13 +9,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Handler;
-import android.text.Layout;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -36,13 +32,8 @@ import java.util.ArrayList;
 
 public class PostItemView extends ViewGroup implements ImageSpanContainer {
     private long mPostId;
-    private CharSequence mAuthorName = null;
-    private CharSequence mDateline = null;
-    private CharSequence mAuthorInfo = null;
     private String mIdentityTag = null;
     private Object mPicassoTag = null;
-    private StaticLayout mAuthorInfoLayout = null;
-    private TextPaint mTextPaint = null;
     private Handler mHandler;
     private CharSequence mOrdinalText = null;
     private TextPaint mOrdinalPaint = null;
@@ -86,11 +77,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         px_height_48 = UIUtils.dp2px(getContext(), 48f);
         px_margin_8 = UIUtils.dp2px(getContext(), 8f);
         px_margin_6 = UIUtils.dp2px(getContext(), 6f);
-        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        float textSize =  UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_subhead);
-        mTextPaint.setTextSize(textSize);
-        mTextPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_primary));
-        mTextPaint.linkColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         mHandler = new Handler();
 
         mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -117,9 +103,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
             height = height + mPostDisplayCache.getTextLayout().getHeight();
         }
         setMeasuredDimension(widthSize, height);
-        if(mAuthorInfoLayout == null) {
-            generateAuthorTextLayout();
-        }
     }
 
     @Override
@@ -147,13 +130,12 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     private Rect mOrdinalBounds = new Rect();
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         int canvasWidth = canvas.getWidth();
-        if(mAuthorInfoLayout != null) {
+        if(mPostDisplayCache.getAuthorLayout() != null) {
             canvas.save();
-            int layoutHeight = mAuthorInfoLayout.getHeight();
+            int layoutHeight = mPostDisplayCache.getAuthorLayout().getHeight();
             canvas.translate(px_margin_72, px_margin_16 + px_width_40 / 2 - layoutHeight / 2);
-            mAuthorInfoLayout.draw(canvas);
+            mPostDisplayCache.getAuthorLayout().draw(canvas);
             canvas.restore();
         }
         if(mPostDisplayCache.getTextLayout() != null) {
@@ -198,31 +180,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                 PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
                 pendingImageSpan.loadImage(this);
             }
-        }
-    }
-
-    public void setAuthorInfo(CharSequence authorName, CharSequence dateline) {
-        if(TextUtils.equals(mAuthorName, authorName) &&  TextUtils.equals(mDateline, dateline)) {
-            return;
-        }
-        mAuthorName = authorName;
-        mDateline = dateline;
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(authorName).append('\n');
-        int start = builder.length();
-        int end = builder.length() + dateline.length();
-        builder.append(dateline);
-        builder.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mAuthorInfo = builder;
-        generateAuthorTextLayout();
-    }
-
-    private void generateAuthorTextLayout() {
-        int width = getMeasuredWidth();
-        if(isInEditMode()) return;
-        if(width > 0) {
-            mAuthorInfoLayout = new StaticLayout(mAuthorInfo, mTextPaint, width - px_margin_72 * 2, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-            //invalidate(px_margin_72, px_margin_16, width - px_margin_72, px_margin_16 + mAuthorInfoLayout.getHeight());
         }
     }
 
