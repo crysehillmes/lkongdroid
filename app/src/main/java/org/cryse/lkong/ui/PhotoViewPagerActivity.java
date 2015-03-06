@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -52,6 +53,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         setContentView(R.layout.activity_photo_viewpager);
         setIsOverrideToolbarColor(false);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
         ButterKnife.inject(this);
@@ -105,6 +108,16 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     @Override
     protected void injectThis() {
         LKongApplication.get(this).simpleActivityComponent().inject(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finishCompat();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
