@@ -96,7 +96,13 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 if(postModel.getRateScore() != 0) {
                     viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
                 } else {
-                    viewHolder.mRateButton.setText(R.string.button_rate);
+                    viewHolder.mRateButton.setText("");
+                }
+
+                if(postModel.getAuthorId() == mUserId) {
+                    viewHolder.mEditButton.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.mEditButton.setVisibility(View.INVISIBLE);
                 }
 
                 if(postModel.getAuthorId() == mUserId) {

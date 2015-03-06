@@ -25,8 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:background="?selectableItemBackground"
-            android:drawableLeft="@drawable/ic_button_rate"
-            android:text="@string/button_rate" />
+            android:drawableLeft="@drawable/ic_button_rate" />
 
         <ImageButton
             android:id="@+id/recyclerview_item_post_button_replay"
