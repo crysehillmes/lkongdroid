@@ -42,6 +42,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
@@ -108,6 +109,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsImageDownloadPolicy
     StringPreference mImageDownloadPolicy;
+    @Inject
+    @PrefsReadFontSize
+    StringPreference mReadFontSizePref;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
@@ -153,10 +157,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
-        mTextSecondaryColor = ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_secondary);
-        mAccentColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
-        mTodayPrefix = getString(R.string.datetime_today);
         initRecyclerView();
+        initTextPaint();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
             mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, -1);
@@ -804,11 +806,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
         int mMaxImageWidth = 256;
         Html.ImageGetter imageGetter = new EmptyImageGetter();
-        /*SimpleImageGetter imageGetter = new SimpleImageGetter(PostListActivity.this, Integer.valueOf(mImageDownloadPolicy.get()))
-                .setEmoticonSize(UIUtils.getSpDimensionPixelSize(PostListActivity.this, R.dimen.text_size_body1))
-                .setPlaceHolder(R.drawable.image_placeholder)
-                .setMaxImageSize(mMaxImageWidth, mMaxImageWidth)
-                .setError(R.drawable.image_placeholder);*/
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
             Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             for (PostModel postModel : posts) {
@@ -895,19 +892,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         postDisplayCache.setSpannableString((SpannableString)spannable);
 
-        TextPaint contentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        float textSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
-        contentTextPaint.setTextSize(textSize);
-        contentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
-        contentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        // Generate content StaticLayout
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
         int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
-        StaticLayout layout = new StaticLayout(spannable, contentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        StaticLayout layout = new StaticLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
         postDisplayCache.setTextLayout(layout);
 
-
+        // Generate author StaticLayout
         SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
         autherNameSpannable.append(postModel.getAuthorName());
         if(postModel.getAuthorId() == mThreadModel.getAuthorId()) {
@@ -924,11 +917,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         int end = autherNameSpannable.length() + datelineString.length();
         autherNameSpannable.append(datelineString);
         autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        float datelineTextSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_body1);
-        autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)datelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)mDatelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         int authorWidth = dm.widthPixels - UIUtils.dp2px(this, 72f) - padding.getLeft() - padding.getRight();
-        StaticLayout authorLayout = new StaticLayout(autherNameSpannable, contentTextPaint, authorWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+        StaticLayout authorLayout = new StaticLayout(autherNameSpannable, mAuthorTextPaint, authorWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         postDisplayCache.setAuthorLayout(authorLayout);
         postModel.setPostDisplayCache(postDisplayCache);
         return spannable;
@@ -1025,6 +1017,26 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         } else {
             openUrlIntent(url);
         }
+    }
+
+    TextPaint mAuthorTextPaint;
+    TextPaint mContentTextPaint;
+    float mDatelineTextSize;
+    private void initTextPaint() {
+        mTextSecondaryColor = ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_secondary);
+        mAccentColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mTodayPrefix = getString(R.string.datetime_today);
+        mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        mContentTextPaint.setTextSize(contentTextSize);
+        mContentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        mContentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mAuthorTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float authorTextSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
+        mAuthorTextPaint.setTextSize(authorTextSize);
+        mAuthorTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        mAuthorTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mDatelineTextSize = UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_body1);
     }
 
     private void openUrlIntent(String url) {

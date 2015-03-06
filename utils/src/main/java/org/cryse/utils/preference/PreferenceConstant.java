@@ -16,4 +16,6 @@ public class PreferenceConstant {
 
     public static final String SHARED_PREFERENCE_THEME_COLOR = "prefs_theme_color";
     public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 4;
+    public static final String SHARED_PREFERENCE_READ_FONT = "prefs_read_font_size";
+    public static final String SHARED_PREFERENCE_READ_FONT_VALUE = "16";
 }

@@ -137,4 +137,7 @@
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
+    <string name="settings_item_font_size_dialog_title">字体大小</string>
+    <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小。</string>
+    <string name="settings_item_font_size_title">文字大小</string>
 </resources>

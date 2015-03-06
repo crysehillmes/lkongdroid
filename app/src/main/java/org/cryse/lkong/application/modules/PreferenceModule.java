@@ -8,6 +8,7 @@ import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.application.qualifier.PrefsThemeColor;
 import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.IntegerPreference;
@@ -59,5 +60,11 @@ public class PreferenceModule {
     @PrefsThemeColor
     IntegerPreference provideThemeColorIndex(SharedPreferences preferences) {
         return new IntegerPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
+    }
+
+    @Provides
+     @PrefsReadFontSize
+     StringPreference provideReadFontSize(SharedPreferences preferences) {
+        return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_READ_FONT, PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE);
     }
 }

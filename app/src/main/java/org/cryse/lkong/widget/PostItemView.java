@@ -133,8 +133,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         int canvasWidth = canvas.getWidth();
         if(mPostDisplayCache.getAuthorLayout() != null) {
             canvas.save();
-            int layoutHeight = mPostDisplayCache.getAuthorLayout().getHeight();
-            canvas.translate(px_margin_72, px_margin_16 + px_width_40 / 2 - layoutHeight / 2);
+            canvas.translate(px_margin_72, px_margin_16);
             mPostDisplayCache.getAuthorLayout().draw(canvas);
             canvas.restore();
         }

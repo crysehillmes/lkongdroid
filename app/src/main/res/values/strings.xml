@@ -107,6 +107,9 @@
     <string name="settings_item_about_title">About</string>
 
 
+    <string name="settings_item_font_size_title">Font Size</string>
+    <string name="settings_item_font_size_summary">Set font size of forum content.</string>
+    <string name="settings_item_font_size_dialog_title">Font Size</string>
     <string name="settings_item_image_download_policy_title">Image download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
     <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post.</string>
@@ -151,4 +154,16 @@
 
     <string name="text_extcredits_lb">龙币</string>
     <string name="text_extcredits_lj">龙晶</string>
+
+    <string-array name="readview_font_size_entries">
+        <item>10</item>
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+        <item>22</item>
+        <item>24</item>
+        <item>26</item>
+    </string-array>
 </resources>

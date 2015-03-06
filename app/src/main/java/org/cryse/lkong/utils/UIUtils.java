@@ -167,6 +167,16 @@ public class UIUtils {
         return new InsetsValue(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
     }
 
+    public static float getFontSizeFromPreferenceValue(Context context, String fontSize) {
+        int sizeItem = Integer.parseInt(fontSize);
+        return sp2px(context, sizeItem);
+    }
+
+    public static float getFontSizeFromPreferenceValueWithExtra(Context context, String fontSize, int extra) {
+        int sizeItem = Integer.parseInt(fontSize) + extra;
+        return sp2px(context, sizeItem);
+    }
+
     public static class InsetsValue {
         private int left;
         private int top;
