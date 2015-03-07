@@ -907,7 +907,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         imageSpan.getSource(),
                         R.drawable.image_placeholder,
                         R.drawable.image_placeholder,
-                        (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                        (int)mContentTextPaint.getTextSize() * 2
                 );
                 spannable.setSpan(emoticonImageSpan,
                         spanStart,

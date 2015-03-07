@@ -30,6 +30,7 @@ import android.text.TextWatcher;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
+import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -91,6 +93,10 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @PrefsPostTail
     StringPreference mPostTailText;
 
+    @Inject
+    @PrefsReadFontSize
+    StringPreference mReadFontSizePref;
+
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
     @InjectView(R.id.activity_new_thread_edittext_content)
@@ -114,6 +120,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     protected abstract void onSendDataDone(AbstractEvent event);
     protected abstract boolean isInEditMode();
 
+    protected float mContentTextSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +134,9 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         ButterKnife.inject(this);
+        mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
+        mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
         if(!hasTitleField()) {
@@ -247,7 +257,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         new EmoticonDialog().show(this, emoticonName -> {
             try {
                 Drawable emoji = Drawable.createFromStream(AbstractPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
-                addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), 96, 96);
+                addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), (int)mContentTextSize * 2, (int)mContentTextSize * 2);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -492,7 +502,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         imageSpan.getSource(),
                         R.drawable.image_placeholder,
                         R.drawable.image_placeholder,
-                        (int)getResources().getDimension(R.dimen.text_size_subhead)* 2
+                        (int)mContentTextSize * 2
                 );
                 spannable.setSpan(emoticonImageSpan,
                         spanStart,
