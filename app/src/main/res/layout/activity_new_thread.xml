@@ -37,7 +37,7 @@
         android:layout_below="@+id/activity_new_thread_edittext_title"
         android:layout_marginBottom="?actionBarSize"
         android:gravity="top|start"
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:scrollbars="vertical"
         android:padding="8dp"
         android:hint="Content"

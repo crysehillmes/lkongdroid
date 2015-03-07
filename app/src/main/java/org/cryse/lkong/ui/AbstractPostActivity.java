@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.SpanWatcher;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -26,6 +27,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,7 +67,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -127,7 +128,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             int actionBarSize = UIUtils.calculateActionBarSize(this);
             layoutParams.setMargins(0, actionBarSize, 0, actionBarSize);
         }
-        mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
         readDataFromIntent(getIntent());
         setTitle(getTitleString());
         mBackgroundServiceConnection = new ServiceConnection() {
@@ -345,15 +345,26 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         return mSendServiceBinder;
     }
 
-    private static class ImageEditTextHandler implements TextWatcher {
-
+    protected static class ImageEditTextHandler implements TextWatcher {
         private final EditText mEditor;
-        private final ArrayList<Object> mEmoticonsToRemove = new ArrayList<Object>();
-
+        final List<Object> mEmoticonsToRemove = new ArrayList<Object>();
         public ImageEditTextHandler(EditText editor) {
             // Attach the handler to listen for text changes.
             mEditor = editor;
             mEditor.addTextChangedListener(this);
+        }
+
+        public void insert(CharSequence charSequence) {
+            // Get the selected text.
+            int start = mEditor.getSelectionStart();
+            int end = mEditor.getSelectionEnd();
+            Editable message = mEditor.getEditableText();
+            Object[] list = ((Spanned)charSequence).getSpans(start, end, Object.class);
+            for (Object span : list) {
+                Log.d("span", span.getClass().getName());
+            }
+            // Insert the emoticon.
+            message.replace(start, end, charSequence);
         }
 
         public void insert(String emoticon, Drawable drawable) {
@@ -370,24 +381,37 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             message.setSpan(span, start, start + emoticon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
+        int mCurrentChangeStart;
+        int mCurrentChangeCount;
+        int mCurrentChangeEnd;
         @Override
         public void beforeTextChanged(CharSequence text, int start, int count, int after) {
             // Check if some text will be removed.
-            if (count > 0) {
-                int end = start + count;
-                Editable message = mEditor.getEditableText();
-                Object[] list = message.getSpans(start, end, Object.class);
-
-                for (Object span : list) {
-                    // Get only the emoticons that are inside of the changed
-                    // region.
-                    int spanStart = message.getSpanStart(span);
-                    int spanEnd = message.getSpanEnd(span);
-                    if ((spanStart < end) && (spanEnd > start)) {
-                        // Add to remove list
-                        mEmoticonsToRemove.add(span);
+            mCurrentChangeStart = start;
+            mCurrentChangeCount = count;
+            mCurrentChangeEnd = mCurrentChangeStart + mCurrentChangeCount;
+            int end = start + count;
+            int editorStart = mEditor.getSelectionStart();
+            int editorEnd = mEditor.getSelectionEnd();
+            if(editorStart == start + count) {
+                if (count > 0) {
+                    Editable message = mEditor.getEditableText();
+                    Object[] list = message.getSpans(start, end, Object.class);
+                    synchronized (mEmoticonsToRemove) {
+                        for (Object span : list) {
+                            // Get only the emoticons that are inside of the changed
+                            // region.
+                            int spanStart = message.getSpanStart(span);
+                            int spanEnd = message.getSpanEnd(span);
+                            if ((spanStart < end) && (spanEnd > start) && !(span instanceof SpanWatcher)) {
+                                // Add to remove list
+                                mEmoticonsToRemove.add(span);
+                            }
+                        }
                     }
                 }
+            } else {
+                mEmoticonsToRemove.clear();
             }
         }
 
@@ -395,24 +419,26 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         public void afterTextChanged(Editable text) {
             Editable message = mEditor.getEditableText();
 
+            int editorStart = mEditor.getSelectionStart();
+            int editorEnd = mEditor.getSelectionEnd();
 
-            Iterator<Object> iter = mEmoticonsToRemove.iterator();
+            if(editorStart == mCurrentChangeStart) {
+                synchronized (mEmoticonsToRemove) {
+                for (Object span : mEmoticonsToRemove) {
+                    int start = message.getSpanStart(span);
+                    int end = message.getSpanEnd(span);
 
-            while (iter.hasNext()) {
-                Object span = iter.next();
+                    // Remove the span
+                    message.removeSpan(span);
 
-                int start = message.getSpanStart(span);
-                int end = message.getSpanEnd(span);
-
-                // Remove the span
-                message.removeSpan(span);
-
-                // Remove the remaining emoticon text.
-                if (start != end) {
-                    message.delete(start, end);
+                    // Remove the remaining emoticon text.
+                    if (start != end) {
+                        message.delete(start, end);
+                    }
+                    Log.d("Edit", "Remove Span");
                 }
-
-                iter.remove();
+                mEmoticonsToRemove.clear();
+            }
             }
         }
 

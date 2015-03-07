@@ -57,7 +57,8 @@ public class NewThreadActivity extends AbstractPostActivity {
             Spanned spannedText = HtmlTextUtils.htmlToSpanned(mEditHtmlContent, imageGetter, new HtmlTagHandler());
             Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             SpannableString spannableString = (SpannableString) replaceImageSpan(drawable, mPostId, spannedText);
-            mContentEditText.setText(spannableString);
+            mContentEditText.append(spannableString);
+            mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
             ImageSpanContainerImpl imageSpanContainer = new ImageSpanContainerImpl(mContentEditText);
             Object[] objects = spannableString.getSpans(0, spannableString.length(), Object.class);
             for (Object spanObj : objects) {
