@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -225,7 +227,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 mProgressDialog.setCanceledOnTouchOutside(false);
                 mProgressDialog.setOnDismissListener(dialog -> finishCompat());
                 StringBuilder sendContentBuilder = new StringBuilder();
-                sendContentBuilder.append(android.text.Html.toHtml(spannableContent));
+                sendContentBuilder.append(android.text.Html.toHtml(replaceBackToImageSpan(spannableContent)));
                 if(!isInEditMode())
                     sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));
                 sendData(hasTitleField() ? title : null, sendContentBuilder.toString());
@@ -528,5 +530,27 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 mEditText.get().invalidate();
             }
         }
+    }
+
+    private static Spanned replaceBackToImageSpan(CharSequence content) {
+        Spannable spannable = new SpannableString(content);
+        Drawable tempDrawable = new ColorDrawable(Color.TRANSPARENT);
+        ClickableImageSpan[] clickableImageSpans = spannable.getSpans(0, spannable.length(), ClickableImageSpan.class);
+        EmoticonImageSpan[] emoticonImageSpans = spannable.getSpans(0, spannable.length(), EmoticonImageSpan.class);
+        for (ClickableImageSpan span : clickableImageSpans) {
+            int start = spannable.getSpanStart(span);
+            int end = spannable.getSpanEnd(span);
+            ImageSpan imageSpan = new ImageSpan(null, span.getSource());
+            spannable.removeSpan(span);
+            spannable.setSpan(imageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        for (EmoticonImageSpan span : emoticonImageSpans) {
+            int start = spannable.getSpanStart(span);
+            int end = spannable.getSpanEnd(span);
+            ImageSpan imageSpan = new ImageSpan(tempDrawable, span.getSource());
+            spannable.removeSpan(span);
+            spannable.setSpan(imageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return spannable;
     }
 }
