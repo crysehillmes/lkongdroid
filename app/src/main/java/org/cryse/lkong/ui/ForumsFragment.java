@@ -135,7 +135,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected ForumListAdapter createAdapter(List<ForumModel> itemList) {
-        return new ForumListAdapter(getActivity(), mItemList);
+        return new ForumListAdapter(getActivity(), getPicasso(), mItemList);
     }
 
     @Override

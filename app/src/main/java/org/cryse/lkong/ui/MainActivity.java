@@ -25,6 +25,7 @@ import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -32,7 +33,7 @@ import br.liveo.interfaces.NavigationLiveoListener;
 
 public class MainActivity extends AbstractMainActivity implements NavigationLiveoListener {
     private static final String LOG_TAG = MainActivity.class.getName();
-
+    Picasso mPicasso;
     @Inject
     AndroidNavigation mNavigation;
     @Inject
@@ -47,6 +48,7 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this);
             finishCompat();
@@ -81,7 +83,7 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
             mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
             if(mCurrentAccount != null) {
                 this.mUserName.setText(mCurrentAccount.getUserName());
-                Picasso.with(this)
+                mPicasso
                         .load(mCurrentAccount.getUserAvatar())
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
@@ -239,6 +241,12 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPicasso.shutdown();
     }
 
     public void checkNewNoticeCount() {

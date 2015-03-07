@@ -31,9 +31,11 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private final String mTodayPrefix;
     private int mColorAccent;
     private final int mAvatarSize;
+    Picasso mPicasso;
     private CircleTransform mCircleTransform = new CircleTransform();
-    public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
+    public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList) {
         super(context, mItemList);
+        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
@@ -67,7 +69,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                 viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
                 viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
                 viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), mTodayPrefix));
-                Picasso.with(getContext())
+                mPicasso
                         .load(threadModel.getUserIcon())
                         .tag(THREAD_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)

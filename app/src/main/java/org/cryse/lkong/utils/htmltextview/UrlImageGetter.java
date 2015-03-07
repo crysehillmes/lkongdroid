@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;
-    Picasso picasso;
+    Picasso mPicasso;
     final Resources mResources;
     int mEmoticonSize  = 0;
     int mMaxImageWidth = 0;
@@ -33,9 +33,9 @@ public class UrlImageGetter implements ImageGetter {
      *
      * @param context
      */
-    public UrlImageGetter(Context context, int downloadPolicy) {
+    public UrlImageGetter(Context context, Picasso picasso, int downloadPolicy) {
         this.mContext = context;
-        this.picasso = Picasso.with(context);
+        this.mPicasso = picasso;
         this.mResources = context.getResources();
         this.mImageDownloadPolicy = downloadPolicy;
         // this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
@@ -81,9 +81,9 @@ public class UrlImageGetter implements ImageGetter {
 
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mMaxImageWidth);
         if(LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy)) {
-            picasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+            mPicasso.load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
         } else {
-            picasso.load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+            mPicasso.load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
         }
         return urlDrawable;
     }

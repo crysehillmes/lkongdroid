@@ -38,6 +38,7 @@ import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -50,6 +51,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
+    Picasso mPicasso;
     @Inject
     ThreadListPresenter mPresenter;
 
@@ -84,6 +86,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         setContentView(R.layout.activity_forum_thread_list);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initRecyclerView();
@@ -106,7 +109,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
         mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new ThreadListAdapter(this, mItemList);
+        mCollectionAdapter = new ThreadListAdapter(this, mPicasso, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -151,9 +154,9 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Picasso.with(ThreadListActivity.this).resumeTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    mPicasso.resumeTag(ThreadListAdapter.THREAD_PICASSO_TAG);
                 } else {
-                    Picasso.with(ThreadListActivity.this).pauseTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    mPicasso.pauseTag(ThreadListAdapter.THREAD_PICASSO_TAG);
                 }
             }
         });
@@ -300,6 +303,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.shutdown();
     }
 
     @Override

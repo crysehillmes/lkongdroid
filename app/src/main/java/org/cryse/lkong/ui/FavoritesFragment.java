@@ -129,7 +129,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        return new ThreadListAdapter(getActivity(), mItemList);
+        return new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
     }
 
     @Override

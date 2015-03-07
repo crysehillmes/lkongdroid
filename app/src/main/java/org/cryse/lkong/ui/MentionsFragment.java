@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.squareup.picasso.Picasso;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
@@ -63,7 +61,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
+        return new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
     }
 
     @Override
@@ -99,9 +97,9 @@ public class MentionsFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Picasso.with(getActivity()).resumeTag(LOAD_IMAGE_TASK_TAG);
+                    getPicasso().resumeTag(LOAD_IMAGE_TASK_TAG);
                 } else {
-                    Picasso.with(getActivity()).pauseTag(LOAD_IMAGE_TASK_TAG);
+                    getPicasso().pauseTag(LOAD_IMAGE_TASK_TAG);
                 }
             }
 

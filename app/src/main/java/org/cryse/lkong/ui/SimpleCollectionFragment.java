@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
@@ -28,6 +30,7 @@ import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -44,6 +47,7 @@ public abstract class SimpleCollectionFragment<
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
+    private Picasso mPicasso = null;
 
     @Inject
     AndroidNavigation mAndroidNavigation;
@@ -64,6 +68,7 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
     }
 
     @Override
@@ -132,6 +137,7 @@ public abstract class SimpleCollectionFragment<
     public void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.shutdown();
     }
 
     @Override
@@ -242,5 +248,9 @@ public abstract class SimpleCollectionFragment<
 
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
+
+    public Picasso getPicasso() {
+        return mPicasso;
     }
 }

@@ -20,8 +20,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
-    public ForumListAdapter(Context context, List<ForumModel> mItemList) {
+    private Picasso mPicasso;
+    public ForumListAdapter(Context context, Picasso picasso, List<ForumModel> mItemList) {
         super(context, mItemList);
+        mPicasso = picasso;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
 
                 viewHolder.mForumTitleTextView.setText(forumModel.getName());
                 /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
-                Picasso.with(getContext())
+                mPicasso
                         .load(forumModel.getIcon())
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)

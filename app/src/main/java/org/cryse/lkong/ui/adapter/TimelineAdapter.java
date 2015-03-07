@@ -41,9 +41,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private final String mImageTaskTag;
     private final int mAvatarSize;
     private CircleTransform mCircleTransform = new CircleTransform();
-    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
+    private Picasso mPicasso;
+    public TimelineAdapter(Context context, List<TimelineModel> items, Picasso picasso, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
+        mPicasso = picasso;
         mImageTaskTag = imgTaskTag;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
@@ -120,7 +122,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
                 viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
-                Picasso.with(getContext())
+                mPicasso
                         .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
                         .tag(mImageTaskTag)
                         .error(R.drawable.ic_default_avatar)
