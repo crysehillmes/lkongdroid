@@ -45,6 +45,7 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
@@ -351,6 +352,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
     }
 
+    private void refreshCurrentPage() {
+        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, true, SHOW_MODE_REPLACE_SIMPLE);
+    }
+
     private void goToNextPage(boolean resetPosition) {
         if(mCurrentPage + 1 >= 1 && mCurrentPage + 1 <= mPageCount)
             getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage + 1, resetPosition, SHOW_MODE_NEXT_PAGE);
@@ -438,6 +443,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         } else if(event instanceof ThemeColorChangedEvent) {
             setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+        } else if(event instanceof EditPostDoneEvent) {
+            refreshCurrentPage();
         }
     }
 
@@ -575,6 +582,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         updatePageIndicator();
         int currentItemCount = mItemList.size();
         switch (showMode) {
+            case SHOW_MODE_REPLACE_SIMPLE:
+                mCollectionAdapter.replaceWith(posts);
+                break;
             case SHOW_MODE_REPLACE:
                 mCollectionAdapter.replaceWith(posts);
                 scrollToPosition(0);

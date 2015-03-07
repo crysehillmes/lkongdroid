@@ -58,7 +58,6 @@ public class NewPostActivity extends AbstractPostActivity {
             Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
             SpannableString spannableString = (SpannableString) replaceImageSpan(drawable, mPostId, spannedText);
             mContentEditText.append(spannableString);
-            mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
             ImageSpanContainerImpl imageSpanContainer = new ImageSpanContainerImpl(mContentEditText);
             Object[] objects = spannableString.getSpans(0, spannableString.length(), Object.class);
             for (Object spanObj : objects) {
@@ -70,6 +69,7 @@ public class NewPostActivity extends AbstractPostActivity {
                 }
             }
         }
+        mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
     }
 
     @Override
