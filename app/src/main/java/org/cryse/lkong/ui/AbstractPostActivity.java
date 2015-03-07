@@ -62,6 +62,10 @@ import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.utils.preference.StringPreference;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -552,5 +556,19 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             spannable.setSpan(imageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return spannable;
+    }
+
+    protected static String removeLastEditInfo(String content) {
+        Document document = Jsoup.parseBodyFragment(content);
+        Elements elements = document.select("i");
+        for(Element element : elements) {
+            if(element.html().contains("\u672c\u5e16\u6700\u540e\u7531") && element.html().contains("\u7f16\u8f91")) {
+                if(element.nextElementSibling() != null && element.nextElementSibling().tagName().equals("br")) {
+                    element.nextElementSibling().remove();
+                }
+                element.remove();
+            }
+        }
+        return document.html();
     }
 }

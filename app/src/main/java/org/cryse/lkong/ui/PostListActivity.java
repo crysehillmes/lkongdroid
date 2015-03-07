@@ -25,7 +25,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -274,7 +273,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     } else {
                         content = postItem.getMessage();
                     }
-                    Log.d("onEditClick", content);
                     mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);

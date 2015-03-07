@@ -42,7 +42,7 @@ public class NewThreadActivity extends AbstractPostActivity {
         } else if(intent.hasExtra(DataContract.BUNDLE_IS_EDIT_MODE)) {
             mIsEditMode = true;
             mEditTitle = intent.getStringExtra(DataContract.BUNDLE_EDIT_TITLE);
-            mEditHtmlContent = intent.getStringExtra(DataContract.BUNDLE_EDIT_CONTENT);
+            mEditHtmlContent = removeLastEditInfo(intent.getStringExtra(DataContract.BUNDLE_EDIT_CONTENT));
             mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, 0l);
             mPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, 0l);
         }

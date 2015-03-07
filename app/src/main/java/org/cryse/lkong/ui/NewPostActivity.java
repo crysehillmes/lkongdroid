@@ -44,7 +44,7 @@ public class NewPostActivity extends AbstractPostActivity {
                 mPostId = null;
             if (intent.hasExtra(DataContract.BUNDLE_IS_EDIT_MODE)) {
                 mIsEditMode = true;
-                mEditHtmlContent = intent.getStringExtra(DataContract.BUNDLE_EDIT_CONTENT);
+                mEditHtmlContent = removeLastEditInfo(intent.getStringExtra(DataContract.BUNDLE_EDIT_CONTENT));
             }
         }
     }
