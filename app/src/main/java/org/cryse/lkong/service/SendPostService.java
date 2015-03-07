@@ -96,15 +96,10 @@ public class SendPostService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(LOG_TAG, "onStartCommand");
         if (intent != null && intent.hasExtra("type")) {
-
-            Log.d(LOG_TAG, String.format("onStartCommand: %s", intent.getStringExtra("type")));
             if ("cancel_current".compareTo(intent.getStringExtra("type")) == 0) {
-                Log.d(LOG_TAG, "onStartCommand, type: cancel_current");
                 stopCurrentTask = true;
             } else if ("cancel_all".compareTo(intent.getStringExtra("type")) == 0) {
-                Log.d(LOG_TAG, "onStartCommand, type: cancel_all");
                 mTaskQueue.clear();
                 stopCurrentTask = true;
             }
@@ -141,7 +136,7 @@ public class SendPostService extends Service {
     }
 
     public void sendThread(SendThreadTask task) {
-        Log.d(LOG_TAG, "sendPost");
+        Log.d(LOG_TAG, "sendThread");
         NotificationCompat.Builder progressNotificationBuilder;
 
         progressNotificationBuilder = new NotificationCompat.Builder(SendPostService.this);
@@ -201,9 +196,7 @@ public class SendPostService extends Service {
         contentProcessor.setUploadImageCallback(path -> {
             String uploadUrl = "";
             try {
-                Log.d(LOG_TAG, "setUploadImageCallback start");
                 uploadUrl = mLKRestService.uploadImageToLKong(authObject, path);
-                Log.d(LOG_TAG, String.format("uploadImageToLKong result %s", uploadUrl));
             } catch (Exception ex) {
                 Log.e(LOG_TAG, "uploadImageToLKong failed", ex);
             } finally {
@@ -211,10 +204,7 @@ public class SendPostService extends Service {
             }
         });
         contentProcessor.run();
-        String replaceResult = contentProcessor.getResultContent();
-
-        Log.d(LOG_TAG, replaceResult);
-        return replaceResult;
+        return contentProcessor.getResultContent();
     }
 
     private void showSendPostTaskResultNotification(NewPostResult newPostResult) {
