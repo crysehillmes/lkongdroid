@@ -87,7 +87,11 @@ public class NewPostActivity extends AbstractPostActivity {
 
     @Override
     protected String getTitleString() {
-        return getString(R.string.button_edit);
+        if(isInEditMode()) {
+            return getString(R.string.button_edit);
+        } else {
+            return mTitle;
+        }
     }
 
     @Override
