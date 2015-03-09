@@ -66,7 +66,7 @@ public class OriginImageDownloader {
                 if(!cachePath.exists())
                     if(!cachePath.mkdir())
                         throw new IllegalStateException();
-                String fileName = md5(url);
+                String fileName = urlToFileName(url);
                 File[] fileWithoutExtension = findFilesForId(cachePath, fileName);
                 if(fileWithoutExtension.length > 0) {
                     subscriber.onNext(fileWithoutExtension[0].getPath());
@@ -82,6 +82,10 @@ public class OriginImageDownloader {
                 subscriber.onError(e);
             }
         });
+    }
+
+    public static String urlToFileName(String url) {
+        return md5(url);
     }
 
     private Response runNetworkRequest(String url) throws Exception {
@@ -133,6 +137,16 @@ public class OriginImageDownloader {
         }
         return fullFileName;
     }
+
+    public static void removeCachedImage(File androidCachePath, String subCacheDir, String fileName) {
+        File cachePath = new File(androidCachePath, subCacheDir);
+        File[] fileWithoutExtension = findFilesForId(cachePath, fileName);
+        for (File file : fileWithoutExtension) {
+            if(file.exists())
+                file.delete();
+        }
+    }
+
 
     public static File[] findFilesForId(File dir, final String nameWithoutExtension) {
         return dir.listFiles(new FileFilter() {
