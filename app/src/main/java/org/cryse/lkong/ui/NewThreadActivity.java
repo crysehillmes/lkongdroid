@@ -86,7 +86,11 @@ public class NewThreadActivity extends AbstractPostActivity {
 
     @Override
     protected String getTitleString() {
-        return getString(R.string.button_edit);
+        if(isInEditMode()) {
+            return getString(R.string.button_edit);
+        } else {
+            return mForumName;
+        }
     }
 
     @Override
