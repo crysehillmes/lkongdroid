@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -26,6 +27,8 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.OriginImageDownloader;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.ToastSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,6 +159,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
 
     public static class ImageFragment extends Fragment {
         private static final String ARGS_IMAGE_URL = "IMAGE_URL";
+        private static final String SUB_CACHE_DIR = "img-origin-cache";
         private Subscription mLoadImageSubscription;
         private String mImageUrl;
         @InjectView(R.id.viewpager_item_photo_progressbar)
@@ -186,6 +190,35 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View contentView = inflater.inflate(R.layout.viewpager_item_photo, container, false);
             ButterKnife.inject(this, contentView);
+            mPhotoView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+
+                @Override
+                public void onReady() {
+
+                }
+
+                @Override
+                public void onImageLoaded() {
+
+                }
+
+                @Override
+                public void onPreviewLoadError(Exception e) {
+                    OriginImageDownloader.removeCachedImage(getActivity().getCacheDir(), SUB_CACHE_DIR, OriginImageDownloader.urlToFileName(mImageUrl));
+                    ToastProxy.showToast(getActivity(), getString(R.string.toast_error_open_origin_image), ToastSupport.TOAST_ALERT);
+                }
+
+                @Override
+                public void onImageLoadError(Exception e) {
+                    OriginImageDownloader.removeCachedImage(getActivity().getCacheDir(), SUB_CACHE_DIR, OriginImageDownloader.urlToFileName(mImageUrl));
+                    ToastProxy.showToast(getActivity(), getString(R.string.toast_error_open_origin_image), ToastSupport.TOAST_ALERT);
+                }
+
+                @Override
+                public void onTileLoadError(Exception e) {
+
+                }
+            });
             return contentView;
         }
 
@@ -199,7 +232,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             result -> {
-                                mPhotoView.setImageUri(result);
+                                mPhotoView.setImage(ImageSource.uri(result));
                             },
                             error -> {
                                 Timber.e(error, "OriginImageDownloader::downloadImage() onError().", LOG_TAG);

@@ -60,6 +60,7 @@
     <string name="toast_error_rate_self">You cannot rate to your own post.</string>
     <string name="toast_error_rate_score_empty">Score could not be empty.</string>
     <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
+    <string name="toast_error_open_origin_image">Failed to load this image.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>

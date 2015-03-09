@@ -224,9 +224,9 @@ public class LKongRestService {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
-        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
         List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
-        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
+        if(listType == ThreadListType.TYPE_SORT_BY_POST)
+            Collections.reverse(threadList);
         return threadList;
     }
 

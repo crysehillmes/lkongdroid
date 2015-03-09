@@ -209,7 +209,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
-                if((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING) && isRecyclerViewAtBottom(recyclerView)) {
+                if(newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
@@ -224,7 +224,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                // mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
@@ -232,9 +232,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mNegativeDyAmount = 0;
                     if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         mToolbarQuickReturn.hide();
+                        mFooterPagerControl.hide();
+                        mFab.hide();
                     }
-                    mFooterPagerControl.hide();
-                    mFab.hide();
                 } else if(dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;

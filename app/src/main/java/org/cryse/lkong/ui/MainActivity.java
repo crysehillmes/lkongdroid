@@ -21,7 +21,6 @@ import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.CircleTransform;
-import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,9 +92,6 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
                 String secondInfoText = mCurrentAccount.getEmail();
                 this.mUserEmail.setText(secondInfoText);
             }
-        } else {
-            mNavigation.navigateToSignInActivity(this);
-            finishCompat();
         }
     }
 
