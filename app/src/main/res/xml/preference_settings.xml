@@ -36,11 +36,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_other_title">
         <Preference
+            android:key="prefs_feedback"
             android:summary="@string/settings_item_feedback_value"
             android:title="@string/settings_item_feedback_title">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="mailto:lkongdroid@outlook.com" />
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_author_title">
