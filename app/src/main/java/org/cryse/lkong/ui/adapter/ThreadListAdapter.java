@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -15,6 +14,8 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -26,12 +27,18 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
+    public static final String THREAD_PICASSO_TAG = "picasso_thread_list_adapter";
     private final String mTodayPrefix;
     private int mColorAccent;
-    public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
+    private final int mAvatarSize;
+    Picasso mPicasso;
+    private CircleTransform mCircleTransform = new CircleTransform();
+    public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList) {
         super(context, mItemList);
+        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
+        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     @Override
@@ -57,15 +64,18 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                     spannableTitle.append(digestIndicator);
                     spannableTitle.setSpan(new ForegroundColorSpan(mColorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
-                spannableTitle.append(android.text.Html.fromHtml(threadModel.getSubject()));
+                spannableTitle.append(threadModel.getSubject());
                 viewHolder.mThreadTitleTextView.setText(spannableTitle);
                 viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
                 viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
                 viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), mTodayPrefix));
-                Picasso.with(getContext())
+                mPicasso
                         .load(threadModel.getUserIcon())
+                        .tag(THREAD_PICASSO_TAG)
                         .error(R.drawable.ic_default_avatar)
                         .placeholder(R.drawable.ic_default_avatar)
+                        .resize(mAvatarSize, mAvatarSize)
+                        .transform(mCircleTransform)
                         .into(viewHolder.mThreadIconImageView);
             }
         }

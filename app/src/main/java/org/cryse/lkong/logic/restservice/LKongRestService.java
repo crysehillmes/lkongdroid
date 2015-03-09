@@ -37,6 +37,7 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
@@ -66,6 +67,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
@@ -83,6 +85,8 @@ public class LKongRestService {
     @Inject
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
+        this.okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
+        this.okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
         this.cookieManager = new CookieManager(
         );
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
@@ -220,9 +224,9 @@ public class LKongRestService {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
-        Timber.d(String.format("LKongRestService::getForumThreadList() lkThreadList.size() = %d ", lKThreadList.getData().size()), LOG_TAG);
         List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
-        Timber.d(String.format("LKongRestService::getForumThreadList() threadList.size() = %d ", threadList.size()), LOG_TAG);
+        if(listType == ThreadListType.TYPE_SORT_BY_POST)
+            Collections.reverse(threadList);
         return threadList;
     }
 
@@ -458,6 +462,15 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
+        if(responseString.contains("\"error\":")) {
+            NoticeCountModel errorModel = new NoticeCountModel();
+            JSONObject jsonObject = new JSONObject(responseString);
+            String errorMessage = jsonObject.getString("error");
+            errorModel.setSuccess(false);
+            errorModel.setErrorMessage(errorMessage);
+            return errorModel;
+        }
+
         LKCheckNoticeCountResult lkCheckNoticeCountResult = gson.fromJson(responseString, LKCheckNoticeCountResult.class);
         NoticeCountModel noticeCountModel = ModelConverter.toNoticeCountModel(lkCheckNoticeCountResult);
         clearCookies();
@@ -545,6 +558,40 @@ public class LKongRestService {
         clearCookies();
         return postRate;
     }
+
+    public EditPostResult editPost(LKAuthObject authObject, long tid, long pid, String action, String title, String content) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        FormEncodingBuilder builder= new FormEncodingBuilder()
+                .add("type", "edit")
+                .add("tid", Long.toString(tid))
+                .add("pid", Long.toString(pid))
+                .add("ac", action)
+                .add("content", content);
+        if(!TextUtils.isEmpty(title) && action.equalsIgnoreCase("thread")) {
+            builder.add("title", title);
+        }
+        RequestBody formBody = builder.build();
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url("http://lkong.cn/post/edit/index.php?mod=post")
+                .post(formBody)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseBody = getStringFromGzipResponse(response);
+        JSONObject jsonObject = new JSONObject(responseBody);
+        EditPostResult editPostResult = new EditPostResult();
+        editPostResult.setTid(jsonObject.getLong("tid"));
+        editPostResult.setSuccess(jsonObject.getBoolean("success"));
+        if(jsonObject.has("errorMessage"))
+            editPostResult.setErrorMessage(jsonObject.getString("errorMessage"));
+        clearCookies();
+
+        return editPostResult;
+    }
+
 
     public void saveToSDCard(String filename, String content)throws Exception {
         File file = new File(Environment.getExternalStorageDirectory(), filename);//指定文件存储目录为SD卡，文件名

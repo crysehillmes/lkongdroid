@@ -94,4 +94,18 @@ public class PtrRecyclerView extends PullToRefreshBase<RecyclerView> {
         }
         return false;
     }
+
+    public int getFirstVisiblePosition() {
+        RecyclerView recyclerView = getRefreshableView();
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if(layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
+            return gridLayoutManager.findFirstVisibleItemPosition();
+        } else if(layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
+            return linearLayoutManager.findFirstVisibleItemPosition();
+        } else {
+            throw new IllegalStateException();
+        }
+    }
 }

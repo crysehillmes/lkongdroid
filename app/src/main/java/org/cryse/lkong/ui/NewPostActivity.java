@@ -1,8 +1,14 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -10,8 +16,13 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
+import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 
 public class NewPostActivity extends AbstractPostActivity {
     public static final String LOG_TAG = NewPostActivity.class.getName();
@@ -19,6 +30,8 @@ public class NewPostActivity extends AbstractPostActivity {
     String mTitle;
     long mThreadId;
     Long mPostId;
+    boolean mIsEditMode = false;
+    String mEditHtmlContent;
 
     @Override
     protected void readDataFromIntent(Intent intent) {
@@ -29,12 +42,42 @@ public class NewPostActivity extends AbstractPostActivity {
                 mPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, 0);
             else
                 mPostId = null;
+            if (intent.hasExtra(DataContract.BUNDLE_IS_EDIT_MODE)) {
+                mIsEditMode = true;
+                mEditHtmlContent = removeLastEditInfo(intent.getStringExtra(DataContract.BUNDLE_EDIT_CONTENT));
+            }
         }
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (mIsEditMode) {
+            Html.ImageGetter imageGetter = new EmptyImageGetter();
+            Spanned spannedText = HtmlTextUtils.htmlToSpanned(mEditHtmlContent, imageGetter, new HtmlTagHandler());
+            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
+            SpannableString spannableString = (SpannableString) replaceImageSpan(drawable, mPostId, spannedText);
+            mContentEditText.append(spannableString);
+            ImageSpanContainerImpl imageSpanContainer = new ImageSpanContainerImpl(mContentEditText);
+            Object[] objects = spannableString.getSpans(0, spannableString.length(), Object.class);
+            for (Object spanObj : objects) {
+                Log.d("Span Class", spanObj.getClass().getName());
+                if (spanObj instanceof ClickableImageSpan) {
+                    ((ClickableImageSpan) spanObj).loadImage(imageSpanContainer);
+                } else if (spanObj instanceof EmoticonImageSpan) {
+                    ((EmoticonImageSpan) spanObj).loadImage(imageSpanContainer);
+                }
+            }
+        }
+        mContentEditTextHandler = new ImageEditTextHandler(mContentEditText);
+    }
+
+    @Override
     protected void sendData(String title, String content) {
-        getSendServiceBinder().sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, content);
+        if(mIsEditMode)
+            getSendServiceBinder().editPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, content);
+        else
+            getSendServiceBinder().sendPost(mUserAccountManager.getAuthObject(), mThreadId, mPostId, content);
     }
 
     @Override
@@ -44,7 +87,7 @@ public class NewPostActivity extends AbstractPostActivity {
 
     @Override
     protected String getTitleString() {
-        return mTitle;
+        return getString(R.string.button_edit);
     }
 
     @Override
@@ -68,6 +111,11 @@ public class NewPostActivity extends AbstractPostActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected boolean isInEditMode() {
+        return mIsEditMode;
     }
 
     @Override

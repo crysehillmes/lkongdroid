@@ -59,6 +59,8 @@
     <string name="toast_error_invalid_floor">No such floor.</string>
     <string name="toast_error_rate_self">You cannot rate to your own post.</string>
     <string name="toast_error_rate_score_empty">Score could not be empty.</string>
+    <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
+    <string name="toast_error_open_origin_image">Failed to load this image.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
@@ -75,6 +77,7 @@
     <string name="button_sign_in">Sign In</string>
     <string name="button_reply">Reply</string>
     <string name="button_rate">Rate</string>
+    <string name="button_edit">Edit</string>
 
     <string name="input_error_email">Please enter your email here.</string>
     <string name="input_error_password">Please enter your password here.</string>
@@ -106,9 +109,12 @@
     <string name="settings_item_about_title">About</string>
 
 
+    <string name="settings_item_font_size_title">Font Size</string>
+    <string name="settings_item_font_size_summary">Set font size of forum content</string>
+    <string name="settings_item_font_size_dialog_title">Font Size</string>
     <string name="settings_item_image_download_policy_title">Image download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
-    <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post.</string>
+    <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post</string>
     <string name="format_post_tail_prefix">&#160;——&#160;</string>
     <string name="settings_item_post_extra_tail_text_default">Post By LKongDroid App</string>
 
@@ -150,4 +156,16 @@
 
     <string name="text_extcredits_lb">龙币</string>
     <string name="text_extcredits_lj">龙晶</string>
+
+    <string-array name="readview_font_size_entries">
+        <item>10</item>
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+        <item>22</item>
+        <item>24</item>
+        <item>26</item>
+    </string-array>
 </resources>

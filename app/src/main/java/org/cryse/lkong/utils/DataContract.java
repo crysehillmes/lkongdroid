@@ -23,6 +23,15 @@ public class DataContract {
     public static final String BUNDLE_POST_ID = "bundle_post_id";
     public static final String BUNDLE_POST_REPLY_TITLE = "bundle_post_reply_title";
 
+
+    public static final String BUNDLE_POST_IMAGE_URL_LIST = "bundle_post_image_url_list";
+    public static final String BUNDLE_POST_IMAGE_INIT_URL = "bundle_post_init_url";
+
     public static final int REQUEST_ID_NEW_POST = 129;
     public static final int REQUEST_ID_NEW_THREAD = 128;
+
+
+    public static final String BUNDLE_IS_EDIT_MODE = "bundle_is_edit_mode";
+    public static final String BUNDLE_EDIT_TITLE = "bundle_edit_title";
+    public static final String BUNDLE_EDIT_CONTENT = "bundle_edit_content";
 }

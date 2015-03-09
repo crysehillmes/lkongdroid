@@ -16,6 +16,7 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.ColorChooserDialog;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
@@ -34,6 +35,8 @@ public class SettingsFragment extends PreferenceFragment {
 
     @Inject
     RxEventBus mEventBus;
+    @Inject
+    AndroidNavigation mNavigation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,9 @@ public class SettingsFragment extends PreferenceFragment {
         setUpThemeColorPreference();
         setImagePolicySummary();
         setupVersionPrefs();
+        setupFeedbackPreference();
     }
+
 
     private void injectThis() {
         LKongApplication.get(getActivity()).simpleActivityComponent().inject(this);
@@ -121,24 +126,22 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
-        Preference changelogPref = (Preference) findPreference("prefs_about_changelog");
-        changelogPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                        .title(R.string.settings_item_change_log_title)
-                        .customView(R.layout.dialog_webview, false)
-                        .positiveText(android.R.string.ok)
-                        .build();
-                WebView webView = (WebView) dialog.getCustomView().findViewById(R.id.webview);
-                try {
-                    String data = readChangelogFromAssets();
-                    webView.loadDataWithBaseURL(null, data, "text/html", "UTF-8", null);
-                } catch (Exception e) {
-                    webView.loadUrl("file:///android_asset/changelog.html");
-                }
-                dialog.show();
-                return true;
+        Preference changelogPref = findPreference("prefs_about_changelog");
+        changelogPref.setOnPreferenceClickListener(preference -> {
+            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.settings_item_change_log_title)
+                    .customView(R.layout.dialog_webview, false)
+                    .positiveText(android.R.string.ok)
+                    .build();
+            WebView webView = (WebView) dialog.getCustomView().findViewById(R.id.webview);
+            try {
+                String data = readChangelogFromAssets();
+                webView.loadDataWithBaseURL(null, data, "text/html", "UTF-8", null);
+            } catch (Exception e) {
+                webView.loadUrl("file:///android_asset/changelog.html");
             }
+            dialog.show();
+            return true;
         });
     }
 
@@ -154,26 +157,29 @@ public class SettingsFragment extends PreferenceFragment {
         return buffer.toString();
     }
 
+    private void setupFeedbackPreference() {
+        Preference feedBackPreference = findPreference("prefs_feedback");
+        feedBackPreference.setOnPreferenceClickListener(preference -> {
+            mNavigation.openActivityForPostListByThreadId(getActivity(), 1153838l);
+            return true;
+        });
+    }
+
     private void setUpThemeColorPreference() {
-        Preference themeColorPreference = (Preference) findPreference("prefs_theme_color");
+        Preference themeColorPreference = findPreference("prefs_theme_color");
         IntegerPreference themeColorPrefsValue = new IntegerPreference(getPreferenceManager().getSharedPreferences(), PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
 
-        themeColorPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                new ColorChooserDialog().show(getActivity(), themeColorPrefsValue.get(), new ColorChooserDialog.Callback() {
-                    @Override
-                    public void onColorSelection(int index, int color, int darker) {
-                        themeColorPrefsValue.set(index);
-                        ThemeEngine themeEngine = ((AbstractThemeableActivity)getActivity()).getThemeEngine();
-                        mEventBus.sendEvent(new ThemeColorChangedEvent(
-                                themeEngine.getPrimaryColor(getActivity()),
-                                themeEngine.getPrimaryDarkColor(getActivity()),
-                                themeEngine.getPrimaryColorResId(),
-                                themeEngine.getPrimaryDarkColorResId()));
-                    }
-                });
-                return true;
-            }
+        themeColorPreference.setOnPreferenceClickListener(preference -> {
+            new ColorChooserDialog().show(getActivity(), themeColorPrefsValue.get(), (index, color, darker) -> {
+                themeColorPrefsValue.set(index);
+                ThemeEngine themeEngine = ((AbstractThemeableActivity)getActivity()).getThemeEngine();
+                mEventBus.sendEvent(new ThemeColorChangedEvent(
+                        themeEngine.getPrimaryColor(getActivity()),
+                        themeEngine.getPrimaryDarkColor(getActivity()),
+                        themeEngine.getPrimaryColorResId(),
+                        themeEngine.getPrimaryDarkColorResId()));
+            });
+            return true;
         });
     }
 }

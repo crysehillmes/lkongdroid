@@ -5,16 +5,20 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import org.cryse.lkong.R;
 
 import java.util.regex.Pattern;
 
@@ -136,18 +140,41 @@ public class UIUtils {
         return value;
     }
 
-    public static int getSpDimensionPixelSize(Context context, @DimenRes int resId) {
-        return sp2px(context, context.getResources().getDimension(resId));
+    public static float getSpDimensionPixelSize(Context context, @DimenRes int resId) {
+        return context.getResources().getDimension(resId);
     }
 
     public static int dp2px(Context context, float dp){
-        float scale = context.getResources().getDisplayMetrics().density;
-        return (int)(dp * scale + 0.5f);
+        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dp, context.getResources().getDisplayMetrics());
     }
 
-    public static int sp2px(Context context, float sp){
-        float scale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int)(sp * scale + 0.5f);
+    public static float sp2px(Context context, float sp){
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                sp, context.getResources().getDisplayMetrics());
+    }
+
+    public static int getDefaultAvatarSize(Context context) {
+        return dp2px(context, context.getResources().getDimension(R.dimen.size_avatar_default));
+    }
+
+    public static InsetsValue getCardViewPadding(int cardElevation, int cornerRadius) {
+        // This padding amount is equal to maxCardElevation + (1 - cos45) * cornerRadius on the sides
+        // and maxCardElevation * 1.5 + (1 - cos45) * cornerRadius on top and bottom.
+        // 1 - cos(45) = 0.29289321881345247
+        int horizontalPadding = (int) Math.ceil((double) cardElevation + 0.29289321881345247d * (double) cornerRadius);
+        int verticalPadding = (int) Math.ceil((double) cardElevation * 1.5d + 0.29289321881345247d * (double) cornerRadius);
+        return new InsetsValue(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
+    }
+
+    public static float getFontSizeFromPreferenceValue(Context context, String fontSize) {
+        int sizeItem = Integer.parseInt(fontSize);
+        return sp2px(context, sizeItem);
+    }
+
+    public static float getFontSizeFromPreferenceValueWithExtra(Context context, String fontSize, int extra) {
+        int sizeItem = Integer.parseInt(fontSize) + extra;
+        return sp2px(context, sizeItem);
     }
 
     public static class InsetsValue {

@@ -85,8 +85,10 @@ public class EmoticonDialog extends DialogFragment {
     private class EmojiComparator implements Comparator<String> {
         @Override
         public int compare(String lhs, String rhs) {
-            Integer left = Integer.valueOf(lhs.substring(2,lhs.length() - 4));
-            Integer right = Integer.valueOf(rhs.substring(2,rhs.length() - 4));
+            int leftDotIndex = lhs.indexOf(".");
+            int rightDotIndex = rhs.indexOf(".");
+            Integer left = Integer.valueOf(lhs.substring(2,leftDotIndex));
+            Integer right = Integer.valueOf(rhs.substring(2,rightDotIndex));
             return left.compareTo(right);
         }
     }

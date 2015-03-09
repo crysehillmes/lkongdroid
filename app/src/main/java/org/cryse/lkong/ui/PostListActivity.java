@@ -1,16 +1,29 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
+import android.provider.Browser;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
+import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,15 +36,19 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
@@ -41,29 +58,46 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
 import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
+import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
+import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
+import org.cryse.utils.DateFormatUtils;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PostListActivity extends AbstractThemeableActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
+    Picasso mPicasso;
     @Inject
     PostListPresenter mPresenter;
 
@@ -76,6 +110,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsImageDownloadPolicy
     StringPreference mImageDownloadPolicy;
+    @Inject
+    @PrefsReadFontSize
+    StringPreference mReadFontSizePref;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
@@ -105,9 +142,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private Boolean mIsFavorite = null;
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
+    private int mAccentColor;
+    private int mTextSecondaryColor;
+    private String mTodayPrefix;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
@@ -118,24 +159,23 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         setTitle(R.string.activity_title_post_list);
 
         initRecyclerView();
+        initTextPaint();
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_THREAD_ID)) {
             mThreadId = intent.getLongExtra(DataContract.BUNDLE_THREAD_ID, -1);
         } else if(intent.hasExtra(DataContract.BUNDLE_POST_ID)) {
             mTargetPostId = intent.getLongExtra(DataContract.BUNDLE_POST_ID, -1);
         }
+        mCurrentPage = intent.getIntExtra(DataContract.BUNDLE_THREAD_CURRENT_PAGE, 1);
         if(mThreadId == -1 && mTargetPostId == -1)
             throw new IllegalStateException("PostListActivity missing extra in intent.");
     }
 
     private void initRecyclerView() {
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int width = displaymetrics.widthPixels;
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
-        mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
+        mPostCollectionView.getRefreshableView().setItemAnimator(null);
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, Integer.valueOf(mImageDownloadPolicy.get()), (width * 4 / 5));
+        mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -169,16 +209,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
-                if((newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_SETTLING) && isRecyclerViewAtBottom(recyclerView)) {
+                if(newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
+                }
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                } else {
+                    mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                // mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
@@ -186,9 +232,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mNegativeDyAmount = 0;
                     if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         mToolbarQuickReturn.hide();
+                        mFooterPagerControl.hide();
+                        mFab.hide();
                     }
-                    mFooterPagerControl.hide();
-                    mFab.hide();
                 } else if(dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
@@ -214,6 +260,39 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
                 }
+            }
+
+            @Override
+            public void onEditClick(View view, int position) {
+                if (mUserAccountManager.isSignedIn()) {
+                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    String content;
+                    if(postItem.getMessage().contains("</blockquote>")) {
+                        int indexOfQuota = postItem.getMessage().indexOf("</blockquote>");
+                        content = postItem.getMessage().substring(indexOfQuota + 13);
+                    } else {
+                        content = postItem.getMessage();
+                    }
+                    mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                } else {
+                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
+                }
+            }
+        });
+        mCollectionAdapter.setOnSpanClickListener(new PostItemView.OnSpanClickListener() {
+            @Override
+            public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl) {
+                Intent intent = new Intent(PostListActivity.this, PhotoViewPagerActivity.class);
+                intent.putExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST, urls);
+                intent.putExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL, initUrl);
+                startActivity(intent);
+                return true;
+            }
+
+            @Override
+            public boolean onUrlSpanClick(long postId, URLSpan span, String target) {
+                urlParse(target);
+                return true;
             }
         });
         mPostCollectionView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
@@ -247,13 +326,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
 
             @Override
-            public void onPageIndicatorClick() {MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
+            public void onPageIndicatorClick() {
+                MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
                         .title(R.string.dialog_post_list_choose_page)
                         .items(mPageIndicatorItems)
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
-                            if(i + 1 == mCurrentPage) return;
-                            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, i + 1, true, SHOW_MODE_REPLACE);
+                            goToPage(i + 1);
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -264,6 +343,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 goToNextPage(true);
             }
         };
+    }
+
+    private void goToPage(int page) {
+        if(page == mCurrentPage || page < 1 || page > mPageCount) return;
+            getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
+    }
+
+    private void refreshCurrentPage() {
+        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, true, SHOW_MODE_REPLACE_SIMPLE);
     }
 
     private void goToNextPage(boolean resetPosition) {
@@ -295,12 +383,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE);
 
                 // Restore last state for checked position.
-                /*final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
-                final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);*/
+                final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
+                final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);
 
-               /* mPostCollectionView.getRefreshableView().post(() -> {
+                mPostCollectionView.getRefreshableView().post(() -> {
                     if (firstVisibleItemPosition != -1) {
-                        RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRecyclerView().getLayoutManager();
+                        RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRefreshableView().getLayoutManager();
                         if (layoutManager instanceof GridLayoutManager) {
                             GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
                             gridLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
@@ -310,9 +398,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         } else {
                             throw new IllegalStateException();
                         }
-                        mPostCollectionView.getRecyclerView().stopScroll();
+                        mPostCollectionView.getRefreshableView().stopScroll();
                     }
-                });*/
+                });
 
             }
         } else {
@@ -321,7 +409,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             if(mThreadId != -1) {
                 getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
             } else if(mTargetPostId != -1) {
-                getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId);
+                getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, true);
             }
             // getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
@@ -353,6 +441,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         } else if(event instanceof ThemeColorChangedEvent) {
             setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+        } else if(event instanceof EditPostDoneEvent) {
+            refreshCurrentPage();
         }
     }
 
@@ -372,13 +462,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
 
         // 保存列表位置
-        /*int firstVisiblePosition = mPostCollectionView.getFirstVisiblePosition();
-        RecyclerView.ViewHolder firstVisibleViewHolder = mPostCollectionView.getRecyclerView().findViewHolderForPosition(firstVisiblePosition);
+        int firstVisiblePosition = mPostCollectionView.getFirstVisiblePosition();
+        RecyclerView.ViewHolder firstVisibleViewHolder = mPostCollectionView.getRefreshableView().findViewHolderForPosition(firstVisiblePosition);
         View firstView = firstVisibleViewHolder.itemView;
         int top = (firstView == null) ? 0 : firstView.getTop();
 
         outState.putInt("listview_index", firstVisiblePosition);
-        outState.putInt("listview_top", top);*/
+        outState.putInt("listview_top", top);
     }
 
     @Override
@@ -474,14 +564,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.cancelTag(PostListAdapter.POST_PICASSO_TAG);
+        mPicasso.shutdown();
     }
 
     @Override
     public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
+        setLoading(true);
+        createSpan(page, posts, refreshPosition, showMode);
+    }
+
+    private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
+        setLoading(false);
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
         switch (showMode) {
+            case SHOW_MODE_REPLACE_SIMPLE:
+                mCollectionAdapter.replaceWith(posts);
+                break;
             case SHOW_MODE_REPLACE:
                 mCollectionAdapter.replaceWith(posts);
                 scrollToPosition(0);
@@ -499,7 +600,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 scrollToPosition(0);
                 break;
         }
-
 
 
         if(refreshPosition) {
@@ -520,7 +620,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
-    public void onGetPostLocationComplete(DataItemLocationModel locationModel) {
+    public void onGetPostLocationComplete(DataItemLocationModel locationModel, boolean loadThreadInfo) {
         if(locationModel != null && locationModel.isLoad() && locationModel.getLocation().startsWith("thread_")) {
             String idString = locationModel.getLocation();
             int firstIndex = idString.indexOf("_");
@@ -530,7 +630,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             else
                 mThreadId = Long.valueOf(idString.substring(firstIndex + 1));
             mTargetOrdinal = locationModel.getOrdinal();
-            getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+            if(loadThreadInfo)
+                getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
+            else
+                calculatePageAndLoad();
         }
     }
 
@@ -540,8 +643,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadSubject = threadInfoModel.getSubject();
         setThreadSubjectSpanned(mThreadModel);
         mCollectionAdapter.notifyItemChanged(1);
-        mCollectionAdapter.setThreadAuthorId(threadInfoModel.getAuthorId());
 
+        calculatePageAndLoad();
+    }
+
+    private void calculatePageAndLoad() {
         // Calculate page here.
         int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
         mPageCount = replyCount == 0 ? 1 : (int)Math.ceil((double) replyCount / 20d);
@@ -553,7 +659,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
         if(mPageCount > 0) {
             if(mTargetOrdinal == -1) {
-                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, 1, true, SHOW_MODE_REPLACE);
+                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, ((mCurrentPage >= 1 && mCurrentPage <= mPageCount) ? mCurrentPage : 1), true, SHOW_MODE_REPLACE);
             } else {
                 int page = replyCount == 0 ? 1 : (int)Math.ceil((double) mTargetOrdinal / 20d);
                 getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
@@ -720,5 +826,249 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     })
                     .build();
         rateListDialog.show();
+    }
+
+
+    public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
+        int mMaxImageWidth = 256;
+        Html.ImageGetter imageGetter = new EmptyImageGetter();
+        Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
+            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
+            for (PostModel postModel : posts) {
+                Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
+                replaceImageSpan(new SpannableString(spannedText), postModel, drawable);
+            }
+            subscriber.onNext(posts);
+            subscriber.onCompleted();
+        });
+        createSpanObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            showPostListInternal(page, posts, refreshPosition, showMode);
+                        },
+                        error -> {
+                            showToast(R.string.notification_content_network_error, ToastSupport.TOAST_ALERT);
+                            Timber.e(error, "PostListActivity::createSpan() onError().", LOG_TAG);
+                        },
+                        () -> {
+                            Timber.d("PostListActivity::createSpan() onComplete().", LOG_TAG);
+                        }
+                );
+    }
+
+    private CharSequence replaceImageSpan(CharSequence sequence, PostModel postModel, Drawable initPlaceHolder) {
+        Spannable spannable;
+        if(sequence instanceof SpannableString)
+            spannable = (SpannableString)sequence;
+        else
+            spannable = new SpannableString(sequence);
+        ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
+        URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
+
+        PostDisplayCache postDisplayCache = new PostDisplayCache();
+        postDisplayCache.getImportantSpans().addAll(Arrays.asList(urlSpans));
+        postDisplayCache.setUrlSpanCount(urlSpans.length);
+
+
+        for(ImageSpan imageSpan : imageSpans) {
+            int spanStart = spannable.getSpanStart(imageSpan);
+            int spanEnd = spannable.getSpanEnd(imageSpan);
+            int spanFlags = spannable.getSpanFlags(imageSpan);
+            if (!TextUtils.isEmpty(imageSpan.getSource()) && !imageSpan.getSource().contains("http://img.lkong.cn/bq/")) {
+                spannable.removeSpan(imageSpan);
+                ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
+                        this,
+                        mPicasso,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        256,
+                        256,
+                        DynamicDrawableSpan.ALIGN_BOTTOM,
+                        initPlaceHolder);
+                spannable.setSpan(clickableImageSpan,
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+                postDisplayCache.getImportantSpans().add(clickableImageSpan);
+                postDisplayCache.getImageUrls().add(imageSpan.getSource());
+            } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
+                spannable.removeSpan(imageSpan);
+                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+                        this,
+                        mPicasso,
+                        null,
+                        Long.toString(postModel.getPid()),
+                        PostListAdapter.POST_PICASSO_TAG,
+                        imageSpan.getSource(),
+                        R.drawable.image_placeholder,
+                        R.drawable.image_placeholder,
+                        (int)mContentTextPaint.getTextSize() * 2
+                );
+                spannable.setSpan(emoticonImageSpan,
+                        spanStart,
+                        spanEnd,
+                        spanFlags);
+                postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
+            }
+        }
+        postDisplayCache.setSpannableString((SpannableString)spannable);
+
+        // Generate content StaticLayout
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
+        int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
+        StaticLayout layout = new StaticLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        postDisplayCache.setTextLayout(layout);
+
+        // Generate author StaticLayout
+        SpannableStringBuilder autherNameSpannable = new SpannableStringBuilder();
+        autherNameSpannable.append(postModel.getAuthorName());
+        if(postModel.getAuthorId() == mThreadModel.getAuthorId()) {
+            String threadAuthorIndicator = getString(R.string.indicator_thread_author);
+            autherNameSpannable.append(threadAuthorIndicator);
+            autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
+                    postModel.getAuthorName().length(),
+                    postModel.getAuthorName().length() + threadAuthorIndicator.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        autherNameSpannable.append('\n');
+        String datelineString = DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix);
+        int start = autherNameSpannable.length();
+        int end = autherNameSpannable.length() + datelineString.length();
+        autherNameSpannable.append(datelineString);
+        autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)mDatelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        int authorWidth = dm.widthPixels - UIUtils.dp2px(this, 72f) - padding.getLeft() - padding.getRight();
+        StaticLayout authorLayout = new StaticLayout(autherNameSpannable, mAuthorTextPaint, authorWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+        postDisplayCache.setAuthorLayout(authorLayout);
+        postModel.setPostDisplayCache(postDisplayCache);
+        return spannable;
+    }
+
+    static final Pattern sOldLKongPidPattern = Pattern.compile("#pid(\\d+)");
+    static final Pattern sOldLKongThreadPattern = Pattern.compile("thread\\-(\\d+)\\-(\\d+)\\-(\\d+)\\.html");
+    static final Pattern sNewLKongThreadPattern = Pattern.compile("lkong.cn/thread/(\\d+)(/(\\d+))?(\\.p_(\\d+))?");
+    private void urlParse(String url) {
+        if(url.contains("lkong.net")) {
+            if(url.contains("forum.php")) {
+                Uri uri = Uri.parse(url);
+                String tidString = uri.getQueryParameter("tid");
+                String pageString = uri.getQueryParameter("page");
+                String pidString = null;
+                Matcher mPidMacher = sOldLKongPidPattern.matcher(url);
+                if (mPidMacher.find( )) {
+                    pidString = mPidMacher.group(1);
+                }
+                if(!TextUtils.isEmpty(tidString)) {
+                    long tid = Long.valueOf(tidString);
+                    if(!TextUtils.isEmpty(pidString)) {
+                        long pid = Long.valueOf(pidString);
+                        if(tid == mThreadId) {
+                            // 就在本帖
+                            mTargetPostId = pid;
+                            getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
+                        } else {
+                            // 别的帖子
+                            mAndroidNavigation.openActivityForPostListByPostId(this, pid);
+                        }
+                    } else if(!TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString)) {
+                        // 楼层未知但是知道页数
+                        int page = Integer.valueOf(pageString);
+                        if(page >= 1 && page < mPageCount) {
+                            goToPage(page);
+                        }
+                    } else {
+                        // 解析失败
+                        openUrlIntent(url);
+                    }
+                }
+            } else if(url.contains("thread-")) {
+                Matcher matcher = sOldLKongThreadPattern.matcher(url);
+                String tidString = null;
+                String pageString = null;
+                if(matcher.find()) {
+                    tidString = matcher.group(1);
+                    pageString = matcher.group(2);
+                    if(!TextUtils.isEmpty(tidString) && TextUtils.isDigitsOnly(tidString) && !TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString)) {
+                        long tid = Long.valueOf(tidString);
+                        int page = Integer.valueOf(pageString);
+                        if(tid == mThreadId) {
+                            goToPage(page);
+                        } else {
+                            mAndroidNavigation.openActivityForPostListByThreadId(this, tid, page);
+                        }
+                    }
+                }
+            } else {
+                openUrlIntent(url);
+            }
+        } else if(url.contains("lkong.cn")) {
+            // 新版地址
+            Matcher matcher = sNewLKongThreadPattern.matcher(url);
+            if(matcher.find()) {
+                int groupCount = matcher.groupCount();
+                String tidString = matcher.group(1);
+                String pageString = null;
+                String pidString = null;
+                if(groupCount >= 3)
+                    pageString = matcher.group(3);
+                if(groupCount >= 5)
+                    pidString = matcher.group(5);
+                long tid = Long.valueOf(tidString);
+                int page = !TextUtils.isEmpty(pageString) && TextUtils.isDigitsOnly(pageString) ? Integer.valueOf(pageString) : -1;
+                long pid = !TextUtils.isEmpty(pidString) && TextUtils.isDigitsOnly(pidString) ?  Integer.valueOf(pidString) : -1l;
+                if(tid == mThreadId) {
+                    if(pid != -1)
+                        getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), pid, false);
+                    else if(page != -1)
+                        goToPage(page);
+                    else
+                        showToast(R.string.toast_error_link_to_current_thread, TOAST_INFO);
+                } else {
+                    if(pid != -1l)
+                        mAndroidNavigation.openActivityForPostListByPostId(this, pid);
+                    else if(page != -1)
+                        mAndroidNavigation.openActivityForPostListByThreadId(this, tid, page);
+                    else
+                        mAndroidNavigation.openActivityForPostListByThreadId(this, tid);
+                }
+            }
+        } else {
+            openUrlIntent(url);
+        }
+    }
+
+    TextPaint mAuthorTextPaint;
+    TextPaint mContentTextPaint;
+    float mDatelineTextSize;
+    private void initTextPaint() {
+        mTextSecondaryColor = ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_secondary);
+        mAccentColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mTodayPrefix = getString(R.string.datetime_today);
+        mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        mContentTextPaint.setTextSize(contentTextSize);
+        mContentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        mContentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mAuthorTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        float authorTextSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
+        mAuthorTextPaint.setTextSize(authorTextSize);
+        mAuthorTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
+        mAuthorTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mDatelineTextSize = UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_body1);
+    }
+
+    private void openUrlIntent(String url) {
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
+        startActivity(intent);
     }
 }

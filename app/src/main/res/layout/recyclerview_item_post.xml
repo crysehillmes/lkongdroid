@@ -3,102 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants"
     app:cardBackgroundColor="?attr/theme_card_bg_color"
-    app:cardCornerRadius="0dp"
+    app:cardCornerRadius="2dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="0dp">
 
-    <RelativeLayout
+    <org.cryse.lkong.widget.PostItemView
+        android:id="@+id/recyclerview_item_post_view_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground">
 
-        <com.pkmmte.view.CircularImageView
-            android:id="@+id/recyclerview_item_post_imageview_author_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="16dp"
-            app:border_color="@android:color/transparent"
-            app:border_width="0dp"
-            app:shadow="false" />
-
-        <TextView
-            android:id="@+id/recyclerview_item_post_textview_author_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="72dp"
-            android:layout_marginRight="72dp"
-            android:layout_marginTop="16dp"
-            android:text="placeholder"
-            android:textColor="?theme_text_color_primary"
-            android:textSize="@dimen/text_size_subhead" />
-
-        <TextView
-            android:id="@+id/recyclerview_item_post_textview_dateline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/recyclerview_item_post_textview_author_name"
-            android:layout_marginLeft="72dp"
-            android:layout_marginRight="72dp"
-            android:text="placeholder"
-            android:textColor="?theme_text_color_secondary"
-            android:textSize="@dimen/text_size_body1" />
-
-        <TextView
-            android:id="@+id/recyclerview_item_post_textview_ordinal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:text="# 1 Floor"
-            android:textColor="?theme_text_color_secondary"
-            android:textSize="@dimen/text_size_caption" />
-
-        <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
-            android:id="@+id/recyclerview_item_post_textview_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="72dp"
-            android:lineSpacingMultiplier="1.3"
-            android:text="placeholder"
-            android:textColor="?theme_text_color_primary"
-            android:textIsSelectable="true"
-            android:textSize="@dimen/text_size_subhead" />
+        <ImageView
+            android:id="@+id/recyclerview_item_post_imageview_avatar"
+            android:layout_width="@dimen/size_avatar_default"
+            android:layout_height="@dimen/size_avatar_default" />
 
         <Button
             android:id="@+id/recyclerview_item_post_button_rate"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:layout_below="@+id/recyclerview_item_post_textview_message"
-            android:layout_marginBottom="6dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="6dp"
-            android:layout_toLeftOf="@+id/recyclerview_item_post_button_replay"
             android:background="?selectableItemBackground"
-            android:drawableLeft="@drawable/ic_button_rate"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text="@string/button_rate" />
+            android:drawableLeft="@drawable/ic_button_rate" />
 
-        <Button
+        <ImageButton
             android:id="@+id/recyclerview_item_post_button_replay"
-            android:layout_width="wrap_content"
+            android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/recyclerview_item_post_textview_message"
-            android:layout_marginBottom="6dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="6dp"
             android:background="?selectableItemBackground"
-            android:drawableLeft="@drawable/ic_button_reply"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:text="@string/button_reply" />
+            android:src="@drawable/ic_button_reply"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/button_reply" />
 
-    </RelativeLayout>
+        <ImageButton
+            android:id="@+id/recyclerview_item_post_button_edit"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_button_edit"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/button_edit"
+            android:visibility="invisible"/>
+    </org.cryse.lkong.widget.PostItemView>
 </android.support.v7.widget.CardView>

@@ -37,7 +37,6 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("ThreadListPresenter::loadThreadList() onNext().", LOG_TAG);
                             mView.showThreadList(result, loadingMore);
                         },
                         error -> {
@@ -45,7 +44,6 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
                             setLoadingStatus(loadingMore, false);
                         },
                         () -> {
-                            Timber.d("ThreadListPresenter::loadThreadList() onComplete().", LOG_TAG);
                             setLoadingStatus(loadingMore, false);
                         }
                 );

@@ -2,14 +2,19 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.squareup.picasso.Picasso;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.NoticeCountEvent;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
@@ -25,7 +30,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
+    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
 
+    private MenuItem mNotificationMenuItem;
+    private boolean mHasNotification = false;
     @Inject
     TimelinePresenter mPresenter;
 
@@ -40,6 +48,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -53,6 +62,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_timeline, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
+        mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -65,6 +75,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
                 mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
             else if(isNightMode() != null && !isNightMode())
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        if(mNotificationMenuItem != null) {
+            if(mHasNotification) mNotificationMenuItem.setIcon(R.drawable.ic_action_notification_red_dot);
+            else mNotificationMenuItem.setIcon(R.drawable.ic_action_notification);
         }
         super.onPrepareOptionsMenu(menu);
     }
@@ -85,6 +99,12 @@ public class TimelineFragment extends SimpleCollectionFragment<
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        checkNewNoticeCount();
+    }
+
+    @Override
     protected String getLogTag() {
         return LOG_TAG;
     }
@@ -101,7 +121,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList);
+        return new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
     }
 
     @Override
@@ -127,6 +147,21 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+        if(event instanceof NoticeCountEvent) {
+            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
+            if (model.getMentionNotice() != 0
+                    || model.getNotice() != 0
+                    || model.getRateNotice() != 0
+                    /*|| model.getPrivateMessageNotice() != 0
+                    || model.getFansNotice() != 0*/
+                    ) {
+                mHasNotification = true;
+            } else {
+                mHasNotification = false;
+            }
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -146,5 +181,35 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
+
+
+    @Override
+    protected void onCollectionViewInitComplete() {
+        super.onCollectionViewInitComplete();
+        mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    getPicasso().resumeTag(LOAD_IMAGE_TASK_TAG);
+                } else {
+                    getPicasso().pauseTag(LOAD_IMAGE_TASK_TAG);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+    }
+
+    protected void checkNewNoticeCount() {
+        if (isAdded()) {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).checkNewNoticeCount();
+            }
+        }
     }
 }

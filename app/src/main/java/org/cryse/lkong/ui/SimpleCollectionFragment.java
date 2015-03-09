@@ -1,11 +1,15 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
@@ -26,6 +30,7 @@ import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -42,6 +47,7 @@ public abstract class SimpleCollectionFragment<
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
+    private Picasso mPicasso = null;
 
     @Inject
     AndroidNavigation mAndroidNavigation;
@@ -62,7 +68,7 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        injectThis();
+        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
     }
 
     @Override
@@ -77,21 +83,15 @@ public abstract class SimpleCollectionFragment<
         getRecyclerViewInsets();
         UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
         mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-        mCollectionView.setItemAnimator(new DefaultItemAnimator());
-        mCollectionView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
+        mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
-        mCollectionView.setRefreshListener(() ->
-                loadData(mUserAccountManager.getAuthObject(), 0, false));
-        mCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
-                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
-            } else {
-                mCollectionView.setLoadingMore(false);
-                mCollectionView.hideMoreProgress();
-            }
-        });
+        initHeaderView();
+        mCollectionView.setRefreshListener(getRefreshListener());
+        mCollectionView.setOnMoreListener(getOnMoreListener());
         mCollectionView.setOnItemClickListener(this::onItemClick);
+        onCollectionViewInitComplete();
     }
 
     @Override
@@ -137,6 +137,7 @@ public abstract class SimpleCollectionFragment<
     public void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        mPicasso.shutdown();
     }
 
     @Override
@@ -209,11 +210,47 @@ public abstract class SimpleCollectionFragment<
 
     protected abstract void onItemClick(View view, int position, long id);
 
+    protected void onCollectionViewInitComplete() {
+
+    }
+
+    protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
+        return new DefaultItemAnimator();
+    }
+
+    protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
+        return new LinearLayoutManager(getActivity());
+    }
+
+    protected void initHeaderView() {
+
+    }
+
     protected void onEvent(AbstractEvent event) {
 
     }
 
+    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
+        return () ->
+                loadData(mUserAccountManager.getAuthObject(), 0, false);
+    }
+
+    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+        return (numberOfItems, numberBeforeMore, currentItemPos) -> {
+            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
+                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
+            } else {
+                mCollectionView.setLoadingMore(false);
+                mCollectionView.hideMoreProgress();
+            }
+        };
+    }
+
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+    }
+
+    public Picasso getPicasso() {
+        return mPicasso;
     }
 }

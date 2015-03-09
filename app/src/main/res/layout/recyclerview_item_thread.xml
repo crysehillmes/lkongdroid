@@ -5,17 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground">
-    <com.pkmmte.view.CircularImageView
+    <ImageView
         android:id="@+id/recyclerview_item_thread_imageview_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:border_color="@android:color/transparent"
-        app:border_width="0dp"
-        app:shadow="false" />
+        android:layout_marginBottom="16dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

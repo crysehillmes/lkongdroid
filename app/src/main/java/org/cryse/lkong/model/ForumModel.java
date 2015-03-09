@@ -1,8 +1,11 @@
 package org.cryse.lkong.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class ForumModel implements Serializable {
+public class ForumModel implements Serializable, SimpleCollectionItem {
     private long fid;
     private String name;
     private String icon;
@@ -105,4 +108,53 @@ public class ForumModel implements Serializable {
     public void setModerators(String[] moderators) {
         this.moderators = moderators;
     }
+
+    @Override
+    public long getSortKey() {
+        return 0;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.fid);
+        dest.writeString(this.name);
+        dest.writeString(this.icon);
+        dest.writeString(this.description);
+        dest.writeString(this.status);
+        dest.writeInt(this.sortByDateline);
+        dest.writeInt(this.threads);
+        dest.writeInt(this.todayPosts);
+        dest.writeInt(this.fansNum);
+        dest.writeString(this.blackboard);
+        dest.writeStringArray(this.moderators);
+    }
+
+    private ForumModel(Parcel in) {
+        this.fid = in.readLong();
+        this.name = in.readString();
+        this.icon = in.readString();
+        this.description = in.readString();
+        this.status = in.readString();
+        this.sortByDateline = in.readInt();
+        this.threads = in.readInt();
+        this.todayPosts = in.readInt();
+        this.fansNum = in.readInt();
+        this.blackboard = in.readString();
+        this.moderators = in.createStringArray();
+    }
+
+    public static final Parcelable.Creator<ForumModel> CREATOR = new Parcelable.Creator<ForumModel>() {
+        public ForumModel createFromParcel(Parcel source) {
+            return new ForumModel(source);
+        }
+
+        public ForumModel[] newArray(int size) {
+            return new ForumModel[size];
+        }
+    };
 }
