@@ -42,7 +42,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("PostListPresenter::loadThreadInfo() onNext().", LOG_TAG);
                             mView.onGetPostLocationComplete(result, loadThreadInfo);
                         },
                         error -> {
@@ -50,7 +49,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                             mView.setLoading(false);
                         },
                         () -> {
-                            Timber.d("PostListPresenter::loadThreadInfo() onComplete().", LOG_TAG);
                         }
                 );
     }
@@ -63,7 +61,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("PostListPresenter::loadThreadInfo() onNext().", LOG_TAG);
                             mView.onLoadThreadInfoComplete(result);
                         },
                         error -> {
@@ -71,7 +68,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                             mView.setLoading(false);
                         },
                         () -> {
-                            Timber.d("PostListPresenter::loadThreadInfo() onComplete().", LOG_TAG);
                         }
                 );
     }
@@ -84,7 +80,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("PostListPresenter::loadPostList() onNext().", LOG_TAG);
                             mView.showPostList(page, result, refreshPosition, showMode);
                         },
                         error -> {
@@ -92,7 +87,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                             mView.setLoading(false);
                         },
                         () -> {
-                            Timber.d("PostListPresenter::loadPostList() onComplete().", LOG_TAG);
                             mView.setLoading(false);
                         }
                 );
@@ -105,14 +99,12 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("PostListPresenter::addOrRemoveFavorite() onNext().", LOG_TAG);
                             mView.onAddOrRemoveFavoriteComplete(result);
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::addOrRemoveFavorite() onError().", LOG_TAG);
                         },
                         () -> {
-                            Timber.d("PostListPresenter::addOrRemoveFavorite() onComplete().", LOG_TAG);
                         }
                 );
     }
@@ -124,7 +116,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("PostListPresenter::ratePost() onNext().", LOG_TAG);
                             mView.onRatePostComplete(result);
                         },
                         error -> {
@@ -132,7 +123,6 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                             Timber.e(error, "PostListPresenter::ratePost() onError().", LOG_TAG);
                         },
                         () -> {
-                            Timber.d("PostListPresenter::ratePost() onComplete().", LOG_TAG);
                         }
                 );
     }
