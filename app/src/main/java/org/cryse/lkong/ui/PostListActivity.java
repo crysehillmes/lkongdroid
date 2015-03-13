@@ -224,7 +224,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                // mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();
