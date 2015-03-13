@@ -542,7 +542,7 @@ public class PostModel implements Parcelable {
         this.ordinal = in.readInt();
         this.tid = in.readLong();
         this.rateScore = in.readInt();
-        in.readTypedList(rateLog, PostRate.CREATOR);
+        rateLog = in.createTypedArrayList(PostRate.CREATOR);
         this.author = in.readParcelable(PostAuthor.class.getClassLoader());
     }
 
