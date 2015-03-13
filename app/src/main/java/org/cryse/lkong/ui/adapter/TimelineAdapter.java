@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
@@ -75,9 +76,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     SpannableStringBuilder spanText = new SpannableStringBuilder();
                     String secondaryText = getString(R.string.format_timeline_reply_to_reply, timelineModel.getReplyQuote().getPosterName(), timelineModel.getSubject());
                     spanText.append(secondaryText);
-                    int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
-                    int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
-                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    if(!TextUtils.isEmpty(timelineModel.getReplyQuote().getPosterName())) {
+                        int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
+                        int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
+                        spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    }
                     viewHolder.mSecondaryMessageTextView.setText(spanText);
 
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
@@ -88,9 +91,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     SpannableStringBuilder spanText = new SpannableStringBuilder();
                     String secondaryText = getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
                     spanText.append(secondaryText);
-                    int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
-                    int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
-                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    if(!TextUtils.isEmpty(timelineModel.getThreadAuthor())) {
+                        int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
+                        int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
+                        spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    }
                     viewHolder.mSecondaryMessageTextView.setText(spanText);
                     viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
                     mainContent = timelineModel.getMessage();
