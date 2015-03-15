@@ -110,7 +110,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mEditButton.setVisibility(View.INVISIBLE);
             }
 
-            mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
+            mPicasso.load(postModel.getAuthorAvatar())
                     .tag(POST_PICASSO_TAG)
                     .error(R.drawable.ic_default_avatar)
                     .placeholder(R.drawable.ic_default_avatar)

@@ -3,16 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/signin_input_container">
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/lkong_logo"/>
-        </RelativeLayout>
     
     <LinearLayout
         android:id="@+id/signin_input_container"
@@ -35,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_account_email"
                 android:imeOptions="actionNext"
-                android:inputType="textNoSuggestions"
+                android:inputType="textEmailAddress"
                 android:nextFocusDown="@+id/edit_password"
                 android:singleLine="true" />
 
