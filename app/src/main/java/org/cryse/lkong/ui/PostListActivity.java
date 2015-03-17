@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -173,7 +174,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
-        mPostCollectionView.getRefreshableView().setItemAnimator(null);
+        mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
@@ -224,7 +225,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                // mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = getToolbar().getHeight();

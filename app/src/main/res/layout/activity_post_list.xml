@@ -14,9 +14,9 @@
         app:ptrPullLabel=""
         app:ptrRefreshLabel=""
         app:ptrReleaseLabel=""
-        app:ptrDrawable="@drawable/ic_action_refresh_48"
-        app:ptrDrawableStart="@drawable/ic_action_refresh_48"
-        app:ptrDrawableEnd="@drawable/ic_action_refresh_48"/>
+        app:ptrDrawable="@android:color/transparent"
+        app:ptrDrawableStart="@android:color/transparent"
+        app:ptrDrawableEnd="@android:color/transparent"/>
 
 
     <android.support.v7.widget.Toolbar

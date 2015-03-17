@@ -80,47 +80,46 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof PostModel) {
-                PostModel postModel = (PostModel)item;
+        int headerCount = getHeaderViewCount();
+        if (position >= headerCount && position < headerCount + mObjectList.getItemCount()) {
+            ViewHolder viewHolder = (ViewHolder) holder;
+            PostModel postModel = getItem(position - headerCount);
 
-                viewHolder.mPostItemView.setPostId(postModel.getPid());
-                viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
-                viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
-                viewHolder.mPostItemView.setShowImages(mShouldShowImages);
-                viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
-                viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+            viewHolder.mPostItemView.setPostId(postModel.getPid());
+            viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
+            viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
+            viewHolder.mPostItemView.setShowImages(mShouldShowImages);
+            viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
+            viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
 
-                if(postModel.getRateScore() != 0) {
-                    viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
-                } else {
-                    viewHolder.mRateButton.setText("");
-                }
-
-                if(postModel.getAuthorId() == mUserId) {
-                    viewHolder.mEditButton.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-                }
-
-                if(postModel.getAuthorId() == mUserId) {
-                    viewHolder.mEditButton.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-                }
-
-                mPicasso.load(ModelConverter.uidToAvatarUrl(postModel.getAuthorId()))
-                        .tag(POST_PICASSO_TAG)
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
-                        .resize(mAvatarSize, mAvatarSize)
-                        .transform(mCircleTransform)
-                        .noFade()
-                        .into(viewHolder.mAvatarImageView);
+            if (postModel.getRateScore() != 0) {
+                viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
+            } else {
+                viewHolder.mRateButton.setText("");
             }
+
+            if (postModel.getAuthorId() == mUserId) {
+                viewHolder.mEditButton.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
+            }
+
+            if (postModel.getAuthorId() == mUserId) {
+                viewHolder.mEditButton.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
+            }
+
+            mPicasso.load(postModel.getAuthorAvatar())
+                    .tag(POST_PICASSO_TAG)
+                    .error(R.drawable.ic_default_avatar)
+                    .placeholder(R.drawable.ic_default_avatar)
+                    .resize(mAvatarSize, mAvatarSize)
+                    .transform(mCircleTransform)
+                    .noFade()
+                    .into(viewHolder.mAvatarImageView);
         }
+
     }
 
     public void setUserId(long userId) {

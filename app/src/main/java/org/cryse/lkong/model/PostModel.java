@@ -16,6 +16,7 @@ public class PostModel implements Parcelable {
     private PostDisplayCache postDisplayCache;
     private String authorName;
     private long authorId;
+    private String authorAvatar;
     private boolean favorite;
     private boolean isMe; // Gson add int to boolean converter
     private boolean notGroup; // Gson add int to boolean converter
@@ -96,6 +97,14 @@ public class PostModel implements Parcelable {
 
     public void setAuthorId(long authorId) {
         this.authorId = authorId;
+    }
+
+    public String getAuthorAvatar() {
+        return authorAvatar;
+    }
+
+    public void setAuthorAvatar(String authorAvatar) {
+        this.authorAvatar = authorAvatar;
     }
 
     public boolean isFavorite() {
@@ -504,6 +513,7 @@ public class PostModel implements Parcelable {
         dest.writeString(this.message);
         dest.writeString(this.authorName);
         dest.writeLong(this.authorId);
+        dest.writeString(this.authorAvatar);
         dest.writeByte(favorite ? (byte) 1 : (byte) 0);
         dest.writeByte(isMe ? (byte) 1 : (byte) 0);
         dest.writeByte(notGroup ? (byte) 1 : (byte) 0);
@@ -530,6 +540,7 @@ public class PostModel implements Parcelable {
         this.message = in.readString();
         this.authorName = in.readString();
         this.authorId = in.readLong();
+        this.authorAvatar = in.readString();
         this.favorite = in.readByte() != 0;
         this.isMe = in.readByte() != 0;
         this.notGroup = in.readByte() != 0;
@@ -542,7 +553,7 @@ public class PostModel implements Parcelable {
         this.ordinal = in.readInt();
         this.tid = in.readLong();
         this.rateScore = in.readInt();
-        in.readTypedList(rateLog, PostRate.CREATOR);
+        rateLog = in.createTypedArrayList(PostRate.CREATOR);
         this.author = in.readParcelable(PostAuthor.class.getClassLoader());
     }
 

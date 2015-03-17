@@ -126,6 +126,7 @@ public class ModelConverter {
                 //postModel.setAuthor(item.getAuthor());
                 postModel.setAuthorId(item.getAuthorid());
                 postModel.setAuthorName(item.getAuthor());
+                postModel.setAuthorAvatar(uidToAvatarUrl(item.getAuthorid()));
                 postModel.setFavorite(item.isFavorite());
                 postModel.setDateline(item.getDateline());
                 postModel.setFid(item.getFid());
