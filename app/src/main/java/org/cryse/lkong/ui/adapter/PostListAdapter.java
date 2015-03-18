@@ -1,9 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +13,10 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
-import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -90,10 +85,10 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
             viewHolder.mPostItemView.setShowImages(mShouldShowImages);
             viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
-            viewHolder.mPostItemView.setOrdinal(getString(R.string.format_post_ordinal, postModel.getOrdinal()));
+            viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
             if (postModel.getRateScore() != 0) {
-                viewHolder.mRateButton.setText(String.format("+ %d", postModel.getRateScore()));
+                viewHolder.mRateButton.setText("+ " + postModel.getRateScore());
             } else {
                 viewHolder.mRateButton.setText("");
             }

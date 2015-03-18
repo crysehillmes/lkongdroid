@@ -231,26 +231,34 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         this.mOnItemLongClickListener = listener;
     }
 
+    View.OnClickListener mOnClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            int position = (int)view.getTag();
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(view, position, getItemId(position));
+            }
+        }
+    };
+
+    View.OnLongClickListener mOnLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            int position = (int)view.getTag();
+            if (mOnItemLongClickListener != null) {
+                return mOnItemLongClickListener.onItemLongClick(view, position, getItemId(position));
+            }
+            return false;
+        }
+    };
+
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         if(holder.getOnClickView() != null) {
-            holder.getOnClickView().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onItemClick(view, position, getItemId(position));
-                    }
-                }
-            });
-            holder.getOnClickView().setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (mOnItemLongClickListener != null) {
-                        return mOnItemLongClickListener.onItemLongClick(view, position, getItemId(position));
-                    }
-                    return false;
-                }
-            });
+            holder.getOnClickView().setTag(position);
+            holder.getOnClickView().setOnClickListener(mOnClickListener);
+            holder.getOnClickView().setOnLongClickListener(mOnLongClickListener);
         }
     }
 
