@@ -70,6 +70,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
     private void init() {
         setWillNotDraw(false);
+        setLayerType(LAYER_TYPE_NONE, null);
+        setDrawingCacheEnabled(false);
         px_margin_16 = UIUtils.dp2px(getContext(), 16f);
         px_margin_72 = UIUtils.dp2px(getContext(), 72f);
         px_width_40 = UIUtils.dp2px(getContext(), 40f);

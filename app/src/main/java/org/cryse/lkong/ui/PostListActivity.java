@@ -174,6 +174,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
+        mPostCollectionView.getRefreshableView().setLayerType(View.LAYER_TYPE_NONE, null);
+        mPostCollectionView.getRefreshableView().setDrawingCacheEnabled(false);
+        mPostCollectionView.getRefreshableView().setAnimationCacheEnabled(false);
+        // mPostCollectionView.getRefreshableView().setItemViewCacheSize(20);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
@@ -643,7 +647,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadModel = threadInfoModel;
         mThreadSubject = threadInfoModel.getSubject();
         setThreadSubjectSpanned(mThreadModel);
-        mCollectionAdapter.notifyItemChanged(1);
 
         calculatePageAndLoad();
     }
