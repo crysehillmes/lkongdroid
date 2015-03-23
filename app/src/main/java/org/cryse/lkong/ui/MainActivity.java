@@ -31,6 +31,7 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
@@ -53,7 +54,7 @@ public class MainActivity extends AbstractThemeableActivity {
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
-
+    List<UserAccountEntity> mUserAccountList;
     /**
      * Used to post delay navigation action to improve UX
      */
@@ -99,26 +100,34 @@ public class MainActivity extends AbstractThemeableActivity {
 
     private void initDrawer() {
         mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+        mUserAccountList = mUserAccountManager.getUserAccounts();
         // Create the AccountHeader
-        mAccountHeader = new AccountHeader()
+        AccountHeader accountHeader = new AccountHeader()
                 .withActivity(this)
-                .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light)
-                .addProfiles(
-                        new ProfileDrawerItem()
-                                .withName(mCurrentAccount.getUserName())
-                                .withEmail(mCurrentAccount.getEmail())
-                                .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)),
-                        new ProfileDrawerItem()
-                                .withName("Add profile")
+                .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
+        for (UserAccountEntity entity : mUserAccountList) {
+            accountHeader.addProfiles(
+                    new ProfileDrawerItem()
+                            .withName(entity.getUserName())
+                            .withEmail(entity.getEmail())
+                            .withIdentifier((int) entity.getUserId())
+                            .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)));
+        }
+        accountHeader.addProfiles(
+                new ProfileDrawerItem()
+                        .withName("Add profile")
+                        .withIdentifier(-3001)
                         .setSelectable(false)
-                )
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public void onProfileChanged(View view, IProfile profile) {
-                    }
-                })
-                .withCurrentProfileHiddenInList(true)
-                .build();
+        );
+        accountHeader.withOnAccountHeaderListener((view, profile) -> {
+            if (profile.getIdentifier() == -3001) {
+                mNavigation.navigateToSignInActivity(MainActivity.this);
+            } else {
+                long uid = profile.getIdentifier();
+                mUserAccountManager.setCurrentUserAccount(uid);
+            }
+        }).withCurrentProfileHiddenInList(true);
+        mAccountHeader = accountHeader.build();
 
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new Drawer()
