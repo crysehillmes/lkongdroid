@@ -15,6 +15,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
+import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -32,6 +33,7 @@ import timber.log.Timber;
 
 public class SignInActivity extends AbstractThemeableActivity implements SignInView {
     private static final String LOG_TAG = SignInActivity.class.getName();
+    public static final String START_MAIN_ACTIVITY = "start_new_activity";
     @Inject
     SignInPresenter mPresenter;
 
@@ -58,7 +60,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
 
     CharSequence mEmailText;
     CharSequence mPasswordText;
-
+    boolean mStartMainActivity = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -68,7 +70,10 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         setContentView(R.layout.activity_signin);
         ButterKnife.inject(this);
         getSwipeBackLayout().setEnableGesture(false);
-
+        Intent intent = getIntent();
+        if(intent.hasExtra(START_MAIN_ACTIVITY)) {
+            mStartMainActivity = intent.getBooleanExtra(START_MAIN_ACTIVITY, false);
+        }
         mSignInButton.setOnClickListener(view -> signIn());
         mSignUpButton.setOnClickListener(view -> {
             String url = "http://lkong.cn/";
@@ -83,17 +88,17 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         super.onPostCreate(savedInstanceState);
         mEmailEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                if(mEmailEditText.getText().length() <= 0)
+                if (mEmailEditText.getText().length() <= 0)
                     mEmailEditText.setError(getString(R.string.input_error_email));
                 else
                     mPasswordEditText.requestFocus();
                 return true;
-        }
+            }
             return false;
         });
         mPasswordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if(checkEmailAndPasswordEditText())
+                if (checkEmailAndPasswordEditText())
                     signIn();
                 return true;
             }
@@ -165,8 +170,12 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
             mResultTextView.setText("");
             mDefaultAccountUid.set(signInResult.getMe().getUid());
             mUserAccountManager.refresh();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            mUserAccountManager.setCurrentUserAccount(signInResult.getMe().getUid());
+            getEventBus().sendEvent(new NewAccountEvent());
+            if(mStartMainActivity) {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
             finishCompat();
         } else {
             Timber.d("SignInActivity::signInComplete() failed().", LOG_TAG);

@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -16,7 +15,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -24,12 +22,14 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
+import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -68,10 +68,6 @@ public class MainActivity extends AbstractThemeableActivity {
         setContentView(R.layout.activity_main);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
-        if (!mUserAccountManager.isSignedIn()) {
-            mNavigation.navigateToSignInActivity(this);
-            finishCompat();
-        }
         setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
@@ -99,35 +95,21 @@ public class MainActivity extends AbstractThemeableActivity {
     }
 
     private void initDrawer() {
-        mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
-        mUserAccountList = mUserAccountManager.getUserAccounts();
         // Create the AccountHeader
         AccountHeader accountHeader = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
-        for (UserAccountEntity entity : mUserAccountList) {
-            accountHeader.addProfiles(
-                    new ProfileDrawerItem()
-                            .withName(entity.getUserName())
-                            .withEmail(entity.getEmail())
-                            .withIdentifier((int) entity.getUserId())
-                            .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)));
-        }
-        accountHeader.addProfiles(
-                new ProfileDrawerItem()
-                        .withName("Add profile")
-                        .withIdentifier(-3001)
-                        .setSelectable(false)
-        );
         accountHeader.withOnAccountHeaderListener((view, profile) -> {
             if (profile.getIdentifier() == -3001) {
-                mNavigation.navigateToSignInActivity(MainActivity.this);
+                mNavigation.navigateToSignInActivity(MainActivity.this, false);
             } else {
                 long uid = profile.getIdentifier();
                 mUserAccountManager.setCurrentUserAccount(uid);
+                getEventBus().sendEvent(new CurrentAccountChangedEvent());
             }
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeader.build();
+        addAccountProfile();
 
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new Drawer()
@@ -234,6 +216,40 @@ public class MainActivity extends AbstractThemeableActivity {
             mNaviagtionDrawer.setStatusBarColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
             mNaviagtionDrawer.getContent().invalidate();
             // setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
+        } else if(event instanceof NewAccountEvent) {
+            addAccountProfile();
         }
+    }
+
+    private void addAccountProfile() {
+        if(mAccountHeader.getProfiles() != null) {
+            int profilesCount = mAccountHeader.getProfiles().size();
+            for (int i = 0; i < profilesCount; i++) {
+                mAccountHeader.removeProfile(0);
+            }
+        }
+        try {
+            mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+            mUserAccountList = mUserAccountManager.getUserAccounts();
+            for (UserAccountEntity entity : mUserAccountList) {
+                mAccountHeader.addProfiles(
+                        new ProfileDrawerItem()
+                                .withName(entity.getUserName())
+                                .withEmail(entity.getEmail())
+                                .withIdentifier((int) entity.getUserId())
+                                .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)));
+            }
+            mAccountHeader.addProfiles(
+                    new ProfileDrawerItem()
+                            .withName("Add profile")
+                            .withIdentifier(-3001)
+                            .setSelectable(false)
+            );
+        } catch (NeedSignInException ex) {
+            mNavigation.navigateToSignInActivity(this, true);
+            finishCompat();
+            return;
+        }
+        getEventBus().sendEvent(new CurrentAccountChangedEvent());
     }
 }

@@ -144,7 +144,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             if (mUserAccountManager.isSignedIn()) {
                 mAndroidNavigation.openActivityForNewThread(this, mForumId, mForumName);
             } else {
-                mAndroidNavigation.navigateToSignInActivity(this);
+                mAndroidNavigation.navigateToSignInActivity(this, false);
             }
         });
         setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
