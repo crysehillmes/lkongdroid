@@ -5,6 +5,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -241,7 +242,8 @@ public class MainActivity extends AbstractThemeableActivity {
             }
             mAccountHeader.addProfiles(
                     new ProfileDrawerItem()
-                            .withName("Add profile")
+                            .withName(getString(R.string.drawer_item_account_add))
+                            .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.drawer_account_add, getTheme()))
                             .withIdentifier(-3001)
                             .setSelectable(false)
             );
