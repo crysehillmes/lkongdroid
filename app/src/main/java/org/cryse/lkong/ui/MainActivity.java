@@ -1,15 +1,22 @@
 package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.util.SparseIntArray;
-import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
 
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -19,45 +26,64 @@ import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.service.CheckNoticeService;
+import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
-import br.liveo.interfaces.NavigationLiveoListener;
-
-public class MainActivity extends AbstractMainActivity implements NavigationLiveoListener {
+public class MainActivity extends AbstractThemeableActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
-    Picasso mPicasso;
     @Inject
     AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
 
-    public List<String> mListNameItem;
+    AccountHeader.Result mAccountHeader;
+    Drawer.Result mNaviagtionDrawer;
+
+    Picasso mPicasso;
     UserAccountEntity mCurrentAccount = null;
 
     ServiceConnection mBackgroundServiceConnection;
     private CheckNoticeService.CheckNoticeCountServiceBinder mCheckNoticeServiceBinder;
 
+    int mCurrentSelection = 0;
+    boolean mIsRestorePosition = false;
+
+    /**
+     * Used to post delay navigation action to improve UX
+     */
+    private Handler mHandler = new Handler();
+    private Runnable mPendingRunnable = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
-        if(!mUserAccountManager.isSignedIn()) {
+        if (!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this);
             finishCompat();
         }
         setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
-        super.onCreate(savedInstanceState);
-        setDrawerLayoutBackground(isNightMode());
-        getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
+        /*setDrawerLayoutBackground(isNightMode());
+        getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));*/
         getSwipeBackLayout().setEnableGesture(false);
+        if(savedInstanceState!=null && savedInstanceState.containsKey("selection_item_position")) {
+            mCurrentSelection = savedInstanceState.getInt("selection_item_position");
+            mIsRestorePosition = true;
+        } else {
+            mCurrentSelection = 1001;
+            mIsRestorePosition = false;
+        }
+        initDrawer();
         mBackgroundServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -71,102 +97,91 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
         };
     }
 
-    @Override
-    public void onUserInformation() {
-        //User information here
-        /*this.mUserName.setText("Rudson Lima");
-        this.mUserEmail.setText("rudsonlive@gmail.com");
-        this.mUserPhoto.setImageResource(R.drawable.ic_rudsonlive);*/
-        this.mUserBackground.setImageResource(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
-        if(mUserAccountManager.isSignedIn()) {
-            mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
-            if(mCurrentAccount != null) {
-                this.mUserName.setText(mCurrentAccount.getUserName());
-                mPicasso
-                        .load(mCurrentAccount.getUserAvatar())
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
-                        .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
-                        .transform(new CircleTransform())
-                        .into(this.mUserPhoto);
-                String secondInfoText = mCurrentAccount.getEmail();
-                this.mUserEmail.setText(secondInfoText);
-            }
+    private void initDrawer() {
+        mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
+        // Create the AccountHeader
+        mAccountHeader = new AccountHeader()
+                .withActivity(this)
+                .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light)
+                .addProfiles(
+                        new ProfileDrawerItem()
+                                .withName(mCurrentAccount.getUserName())
+                                .withEmail(mCurrentAccount.getEmail())
+                                .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)),
+                        new ProfileDrawerItem()
+                                .withName("Add profile")
+                        .setSelectable(false)
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public void onProfileChanged(View view, IProfile profile) {
+                    }
+                })
+                .withCurrentProfileHiddenInList(true)
+                .build();
+
+        //Now create your drawer and pass the AccountHeader.Result
+        mNaviagtionDrawer = new Drawer()
+                .withActivity(this)
+                .withToolbar(getToolbar())
+                .withAccountHeader(mAccountHeader)
+                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false)
+
+                )
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View view) {
+
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View view) {
+                        supportInvalidateOptionsMenu();
+                        // If mPendingRunnable is not null, then add to the message queue
+                        if (mPendingRunnable != null) {
+                            mHandler.post(mPendingRunnable);
+                            mPendingRunnable = null;
+                        }
+                    }
+                })
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
+                            mCurrentSelection = drawerItem.getIdentifier();
+                        mPendingRunnable = () ->  onNavigationSelected(drawerItem);
+                    }
+                })
+                .build();
+        if(mCurrentSelection == 1001 && !mIsRestorePosition) {
+            mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
+            mNavigation.navigateToTimelineFragment();
+        } else if(mIsRestorePosition) {
+            mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
         }
+
     }
 
-    @Override
-    public void onInt(Bundle savedInstanceState) {
-        //Creation of the list items is here
-
-        // set listener {required}
-        this.setNavigationListener(this);
-
-        //First item of the position selected from the list
-        this.setDefaultStartPositionNavigation(0);
-
-        // name of the list items
-        mListNameItem = new ArrayList<>();
-        mListNameItem.add(0, getString(R.string.drawer_item_timeline));
-        mListNameItem.add(1, getString(R.string.drawer_item_forum_list));
-        mListNameItem.add(2, getString(R.string.drawer_item_favorites));
-        /*mListNameItem.add(3, getString(R.string.drafts));
-        mListNameItem.add(4, getString(R.string.more_markers)); //This item will be a subHeader
-        mListNameItem.add(5, getString(R.string.trash));
-        mListNameItem.add(6, getString(R.string.spam));*/
-
-        // icons list items
-        List<Integer> mListIconItem = new ArrayList<>();
-        mListIconItem.add(0, R.drawable.ic_drawer_timeline);
-        mListIconItem.add(1, R.drawable.ic_drawer_forum_list); //Item no icon set 0
-        mListIconItem.add(2, R.drawable.ic_drawer_favorites); //Item no icon set 0
-        /*mListIconItem.add(3, R.drawable.ic_drafts_black_24dp);
-        mListIconItem.add(4, 0); //When the item is a subHeader the value of the icon 0
-        mListIconItem.add(5, R.drawable.ic_delete_black_24dp);
-        mListIconItem.add(6, R.drawable.ic_report_black_24dp);*/
-
-        //{optional} - Among the names there is some subheader, you must indicate it here
-        List<Integer> mListHeaderItem = new ArrayList<>();
-        //mListHeaderItem.add(4);
-
-        //{optional} - Among the names there is any item counter, you must indicate it (position) and the value here
-        SparseIntArray mSparseCounterItem = new SparseIntArray(); //indicate all items that have a counter
-        /*mSparseCounterItem.put(0, 7);
-        mSparseCounterItem.put(1, 123);
-        mSparseCounterItem.put(6, 250);*/
-
-        //If not please use the FooterDrawer use the setFooterVisible(boolean visible) method with value false
-        this.setFooterInformationDrawer(R.string.drawer_item_settings, R.drawable.ic_drawer_settings);
-
-        this.setNavigationAdapter(mListNameItem, mListIconItem, mListHeaderItem, mSparseCounterItem);
-    }
-
-    @Override
-    public String getLogTag() {
-        return LOG_TAG;
-    }
-
-    @Override
-    public int getToolbarLayoutId() {
-        return R.id.my_awesome_toolbar;
-    }
-
-    @Override
-    public int getToolbarCustomShadowLayoutId() {
-        return R.id.toolbar_shadow;
-    }
-
-    @Override
-    public void onItemClickNavigation(int position, int layoutContainerId) {
-        switch (position) {
-            case 0:
+    private void onNavigationSelected(IDrawerItem drawerItem) {
+        switch (drawerItem.getIdentifier()) {
+            case 1001:
                 mNavigation.navigateToTimelineFragment();
                 break;
-            case 1:
+            case 1002:
                 mNavigation.navigateToForumListFragment(null);
                 break;
-            case 2:
+            case 1003:
                 mNavigation.navigateToFavoritesFragment(null);
+                break;
+            case 1101:
+                mNavigation.navigateToSettingsActivity(MainActivity.this);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown NavigationDrawerItem position.");
@@ -174,37 +189,9 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     }
 
     @Override
-    public void onPrepareOptionsMenuNavigation(Menu menu, int position, boolean visible) {
-        /*
-        //hide the menu when the navigation is opens
-        switch (position) {
-            case 0:
-                menu.findItem(R.id.menu_add).setVisible(!visible);
-                menu.findItem(R.id.menu_search).setVisible(!visible);
-                break;
-
-            case 1:
-                menu.findItem(R.id.menu_add).setVisible(!visible);
-                menu.findItem(R.id.menu_search).setVisible(!visible);
-                break;
-        }*/
-    }
-
-    @Override
-    public void onClickUserPhotoNavigation(View v) {
-        // user photo onClick
-        // Toast.makeText(this, R.string.open_user_profile, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onClickFooterItemNavigation(View v) {
-        // footer onClick
-        // startActivity(new Intent(this, SettingsActivity.class));
-        mNavigation.navigateToSettingsActivity(this);
-    }
-
-    public void onSectionAttached(String title) {
-        setTitle(title);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("selection_item_position", mCurrentSelection);
     }
 
     @Override
@@ -213,40 +200,31 @@ public class MainActivity extends AbstractMainActivity implements NavigationLive
     }
 
     @Override
-    protected void onEvent(AbstractEvent event) {
-        super.onEvent(event);
-        if (event instanceof ThemeColorChangedEvent) {
-            getDrawerLayout().setStatusBarBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
-            setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
-        }
+    protected void analyticsTrackEnter() {
+        AnalyticsUtils.trackFragmentActivityEnter(this, LOG_TAG);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        this.unbindService(mBackgroundServiceConnection);
+    protected void analyticsTrackExit() {
+        AnalyticsUtils.trackFragmentActivityExit(this, LOG_TAG);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Intent service = new Intent(this.getApplicationContext(), CheckNoticeService.class);
-        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPicasso.shutdown();
+    public void onSectionAttached(String title) {
+        setTitle(title);
     }
 
     public void checkNewNoticeCount() {
-        if(mCheckNoticeServiceBinder != null && mCheckNoticeServiceBinder.isBinderAlive())
+        if (mCheckNoticeServiceBinder != null && mCheckNoticeServiceBinder.isBinderAlive())
             mCheckNoticeServiceBinder.checkNoticeCount(mUserAccountManager.getAuthObject());
+    }
+
+    @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if (event instanceof ThemeColorChangedEvent) {
+            mNaviagtionDrawer.setStatusBarColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+            mNaviagtionDrawer.getContent().invalidate();
+            // setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
+        }
     }
 }
