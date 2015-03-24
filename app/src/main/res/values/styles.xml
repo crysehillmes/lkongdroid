@@ -1,6 +1,6 @@
 <resources>
-    <style name="FrameworkRoot.Light" parent="Theme.AppCompat.Light.NoActionBar" />
-    <style name="FrameworkRoot.Dark" parent="Theme.AppCompat.NoActionBar" />
+    <style name="FrameworkRoot.Light" parent="MaterialDrawerTheme.Light.DarkToolbar" />
+    <style name="FrameworkRoot.Dark" parent="MaterialDrawerTheme" />
 
     <style name="TextAppearance.LKongDroid.FloatLabel.Light" parent="android:TextAppearance.Small">
         <item name="android:textColor">?colorAccent</item>

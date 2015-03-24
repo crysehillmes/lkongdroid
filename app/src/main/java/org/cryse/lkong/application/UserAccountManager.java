@@ -8,6 +8,7 @@ import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.utils.preference.LongPreference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,7 +40,16 @@ public class UserAccountManager {
             mUserAccounts.clear();
             mUserAccounts.addAll(this.mLKongDatabase.getAllUserAccounts());
             if(uid >= 0) {
-                mCurrentUserAccount = mLKongDatabase.getUserAccount(uid);
+                int index = -1;
+                for (int i = 0; i < mUserAccounts.size(); i++) {
+                    if(mUserAccounts.get(i).getUserId() == uid) {
+                        mCurrentUserAccount = mUserAccounts.get(i);
+                        index = i;
+                    }
+                }
+                if(index != -1) {
+                    Collections.swap(mUserAccounts, 0, index);
+                }
             }
         } catch (Exception ex) {
             Timber.e(ex, "getAllUserAccounts() failed.", LOG_TAG);
@@ -75,12 +85,18 @@ public class UserAccountManager {
     }
 
     public void setCurrentUserAccount(long userId) {
-        for(UserAccountEntity entity : mUserAccounts) {
-            if(entity.getUserId() == userId) {
+        int index = -1;
+        for (int i = 0; i < mUserAccounts.size(); i++) {
+            UserAccountEntity entity = mUserAccounts.get(i);
+            if (entity.getUserId() == userId) {
+                index = i;
                 this.mCurrentUserAccount = entity;
                 this.mAuthObject = mCurrentUserAccount.getAuthObject();
                 this.mDefaultAccountUid.set(userId);
             }
+        }
+        if(index != -1) {
+            Collections.swap(mUserAccounts, 0, index);
         }
     }
 }

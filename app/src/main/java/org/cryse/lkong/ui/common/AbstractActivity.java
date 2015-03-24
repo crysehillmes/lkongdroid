@@ -187,4 +187,8 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected void onEvent(AbstractEvent event) {
 
     }
+
+    protected RxEventBus getEventBus() {
+        return mEventBus;
+    }
 }

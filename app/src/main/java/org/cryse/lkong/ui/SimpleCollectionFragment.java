@@ -253,4 +253,8 @@ public abstract class SimpleCollectionFragment<
     public Picasso getPicasso() {
         return mPicasso;
     }
+
+    protected long getLastItemSortKey() {
+        return mLastItemSortKey;
+    }
 }

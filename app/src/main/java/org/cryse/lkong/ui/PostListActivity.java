@@ -263,7 +263,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
                     mAndroidNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
                 } else {
-                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
+                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
             }
 
@@ -280,7 +280,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     }
                     mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
                 } else {
-                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this);
+                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
             }
         });
@@ -317,7 +317,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             if (mUserAccountManager.isSignedIn()) {
                 mAndroidNavigation.openActivityForReplyToThread(this, mThreadId, mThreadSubject);
             } else {
-                mAndroidNavigation.navigateToSignInActivity(this);
+                mAndroidNavigation.navigateToSignInActivity(this, false);
             }
         });
         setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
@@ -387,26 +387,27 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 setThreadSubjectSpanned(mThreadModel);
                 showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE);
 
-                // Restore last state for checked position.
-                final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
-                final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);
+                if(savedInstanceState.containsKey("listview_index") && savedInstanceState.containsKey("listview_top")) {
+                    // Restore last state for checked position.
+                    final int firstVisibleItemPosition = savedInstanceState.getInt("listview_index", -1);
+                    final int firstVisibleItemTop = savedInstanceState.getInt("listview_top", 0);
 
-                mPostCollectionView.getRefreshableView().post(() -> {
-                    if (firstVisibleItemPosition != -1) {
-                        RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRefreshableView().getLayoutManager();
-                        if (layoutManager instanceof GridLayoutManager) {
-                            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
-                            gridLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
-                        } else if (layoutManager instanceof LinearLayoutManager) {
-                            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
-                            linearLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
-                        } else {
-                            throw new IllegalStateException();
+                    mPostCollectionView.getRefreshableView().post(() -> {
+                        if (firstVisibleItemPosition != -1) {
+                            RecyclerView.LayoutManager layoutManager = mPostCollectionView.getRefreshableView().getLayoutManager();
+                            if (layoutManager instanceof GridLayoutManager) {
+                                GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+                                gridLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
+                            } else if (layoutManager instanceof LinearLayoutManager) {
+                                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+                                linearLayoutManager.scrollToPositionWithOffset(firstVisibleItemPosition, firstVisibleItemTop);
+                            } else {
+                                throw new IllegalStateException();
+                            }
+                            mPostCollectionView.getRefreshableView().stopScroll();
                         }
-                        mPostCollectionView.getRefreshableView().stopScroll();
-                    }
-                });
-
+                    });
+                }
             }
         } else {
             /*mPostCollectionView.getSwipeToRefresh().measure(1,1);
@@ -469,11 +470,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         // 保存列表位置
         int firstVisiblePosition = mPostCollectionView.getFirstVisiblePosition();
         RecyclerView.ViewHolder firstVisibleViewHolder = mPostCollectionView.getRefreshableView().findViewHolderForPosition(firstVisiblePosition);
-        View firstView = firstVisibleViewHolder.itemView;
-        int top = (firstView == null) ? 0 : firstView.getTop();
+        if(firstVisibleViewHolder != null) {
+            View firstView = firstVisibleViewHolder.itemView;
+            int top = (firstView == null) ? 0 : firstView.getTop();
 
-        outState.putInt("listview_index", firstVisiblePosition);
-        outState.putInt("listview_top", top);
+            outState.putInt("listview_index", firstVisiblePosition);
+            outState.putInt("listview_top", top);
+        }
     }
 
     @Override

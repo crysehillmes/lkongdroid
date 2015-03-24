@@ -101,8 +101,9 @@ public class AndroidNavigation {
         context.startActivity(intent);
     }
 
-    public void navigateToSignInActivity(Context context) {
+    public void navigateToSignInActivity(Context context, boolean startMainActivity) {
         Intent intent = new Intent(context, SignInActivity.class);
+        intent.putExtra(SignInActivity.START_MAIN_ACTIVITY, startMainActivity);
         context.startActivity(intent);
     }
 

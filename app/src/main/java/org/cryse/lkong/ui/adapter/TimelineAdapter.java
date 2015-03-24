@@ -130,8 +130,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 mPicasso
                         .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
                         .tag(mImageTaskTag)
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_placeholder_avatar)
+                        .placeholder(R.drawable.ic_placeholder_avatar)
                         .resize(mAvatarSize, mAvatarSize)
                         .transform(mCircleTransform)
                         .into(viewHolder.mAuthorAvatarImageView);
