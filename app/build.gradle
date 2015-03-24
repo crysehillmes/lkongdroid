@@ -70,7 +70,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.nispok:snackbar:2.7.3'
+    compile 'com.nispok:snackbar:2.10.6'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.jakewharton.timber:timber:2.5.0'
     compile 'org.jsoup:jsoup:1.8.1'
@@ -81,7 +81,7 @@ dependencies {
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.0.0'
     provided 'de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:1.2.1'
-    compile('com.mikepenz.materialdrawer:library:2.5.5@aar') {
+    compile('com.mikepenz.materialdrawer:library:2.5.6@aar') {
         transitive = true
     }
 }
