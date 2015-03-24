@@ -2,6 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,6 +17,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -30,7 +32,9 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.PicassoProfileDrawerItem;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.CircleTransform;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -110,7 +114,6 @@ public class MainActivity extends AbstractThemeableActivity {
             }
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeader.build();
-        addAccountProfile();
 
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new Drawer()
@@ -152,6 +155,7 @@ public class MainActivity extends AbstractThemeableActivity {
                     }
                 })
                 .build();
+        addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
             mNavigation.navigateToTimelineFragment();
@@ -184,6 +188,12 @@ public class MainActivity extends AbstractThemeableActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("selection_item_position", mCurrentSelection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPicasso.shutdown();
     }
 
     @Override
@@ -233,12 +243,19 @@ public class MainActivity extends AbstractThemeableActivity {
             mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
             mUserAccountList = mUserAccountManager.getUserAccounts();
             for (UserAccountEntity entity : mUserAccountList) {
-                mAccountHeader.addProfiles(
-                        new ProfileDrawerItem()
-                                .withName(entity.getUserName())
-                                .withEmail(entity.getEmail())
-                                .withIdentifier((int) entity.getUserId())
-                                .withIcon(getResources().getDrawable(R.drawable.ic_default_avatar)));
+
+                ProfileDrawerItem profileDrawerItem = new PicassoProfileDrawerItem()
+                        .withContext(MainActivity.this, mAccountHeader, entity.getUserId())
+                        .withName(entity.getUserName())
+                        .withEmail(entity.getEmail())
+                        .withIdentifier((int) entity.getUserId());
+                        //.withIcon(getResources().getDrawable(R.drawable.ic_default_avatar))
+                mPicasso.load(entity.getUserAvatar())
+                        .error(R.drawable.ic_default_avatar)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
+                        .transform(new CircleTransform()).into((PicassoProfileDrawerItem)profileDrawerItem);
+                mAccountHeader.addProfiles(profileDrawerItem);
             }
             mAccountHeader.addProfiles(
                     new ProfileDrawerItem()
