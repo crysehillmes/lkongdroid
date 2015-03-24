@@ -107,8 +107,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
             mPicasso.load(postModel.getAuthorAvatar())
                     .tag(POST_PICASSO_TAG)
-                    .error(R.drawable.ic_default_avatar)
-                    .placeholder(R.drawable.ic_default_avatar)
+                    .error(R.drawable.ic_placeholder_avatar)
+                    .placeholder(R.drawable.ic_placeholder_avatar)
                     .resize(mAvatarSize, mAvatarSize)
                     .transform(mCircleTransform)
                     .noFade()

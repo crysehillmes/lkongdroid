@@ -251,8 +251,8 @@ public class MainActivity extends AbstractThemeableActivity {
                         .withIdentifier((int) entity.getUserId());
                         //.withIcon(getResources().getDrawable(R.drawable.ic_default_avatar))
                 mPicasso.load(entity.getUserAvatar())
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_placeholder_avatar)
+                        .placeholder(R.drawable.ic_placeholder_avatar)
                         .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
                         .transform(new CircleTransform()).into((PicassoProfileDrawerItem)profileDrawerItem);
                 mAccountHeader.addProfiles(profileDrawerItem);
