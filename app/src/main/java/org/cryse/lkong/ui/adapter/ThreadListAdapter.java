@@ -72,8 +72,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                 mPicasso
                         .load(threadModel.getUserIcon())
                         .tag(THREAD_PICASSO_TAG)
-                        .error(R.drawable.ic_default_avatar)
-                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_placeholder_avatar)
+                        .placeholder(R.drawable.ic_placeholder_avatar)
                         .resize(mAvatarSize, mAvatarSize)
                         .transform(mCircleTransform)
                         .into(viewHolder.mThreadIconImageView);

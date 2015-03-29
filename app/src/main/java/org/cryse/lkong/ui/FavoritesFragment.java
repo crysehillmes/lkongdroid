@@ -10,6 +10,7 @@ import android.view.View;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.model.NoticeCountModel;
@@ -167,6 +168,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             }
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
+        } else if (event instanceof CurrentAccountChangedEvent) {
+            loadData(mUserAccountManager.getAuthObject(), 0, false);
         }
     }
 

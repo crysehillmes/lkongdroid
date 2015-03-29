@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.TimelineModel;
@@ -161,6 +162,8 @@ public class TimelineFragment extends SimpleCollectionFragment<
             }
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
+        } else if (event instanceof CurrentAccountChangedEvent) {
+            loadData(mUserAccountManager.getAuthObject(), 0, false);
         }
     }
 
