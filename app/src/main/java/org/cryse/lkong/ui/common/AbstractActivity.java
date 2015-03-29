@@ -2,7 +2,6 @@ package org.cryse.lkong.ui.common;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.view.View;
 
 import com.example.android.systemuivis.SystemUiHelper;
 
-import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;

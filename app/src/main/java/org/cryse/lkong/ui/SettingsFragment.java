@@ -52,7 +52,6 @@ public class SettingsFragment extends PreferenceFragment {
         setupFeedbackPreference();
     }
 
-
     private void injectThis() {
         LKongApplication.get(getActivity()).simpleActivityComponent().inject(this);
     }
