@@ -4,8 +4,8 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22"
+    compileSdkVersion appCompileSdkVersion
+    buildToolsVersion appBuildToolsVersion
 
     defaultConfig {
         applicationId "org.cryse.lkong"
@@ -33,6 +33,7 @@ android {
         }
         release {
             minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -59,9 +60,9 @@ dependencies {
     // compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.umeng.analytics:analytics:5.4.1'
     compile files('libs/umeng-update-v2.5.0.jar')
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.8.1'
-    compile 'com.google.dagger:dagger:2.0-SNAPSHOT'
-    apt 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.0.1'
+    compile 'com.google.dagger:dagger:2.0'
+    apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'javax.annotation:jsr250-api:1.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     // ReactiveX
@@ -81,7 +82,7 @@ dependencies {
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.0.0'
     provided 'de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:1.2.1'
-    compile('com.mikepenz.materialdrawer:library:2.5.6@aar') {
+    compile('com.mikepenz.materialdrawer:library:2.7.6@aar') {
         transitive = true
     }
 }

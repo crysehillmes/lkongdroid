@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion appCompileSdkVersion
+    buildToolsVersion appBuildToolsVersion
 
     defaultConfig {
         minSdkVersion appMinSdkVersion
@@ -40,5 +40,5 @@ dependencies {
     compile ('com.navercorp.pulltorefresh:library:3.2.3@aar') {
         exclude module: 'support-v4'
     }
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.7.0'
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.0.1'
 }

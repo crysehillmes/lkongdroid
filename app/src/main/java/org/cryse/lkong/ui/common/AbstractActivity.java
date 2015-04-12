@@ -47,7 +47,7 @@ public abstract class AbstractActivity extends ActionBarActivity {
     protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
         if (mToolbar == null) {
             mToolbar = (Toolbar) findViewById(toolbarLayoutId);
-            View mPreLShadow = findViewById(customToolbarShadowId);
+            mPreLShadow = findViewById(customToolbarShadowId);
             if (mToolbar != null) {
                 //UIUtils.setInsets(this, mToolbar, false);
                 if(Build.VERSION.SDK_INT < 21 && mPreLShadow != null) {
