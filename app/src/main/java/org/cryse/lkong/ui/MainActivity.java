@@ -17,6 +17,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -104,14 +105,15 @@ public class MainActivity extends AbstractThemeableActivity {
         AccountHeader accountHeader = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
-        accountHeader.withOnAccountHeaderListener((view, profile) -> {
-            if (profile.getIdentifier() == -3001) {
+        accountHeader.withOnAccountHeaderListener((view, iProfile, b) -> {
+            if (iProfile.getIdentifier() == -3001) {
                 mNavigation.navigateToSignInActivity(MainActivity.this, false);
             } else {
-                long uid = profile.getIdentifier();
+                long uid = iProfile.getIdentifier();
                 mUserAccountManager.setCurrentUserAccount(uid);
                 getEventBus().sendEvent(new CurrentAccountChangedEvent());
             }
+            return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeader.build();
 

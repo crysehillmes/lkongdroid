@@ -247,7 +247,7 @@ public abstract class SimpleCollectionFragment<
     }
 
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
-        return UIUtils.getInsets(getActivity(), mCollectionView, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        return UIUtils.getInsets(getActivity(), mCollectionView, false, false, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
     }
 
     public Picasso getPicasso() {
