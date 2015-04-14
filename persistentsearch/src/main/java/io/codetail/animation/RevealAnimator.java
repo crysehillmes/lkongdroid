@@ -1,15 +1,14 @@
 package io.codetail.animation;
 
+import io.codetail.animation.ViewAnimationUtils.SimpleAnimationListener;
+
+import java.lang.ref.WeakReference;
+
 import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
-
-
-import java.lang.ref.WeakReference;
-
-import static io.codetail.animation.ViewAnimationUtils.SimpleAnimationListener;
 
 /**
  * @hide

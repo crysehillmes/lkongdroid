@@ -3,10 +3,9 @@ package com.quinny898.library.persistentsearch;
 import io.codetail.animation.ReverseInterpolator;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
-import java.util.ArrayList;
 
-import com.balysv.materialmenu.MaterialMenuView;
-import com.balysv.materialmenu.MaterialMenuDrawable.IconState;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import android.animation.LayoutTransition;
 import android.app.Activity;
@@ -43,6 +42,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.balysv.materialmenu.MaterialMenuDrawable.IconState;
+import com.balysv.materialmenu.MaterialMenuView;
+
 public class SearchBox extends RelativeLayout {
 
 	private MaterialMenuView materialMenu;
@@ -60,7 +62,7 @@ public class SearchBox extends RelativeLayout {
 	private SearchListener listener;
 	private MenuListener menuListener;
 	private FrameLayout rootLayout;
-	private String logoText;
+	private CharSequence logoText;
 	private ProgressBar pb;
 	private ArrayList<SearchResult> initialResults;
 	private boolean searchWithoutSuggestions = true;
@@ -81,7 +83,7 @@ public class SearchBox extends RelativeLayout {
 	public SearchBox(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-	
+
 	/**
 	 * Create a searchbox with params and a style
 	 * @param context
@@ -131,7 +133,7 @@ public class SearchBox extends RelativeLayout {
 		searchables = new ArrayList<SearchResult>();
 		search.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event) {
+										  KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 					search(getSearchText());
 					return true;
@@ -152,9 +154,9 @@ public class SearchBox extends RelativeLayout {
 				return false;
 			}
 		});
-		logoText = "Logo";
+		logoText = "";
 	}
-	
+
 	/***
 	 * Reveal the searchbox from a menu item. Specify the menu item id and pass the activity so the item can be found
 	 * @param id
@@ -174,7 +176,7 @@ public class SearchBox extends RelativeLayout {
 			}
 		}
 	}
-	
+
 	/***
 	 * Hide the searchbox using the circle animation. Can be called regardless of result list length
 	 * @param activity
@@ -202,7 +204,7 @@ public class SearchBox extends RelativeLayout {
 
 			@Override
 			public void onAnimationStart() {
-				
+
 			}
 
 			@Override
@@ -212,17 +214,17 @@ public class SearchBox extends RelativeLayout {
 
 			@Override
 			public void onAnimationCancel() {
-				
+
 			}
 
 			@Override
 			public void onAnimationRepeat() {
-				
+
 			}
-			
+
 		});
 	}
-	
+
 	/***
 	 * Toggle the searchbox's open/closed state manually
 	 */
@@ -237,7 +239,7 @@ public class SearchBox extends RelativeLayout {
 		}
 		searchOpen = !searchOpen;
 	}
-	
+
 	/***
 	 * Start the voice input activity manually
 	 * @param activity
@@ -252,12 +254,12 @@ public class SearchBox extends RelativeLayout {
 			activity.startActivityForResult(intent, 1234);
 		}
 	}
-	
+
 	/***
 	 * Set whether to show the progress bar spinner
 	 * @param show
 	 */
-	
+
 	public void showLoading(boolean show){
 		if(show){
 			pb.setVisibility(View.VISIBLE);
@@ -267,7 +269,7 @@ public class SearchBox extends RelativeLayout {
 			mic.setVisibility(View.VISIBLE);
 		}
 	}
-	
+
 	/***
 	 * Mandatory method for the onClick event
 	 * @param activity
@@ -280,7 +282,7 @@ public class SearchBox extends RelativeLayout {
 		}
 
 	}
-	
+
 	/***
 	 * Populate the searchbox with words, in an arraylist. Used by the voice input
 	 * @param matches
@@ -295,7 +297,7 @@ public class SearchBox extends RelativeLayout {
 		setSearchString(text);
 		search(text);
 	}
-	
+
 	/***
 	 * Force an update of the results
 	 */
@@ -303,8 +305,8 @@ public class SearchBox extends RelativeLayout {
 		resultList.clear();
 		int count = 0;
 		for (int x = 0; x < searchables.size(); x++) {
-			if (searchables.get(x).title.toLowerCase().startsWith(
-					getSearchText().toLowerCase())
+			if (searchables.get(x).toString().toLowerCase(Locale.getDefault()).contains(
+					getSearchText().toLowerCase(Locale.getDefault()))
 					&& count < 5) {
 				addResult(searchables.get(x));
 				count++;
@@ -317,25 +319,25 @@ public class SearchBox extends RelativeLayout {
 		}
 
 	}
-	
+
 	/***
-	 * 
+	 *
 	 * Set the results that are shown (up to 5) when the searchbox is opened with no text 
 	 * @param results
 	 */
 	public void setInitialResults(ArrayList<SearchResult> results){
 		this.initialResults = results;
 	}
-	
+
 	/***
 	 * Set whether the menu button should be shown. Particularly useful for apps that adapt to screen sizes
 	 * @param visibility
 	 */
-	
+
 	public void setMenuVisibility(int visibility){
 		materialMenu.setVisibility(visibility);
 	}
-	
+
 	/***
 	 * Set the menu listener
 	 * @param menuListener
@@ -343,7 +345,7 @@ public class SearchBox extends RelativeLayout {
 	public void setMenuListener(MenuListener menuListener) {
 		this.menuListener = menuListener;
 	}
-	
+
 	/***
 	 * Set the search listener
 	 * @param listener
@@ -351,7 +353,7 @@ public class SearchBox extends RelativeLayout {
 	public void setSearchListener(SearchListener listener) {
 		this.listener = listener;
 	}
-	
+
 	/***
 	 * Set whether to search without suggestions being available (default is true). Disable if your app only works with provided options
 	 * @param state
@@ -368,16 +370,16 @@ public class SearchBox extends RelativeLayout {
 		search.setFilters(new InputFilter[] { new InputFilter.LengthFilter(
 				length) });
 	}
-	
+
 	/***
 	 * Set the text of the logo (default text when closed)
 	 * @param text
 	 */
-	public void setLogoText(String text) {
+	public void setLogoText(CharSequence text) {
 		this.logoText = text;
 		setLogoTextInt(text);
 	}
-	
+
 	/***
 	 * Get the searchbox's current text
 	 * @return
@@ -385,15 +387,15 @@ public class SearchBox extends RelativeLayout {
 	public String getSearchText() {
 		return search.getText().toString();
 	}
-	
+
 	/***
 	 * Set the searchbox's current text manually
 	 * @param text
 	 */
-	public void setSearchString(String text) {
+	public void setSearchString(CharSequence text) {
 		search.setText(text);
 	}
-	
+
 	/***
 	 * Add a result
 	 * @param result
@@ -404,7 +406,7 @@ public class SearchBox extends RelativeLayout {
 			((SearchAdapter) results.getAdapter()).notifyDataSetChanged();
 		}
 	}
-	
+
 	/***
 	 * Clear all the results
 	 */
@@ -424,7 +426,7 @@ public class SearchBox extends RelativeLayout {
 		if (resultList != null)return resultList.size();
 		return 0;
 	}
-	
+
 	/***
 	 * Set the searchable items from a list (replaces any current items)
 	 */
@@ -483,29 +485,29 @@ public class SearchBox extends RelativeLayout {
 		SupportAnimator animator = ViewAnimationUtils.createCircularReveal(
 				root, cx, cy, 0, finalRadius);
 		animator.setInterpolator(new AccelerateDecelerateInterpolator());
-		animator.setDuration(500);
+		animator.setDuration(300);
 		animator.addListener(new SupportAnimator.AnimatorListener(){
 
 			@Override
 			public void onAnimationCancel() {
-				
+
 			}
 
 			@Override
 			public void onAnimationEnd() {
-				toggleSearch();				
+				toggleSearch();
 			}
 
 			@Override
 			public void onAnimationRepeat() {
-				
+
 			}
 
 			@Override
 			public void onAnimationStart() {
-				
+
 			}
-			
+
 		});
 		animator.start();
 	}
@@ -516,16 +518,16 @@ public class SearchBox extends RelativeLayout {
 		if (!TextUtils.isEmpty(getSearchText())) {
 			setLogoTextInt(result.title);
 			if (listener != null)
-				listener.onSearch(result.title);
+				listener.onSearch(result);
 		} else {
 			setLogoTextInt(logoText);
 		}
 		toggleSearch();
 	}
 
-	
 
-	
+
+
 
 	private void openSearch(Boolean openKeyboard) {
 		this.materialMenu.animateState(IconState.ARROW);
@@ -537,6 +539,7 @@ public class SearchBox extends RelativeLayout {
 		results.setAdapter(new SearchAdapter(context, resultList));
 		search.addTextChangedListener(new TextWatcher() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void afterTextChanged(Editable s) {
 				if (s.length() > 0) {
@@ -554,19 +557,19 @@ public class SearchBox extends RelativeLayout {
 						updateResults();
 					}
 				}
-				
+
 				if (listener != null)
 					listener.onSearchTermChanged();
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+										  int after) {
 			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
+									  int count) {
 
 			}
 
@@ -575,7 +578,7 @@ public class SearchBox extends RelativeLayout {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+									long arg3) {
 				SearchResult result = resultList.get(arg2);
 				search(result);
 
@@ -587,7 +590,7 @@ public class SearchBox extends RelativeLayout {
 		}else{
 			updateResults();
 		}
-		
+
 		if (listener != null)
 			listener.onSearchOpened();
 		if (getSearchText().length() > 0) {
@@ -603,7 +606,7 @@ public class SearchBox extends RelativeLayout {
 					InputMethodManager.SHOW_FORCED, 0);
 		}
 	}
-	
+
 	private void setInitialResults(){
 		resultList.clear();
 		int count = 0;
@@ -620,9 +623,9 @@ public class SearchBox extends RelativeLayout {
 		}
 	}
 
-	
 
-	
+
+
 
 	private void closeSearch() {
 		this.materialMenu.animateState(IconState.BURGER);
@@ -643,25 +646,25 @@ public class SearchBox extends RelativeLayout {
 				0);
 	}
 
-	
 
-	
 
-	private void setLogoTextInt(String text) {
+
+
+	private void setLogoTextInt(CharSequence text) {
 		logo.setText(text);
 	}
 
-	
-	
-	
+
+
+
 
 	private void search(String text) {
 		SearchResult option = new SearchResult(text, null);
 		search(option);
-		
+
 	}
 
-	
+
 
 	class SearchAdapter extends ArrayAdapter<SearchResult> {
 		public SearchAdapter(Context context, ArrayList<SearchResult> options) {
@@ -740,7 +743,7 @@ public class SearchBox extends RelativeLayout {
 		 * Called when a search happens, with a result
 		 * @param result
 		 */
-		public void onSearch(String result);
+		public void onSearch(SearchResult result);
 	}
 
 	public interface MenuListener {

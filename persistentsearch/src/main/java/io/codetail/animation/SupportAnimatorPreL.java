@@ -1,9 +1,9 @@
 package io.codetail.animation;
 
+import java.lang.ref.WeakReference;
+
 import android.animation.Animator;
 import android.view.animation.Interpolator;
-
-import java.lang.ref.WeakReference;
 
 final class SupportAnimatorPreL extends SupportAnimator {
 

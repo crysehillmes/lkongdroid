@@ -13,7 +13,7 @@ public abstract class SupportAnimator {
     /**
      * @return depends from {@link android.os.Build.VERSION} if sdk version
      * {@link android.os.Build.VERSION_CODES#LOLLIPOP} and greater will return
-     * {@link android.animation.Animator} otherwise {@link android.animation.Animator}
+     * {@link android.animation.Animator} otherwise {@link com.nineoldandroids.animation.Animator}
      */
     public abstract Object get();
 

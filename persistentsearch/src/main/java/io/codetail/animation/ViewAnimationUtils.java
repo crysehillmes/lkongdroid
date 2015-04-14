@@ -1,16 +1,16 @@
 package io.codetail.animation;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 public class ViewAnimationUtils {
 
@@ -38,8 +38,8 @@ public class ViewAnimationUtils {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static SupportAnimator createCircularReveal(View view,
-                                                int centerX,  int centerY,
-                                                float startRadius, float endRadius) {
+                                                       int centerX,  int centerY,
+                                                       float startRadius, float endRadius) {
 
         if(LOLLIPOP_PLUS){
             return new SupportAnimatorLollipop(android.view.ViewAnimationUtils
@@ -85,10 +85,11 @@ public class ViewAnimationUtils {
      * @param startDelay start delay before animation begin
      */
     public static void liftingFromBottom(View view, float baseRotation, float fromY, int duration, int startDelay){
-        view.setRotationX(baseRotation);
-        view.setTranslationY(fromY);
+        ViewCompat.setRotationX(view, baseRotation);
+        ViewCompat.setTranslationY(view, fromY);
 
-        view.animate()
+        view
+                .animate()
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(duration)
                 .setStartDelay(startDelay)
@@ -107,8 +108,8 @@ public class ViewAnimationUtils {
      * @param startDelay start delay before animation begin
      */
     public static void liftingFromBottom(View view, float baseRotation, int duration, int startDelay){
-        view.setRotationX(baseRotation);
-        view.setTranslationY(view.getHeight() / 3);
+        ViewCompat.setRotationX(view, baseRotation);
+        ViewCompat.setTranslationY(view, view.getHeight() / 3);
 
         view.animate()
                 .setInterpolator(new AccelerateDecelerateInterpolator())
@@ -128,10 +129,11 @@ public class ViewAnimationUtils {
      * @param duration aniamtion duration
      */
     public static void liftingFromBottom(View view, float baseRotation, int duration){
-        view.setRotationX(baseRotation);
-        view.setTranslationY(view.getHeight() / 3);
+        ViewCompat.setRotationX(view, baseRotation);
+        ViewCompat.setTranslationY(view, view.getHeight() / 3);
 
-        view.animate()
+        view
+                .animate()
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(duration)
                 .rotationX(0)
