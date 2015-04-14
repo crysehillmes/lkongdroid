@@ -85,6 +85,9 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_open_search:
+                mAndroidNavigation.navigateToSearchActivity(getActivity());
+                return true;
             case R.id.action_open_notification:
                 mAndroidNavigation.navigateToNotificationActivity(getActivity());
                 return true;
