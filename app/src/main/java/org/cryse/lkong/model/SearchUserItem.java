@@ -1,6 +1,6 @@
 package org.cryse.lkong.model;
 
-public class SearchUserItem {
+public class SearchUserItem extends AbstractSearchResult {
     private String avatarUrl;
     private CharSequence customStatus; // "customstatus": "",
     private CharSequence signHtml; // "sightml": "",

@@ -2,7 +2,7 @@ package org.cryse.lkong.model;
 
 import java.util.Date;
 
-public class SearchPostItem {
+public class SearchPostItem extends AbstractSearchResult {
     private int replyCount; //"replynum": "5",
     private String userName; //        "username": "\u51b0\u83b2\u96ea\u5983",
     private long userId; //        "uid": "694795",

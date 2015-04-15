@@ -5,14 +5,15 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <org.cryse.widget.recyclerview.SuperRecyclerView
+        android:id="@+id/activity_search_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srv_empty="@layout/layout_empty_view"
+        app:srv_scrollbarStyle="outsideOverlay"/>
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top" />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/activity_search_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
 </FrameLayout>
