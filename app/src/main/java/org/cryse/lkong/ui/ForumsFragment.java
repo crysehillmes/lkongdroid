@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,7 @@ import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.presenter.ForumsPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
-import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
@@ -38,7 +37,8 @@ public class ForumsFragment extends SimpleCollectionFragment<
     boolean mNeedRefresh = false;
     @Inject
     ForumsPresenter mPresenter;
-
+    @Inject
+    AndroidNavigation mNavigation;
     protected MenuItem mChangeThemeMenuItem;
     private MenuItem mNotificationMenuItem;
     private boolean mHasNotification = false;
@@ -85,6 +85,9 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_open_search:
+                mAndroidNavigation.navigateToSearchActivity(getActivity());
+                return true;
             case R.id.action_open_notification:
                 mAndroidNavigation.navigateToNotificationActivity(getActivity());
                 return true;
@@ -148,11 +151,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
         int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
             ForumModel item = mCollectionAdapter.getItem(position);
-            Intent intent = new Intent(getActivity(), ThreadListActivity.class);
-            intent.putExtra(DataContract.BUNDLE_FORUM_ID, item.getFid());
-            intent.putExtra(DataContract.BUNDLE_FORUM_NAME, item.getName());
-            intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, item.getDescription());
-            startActivity(intent);
+            mNavigation.openActivityForForumByForumId(getActivity(), item.getFid(), item.getName(), item.getDescription());
         }
     }
 

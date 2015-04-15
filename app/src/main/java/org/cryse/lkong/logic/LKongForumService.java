@@ -13,6 +13,7 @@ import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -313,6 +314,18 @@ public class LKongForumService {
             try {
                 PostModel.PostRate postRate = mLKongRestService.ratePost(authObject, postId, score, reaseon);
                 subscriber.onNext(postRate);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<SearchDataSet> search(LKAuthObject authObject, long start, String queryString) {
+        return Observable.create(subscriber -> {
+            try {
+                SearchDataSet dataSet = mLKongRestService.searchLKong(authObject, start, queryString);
+                subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

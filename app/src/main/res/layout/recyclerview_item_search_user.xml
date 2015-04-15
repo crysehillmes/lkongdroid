@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?selectableItemBackground">
+    <ImageView
+        android:id="@+id/recyclerview_item_search_user_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+    <TextView
+        android:id="@+id/recyclerview_item_search_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="72dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="?theme_text_color_primary"
+        android:textSize="@dimen/text_size_subhead" />
+    <TextView
+        android:id="@+id/recyclerview_item_search_user_sign"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/recyclerview_item_search_user_name"
+        android:layout_marginLeft="72dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="?theme_text_color_secondary"
+        android:textSize="@dimen/text_size_body1" />
+</RelativeLayout>

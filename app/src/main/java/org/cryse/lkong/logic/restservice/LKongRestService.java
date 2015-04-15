@@ -45,6 +45,7 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
@@ -64,6 +65,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -592,6 +594,26 @@ public class LKongRestService {
         return editPostResult;
     }
 
+    public SearchDataSet searchLKong(LKAuthObject authObject, long start, String queryString) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = LKONG_INDEX_URL + String.format("?mod=data&sars=search/%s", URLEncoder.encode(queryString, "UTF-8"));
+        if(start > 0) {
+            url = url + "&nexttime=" + Long.toString(start);
+        }
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        SearchDataSet dataSet = new SearchDataSet();
+        dataSet.parseData(responseString);
+        clearCookies();
+        return dataSet;
+    }
 
     public void saveToSDCard(String filename, String content)throws Exception {
         File file = new File(Environment.getExternalStorageDirectory(), filename);//指定文件存储目录为SD卡，文件名
