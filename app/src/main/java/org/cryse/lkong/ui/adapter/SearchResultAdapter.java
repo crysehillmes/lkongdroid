@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(item.getUserName());
+        viewHolder.secondaryTextView.setText(getString(R.string.format_search_post_result_reply_count, item.getReplyCount()));
     }
 
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {

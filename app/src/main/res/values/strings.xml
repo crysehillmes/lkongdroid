@@ -49,6 +49,7 @@
     <string name="format_note_rate_log_prefix">Your post&#160;</string>
     <string name="format_note_rate_log_middle">&#160;is rated by %1$s:&#160;</string>
     <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
+    <string name="format_search_post_result_reply_count">%1$d&#160; Replies</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
