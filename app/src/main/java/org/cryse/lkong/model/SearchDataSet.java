@@ -16,6 +16,7 @@ public class SearchDataSet {
     public static final int TYPE_GROUP = 113;
 
     private int dataType;
+    private long nextTime;
     private List<AbstractSearchResult> searchResultItems = new ArrayList<>();
 
     public int getDataType() {
@@ -26,12 +27,27 @@ public class SearchDataSet {
         this.dataType = dataType;
     }
 
+    public long getNextTime() {
+        return nextTime;
+    }
+
+    public void setNextTime(long nextTime) {
+        this.nextTime = nextTime;
+    }
+
     public List<AbstractSearchResult> getSearchResultItems() {
         return searchResultItems;
     }
 
     public void parseData(String data) throws JSONException {
         JSONObject rootObject = new JSONObject(data);
+        Long nextTime = rootObject.getLong("nexttime");
+        if(rootObject.has("isend")) {
+            if(rootObject.getInt("isend") == 1) {
+                nextTime = 0l;
+            }
+        }
+        setNextTime(nextTime);
         String tmpSignature = rootObject.getString("tmp");
         if(tmpSignature.equalsIgnoreCase("d_forum")) {
             parsePostDataSet(rootObject.getJSONArray("data"));

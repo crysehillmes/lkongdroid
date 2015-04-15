@@ -23,15 +23,16 @@ public class SearchPresenter implements BasePresenter<SearchForumView> {
         this.mLKongForumService = forumService;
     }
 
-    public void search(LKAuthObject authObject, String search) {
+    public void search(LKAuthObject authObject, long start, String search, boolean loadingMore) {
         SubscriptionUtils.checkAndUnsubscribe(mSearchSubscription);
-        mSearchSubscription = mLKongForumService.search(authObject, search)
+        setLoadingStatus(loadingMore, true);
+        mSearchSubscription = mLKongForumService.search(authObject, start, search)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             if(mView != null)
-                                mView.onSearchDone(result);
+                                mView.onSearchDone(result, loadingMore);
                         },
                         error -> {
                             if(mView != null) {
@@ -39,10 +40,20 @@ public class SearchPresenter implements BasePresenter<SearchForumView> {
                                 Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
                                 mView.setLoading(false);
                             }
+                            setLoadingStatus(loadingMore, false);
                         },
                         () -> {
+                            setLoadingStatus(loadingMore, false);
                         }
                 );
+    }
+
+    private void setLoadingStatus(boolean loadingMore, boolean isLoading) {
+        if(mView == null) return;
+        if(loadingMore)
+            mView.setLoadingMore(isLoading);
+        else
+            mView.setLoading(isLoading);
     }
 
     @Override

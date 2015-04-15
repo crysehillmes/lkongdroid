@@ -22,6 +22,7 @@ import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
+import org.cryse.lkong.ui.ThreadListActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.utils.DataContract;
 
@@ -169,6 +170,14 @@ public class AndroidNavigation {
         Intent intent = new Intent(context, PostListActivity.class);
         intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
         intent.putExtra(DataContract.BUNDLE_THREAD_CURRENT_PAGE, page);
+        context.startActivity(intent);
+    }
+
+    public void openActivityForForumByForumId(Context context, long forumId, String forumName, String forumDescription) {
+        Intent intent = new Intent(context, ThreadListActivity.class);
+        intent.putExtra(DataContract.BUNDLE_FORUM_ID, forumId);
+        intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
+        intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, forumDescription);
         context.startActivity(intent);
     }
 }

@@ -321,10 +321,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<SearchDataSet> search(LKAuthObject authObject, String queryString) {
+    public Observable<SearchDataSet> search(LKAuthObject authObject, long start, String queryString) {
         return Observable.create(subscriber -> {
             try {
-                SearchDataSet dataSet = mLKongRestService.searchLKong(authObject, queryString);
+                SearchDataSet dataSet = mLKongRestService.searchLKong(authObject, start, queryString);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {

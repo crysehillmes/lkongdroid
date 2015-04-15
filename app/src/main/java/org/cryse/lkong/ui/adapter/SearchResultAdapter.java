@@ -37,6 +37,12 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         }
     }
 
+    public void appendDataSet(SearchDataSet searchDataSet) {
+        if (mResultType == searchDataSet.getDataType()) {
+            this.addAll(searchDataSet.getSearchResultItems());
+        }
+    }
+
     public SearchResultAdapter(Context context, Picasso picasso) {
         super(context, new ArrayList<AbstractSearchResult>());
         this.mPicasso = picasso;
@@ -112,6 +118,10 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     @Override
     public int onGetItemViewItemType(int position) {
         return ITEM_TYPE_ITEM_START + mResultType;
+    }
+
+    public int getResultType() {
+        return mResultType;
     }
 
     protected static class SearchPostViewHolder extends RecyclerViewHolder {

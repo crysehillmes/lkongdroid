@@ -594,10 +594,13 @@ public class LKongRestService {
         return editPostResult;
     }
 
-    public SearchDataSet searchLKong(LKAuthObject authObject, String queryString) throws Exception {
+    public SearchDataSet searchLKong(LKAuthObject authObject, long start, String queryString) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
         String url = LKONG_INDEX_URL + String.format("?mod=data&sars=search/%s", URLEncoder.encode(queryString, "UTF-8"));
+        if(start > 0) {
+            url = url + "&nexttime=" + Long.toString(start);
+        }
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(url)
