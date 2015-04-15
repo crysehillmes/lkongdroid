@@ -145,4 +145,6 @@
     <string name="drawer_item_account_add">添加账户</string>
     <string name="action_open_search">搜索</string>
     <string name="format_search_post_result_reply_count">%1$d&#160; 回复</string>
+    <string name="hint_search_label">搜索</string>
+    <string name="hint_search_hint">搜索位面，主题或用户</string>
 </resources>
