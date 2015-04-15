@@ -12,8 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -22,8 +25,11 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SearchForumView;
+
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -34,6 +40,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     private static final String LOG_TAG = SearchActivity.class.getName();
     SearchView mSearchView = null;
     private String mQueryString = null;
+    Picasso mPicasso;
     @Inject
     SearchPresenter mPresenter;
     @Inject
@@ -47,6 +54,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         int actionBarSize = UIUtils.calculateActionBarSize(this);
         getToolbar().setContentInsetsAbsolute(actionBarSize, 0);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -60,7 +68,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         mSearchResultRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
 
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mSearchResultAdapter = new SearchResultAdapter(this);
+        mSearchResultAdapter = new SearchResultAdapter(mPicasso);
         mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
     }
     @Override
@@ -95,6 +103,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                     @Override
                     public boolean onQueryTextSubmit(String s) {
                         search(s);
+                        mSearchResultAdapter.setDataSet(null);
                         Toast.makeText(SearchActivity.this, s, Toast.LENGTH_SHORT).show();
                         view.clearFocus();
                         return true;
@@ -160,6 +169,13 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getPresenter().destroy();
+        mPicasso.shutdown();
+    }
+
+    @Override
     public void setLoading(Boolean value) {
 
     }
@@ -185,10 +201,13 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     }
 
     protected static class SearchResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private Context mContext;
+        private Picasso mPicasso;
         private SearchDataSet mDataSet;
-        public SearchResultAdapter(Context context) {
-            this.mContext = context;
+        private CircleTransform mCircleTransform;
+
+        public SearchResultAdapter(Picasso picasso) {
+            this.mPicasso = picasso;
+            this.mCircleTransform = new CircleTransform();
         }
 
         public void setDataSet(SearchDataSet dataSet) {
@@ -231,17 +250,31 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         }
 
         private void bindPostResult(SearchPostViewHolder viewHolder, int position) {
-            viewHolder.subjectTextView.setText(mDataSet.getSearchPostItems().get(position).getSubject());
+            viewHolder.titleTextView.setText(mDataSet.getSearchPostItems().get(position).getSubject());
+            viewHolder.secondaryTextView.setText(mDataSet.getSearchPostItems().get(position).getUserName());
         }
 
         private void bindUserResult(SearchUserViewHolder viewHolder, int position) {
             viewHolder.nameTextView.setText(mDataSet.getSearchUserItems().get(position).getUserName());
             viewHolder.signTextView.setText(mDataSet.getSearchUserItems().get(position).getSignHtml());
+            mPicasso.load(mDataSet.getSearchUserItems().get(position).getAvatarUrl())
+                    .placeholder(R.drawable.ic_placeholder_avatar)
+                    .error(R.drawable.ic_placeholder_avatar)
+                    .fit()
+                    .centerCrop()
+                    .transform(mCircleTransform)
+                    .into(viewHolder.avatarImageView);
         }
 
         private void bindGroupResult(SearchGroupViewHolder viewHolder, int position) {
             viewHolder.nameTextView.setText(mDataSet.getSearchGroupItems().get(position).getGroupName());
             viewHolder.descriptionTextView.setText(mDataSet.getSearchGroupItems().get(position).getGroupDescription());
+            mPicasso.load(mDataSet.getSearchGroupItems().get(position).getIconUrl())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .fit()
+                    .centerCrop()
+                    .into(viewHolder.iconImageView);
         }
 
         @Override
@@ -265,8 +298,10 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         }
 
         protected static class SearchPostViewHolder extends RecyclerView.ViewHolder {
-            @InjectView(R.id.recyclerview_item_search_post_subject)
-            TextView subjectTextView;
+            @InjectView(R.id.recyclerview_item_search_post_title)
+            TextView titleTextView;
+            @InjectView(R.id.recyclerview_item_search_post_secondary)
+            TextView secondaryTextView;
             public SearchPostViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.inject(this, itemView);
@@ -274,6 +309,8 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         }
 
         protected static class SearchUserViewHolder extends RecyclerView.ViewHolder {
+            @InjectView(R.id.recyclerview_item_search_user_icon)
+            ImageView avatarImageView;
             @InjectView(R.id.recyclerview_item_search_user_name)
             TextView nameTextView;
             @InjectView(R.id.recyclerview_item_search_user_sign)
@@ -285,6 +322,8 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         }
 
         protected static class SearchGroupViewHolder extends RecyclerView.ViewHolder {
+            @InjectView(R.id.recyclerview_item_search_group_icon)
+            ImageView iconImageView;
             @InjectView(R.id.recyclerview_item_search_group_name)
             TextView nameTextView;
             @InjectView(R.id.recyclerview_item_search_group_description)

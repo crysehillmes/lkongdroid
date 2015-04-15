@@ -1,17 +1,18 @@
 package org.cryse.lkong.model;
 
 public class SearchGroupItem {
-    private String groupDescription; // description;
+    private String iconUrl;
+    private CharSequence groupDescription; // description;
     private long forumId; // fid;
     private int fansCount; // fansnum;
-    private String groupName; // name;
+    private CharSequence groupName; // name;
     private String id;
 
-    public String getGroupDescription() {
+    public CharSequence getGroupDescription() {
         return groupDescription;
     }
 
-    public void setGroupDescription(String groupDescription) {
+    public void setGroupDescription(CharSequence groupDescription) {
         this.groupDescription = groupDescription;
     }
 
@@ -31,11 +32,11 @@ public class SearchGroupItem {
         this.fansCount = fansCount;
     }
 
-    public String getGroupName() {
+    public CharSequence getGroupName() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
+    public void setGroupName(CharSequence groupName) {
         this.groupName = groupName;
     }
 
@@ -45,5 +46,13 @@ public class SearchGroupItem {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

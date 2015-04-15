@@ -1,5 +1,8 @@
 package org.cryse.lkong.model;
 
+import android.text.Html;
+
+import org.cryse.lkong.model.converter.ModelConverter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,7 +74,7 @@ public class SearchDataSet {
             SearchPostItem item = new SearchPostItem();
             item.setId(jsonObject.getString("id"));
             item.setSortKey(jsonObject.getLong("sortkey"));
-            item.setSubject(jsonObject.getString("subject"));
+            item.setSubject(Html.fromHtml(jsonObject.getString("subject")));
             item.setReplyCount(Integer.valueOf(jsonObject.getString("replynum")));
             item.setUserId(Long.valueOf(jsonObject.getString("uid")));
             item.setUserName(jsonObject.getString("username"));
@@ -88,10 +91,11 @@ public class SearchDataSet {
             SearchUserItem item = new SearchUserItem();
             item.setId(jsonObject.getString("id"));
             item.setUserId(Long.valueOf(jsonObject.getString("uid")));
-            item.setUserName(jsonObject.getString("username"));
+            item.setUserName(htmlToCharSequence(jsonObject.getString("username")));
             item.setGender(jsonObject.getInt("gender"));
-            item.setSignHtml(jsonObject.getString("sightml"));
-            item.setCustomStatus(jsonObject.getString("customstatus"));
+            item.setSignHtml(htmlToCharSequence(jsonObject.getString("sightml")));
+            item.setCustomStatus(htmlToCharSequence(jsonObject.getString("customstatus")));
+            item.setAvatarUrl(ModelConverter.uidToAvatarUrl(item.getUserId()));
             searchUserItems.add(item);
         }
     }
@@ -106,9 +110,14 @@ public class SearchDataSet {
             item.setId(jsonObject.getString("id"));
             item.setForumId(Long.valueOf(jsonObject.getString("fid")));
             item.setFansCount(Integer.valueOf(jsonObject.getString("fansnum")));
-            item.setGroupName(jsonObject.getString("name"));
-            item.setGroupDescription(jsonObject.getString("description"));
+            item.setGroupName(htmlToCharSequence(jsonObject.getString("name")));
+            item.setGroupDescription(htmlToCharSequence(jsonObject.getString("description")));
+            item.setIconUrl(ModelConverter.fidToForumIconUrl(item.getForumId()));
             searchGroupItems.add(item);
         }
+    }
+
+    private CharSequence htmlToCharSequence(String html) {
+        return Html.fromHtml(html);
     }
 }

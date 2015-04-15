@@ -1,26 +1,27 @@
 package org.cryse.lkong.model;
 
 public class SearchUserItem {
-    private String customStatus; // "customstatus": "",
-    private String signHtml; // "sightml": "",
+    private String avatarUrl;
+    private CharSequence customStatus; // "customstatus": "",
+    private CharSequence signHtml; // "sightml": "",
     private int gender; //        "gender": 1,
     private long userId; //        "uid": "764822",
-    private String userName; //        "username": "<em>tyk<\/em><em>5555<\/em>",
+    private CharSequence userName; //        "username": "<em>tyk<\/em><em>5555<\/em>",
     private String id; //        "id": "user_764822"
 
-    public String getCustomStatus() {
+    public CharSequence getCustomStatus() {
         return customStatus;
     }
 
-    public void setCustomStatus(String customStatus) {
+    public void setCustomStatus(CharSequence customStatus) {
         this.customStatus = customStatus;
     }
 
-    public String getSignHtml() {
+    public CharSequence getSignHtml() {
         return signHtml;
     }
 
-    public void setSignHtml(String signHtml) {
+    public void setSignHtml(CharSequence signHtml) {
         this.signHtml = signHtml;
     }
 
@@ -40,11 +41,11 @@ public class SearchUserItem {
         this.userId = userId;
     }
 
-    public String getUserName() {
+    public CharSequence getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public void setUserName(CharSequence userName) {
         this.userName = userName;
     }
 
@@ -54,5 +55,13 @@ public class SearchUserItem {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }
