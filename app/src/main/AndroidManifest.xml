@@ -39,6 +39,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity
+            android:name=".ui.UserProfileActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".service.CheckNoticeService"/>
 

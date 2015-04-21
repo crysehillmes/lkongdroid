@@ -34,4 +34,7 @@ public class DataContract {
     public static final String BUNDLE_IS_EDIT_MODE = "bundle_is_edit_mode";
     public static final String BUNDLE_EDIT_TITLE = "bundle_edit_title";
     public static final String BUNDLE_EDIT_CONTENT = "bundle_edit_content";
+
+
+    public static final String BUNDLE_USER_ID = "bundle_user_id";
 }

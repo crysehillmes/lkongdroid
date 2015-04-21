@@ -147,10 +147,10 @@ public class LKongRestService {
         return userInfoModel;
     }
 
-    public UserInfoModel getUserInfo(LKAuthObject authObject) throws Exception {
+    public UserInfoModel getUserInfo(LKAuthObject authObject, long uid) throws Exception {
         checkSignInStatus(authObject, false);
         applyAuthCookies(authObject);
-
+        String url = LKONG_INDEX_URL + String.format("?mod=ajax&action=userconfig_%06d", uid);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")

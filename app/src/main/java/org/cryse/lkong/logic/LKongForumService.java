@@ -93,7 +93,19 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
+    public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
+                subscriber.onNext(userInfoModel);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
                 UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject);
@@ -107,7 +119,7 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
-    }
+    }*/
 
     public Observable<List<UserAccountEntity>> getAllUserAccounts() {
         return Observable.create(subscriber -> {

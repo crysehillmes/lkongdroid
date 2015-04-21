@@ -7,14 +7,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 
@@ -27,6 +30,10 @@ public class UIUtils {
     private static String sNavBarOverride;
     public static final float SESSION_BG_COLOR_SCALE_FACTOR = 0.65f;
     private static final int[] RES_IDS_ACTION_BAR_SIZE = { android.R.attr.actionBarSize };
+
+    private static int screenWidth = 0;
+    private static int screenHeight = 0;
+
     /**
      * Regex to search for HTML escape sequences.
      *
@@ -185,6 +192,30 @@ public class UIUtils {
         int horizontalPadding = (int) Math.ceil((double) cardElevation + 0.29289321881345247d * (double) cornerRadius);
         int verticalPadding = (int) Math.ceil((double) cardElevation * 1.5d + 0.29289321881345247d * (double) cornerRadius);
         return new InsetsValue(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
+    }
+
+    public static int getScreenHeight(Context c) {
+        if (screenHeight == 0) {
+            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            screenHeight = size.y;
+        }
+
+        return screenHeight;
+    }
+
+    public static int getScreenWidth(Context c) {
+        if (screenWidth == 0) {
+            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            screenWidth = size.x;
+        }
+
+        return screenWidth;
     }
 
     public static class InsetsValue {
