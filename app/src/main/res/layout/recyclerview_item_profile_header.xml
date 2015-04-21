@@ -7,18 +7,21 @@
     android:orientation="vertical"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:padding="24dp">
+    android:elevation="@dimen/toolbar_elevation">
 
     <LinearLayout
         android:clipChildren="false"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp">
 
         <ImageView
             android:id="@+id/ivUserProfilePhoto"
             android:layout_width="@dimen/size_avatar_user_profile"
             android:layout_height="@dimen/size_avatar_user_profile"
-            android:layout_marginRight="16dp" />
+            android:layout_marginRight="24dp" />
 
         <LinearLayout
             android:id="@+id/vUserDetails"
@@ -69,7 +72,10 @@
         android:id="@+id/vUserStats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -161,5 +167,53 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:id="@+id/vButtons"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <ImageButton
+                android:id="@+id/btnGrid"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_favorite"
+                android:background="@android:color/transparent" />
+
+            <ImageButton
+                android:id="@+id/btnList"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_favorite"
+                android:background="@android:color/transparent" />
+
+            <ImageButton
+                android:id="@+id/btnMap"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_favorite"
+                android:background="@android:color/transparent" />
+
+            <ImageButton
+                android:id="@+id/btnTagged"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_favorite"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/vUnderline"
+            android:layout_width="100dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom"
+            android:background="#5be5ad" />
+    </FrameLayout>
 </LinearLayout>

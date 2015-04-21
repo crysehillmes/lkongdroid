@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -71,6 +73,9 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         setContentView(R.layout.activity_profile);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
+        ViewCompat.setElevation(getToolbar(), 0f);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
         if(mUid == 0l)
             throw new IllegalArgumentException("Must set uid in intent.");
@@ -130,6 +135,16 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         } else {
             rvUserProfile.setVisibility(View.INVISIBLE);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finishCompat();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

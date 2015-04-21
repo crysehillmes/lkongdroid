@@ -36,13 +36,12 @@ import butterknife.InjectView;
 public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int TYPE_PROFILE_HEADER = 0;
-    public static final int TYPE_PROFILE_OPTIONS = 1;
     public static final int TYPE_PHOTO = 2;
 
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
     private static final int MAX_PHOTO_ANIMATION_DELAY = 600;
 
-    private static final int MIN_ITEMS_COUNT = 2;
+    private static final int MIN_ITEMS_COUNT = 1;
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
 
 
@@ -81,8 +80,6 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_PROFILE_HEADER;
-        } else if (position == 1) {
-            return TYPE_PROFILE_OPTIONS;
         } else {
             return TYPE_PHOTO;
         }
@@ -96,12 +93,6 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             layoutParams.setFullSpan(true);
             view.setLayoutParams(layoutParams);
             return new ProfileHeaderViewHolder(view);
-        } else if (TYPE_PROFILE_OPTIONS == viewType) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_options, parent, false);
-            StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-            layoutParams.setFullSpan(true);
-            view.setLayoutParams(layoutParams);
-            return new ProfileOptionsViewHolder(view);
         } else if (TYPE_PHOTO == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_item, parent, false);
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
@@ -120,8 +111,6 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int viewType = getItemViewType(position);
         if (TYPE_PROFILE_HEADER == viewType) {
             bindProfileHeader((ProfileHeaderViewHolder) holder);
-        } else if (TYPE_PROFILE_OPTIONS == viewType) {
-            bindProfileOptions((ProfileOptionsViewHolder) holder);
         } else if (TYPE_PHOTO == viewType) {
             bindPhoto((PhotoViewHolder) holder, position);
         }
@@ -154,9 +143,6 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return false;
             }
         });
-    }
-
-    private void bindProfileOptions(final ProfileOptionsViewHolder holder) {
         holder.vButtons.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -204,12 +190,14 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void animateUserProfileOptions(ProfileOptionsViewHolder viewHolder) {
+    private void animateUserProfileOptions(ProfileHeaderViewHolder viewHolder) {
         if (!lockedAnimations) {
             viewHolder.vButtons.setTranslationY(-viewHolder.vButtons.getHeight());
+            viewHolder.vButtons.setAlpha(0f);
             viewHolder.vUnderline.setScaleX(0);
 
             viewHolder.vButtons.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+            viewHolder.vButtons.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
             viewHolder.vUnderline.animate().scaleX(1).setDuration(200).setStartDelay(USER_OPTIONS_ANIMATION_DELAY + 300).setInterpolator(INTERPOLATOR).start();
         }
     }
@@ -276,13 +264,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @InjectView(R.id.recyclerview_item_profile_header_post_count_textview)
         TextView postCountTextView;
 
-        public ProfileHeaderViewHolder(View view) {
-            super(view);
-            ButterKnife.inject(this, view);
-        }
-    }
 
-    static class ProfileOptionsViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.btnGrid)
         ImageButton btnGrid;
         @InjectView(R.id.btnList)
@@ -295,8 +277,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         View vUnderline;
         @InjectView(R.id.vButtons)
         View vButtons;
-
-        public ProfileOptionsViewHolder(View view) {
+        public ProfileHeaderViewHolder(View view) {
             super(view);
             ButterKnife.inject(this, view);
         }
