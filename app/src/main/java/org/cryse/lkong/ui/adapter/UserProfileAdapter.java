@@ -1,7 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -11,32 +10,30 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.utils.ColorUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by Miroslaw Stanek on 20.01.15.
- */
 public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int TYPE_PROFILE_HEADER = 0;
-    public static final int TYPE_PHOTO = 2;
+    public static final int TYPE_TIMELINE_ITEM = 2;
+    public static final int TYPE_THREAD_ITEM = 4;
 
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
     private static final int MAX_PHOTO_ANIMATION_DELAY = 600;
@@ -47,24 +44,31 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private final Context context;
     private final Picasso mPicasso;
-    private final int cellSize;
     private final int avatarSize;
+    private int mColorAccent;
 
     private final String profilePhoto;
-    private final List<String> photos;
+    private final List<Object> mItemList;
     private UserInfoModel mUserInfo;
     private boolean lockedAnimations = false;
     private long profileHeaderAnimationStartTime = 0;
     private int lastAnimatedItem = 0;
     private int mPrimaryColor;
-    public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor) {
+    private final String mTodayPrefix;
+    private final String mImageTaskTag;
+    private final int mAvatarSize;
+    private CircleTransform mCircleTransform = new CircleTransform();
+    public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
         this.context = context;
         this.mPicasso = picasso;
-        this.cellSize = UIUtils.getScreenWidth(context) / 3;
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
         this.profilePhoto = profilePhoto;
-        this.photos = Arrays.asList(new String[]{});
+        this.mItemList = itemList;
         this.mPrimaryColor = primaryColor;
+        this.mTodayPrefix = context.getString(R.string.datetime_today);
+        this.mImageTaskTag = imgTaskTag;
+        this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        this.mColorAccent = ColorUtils.getColorFromAttr(context, R.attr.colorAccent);
     }
 
     public void setPrimaryColor(int primaryColor) {
@@ -80,8 +84,12 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         if (position == 0) {
             return TYPE_PROFILE_HEADER;
+        } else if(mItemList.get(position) instanceof TimelineModel) {
+            return TYPE_TIMELINE_ITEM;
+        } else if(mItemList.get(position) instanceof ThreadModel){
+            return TYPE_THREAD_ITEM;
         } else {
-            return TYPE_PHOTO;
+            throw new IllegalStateException("Unknown item type.");
         }
     }
 
@@ -93,14 +101,12 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             layoutParams.setFullSpan(true);
             view.setLayoutParams(layoutParams);
             return new ProfileHeaderViewHolder(view);
-        } else if (TYPE_PHOTO == viewType) {
+        } else if (TYPE_TIMELINE_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_item, parent, false);
-            StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-            layoutParams.height = cellSize;
-            layoutParams.width = cellSize;
-            layoutParams.setFullSpan(false);
-            view.setLayoutParams(layoutParams);
-            return new PhotoViewHolder(view);
+            return new TimelineAdapter.ViewHolder(view);
+        } else if(TYPE_THREAD_ITEM == viewType) {
+            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_thread, parent, false);
+            return new ThreadListAdapter.ViewHolder(view);
         }
 
         return null;
@@ -109,10 +115,14 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
+        int headerCount = mUserInfo == null ? 0 : 1;
+        Object item = mItemList.size() > 0 ? mItemList.get(position - headerCount) : null;
         if (TYPE_PROFILE_HEADER == viewType) {
             bindProfileHeader((ProfileHeaderViewHolder) holder);
-        } else if (TYPE_PHOTO == viewType) {
-            bindPhoto((PhotoViewHolder) holder, position);
+        } else if (TYPE_TIMELINE_ITEM == viewType && item != null && item instanceof TimelineModel) {
+            bindPhoto((TimelineAdapter.ViewHolder) holder, position, (TimelineModel) item);
+        } else if (TYPE_THREAD_ITEM == viewType && item != null && item instanceof ThreadModel) {
+            bindThread((ThreadListAdapter.ViewHolder)holder, position, (ThreadModel) item);
         }
     }
 
@@ -155,22 +165,31 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
     }
 
-    private void bindPhoto(final PhotoViewHolder holder, int position) {
-        Picasso.with(context)
-                .load(photos.get(position - MIN_ITEMS_COUNT))
-                .resize(cellSize, cellSize)
-                .centerCrop()
-                .into(holder.ivPhoto, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        animatePhoto(holder);
-                    }
+    private void bindPhoto(final TimelineAdapter.ViewHolder holder, int position, TimelineModel timelineModel) {
+        TimelineAdapter.bindTimelineItem(
+                context,
+                mPicasso,
+                mTodayPrefix,
+                mImageTaskTag,
+                mAvatarSize,
+                mCircleTransform,
+                holder,
+                timelineModel
+        );
+        if (lastAnimatedItem < position) lastAnimatedItem = position;
+    }
 
-                    @Override
-                    public void onError() {
-
-                    }
-                });
+    private void bindThread(final ThreadListAdapter.ViewHolder holder, int position, ThreadModel threadModel) {
+        ThreadListAdapter.bindThreadModel(
+                context,
+                mPicasso,
+                mTodayPrefix,
+                mImageTaskTag,
+                mAvatarSize,
+                mColorAccent,
+                mCircleTransform,
+                holder,
+                threadModel);
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 
@@ -202,7 +221,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void animatePhoto(PhotoViewHolder viewHolder) {
+    private void animatePhoto(TimelineAdapter.ViewHolder viewHolder) {
         if (!lockedAnimations) {
             if (lastAnimatedItem == viewHolder.getPosition()) {
                 setLockedAnimations(true);
@@ -217,9 +236,9 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 animationDelay += viewHolder.getPosition() * 30;
             }
 
-            viewHolder.flRoot.setScaleY(0);
-            viewHolder.flRoot.setScaleX(0);
-            viewHolder.flRoot.animate()
+            viewHolder.mRootCardView.setScaleY(0);
+            viewHolder.mRootCardView.setScaleX(0);
+            viewHolder.mRootCardView.animate()
                     .scaleY(1)
                     .scaleX(1)
                     .setDuration(200)
@@ -233,7 +252,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemCount() {
         if(mUserInfo == null)
             return 0;
-        return MIN_ITEMS_COUNT + photos.size();
+        return MIN_ITEMS_COUNT + mItemList.size();
     }
 
     static class ProfileHeaderViewHolder extends RecyclerView.ViewHolder {
@@ -283,20 +302,22 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    static class PhotoViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.flRoot)
-        FrameLayout flRoot;
-        @InjectView(R.id.ivPhoto)
-        ImageView ivPhoto;
-
-        public PhotoViewHolder(View view) {
-            super(view);
-            ButterKnife.inject(this, view);
-        }
-    }
-
     public void setLockedAnimations(boolean lockedAnimations) {
         this.lockedAnimations = lockedAnimations;
+    }
+
+    public void clear() {
+        int headerCount = mUserInfo == null ? 0 : 1;
+        int itemCount = mItemList.size();
+        mItemList.clear();
+        notifyItemRangeRemoved(headerCount, itemCount);
+    }
+
+    public void addAll(List<Object> items) {
+        int headerCount = mUserInfo == null ? 0 : 1;
+        int itemCount = mItemList.size();
+        mItemList.addAll(items);
+        notifyItemRangeInserted(headerCount + itemCount, items.size());
     }
 }
 

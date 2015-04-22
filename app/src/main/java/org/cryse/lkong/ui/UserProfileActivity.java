@@ -26,6 +26,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.UserProfileView;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
@@ -37,6 +38,7 @@ import io.github.froger.instamaterial.ui.view.RevealBackgroundView;
 public class UserProfileActivity extends AbstractThemeableActivity implements RevealBackgroundView.OnStateChangeListener, UserProfileView {
     private static final String LOG_TAG = UserProfileActivity.class.getName();
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
+    private static final String LOAD_IMAGE_TASK_TAG = "user_profile_load_image_tag_";
 
     Picasso mPicasso;
 
@@ -57,7 +59,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     private long mUid;
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
-
+    private ArrayList<Object> mItemList;
     public static void startUserProfileFromLocation(int[] startingLocation, Activity startingActivity, long uid) {
         Intent intent = new Intent(startingActivity, UserProfileActivity.class);
         intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
@@ -69,6 +71,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
+        mItemList = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
@@ -129,7 +132,15 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     public void onStateChange(int state) {
         if (RevealBackgroundView.STATE_FINISHED == state) {
             rvUserProfile.setVisibility(View.VISIBLE);
-            userPhotosAdapter = new UserProfileAdapter(this, mPicasso, mUserAvatarUrl, getThemeEngine().getPrimaryColor(this));
+            userPhotosAdapter = new UserProfileAdapter(
+                    this,
+                    mPicasso,
+                    mUserAvatarUrl,
+                    getThemeEngine().getPrimaryColor(this),
+                    LOAD_IMAGE_TASK_TAG + Long.toString(mUid),
+                    mItemList
+
+            );
             rvUserProfile.setAdapter(userPhotosAdapter);
             if(mUserModelInfo != null) userPhotosAdapter.setUserInfo(mUserModelInfo);
         } else {

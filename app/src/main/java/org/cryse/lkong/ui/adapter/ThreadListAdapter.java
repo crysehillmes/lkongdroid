@@ -57,28 +57,47 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
             Object item = getObjectItem(position);
             if(item instanceof ThreadModel) {
                 ThreadModel threadModel = (ThreadModel)item;
-
-                SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
-                if(threadModel.isDigest()) {
-                    String digestIndicator = getString(R.string.indicator_thread_digest);
-                    spannableTitle.append(digestIndicator);
-                    spannableTitle.setSpan(new ForegroundColorSpan(mColorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
-                spannableTitle.append(threadModel.getSubject());
-                viewHolder.mThreadTitleTextView.setText(spannableTitle);
-                viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
-                viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
-                viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), mTodayPrefix));
-                mPicasso
-                        .load(threadModel.getUserIcon())
-                        .tag(THREAD_PICASSO_TAG)
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .resize(mAvatarSize, mAvatarSize)
-                        .transform(mCircleTransform)
-                        .into(viewHolder.mThreadIconImageView);
+                bindThreadModel(getContext(),
+                        mPicasso,
+                        mTodayPrefix,
+                        THREAD_PICASSO_TAG,
+                        mAvatarSize,
+                        mColorAccent,
+                        mCircleTransform,
+                        viewHolder,
+                        threadModel);
             }
         }
+    }
+
+    public static void bindThreadModel(Context context,
+                                       Picasso picasso,
+                                       String todayPrefix,
+                                       String imageTaskTag,
+                                       int avatarSize,
+                                       int colorAccent,
+                                       CircleTransform circleTransform,
+                                       ViewHolder viewHolder,
+                                       ThreadModel threadModel) {
+        SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
+        if(threadModel.isDigest()) {
+            String digestIndicator = context.getString(R.string.indicator_thread_digest);
+            spannableTitle.append(digestIndicator);
+            spannableTitle.setSpan(new ForegroundColorSpan(colorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        spannableTitle.append(threadModel.getSubject());
+        viewHolder.mThreadTitleTextView.setText(spannableTitle);
+        viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
+        viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
+        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), todayPrefix));
+        picasso
+                .load(threadModel.getUserIcon())
+                .tag(imageTaskTag)
+                .error(R.drawable.ic_placeholder_avatar)
+                .placeholder(R.drawable.ic_placeholder_avatar)
+                .resize(avatarSize, avatarSize)
+                .transform(circleTransform)
+                .into(viewHolder.mThreadIconImageView);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

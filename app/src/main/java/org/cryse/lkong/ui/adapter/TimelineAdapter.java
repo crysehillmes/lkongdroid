@@ -2,6 +2,7 @@ package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -66,81 +67,104 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             Object item = getObjectItem(position);
             if(item instanceof TimelineModel) {
                 TimelineModel timelineModel = (TimelineModel)item;
-
-                SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
-                String mainContent;
-                if(timelineModel.isQuote()) {
-                    // 回复某一条回复
-                    viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
-
-                    SpannableStringBuilder spanText = new SpannableStringBuilder();
-                    String secondaryText = getString(R.string.format_timeline_reply_to_reply, timelineModel.getReplyQuote().getPosterName(), timelineModel.getSubject());
-                    spanText.append(secondaryText);
-                    if(!TextUtils.isEmpty(timelineModel.getReplyQuote().getPosterName())) {
-                        int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
-                        int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
-                        spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-                    viewHolder.mSecondaryMessageTextView.setText(spanText);
-
-                    viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
-                    mainContent = timelineModel.getReplyQuote().getMessage();
-                } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
-                    // 回复某一主题
-                    viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
-                    SpannableStringBuilder spanText = new SpannableStringBuilder();
-                    String secondaryText = getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
-                    spanText.append(secondaryText);
-                    if(!TextUtils.isEmpty(timelineModel.getThreadAuthor())) {
-                        int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
-                        int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
-                        spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    }
-                    viewHolder.mSecondaryMessageTextView.setText(spanText);
-                    viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
-                    mainContent = timelineModel.getMessage();
-                } else if(timelineModel.isThread()) {
-                    // 用户自己发布主题
-                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
-                    String createInfo = getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
-                    mainPrefixSpannable.append(createInfo);
-                    mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary)),
-                            0,
-                            createInfo.length(),
-                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                    mainPrefixSpannable.append('\n');
-                    mainContent = timelineModel.getMessage();
-                } else {
-                    // 其他
-                    viewHolder.mSecondaryContainer.setVisibility(View.GONE);
-                    mainContent = timelineModel.getMessage();
-                }
-
-                SimpleImageGetter imageGetter = new SimpleImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
-                        .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(getContext(), R.dimen.text_size_body1))
-                        .setPlaceHolder(R.drawable.image_placeholder)
-                        .setError(R.drawable.image_placeholder);
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
-                SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
-                mainSpannable.append(mainPrefixSpannable).append(spannedText);
-                viewHolder.mMessageTextView.setText(mainSpannable);
-
-                viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
-                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), mTodayPrefix));
-                mPicasso
-                        .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
-                        .tag(mImageTaskTag)
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .resize(mAvatarSize, mAvatarSize)
-                        .transform(mCircleTransform)
-                        .into(viewHolder.mAuthorAvatarImageView);
+                bindTimelineItem(
+                        getContext(),
+                        mPicasso,
+                        mTodayPrefix,
+                        mImageTaskTag,
+                        mAvatarSize,
+                        mCircleTransform,
+                        viewHolder,
+                        timelineModel
+                );
             }
         }
     }
 
+    public static void bindTimelineItem(
+            Context context,
+            Picasso picasso,
+            String todayPrefix,
+            String imageTaskTag,
+            int avatarSize,
+            CircleTransform circleTransform,
+            ViewHolder viewHolder,
+            TimelineModel timelineModel) {
+
+        SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
+        String mainContent;
+        if(timelineModel.isQuote()) {
+            // 回复某一条回复
+            viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
+
+            SpannableStringBuilder spanText = new SpannableStringBuilder();
+            String secondaryText = context.getString(R.string.format_timeline_reply_to_reply, timelineModel.getReplyQuote().getPosterName(), timelineModel.getSubject());
+            spanText.append(secondaryText);
+            if(!TextUtils.isEmpty(timelineModel.getReplyQuote().getPosterName())) {
+                int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
+                int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
+                spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+            viewHolder.mSecondaryMessageTextView.setText(spanText);
+
+            viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
+            mainContent = timelineModel.getReplyQuote().getMessage();
+        } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
+            // 回复某一主题
+            viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
+            SpannableStringBuilder spanText = new SpannableStringBuilder();
+            String secondaryText = context.getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
+            spanText.append(secondaryText);
+            if(!TextUtils.isEmpty(timelineModel.getThreadAuthor())) {
+                int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
+                int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
+                spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+            viewHolder.mSecondaryMessageTextView.setText(spanText);
+            viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
+            mainContent = timelineModel.getMessage();
+        } else if(timelineModel.isThread()) {
+            // 用户自己发布主题
+            viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+            String createInfo = context.getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
+            mainPrefixSpannable.append(createInfo);
+            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_secondary)),
+                    0,
+                    createInfo.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            mainPrefixSpannable.append('\n');
+            mainContent = timelineModel.getMessage();
+        } else {
+            // 其他
+            viewHolder.mSecondaryContainer.setVisibility(View.GONE);
+            mainContent = timelineModel.getMessage();
+        }
+
+        SimpleImageGetter imageGetter = new SimpleImageGetter(context, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
+                .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(context, R.dimen.text_size_body1))
+                .setPlaceHolder(R.drawable.image_placeholder)
+                .setError(R.drawable.image_placeholder);
+        Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
+        SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
+        mainSpannable.append(mainPrefixSpannable).append(spannedText);
+        viewHolder.mMessageTextView.setText(mainSpannable);
+
+        viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
+        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix));
+        picasso
+                .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
+                .tag(imageTaskTag)
+                .error(R.drawable.ic_placeholder_avatar)
+                .placeholder(R.drawable.ic_placeholder_avatar)
+                .resize(avatarSize, avatarSize)
+                .transform(circleTransform)
+                .into(viewHolder.mAuthorAvatarImageView);
+    }
+
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
+        @InjectView(R.id.recyclerview_item_timeline_cardview_root_container)
+        CardView mRootCardView;
         @InjectView(R.id.recyclerview_item_timeline_textview_author_name)
         TextView mAuthorTextView;
         @InjectView(R.id.recyclerview_item_timeline_textview_dateline)
