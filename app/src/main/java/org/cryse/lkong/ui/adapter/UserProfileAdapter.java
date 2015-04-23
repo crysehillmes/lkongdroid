@@ -1,8 +1,8 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +10,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +22,10 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
+import org.cryse.widget.slidingtabs.SlidingTabLayout;
+import org.cryse.widget.slidingtabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -58,6 +60,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final String mImageTaskTag;
     private final int mAvatarSize;
     private CircleTransform mCircleTransform = new CircleTransform();
+    private List<String> mOptionTabTitles;
     public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
         this.context = context;
         this.mPicasso = picasso;
@@ -69,6 +72,10 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mImageTaskTag = imgTaskTag;
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mColorAccent = ColorUtils.getColorFromAttr(context, R.attr.colorAccent);
+        this.mOptionTabTitles = new ArrayList<String>();
+        this.mOptionTabTitles.add("All");
+        this.mOptionTabTitles.add("Threads");
+        this.mOptionTabTitles.add("Digests");
     }
 
     public void setPrimaryColor(int primaryColor) {
@@ -137,6 +144,22 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 .into(holder.ivUserProfilePhoto);
         // Set user info values
         if(mUserInfo != null) {
+            holder.vButtons.setBackgroundColor(mPrimaryColor);
+            holder.vButtons.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+
+                @Override
+                public int getIndicatorColor(int position) {
+                    return Color.WHITE;
+                }
+
+                @Override
+                public int getDividerColor(int position) {
+                    return Color.TRANSPARENT;
+                }
+
+            });
+            holder.vButtons.setTextColor(Color.WHITE);
+            holder.vButtons.setTitles(mOptionTabTitles);
             holder.userNameTextView.setText(mUserInfo.getUserName());
             holder.statusTextView.setText(mUserInfo.getCustomStatus());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
@@ -157,8 +180,6 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             @Override
             public boolean onPreDraw() {
                 holder.vButtons.getViewTreeObserver().removeOnPreDrawListener(this);
-                holder.vUnderline.getLayoutParams().width = holder.btnGrid.getWidth();
-                holder.vUnderline.requestLayout();
                 animateUserProfileOptions(holder);
                 return false;
             }
@@ -213,11 +234,9 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (!lockedAnimations) {
             viewHolder.vButtons.setTranslationY(-viewHolder.vButtons.getHeight());
             viewHolder.vButtons.setAlpha(0f);
-            viewHolder.vUnderline.setScaleX(0);
 
             viewHolder.vButtons.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
             viewHolder.vButtons.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
-            viewHolder.vUnderline.animate().scaleX(1).setDuration(200).setStartDelay(USER_OPTIONS_ANIMATION_DELAY + 300).setInterpolator(INTERPOLATOR).start();
         }
     }
 
@@ -283,19 +302,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @InjectView(R.id.recyclerview_item_profile_header_post_count_textview)
         TextView postCountTextView;
 
-
-        @InjectView(R.id.btnGrid)
-        ImageButton btnGrid;
-        @InjectView(R.id.btnList)
-        ImageButton btnList;
-        @InjectView(R.id.btnMap)
-        ImageButton btnMap;
-        @InjectView(R.id.btnTagged)
-        ImageButton btnComments;
-        @InjectView(R.id.vUnderline)
-        View vUnderline;
         @InjectView(R.id.vButtons)
-        View vButtons;
+        TabLayout vButtons;
         public ProfileHeaderViewHolder(View view) {
             super(view);
             ButterKnife.inject(this, view);
