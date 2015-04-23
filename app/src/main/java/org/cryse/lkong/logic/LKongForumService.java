@@ -344,4 +344,28 @@ public class LKongForumService {
             }
         });
     }
+
+    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long start, long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, start, uid);
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, start, uid, isDigest);
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
 }

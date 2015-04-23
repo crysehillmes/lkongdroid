@@ -82,11 +82,13 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemViewType(int position) {
+        int headerCount = mUserInfo == null ? 0 : 1;
+        int index = position - headerCount;
         if (position == 0) {
             return TYPE_PROFILE_HEADER;
-        } else if(mItemList.get(position) instanceof TimelineModel) {
+        } else if(mItemList.get(index) instanceof TimelineModel) {
             return TYPE_TIMELINE_ITEM;
-        } else if(mItemList.get(position) instanceof ThreadModel){
+        } else if(mItemList.get(index) instanceof ThreadModel){
             return TYPE_THREAD_ITEM;
         } else {
             throw new IllegalStateException("Unknown item type.");
@@ -97,12 +99,9 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (TYPE_PROFILE_HEADER == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_header, parent, false);
-            StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-            layoutParams.setFullSpan(true);
-            view.setLayoutParams(layoutParams);
             return new ProfileHeaderViewHolder(view);
         } else if (TYPE_TIMELINE_ITEM == viewType) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_item, parent, false);
+            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_timeline, parent, false);
             return new TimelineAdapter.ViewHolder(view);
         } else if(TYPE_THREAD_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_thread, parent, false);
@@ -116,7 +115,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
         int headerCount = mUserInfo == null ? 0 : 1;
-        Object item = mItemList.size() > 0 ? mItemList.get(position - headerCount) : null;
+        int index = position - headerCount;
+        Object item = mItemList.size() > 0 && index >= 0 ? mItemList.get(index) : null;
         if (TYPE_PROFILE_HEADER == viewType) {
             bindProfileHeader((ProfileHeaderViewHolder) holder);
         } else if (TYPE_TIMELINE_ITEM == viewType && item != null && item instanceof TimelineModel) {
@@ -313,7 +313,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyItemRangeRemoved(headerCount, itemCount);
     }
 
-    public void addAll(List<Object> items) {
+    public void addAll(List items) {
         int headerCount = mUserInfo == null ? 0 : 1;
         int itemCount = mItemList.size();
         mItemList.addAll(items);

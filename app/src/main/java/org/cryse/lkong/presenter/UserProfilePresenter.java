@@ -16,6 +16,8 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
     private static final String LOG_TAG = UserProfilePresenter.class.getName();
     LKongForumService mLKongForumService;
     Subscription mSearchSubscription;
+    Subscription mGetUserAllSubscription;
+    Subscription mGetUserThreadsSubscription;
     UserProfileView mView;
     @Inject
     public UserProfilePresenter(LKongForumService forumService) {
@@ -24,7 +26,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
 
     public void getUserProfile(LKAuthObject authObject, long uid) {
         SubscriptionUtils.checkAndUnsubscribe(mSearchSubscription);
-        setLoadingStatus(true);
+        setLoadingStatus(false, true);
         mSearchSubscription = mLKongForumService.getUserInfo(authObject, uid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -39,17 +41,69 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                                 Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
                                 mView.setLoading(false);
                             }
-                            setLoadingStatus(false);
+                            setLoadingStatus(false, false);
                         },
                         () -> {
-                            setLoadingStatus(false);
+                            setLoadingStatus(false, false);
                         }
                 );
     }
 
-    private void setLoadingStatus(boolean isLoading) {
-        if(mView == null) return;
-        mView.setLoading(isLoading);
+    public void getUserAllData(LKAuthObject authObject, long start, long uid, boolean isLoadingMore) {
+        SubscriptionUtils.checkAndUnsubscribe(mGetUserAllSubscription);
+        setLoadingStatus(isLoadingMore, true);
+        mGetUserAllSubscription = mLKongForumService.getUserAll(authObject, start, uid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onLoadUserAllData(result, isLoadingMore);
+                        },
+                        error -> {
+                            if(mView != null) {
+                                mView.onLoadUserProfileError(error);
+                                Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
+                                mView.setLoading(false);
+                            }
+                            setLoadingStatus(isLoadingMore, false);
+                        },
+                        () -> {
+                            setLoadingStatus(isLoadingMore, false);
+                        }
+                );
+    }
+
+    public void getUserThreads(LKAuthObject authObject, long start, long uid, boolean digest, boolean isLoadingMore) {
+        SubscriptionUtils.checkAndUnsubscribe(mGetUserThreadsSubscription);
+        setLoadingStatus(isLoadingMore, true);
+        mGetUserThreadsSubscription = mLKongForumService.getUserThreads(authObject, start, uid, digest)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onLoadUserThreads(result, digest, isLoadingMore);
+                        },
+                        error -> {
+                            if(mView != null) {
+                                mView.onLoadUserProfileError(error);
+                                Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
+                                mView.setLoading(false);
+                            }
+                            setLoadingStatus(isLoadingMore, false);
+                        },
+                        () -> {
+                            setLoadingStatus(isLoadingMore, false);
+                        }
+                );
+    }
+
+    public void setLoadingStatus(boolean loadingMore, boolean isLoading) {
+        if (loadingMore)
+            mView.setLoadingMore(isLoading);
+        else
+            mView.setLoading(isLoading);
     }
 
     @Override
@@ -65,5 +119,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
     @Override
     public void destroy() {
         SubscriptionUtils.checkAndUnsubscribe(mSearchSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mGetUserAllSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mGetUserThreadsSubscription);
     }
 }

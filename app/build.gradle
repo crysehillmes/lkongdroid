@@ -85,6 +85,7 @@ dependencies {
     compile('com.mikepenz.materialdrawer:library:2.7.6@aar') {
         transitive = true
     }
+    compile 'com.malinskiy:superrecyclerview:1.1.0'
 }
 
 retrolambda {

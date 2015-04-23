@@ -2,20 +2,24 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
@@ -24,9 +28,11 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.UserProfileView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
@@ -52,7 +58,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @InjectView(R.id.vRevealBackground)
     RevealBackgroundView vRevealBackground;
     @InjectView(R.id.rvUserProfile)
-    RecyclerView rvUserProfile;
+    SuperRecyclerView rvUserProfile;
 
     private UserProfileAdapter userPhotosAdapter;
 
@@ -118,12 +124,22 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     }
 
     private void setupUserProfileGrid() {
-        final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        rvUserProfile.setLayoutManager(layoutManager);
+        UIUtils.InsetsValue insetsValue =  UIUtils.getInsets(this, rvUserProfile, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        rvUserProfile.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+
+        // final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        rvUserProfile.setLayoutManager(new LinearLayoutManager(this));
         rvUserProfile.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 userPhotosAdapter.setLockedAnimations(true);
+            }
+        });
+        rvUserProfile.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+
             }
         });
     }
@@ -194,8 +210,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void onLoadUserProfileComplete(UserInfoModel userInfoModel) {
         mUserModelInfo = userInfoModel;
-        if(userPhotosAdapter != null)
+        if(userPhotosAdapter != null) {
             userPhotosAdapter.setUserInfo(userInfoModel);
+            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+        }
     }
 
     @Override
@@ -204,8 +222,23 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     }
 
     @Override
-    public void setLoading(Boolean value) {
+    public void onLoadUserAllData(List<TimelineModel> items, boolean isLoadingMore) {
+        if(userPhotosAdapter != null) {
+            if(!isLoadingMore) {
+                userPhotosAdapter.clear();
+            }
+            userPhotosAdapter.addAll(items);
+        }
+    }
 
+    @Override
+    public void onLoadUserThreads(List<ThreadModel> items, boolean isDigest, boolean isLoadingMore) {
+
+    }
+
+    @Override
+    public void setLoading(Boolean value) {
+        rvUserProfile.getSwipeToRefresh().setRefreshing(value);
     }
 
     @Override
@@ -224,5 +257,15 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
             return R.style.LKongDroidTheme_Dark_Translucent;
         else
             return R.style.LKongDroidTheme_Light_Translucent;
+    }
+
+    @Override
+    public boolean isLoadingMore() {
+        return false;
+    }
+
+    @Override
+    public void setLoadingMore(boolean value) {
+
     }
 }
