@@ -67,6 +67,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private TabLayout.OnTabListener mOnTabListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     private List<String> mOptionTabTitles;
+    private TimelineAdapter.OnItemProfileImageClickListener mOnItemProfileImageClickListener;
+
     public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
         this.context = context;
         this.mPicasso = picasso;
@@ -115,7 +117,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return new ProfileHeaderViewHolder(view);
         } else if (TYPE_TIMELINE_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_timeline, parent, false);
-            return new TimelineAdapter.ViewHolder(view);
+            return new TimelineAdapter.ViewHolder(view, mOnItemProfileImageClickListener);
         } else if(TYPE_THREAD_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_thread, parent, false);
             return new ThreadListAdapter.ViewHolder(view);
@@ -164,6 +166,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
                 if(mOnTabListener != null)
                     mOnTabListener.onTabSelect(position);
+                clear();
             });
             holder.vButtons.setBackgroundColor(mPrimaryColor);
             holder.vButtons.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
@@ -369,6 +372,18 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
         return -1;
+    }
+
+    public Object getItem(int position) {
+        int headerCount = mUserInfo == null ? 0 : 1;
+        int index = position - headerCount;
+        if(index >= 0 && mItemList.size() > 0)
+            return mItemList.get(index);
+        return null;
+    }
+
+    public void setOnItemProfileImageClickListener(TimelineAdapter.OnItemProfileImageClickListener onItemProfileImageClickListener) {
+        this.mOnItemProfileImageClickListener = onItemProfileImageClickListener;
     }
 }
 

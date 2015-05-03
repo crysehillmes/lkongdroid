@@ -61,7 +61,15 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        adapter.setOnItemContentClickListener((view, position) -> {
+            TimelineModel model = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+            int[] startingLocation = new int[2];
+            view.getLocationOnScreen(startingLocation);
+            startingLocation[0] += view.getWidth() / 2;
+            mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+        });
+        return adapter;
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
+import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.ui.adapter.UserProfileAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -195,6 +196,20 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     mItemList
 
             );
+            userPhotosAdapter.setOnItemProfileImageClickListener(new TimelineAdapter.OnItemProfileImageClickListener() {
+                @Override
+                public void onProfileImageClick(View view, int position) {
+                    Object object = userPhotosAdapter.getItem(position);
+                    if(object instanceof TimelineModel) {
+                        TimelineModel model = (TimelineModel) object;
+                        int[] startingLocation = new int[2];
+                        view.getLocationOnScreen(startingLocation);
+                        startingLocation[0] += view.getWidth() / 2;
+                        mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
+                    }
+
+                }
+            });
             userPhotosAdapter.setOnTabListener(position -> {
                 isNoMore = false;
                 switch (position) {

@@ -44,6 +44,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private final int mAvatarSize;
     private CircleTransform mCircleTransform = new CircleTransform();
     private Picasso mPicasso;
+    private OnItemProfileImageClickListener mOnItemProfileImageClickListener;
     public TimelineAdapter(Context context, List<TimelineModel> items, Picasso picasso, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
@@ -56,7 +57,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_timeline, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, mOnItemProfileImageClickListener);
     }
 
     @Override
@@ -181,11 +182,26 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         TextView mSecondaryMessageTextView;
         @InjectView(R.id.recyclerview_item_timeline_third_message)
         TextView mThirdMessageTextView;
-        public ViewHolder(View v) {
+
+
+        OnItemProfileImageClickListener mOnItemProfileImageClickListener;
+        public ViewHolder(View v, OnItemProfileImageClickListener onItemProfileImageClickListener) {
             super(v);
             ButterKnife.inject(this, v);
+            mOnItemProfileImageClickListener = onItemProfileImageClickListener;
+            mAuthorAvatarImageView.setOnClickListener(view -> {
+                if(mOnItemProfileImageClickListener != null) {
+                    mOnItemProfileImageClickListener.onProfileImageClick(view, getAdapterPosition());
+                }
+            });
         }
     }
 
+    public void setOnItemContentClickListener(OnItemProfileImageClickListener onItemProfileImageClickListener) {
+        this.mOnItemProfileImageClickListener = onItemProfileImageClickListener;
+    }
 
+    public interface OnItemProfileImageClickListener {
+        void onProfileImageClick(View view, int position);
+    }
 }

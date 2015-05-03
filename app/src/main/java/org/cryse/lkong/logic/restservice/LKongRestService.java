@@ -153,7 +153,7 @@ public class LKongRestService {
         String url = LKONG_INDEX_URL + String.format("?mod=ajax&action=userconfig_%06d", uid);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
+                .url(url)
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
