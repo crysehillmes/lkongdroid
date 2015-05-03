@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.squareup.picasso.Picasso;
 
@@ -30,6 +31,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.UserProfileView;
+import org.cryse.widget.slidingtabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     private UserProfileAdapter userPhotosAdapter;
 
     private long mUid;
+
+    private boolean isNoMore = false;
+    private boolean isLoading = false;
+    private boolean isLoadingMore = false;
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
     private ArrayList<Object> mItemList;
@@ -138,8 +144,39 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         rvUserProfile.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
-
+                isNoMore = false;
+                int currentListType = userPhotosAdapter.getCurrentListType();
+                switch (currentListType) {
+                    case UserProfileAdapter.LIST_ALL:
+                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+                        break;
+                    case UserProfileAdapter.LIST_THREADS:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
+                        break;
+                    case UserProfileAdapter.LIST_DIGEST:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
+                        break;
+                }
+            }
+        });
+        rvUserProfile.setOnMoreListener((overallItemsCount, itemsBeforeMore, maxLastVisiblePosition) -> {
+            long lastSortKey = userPhotosAdapter.getLastSortKey();
+            if (!isNoMore && !isLoadingMore && lastSortKey != -1) {
+                int currentListType = userPhotosAdapter.getCurrentListType();
+                switch (currentListType) {
+                    case UserProfileAdapter.LIST_ALL:
+                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), lastSortKey, mUid, true);
+                        break;
+                    case UserProfileAdapter.LIST_THREADS:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), lastSortKey, mUid, false, true);
+                        break;
+                    case UserProfileAdapter.LIST_DIGEST:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), lastSortKey, mUid, true, true);
+                        break;
+                }
+            } else {
+                rvUserProfile.setLoadingMore(false);
+                rvUserProfile.hideMoreProgress();
             }
         });
     }
@@ -157,6 +194,20 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     mItemList
 
             );
+            userPhotosAdapter.setOnTabListener(position -> {
+                isNoMore = false;
+                switch (position) {
+                    case 0:
+                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+                        break;
+                    case 1:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
+                        break;
+                    case 2:
+                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
+                        break;
+                }
+            });
             rvUserProfile.setAdapter(userPhotosAdapter);
             if(mUserModelInfo != null) userPhotosAdapter.setUserInfo(mUserModelInfo);
         } else {
@@ -224,6 +275,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void onLoadUserAllData(List<TimelineModel> items, boolean isLoadingMore) {
         if(userPhotosAdapter != null) {
+            if(items.size() == 0) {
+                isNoMore = true;
+                return;
+            }
             if(!isLoadingMore) {
                 userPhotosAdapter.clear();
             }
@@ -233,17 +288,16 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
 
     @Override
     public void onLoadUserThreads(List<ThreadModel> items, boolean isDigest, boolean isLoadingMore) {
-
-    }
-
-    @Override
-    public void setLoading(Boolean value) {
-        rvUserProfile.getSwipeToRefresh().setRefreshing(value);
-    }
-
-    @Override
-    public Boolean isLoading() {
-        return null;
+        if(userPhotosAdapter != null) {
+            if(items.size() == 0) {
+                isNoMore = true;
+                return;
+            }
+            if(!isLoadingMore) {
+                userPhotosAdapter.clear();
+            }
+            userPhotosAdapter.addAll(items);
+        }
     }
 
     @Override
@@ -261,11 +315,27 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
 
     @Override
     public boolean isLoadingMore() {
-        return false;
+        return isLoadingMore;
     }
 
     @Override
     public void setLoadingMore(boolean value) {
+        isLoadingMore = value;
+        rvUserProfile.setLoadingMore(value);
+        if(value)
+            rvUserProfile.showMoreProgress();
+        else
+            rvUserProfile.hideMoreProgress();
+    }
 
+    @Override
+    public void setLoading(Boolean value) {
+        isLoading = value;
+        rvUserProfile.getSwipeToRefresh().setRefreshing(value);
+    }
+
+    @Override
+    public Boolean isLoading() {
+        return isLoading;
     }
 }

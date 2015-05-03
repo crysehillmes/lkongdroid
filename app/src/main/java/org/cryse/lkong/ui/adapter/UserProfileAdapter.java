@@ -37,6 +37,10 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int TYPE_TIMELINE_ITEM = 2;
     public static final int TYPE_THREAD_ITEM = 4;
 
+    public static final int LIST_ALL = 0;
+    public static final int LIST_THREADS = 1;
+    public static final int LIST_DIGEST = 2;
+
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
     private static final int MAX_PHOTO_ANIMATION_DELAY = 600;
 
@@ -59,6 +63,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final String mTodayPrefix;
     private final String mImageTaskTag;
     private final int mAvatarSize;
+    private int mCurrentListType = 0;
+    private TabLayout.OnTabListener mOnTabListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     private List<String> mOptionTabTitles;
     public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
@@ -144,6 +150,21 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 .into(holder.ivUserProfilePhoto);
         // Set user info values
         if(mUserInfo != null) {
+            holder.vButtons.setOnTabListener(position -> {
+                switch (position) {
+                    case 0:
+                        mCurrentListType = LIST_ALL;
+                        break;
+                    case 1:
+                        mCurrentListType = LIST_THREADS;
+                        break;
+                    case 2:
+                        mCurrentListType = LIST_DIGEST;
+                        break;
+                }
+                if(mOnTabListener != null)
+                    mOnTabListener.onTabSelect(position);
+            });
             holder.vButtons.setBackgroundColor(mPrimaryColor);
             holder.vButtons.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
 
@@ -326,6 +347,27 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         int itemCount = mItemList.size();
         mItemList.addAll(items);
         notifyItemRangeInserted(headerCount + itemCount, items.size());
+    }
+
+    public void setOnTabListener(TabLayout.OnTabListener listener) {
+        this.mOnTabListener = listener;
+    }
+
+    public int getCurrentListType() {
+        return mCurrentListType;
+    }
+
+    public long getLastSortKey() {
+        int itemCount = mItemList.size();
+        if(itemCount > 0) {
+            Object objItem = mItemList.get(itemCount - 1);
+            if(objItem instanceof TimelineModel) {
+                return ((TimelineModel) objItem).getSortKey();
+            } else if(objItem instanceof ThreadModel) {
+                return ((ThreadModel) objItem).getSortKey();
+            }
+        }
+        return -1;
     }
 }
 

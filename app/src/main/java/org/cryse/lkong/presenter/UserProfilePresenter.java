@@ -1,9 +1,13 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.UserProfileView;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -62,9 +66,8 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         },
                         error -> {
                             if(mView != null) {
-                                mView.onLoadUserProfileError(error);
+                                mView.onLoadUserAllData(new ArrayList<TimelineModel>(), isLoadingMore);
                                 Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
-                                mView.setLoading(false);
                             }
                             setLoadingStatus(isLoadingMore, false);
                         },
@@ -87,9 +90,8 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         },
                         error -> {
                             if(mView != null) {
-                                mView.onLoadUserProfileError(error);
+                                mView.onLoadUserThreads(new ArrayList<ThreadModel>(), digest, isLoadingMore);
                                 Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
-                                mView.setLoading(false);
                             }
                             setLoadingStatus(isLoadingMore, false);
                         },
