@@ -182,6 +182,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.vButtons.setTextColor(Color.WHITE);
             holder.vButtons.setTitles(mOptionTabTitles);
             holder.userNameTextView.setText(mUserInfo.getUserName());
+            holder.extraInfoTextView.setText(mUserInfo.getBlacklists());
             holder.statusTextView.setText(mUserInfo.getCustomStatus());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));

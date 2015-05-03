@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
@@ -31,7 +32,6 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.UserProfileView;
-import org.cryse.widget.slidingtabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,11 +72,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
     private ArrayList<Object> mItemList;
-    public static void startUserProfileFromLocation(int[] startingLocation, Activity startingActivity, long uid) {
-        Intent intent = new Intent(startingActivity, UserProfileActivity.class);
+
+    public static void startUserProfileFromLocation(Context startingContext, int[] startingLocation, long uid) {
+        Intent intent = new Intent(startingContext, UserProfileActivity.class);
         intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
         intent.putExtra(DataContract.BUNDLE_USER_ID, uid);
-        startingActivity.startActivity(intent);
+        startingContext.startActivity(intent);
     }
 
     @Override

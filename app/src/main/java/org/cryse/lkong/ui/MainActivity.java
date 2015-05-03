@@ -114,7 +114,7 @@ public class MainActivity extends AbstractThemeableActivity {
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    UserProfileActivity.startUserProfileFromLocation(startingLocation, this, uid);
+                    mNavigation.openActivityForUserProfile(this, startingLocation, uid);
                     overridePendingTransition(0, 0);
                 } else {
                     mUserAccountManager.setCurrentUserAccount(uid);

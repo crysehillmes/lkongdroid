@@ -24,6 +24,7 @@ import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.ThreadListActivity;
 import org.cryse.lkong.ui.TimelineFragment;
+import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
 
 public class AndroidNavigation {
@@ -179,5 +180,9 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
         intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, forumDescription);
         context.startActivity(intent);
+    }
+
+    public void openActivityForUserProfile(Context context, int[] startingLocation, long uid) {
+        UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
     }
 }
