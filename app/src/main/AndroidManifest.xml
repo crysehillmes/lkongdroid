@@ -31,7 +31,9 @@
         <activity android:name=".ui.SettingsActivity"/>
         <activity android:name=".ui.NotificationActivity"/>
         <activity android:name=".ui.PhotoViewPagerActivity"/>
-        <activity android:name=".ui.SearchActivity">
+        <activity
+            android:name=".ui.SearchActivity"
+            android:label="">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -41,7 +43,8 @@
         </activity>
         <activity
             android:name=".ui.UserProfileActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/LKongDroidTheme.Light.Translucent"
+            android:label=""/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".service.CheckNoticeService"/>
 
