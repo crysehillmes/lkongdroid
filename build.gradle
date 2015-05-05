@@ -6,7 +6,7 @@ buildscript {
         maven { url 'http://download.crashlytics.com/maven' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.2.2'
         classpath 'me.tatarka:gradle-retrolambda:3.0.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
@@ -109,9 +109,9 @@ allprojects {
     ext.appVersionName = generateVersionName()
     ext.appMinSdkVersion = 14
     ext.appTargetSdkVersion = 22
-    ext.appCompileSdkVersion=22
-    ext.appBuildToolsVersion='22.0.1'
+    ext.appCompileSdkVersion = 22
+    ext.appBuildToolsVersion = '22.0.1'
 
 
-    ext.supportlibraryVersion='22.1.1'
+    ext.supportlibraryVersion = '22.1.1'
 }
