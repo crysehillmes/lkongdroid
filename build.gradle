@@ -111,4 +111,7 @@ allprojects {
     ext.appTargetSdkVersion = 22
     ext.appCompileSdkVersion=22
     ext.appBuildToolsVersion='22.0.1'
+
+
+    ext.supportlibraryVersion='22.1.1'
 }
