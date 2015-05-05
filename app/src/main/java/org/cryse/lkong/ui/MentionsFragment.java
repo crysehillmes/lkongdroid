@@ -62,12 +62,27 @@ public class MentionsFragment extends SimpleCollectionFragment<
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
         TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
-        adapter.setOnItemContentClickListener((view, position) -> {
-            TimelineModel model = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-            int[] startingLocation = new int[2];
-            view.getLocationOnScreen(startingLocation);
-            startingLocation[0] += view.getWidth() / 2;
-            mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+        adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
+            @Override
+            public void onProfileAreaClick(View view, int position, long uid) {
+                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+                }
+            }
+
+            @Override
+            public void onTimelineItemClick(View view, int adapterPosition) {
+                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
+                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                    mAndroidNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
+                }
+            }
         });
         return adapter;
     }
@@ -79,17 +94,6 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            TimelineModel item = mCollectionAdapter.getItem(position);
-            if(item.getId().startsWith("thread_")) {
-                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), Long.valueOf(item.getId().substring(7)));
-            } else if(item.getId().startsWith("post_")) {
-                mAndroidNavigation.openActivityForPostListByPostId(getActivity(), Long.valueOf(item.getId().substring(5)));
-            } else {
-                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), item.getTid());
-            }
-        }
     }
 
     @Override

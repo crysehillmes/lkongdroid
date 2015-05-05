@@ -27,6 +27,7 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -129,15 +130,13 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mThreadCollectionView.hideMoreProgress();
             }
         });
-        mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+        mCollectionAdapter.setOnThreadItemClickListener((view, adapterPosition) -> {
+            int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
             if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                 ThreadModel item = mCollectionAdapter.getItem(itemIndex);
-                Intent intent = new Intent(this, PostListActivity.class);
                 String idString = item.getId().substring(7);
                 long tid = Long.parseLong(idString);
-                intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
-                startActivity(intent);
+                mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
             }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);

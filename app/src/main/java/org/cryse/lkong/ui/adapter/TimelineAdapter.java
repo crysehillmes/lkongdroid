@@ -21,6 +21,8 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
+import org.cryse.lkong.ui.listener.OnTimelineItemClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
@@ -44,7 +46,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private final int mAvatarSize;
     private CircleTransform mCircleTransform = new CircleTransform();
     private Picasso mPicasso;
-    private OnItemProfileImageClickListener mOnItemProfileImageClickListener;
+    private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
     public TimelineAdapter(Context context, List<TimelineModel> items, Picasso picasso, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
@@ -57,12 +59,12 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_timeline, parent, false);
-        return new ViewHolder(v, mOnItemProfileImageClickListener);
+        return new ViewHolder(v, mOnTimelineModelItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
+        //super.onBindViewHolder(holder, position);
         if(holder instanceof ViewHolder) {
             ViewHolder viewHolder = (ViewHolder)holder;
             Object item = getObjectItem(position);
@@ -184,24 +186,29 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         TextView mThirdMessageTextView;
 
 
-        OnItemProfileImageClickListener mOnItemProfileImageClickListener;
-        public ViewHolder(View v, OnItemProfileImageClickListener onItemProfileImageClickListener) {
+        OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
+        public ViewHolder(View v, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
             super(v);
             ButterKnife.inject(this, v);
-            mOnItemProfileImageClickListener = onItemProfileImageClickListener;
+            mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
             mAuthorAvatarImageView.setOnClickListener(view -> {
-                if(mOnItemProfileImageClickListener != null) {
-                    mOnItemProfileImageClickListener.onProfileImageClick(view, getAdapterPosition());
+                if(mOnTimelineModelItemClickListener != null) {
+                    mOnTimelineModelItemClickListener.onProfileAreaClick(view, getAdapterPosition(), 0l);
+                }
+            });
+            itemView.setOnClickListener(v1 -> {
+                if(mOnTimelineModelItemClickListener != null) {
+                    mOnTimelineModelItemClickListener.onTimelineItemClick(v1, getAdapterPosition());
                 }
             });
         }
     }
 
-    public void setOnItemContentClickListener(OnItemProfileImageClickListener onItemProfileImageClickListener) {
-        this.mOnItemProfileImageClickListener = onItemProfileImageClickListener;
+    public void setOnTimelineModelItemClickListener(OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
+        this.mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
     }
 
-    public interface OnItemProfileImageClickListener {
-        void onProfileImageClick(View view, int position);
+    public interface OnTimelineModelItemClickListener extends OnItemProfileAreaClickListener, OnTimelineItemClickListener {
+
     }
 }

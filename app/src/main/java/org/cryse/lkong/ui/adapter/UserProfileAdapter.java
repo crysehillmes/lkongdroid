@@ -19,6 +19,9 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
+import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
+import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
+import org.cryse.lkong.ui.listener.OnTimelineItemClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -67,7 +70,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private TabLayout.OnTabListener mOnTabListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     private List<String> mOptionTabTitles;
-    private TimelineAdapter.OnItemProfileImageClickListener mOnItemProfileImageClickListener;
+    private OnProfileItemClickListener mOnProfileItemClickListener;
 
     public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
         this.context = context;
@@ -117,10 +120,10 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return new ProfileHeaderViewHolder(view);
         } else if (TYPE_TIMELINE_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_timeline, parent, false);
-            return new TimelineAdapter.ViewHolder(view, mOnItemProfileImageClickListener);
+            return new TimelineAdapter.ViewHolder(view, mOnProfileItemClickListener);
         } else if(TYPE_THREAD_ITEM == viewType) {
             final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_thread, parent, false);
-            return new ThreadListAdapter.ViewHolder(view);
+            return new ThreadListAdapter.ViewHolder(view, mOnProfileItemClickListener);
         }
 
         return null;
@@ -135,7 +138,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (TYPE_PROFILE_HEADER == viewType) {
             bindProfileHeader((ProfileHeaderViewHolder) holder);
         } else if (TYPE_TIMELINE_ITEM == viewType && item != null && item instanceof TimelineModel) {
-            bindPhoto((TimelineAdapter.ViewHolder) holder, position, (TimelineModel) item);
+            bindTimeline((TimelineAdapter.ViewHolder) holder, position, (TimelineModel) item);
         } else if (TYPE_THREAD_ITEM == viewType && item != null && item instanceof ThreadModel) {
             bindThread((ThreadListAdapter.ViewHolder)holder, position, (ThreadModel) item);
         }
@@ -211,7 +214,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
     }
 
-    private void bindPhoto(final TimelineAdapter.ViewHolder holder, int position, TimelineModel timelineModel) {
+    private void bindTimeline(final TimelineAdapter.ViewHolder holder, int position, TimelineModel timelineModel) {
         TimelineAdapter.bindTimelineItem(
                 context,
                 mPicasso,
@@ -382,8 +385,11 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return null;
     }
 
-    public void setOnItemProfileImageClickListener(TimelineAdapter.OnItemProfileImageClickListener onItemProfileImageClickListener) {
-        this.mOnItemProfileImageClickListener = onItemProfileImageClickListener;
+    public void setOnItemProfileImageClickListener(OnProfileItemClickListener onProfileItemClickListener) {
+        this.mOnProfileItemClickListener = onProfileItemClickListener;
+    }
+
+    public interface OnProfileItemClickListener extends TimelineAdapter.OnTimelineModelItemClickListener, OnItemProfileAreaClickListener, OnThreadItemClickListener, OnTimelineItemClickListener {
     }
 }
 

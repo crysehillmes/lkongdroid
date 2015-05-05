@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -32,6 +33,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private int mColorAccent;
     private final int mAvatarSize;
     Picasso mPicasso;
+
+    OnThreadItemClickListener mOnThreadItemClickListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList) {
         super(context, mItemList);
@@ -46,12 +49,12 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_thread, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, mOnThreadItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
+        //super.onBindViewHolder(holder, position);
         if(holder instanceof ViewHolder) {
             ViewHolder viewHolder = (ViewHolder)holder;
             Object item = getObjectItem(position);
@@ -100,6 +103,10 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                 .into(viewHolder.mThreadIconImageView);
     }
 
+    public void setOnThreadItemClickListener(OnThreadItemClickListener listener) {
+        this.mOnThreadItemClickListener = listener;
+    }
+
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
@@ -114,9 +121,16 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         @InjectView(R.id.recyclerview_item_thread_textview_notice2)
         public TextView mNotice2TextView;
 
-        public ViewHolder(View v) {
+        OnThreadItemClickListener mOnThreadItemClickListener;
+        public ViewHolder(View v, OnThreadItemClickListener listener) {
             super(v);
             ButterKnife.inject(this, v);
+            mOnThreadItemClickListener = listener;
+            itemView.setOnClickListener(view -> {
+                if(mOnThreadItemClickListener != null) {
+                    mOnThreadItemClickListener.onThreadItemClick(view, getAdapterPosition());
+                }
+            });
         }
     }
 }

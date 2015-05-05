@@ -105,6 +105,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        rvUserProfile.measure(0, 0);
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid);
     }
 
@@ -196,18 +197,37 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     mItemList
 
             );
-            userPhotosAdapter.setOnItemProfileImageClickListener(new TimelineAdapter.OnItemProfileImageClickListener() {
+            userPhotosAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
                 @Override
-                public void onProfileImageClick(View view, int position) {
+                public void onTimelineItemClick(View view, int adapterPosition) {
+                    Object object = userPhotosAdapter.getItem(adapterPosition);
+                    if(object != null && object instanceof TimelineModel) {
+                        TimelineModel model = (TimelineModel) object;
+                        mNavigation.openActivityForPostListByTimelineModel(UserProfileActivity.this, model);
+                    }
+                }
+
+                @Override
+                public void onThreadItemClick(View view, int adapterPosition) {
+                    Object object = userPhotosAdapter.getItem(adapterPosition);
+                    if(object != null && object instanceof ThreadModel) {
+                        ThreadModel model = (ThreadModel) object;
+                        String idString = model.getId().substring(7);
+                        long tid = Long.parseLong(idString);
+                        mNavigation.openActivityForPostListByThreadId(UserProfileActivity.this, tid);
+                    }
+                }
+
+                @Override
+                public void onProfileAreaClick(View view, int position, long uid) {
                     Object object = userPhotosAdapter.getItem(position);
-                    if(object instanceof TimelineModel) {
+                    if(object != null && object instanceof TimelineModel) {
                         TimelineModel model = (TimelineModel) object;
                         int[] startingLocation = new int[2];
                         view.getLocationOnScreen(startingLocation);
                         startingLocation[0] += view.getWidth() / 2;
                         mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
                     }
-
                 }
             });
             userPhotosAdapter.setOnTabListener(position -> {

@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.NotificationActivity;
@@ -155,6 +156,16 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_EDIT_TITLE, title);
         intent.putExtra(DataContract.BUNDLE_EDIT_CONTENT, htmlContent);
         activity.startActivity(intent);
+    }
+
+    public void openActivityForPostListByTimelineModel(Context context, TimelineModel item) {
+        if(item.getId().startsWith("thread_")) {
+            openActivityForPostListByThreadId(context, Long.valueOf(item.getId().substring(7)));
+        } else if(item.getId().startsWith("post_")) {
+            openActivityForPostListByPostId(context, Long.valueOf(item.getId().substring(5)));
+        } else {
+            openActivityForPostListByThreadId(context, item.getTid());
+        }
     }
 
     public void openActivityForPostListByPostId(Context context, long postId) {
