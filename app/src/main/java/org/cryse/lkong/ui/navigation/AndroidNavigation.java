@@ -193,7 +193,8 @@ public class AndroidNavigation {
         context.startActivity(intent);
     }
 
-    public void openActivityForUserProfile(Context context, int[] startingLocation, long uid) {
+    public void openActivityForUserProfile(Activity context, int[] startingLocation, long uid) {
         UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
+        context.overridePendingTransition(0, 0);
     }
 }

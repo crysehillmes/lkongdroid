@@ -3,14 +3,21 @@
     <PreferenceCategory android:title="@string/settings_category_dispaly_title">
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="is_night_mode"
+            android:key="prefs_is_night_mode"
+            android:title="@string/settings_item_is_night_mode_title"
             android:summary="@string/settings_item_is_night_mode_summary"
-            android:title="@string/settings_item_is_night_mode_title" />
+            android:defaultValue="false"/>
         <Preference
             android:key="prefs_theme_color"
-            android:summary="@string/settings_item_theme_color_summary"
-            android:title="@string/settings_item_theme_color_title"/>
+            android:title="@string/settings_item_theme_color_title"
+            android:summary="@string/settings_item_theme_color_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Empty">
+        <CheckBoxPreference
+            android:key="prefs_use_forums_first"
+            android:title="@string/settings_item_use_forums_first_title"
+            android:summary="@string/settings_item_use_forums_first_summary"
+            android:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
         <ListPreference
@@ -29,7 +36,7 @@
             android:entryValues="@array/image_download_policy_values_arrays"
             android:title="@string/settings_item_image_download_policy_title" />
         <EditTextPreference
-            android:key="post_extra_tail_text"
+            android:key="prefs_post_extra_tail_text"
             android:title="@string/settings_item_post_extra_tail_text_title"
             android:summary="@string/settings_item_post_extra_tail_text_summary"
             android:defaultValue="@string/settings_item_post_extra_tail_text_default"/>
