@@ -147,13 +147,13 @@ public class LKongRestService {
         return userInfoModel;
     }
 
-    public UserInfoModel getUserInfo(LKAuthObject authObject) throws Exception {
+    public UserInfoModel getUserInfo(LKAuthObject authObject, long uid) throws Exception {
         checkSignInStatus(authObject, false);
         applyAuthCookies(authObject);
-
+        String url = LKONG_INDEX_URL + String.format("?mod=ajax&action=userconfig_%06d", uid);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
+                .url(url)
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
@@ -613,6 +613,49 @@ public class LKongRestService {
         dataSet.parseData(responseString);
         clearCookies();
         return dataSet;
+    }
+
+    public List<TimelineModel> getUserAll(LKAuthObject authObject, long start, long uid) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+
+        String url = String.format("http://lkong.cn/user/index.php?mod=data&sars=user/%06d", uid);
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKTimelineData lkTimelineData = gson.fromJson(responseString, LKTimelineData.class);
+        if(lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
+            return new ArrayList<TimelineModel>();
+        List<TimelineModel> timelineList = ModelConverter.toTimelineModel(lkTimelineData);
+        Collections.reverse(timelineList);
+        clearCookies();
+        return timelineList;
+    }
+
+    public List<ThreadModel> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = String.format("http://lkong.cn/user/%06d/index.php?mod=data&sars=user/%06d/", uid, uid);
+        url = url + (isDigest ? "digest" : "thread");
+        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
+        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
+        clearCookies();
+        return threadList;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {

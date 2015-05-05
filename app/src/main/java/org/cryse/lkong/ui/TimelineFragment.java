@@ -19,6 +19,7 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
+import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
@@ -125,7 +126,30 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        return new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
+            @Override
+            public void onProfileAreaClick(View view, int position, long uid) {
+                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+                }
+            }
+
+            @Override
+            public void onTimelineItemClick(View view, int adapterPosition) {
+                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                    mAndroidNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
+                }
+            }
+        });
+        return adapter;
     }
 
     @Override
@@ -135,17 +159,6 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            TimelineModel item = mCollectionAdapter.getItem(position);
-            if(item.getId().startsWith("thread_")) {
-                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), Long.valueOf(item.getId().substring(7)));
-            } else if(item.getId().startsWith("post_")) {
-                mAndroidNavigation.openActivityForPostListByPostId(getActivity(), Long.valueOf(item.getId().substring(5)));
-            } else {
-                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), item.getTid());
-            }
-        }
     }
 
     @Override

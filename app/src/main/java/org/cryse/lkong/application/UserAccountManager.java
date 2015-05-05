@@ -84,6 +84,10 @@ public class UserAccountManager {
         return mUserAccounts;
     }
 
+    public long getCurrentUserId() {
+        return this.mDefaultAccountUid.get();
+    }
+
     public void setCurrentUserAccount(long userId) {
         int index = -1;
         for (int i = 0; i < mUserAccounts.size(); i++) {

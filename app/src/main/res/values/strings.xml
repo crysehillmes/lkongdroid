@@ -173,4 +173,10 @@
         <item>24</item>
         <item>26</item>
     </string-array>
+
+    <string name="profile_header_followers">Followers</string>
+    <string name="profile_header_following">Following</string>
+    <string name="profile_header_threads">Threads</string>
+    <string name="profile_header_posts">Posts</string>
+    <string name="profile_header_count_zero">0</string>
 </resources>

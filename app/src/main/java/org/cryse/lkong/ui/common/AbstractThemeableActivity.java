@@ -34,14 +34,19 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         mTheme = getAppTheme();
         setTheme(mTheme);
         super.onCreate(savedInstanceState);
-        mHelper = new SwipeBackActivityHelper(this);
-        mHelper.onActivityCreate();
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int width = displaymetrics.widthPixels;
-        getSwipeBackLayout().setEdgeSize(width);
-        getSwipeBackLayout().setSensitivity(this, 0.5f);
-        getSwipeBackLayout().setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        if(hasSwipeBackLayout()) {
+            mHelper = new SwipeBackActivityHelper(this);
+            mHelper.onActivityCreate();
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int width = displaymetrics.widthPixels;
+            getSwipeBackLayout().setEdgeSize(width);
+            getSwipeBackLayout().setSensitivity(this, 0.5f);
+            getSwipeBackLayout().setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        }
+    }
+    protected boolean hasSwipeBackLayout() {
+        return true;
     }
 
     @Override
@@ -59,7 +64,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mHelper.onPostCreate();
+        if(mHelper != null) mHelper.onPostCreate();
     }
 
     @Override

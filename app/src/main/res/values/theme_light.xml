@@ -32,4 +32,9 @@
     <style name="LKongDroidTheme.Light.NoTranslucent" parent="LKongDroidTheme.Light">
         <item name="android:windowIsTranslucent">false</item>
     </style>
+
+    <style name="LKongDroidTheme.Light.Translucent" parent="LKongDroidTheme.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

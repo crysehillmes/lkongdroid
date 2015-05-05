@@ -110,8 +110,16 @@ public class MainActivity extends AbstractThemeableActivity {
                 mNavigation.navigateToSignInActivity(MainActivity.this, false);
             } else {
                 long uid = iProfile.getIdentifier();
-                mUserAccountManager.setCurrentUserAccount(uid);
-                getEventBus().sendEvent(new CurrentAccountChangedEvent());
+                if(mUserAccountManager.getCurrentUserId() == uid) {
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mNavigation.openActivityForUserProfile(this, startingLocation, uid);
+                    overridePendingTransition(0, 0);
+                } else {
+                    mUserAccountManager.setCurrentUserAccount(uid);
+                    getEventBus().sendEvent(new CurrentAccountChangedEvent());
+                }
             }
             return true;
         }).withCurrentProfileHiddenInList(true);

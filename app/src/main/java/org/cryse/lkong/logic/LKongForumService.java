@@ -93,7 +93,19 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
+    public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
+                subscriber.onNext(userInfoModel);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
                 UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject);
@@ -107,7 +119,7 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
-    }
+    }*/
 
     public Observable<List<UserAccountEntity>> getAllUserAccounts() {
         return Observable.create(subscriber -> {
@@ -325,6 +337,30 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 SearchDataSet dataSet = mLKongRestService.searchLKong(authObject, start, queryString);
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long start, long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, start, uid);
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) {
+        return Observable.create(subscriber -> {
+            try {
+                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, start, uid, isDigest);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {

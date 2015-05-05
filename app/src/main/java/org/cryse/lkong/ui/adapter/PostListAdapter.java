@@ -144,17 +144,22 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             mOnItemReplyClickListener = onItemReplyClickListener;
             mReplyButton.setOnClickListener(view -> {
                 if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onReplyClick(view, getPosition());
+                    mOnItemReplyClickListener.onReplyClick(view, getAdapterPosition());
                 }
             });
             mRateButton.setOnClickListener(view -> {
                 if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onRateClick(view, getPosition());
+                    mOnItemReplyClickListener.onRateClick(view, getAdapterPosition());
                 }
             });
             mEditButton.setOnClickListener(view -> {
                 if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onEditClick(view, getPosition());
+                    mOnItemReplyClickListener.onEditClick(view, getAdapterPosition());
+                }
+            });
+            mAvatarImageView.setOnClickListener(view -> {
+                if(mOnItemReplyClickListener != null) {
+                    mOnItemReplyClickListener.onProfileImageClick(view, getAdapterPosition());
                 }
             });
             if(mOnSpanClickListener != null)
@@ -166,5 +171,6 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         public void onRateClick(View view, int position);
         public void onReplyClick(View view, int position);
         public void onEditClick(View view, int position);
+        public void onProfileImageClick(View view, int position);
     }
 }
