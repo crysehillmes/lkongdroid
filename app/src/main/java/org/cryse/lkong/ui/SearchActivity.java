@@ -18,6 +18,7 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
+import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -97,6 +98,11 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                         mNavigation.openActivityForPostListByThreadId(this, Long.valueOf(idString));
                     break;
                 case SearchDataSet.TYPE_USER:
+                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position - headerCount);
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mNavigation.openActivityForUserProfile(this, startingLocation, userResult.getUserId());
                     break;
                 case SearchDataSet.TYPE_GROUP:
                     SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position - headerCount);
