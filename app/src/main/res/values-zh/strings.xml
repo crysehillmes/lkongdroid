@@ -147,4 +147,11 @@
     <string name="format_search_post_result_reply_count">%1$d&#160; 回复</string>
     <string name="hint_search_label">搜索</string>
     <string name="hint_search_hint">搜索位面，主题或用户</string>
+    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流</string>
+    <string name="settings_item_use_forums_first_title">首页板块列表</string>
+    <string name="settings_category_navigation">导航</string>
+    <string name="profile_header_followers">粉丝</string>
+    <string name="profile_header_following">关注</string>
+    <string name="profile_header_posts">回复</string>
+    <string name="profile_header_threads">主题</string>
 </resources>

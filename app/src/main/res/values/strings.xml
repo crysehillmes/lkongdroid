@@ -139,6 +139,9 @@
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
+    <string name="settings_category_navigation">Navigation</string>
+    <string name="settings_item_use_forums_first_title">Forums first</string>
+    <string name="settings_item_use_forums_first_summary">Use forum list as first page.</string>
 
     <string-array name="image_download_policy_arrays">
         <item>Always</item>
