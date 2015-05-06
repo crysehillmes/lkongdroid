@@ -82,7 +82,7 @@ dependencies {
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.0.0'
     provided 'de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:1.2.1'
-    compile('com.mikepenz.materialdrawer:library:2.7.6@aar') {
+    compile('com.mikepenz.materialdrawer:library:2.9.2@aar') {
         transitive = true
     }
     compile 'com.malinskiy:superrecyclerview:1.1.0'
