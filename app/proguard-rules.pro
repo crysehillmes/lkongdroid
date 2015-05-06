@@ -121,3 +121,5 @@
 }
 -keep class com.umeng.** { *; }
 -keep class org.apache.** { *; }
+-keep class com.malinskiy.** { *; }
+-dontwarn com.malinskiy.**
