@@ -12,7 +12,7 @@
             android:title="@string/settings_item_theme_color_title"
             android:summary="@string/settings_item_theme_color_summary"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Empty">
+    <PreferenceCategory android:title="@string/settings_category_navigation">
         <CheckBoxPreference
             android:key="prefs_use_forums_first"
             android:title="@string/settings_item_use_forums_first_title"
