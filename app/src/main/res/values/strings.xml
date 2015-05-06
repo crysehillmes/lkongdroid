@@ -18,6 +18,7 @@
     <string name="action_insert_emoji">Insert Emoji</string>
     <string name="action_send_post">Send</string>
     <string name="action_open_notification">Notifications</string>
+    <string name="action_open_search">Search</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
@@ -32,6 +33,8 @@
     <string name="hint_account_password">Password</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
+    <string name="hint_search_label">Search</string>
+    <string name="hint_search_hint">Search forums, threads or people</string>
 
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
@@ -46,6 +49,7 @@
     <string name="format_note_rate_log_prefix">Your post&#160;</string>
     <string name="format_note_rate_log_middle">&#160;is rated by %1$s:&#160;</string>
     <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
+    <string name="format_search_post_result_reply_count">%1$d&#160; Replies</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
@@ -135,6 +139,9 @@
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
+    <string name="settings_category_navigation">Navigation</string>
+    <string name="settings_item_use_forums_first_title">Forums first</string>
+    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app).</string>
 
     <string-array name="image_download_policy_arrays">
         <item>Always</item>
@@ -169,4 +176,10 @@
         <item>24</item>
         <item>26</item>
     </string-array>
+
+    <string name="profile_header_followers">Followers</string>
+    <string name="profile_header_following">Following</string>
+    <string name="profile_header_threads">Threads</string>
+    <string name="profile_header_posts">Posts</string>
+    <string name="profile_header_count_zero">0</string>
 </resources>

@@ -68,27 +68,30 @@ public class ModelConverter {
     public static List<ThreadModel> toForumThreadModel(LKForumThreadList lkForumThreadList, boolean checkNextTimeSortKey) {
         List<ThreadModel> threadList = new ArrayList<ThreadModel>();
         ThreadModel nextSortKeyItem = null;
-        for(LKForumThreadItem item : lkForumThreadList.getData()) {
-            ThreadModel threadModel = new ThreadModel();
-            threadModel.setSortKey(item.getSortkey());
-            threadModel.setUserName(item.getUsername());
-            threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));
-            threadModel.setUid(item.getUid());
-            threadModel.setClosed(item.getClosed());
-            threadModel.setDateline(item.getDateline());
-            threadModel.setDigest(item.getDigest() > 0);
-            threadModel.setFid(item.getFid());
-            threadModel.setId(item.getId());
-            threadModel.setReplyCount(item.getReplynum());
-            Document document = Jsoup.parseBodyFragment(item.getSubject());
-            HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
-            threadModel.setSubject(htmlToPlainText.getPlainText(document));
-            threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
-            if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
-                nextSortKeyItem = threadModel;
-            else
-                threadList.add(threadModel);
+        if(lkForumThreadList != null && lkForumThreadList.getData() != null) {
+            for(LKForumThreadItem item : lkForumThreadList.getData()) {
+                ThreadModel threadModel = new ThreadModel();
+                threadModel.setSortKey(item.getSortkey());
+                threadModel.setUserName(item.getUsername());
+                threadModel.setUserIcon(uidToAvatarUrl(item.getUid()));
+                threadModel.setUid(item.getUid());
+                threadModel.setClosed(item.getClosed());
+                threadModel.setDateline(item.getDateline());
+                threadModel.setDigest(item.getDigest() > 0);
+                threadModel.setFid(item.getFid());
+                threadModel.setId(item.getId());
+                threadModel.setReplyCount(item.getReplynum());
+                Document document = Jsoup.parseBodyFragment(item.getSubject());
+                HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+                threadModel.setSubject(htmlToPlainText.getPlainText(document));
+                threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
+                if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
+                    nextSortKeyItem = threadModel;
+                else
+                    threadList.add(threadModel);
+            }
         }
+
         if(checkNextTimeSortKey && nextSortKeyItem != null) {
             Collections.sort(threadList, new ThreadModelCompareBySortKeyTime());
             threadList.add(nextSortKeyItem);

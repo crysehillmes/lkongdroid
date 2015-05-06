@@ -49,7 +49,7 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
             return onCreateHeaderViewHolder(parent, viewType);
         } else if(viewType >= ITEM_TYPE_FOOTER_START && viewType < ITEM_TYPE_FOOTER_START + TYPE_OFFSET) {
             return onCreateFooterViewHolder(parent, viewType);
-        } else if(viewType >= ITEM_TYPE_ITEM_START && viewType < ITEM_TYPE_ITEM_START + TYPE_OFFSET) {
+        } else if(viewType >= ITEM_TYPE_ITEM_START) {
             return onCreateItemViewHolder(parent, viewType);
         } else {
             throw new IllegalArgumentException("Unknown viewType.");

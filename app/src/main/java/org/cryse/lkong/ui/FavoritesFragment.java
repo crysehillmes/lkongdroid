@@ -80,6 +80,9 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_open_search:
+                mAndroidNavigation.navigateToSearchActivity(getActivity());
+                return true;
             case R.id.action_open_notification:
                 mAndroidNavigation.navigateToNotificationActivity(getActivity());
                 return true;
@@ -183,7 +186,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
-        return UIUtils.getInsets(getActivity(), mCollectionView, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        return UIUtils.getInsets(getActivity(), mCollectionView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
     }
 
     protected void checkNewNoticeCount() {

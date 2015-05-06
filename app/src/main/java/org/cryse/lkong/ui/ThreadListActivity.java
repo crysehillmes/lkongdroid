@@ -27,6 +27,7 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -39,6 +40,7 @@ import org.cryse.widget.recyclerview.SuperRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -47,9 +49,9 @@ import butterknife.InjectView;
 
 public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
     public static final String LOG_TAG = ThreadListActivity.class.getName();
-    private boolean isNoMore = false;
-    private boolean isLoading = false;
-    private boolean isLoadingMore = false;
+    private AtomicBoolean isNoMore = new AtomicBoolean(false);
+    private AtomicBoolean isLoading = new AtomicBoolean(false);
+    private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
     Picasso mPicasso;
     @Inject
@@ -121,22 +123,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
+            if (!isNoMore.get() && !isLoadingMore.get() && mLastItemSortKey != -1) {
                 getPresenter().loadThreadList(mForumId, mLastItemSortKey, mCurrentListType, true);
             } else {
                 mThreadCollectionView.setLoadingMore(false);
                 mThreadCollectionView.hideMoreProgress();
             }
         });
-        mThreadCollectionView.setOnItemClickListener((view, position, id) -> {
-            int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+        mCollectionAdapter.setOnThreadItemClickListener((view, adapterPosition) -> {
+            int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
             if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                 ThreadModel item = mCollectionAdapter.getItem(itemIndex);
-                Intent intent = new Intent(this, PostListActivity.class);
                 String idString = item.getId().substring(7);
                 long tid = Long.parseLong(idString);
-                intent.putExtra(DataContract.BUNDLE_THREAD_ID, tid);
-                startActivity(intent);
+                mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
             }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);
@@ -309,16 +309,10 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Override
     public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
         if(isLoadMore) {
-            if (threadList.size() == 0) isNoMore = true;
-            // isLoadingMore = false;
-            // if (threadList.size() != 0) mCurrentListPageNumber++;
-            // addToListView(novels);
+            if (threadList.size() == 0) isNoMore.set(true);
             mCollectionAdapter.addAll(threadList);
         } else {
-            isNoMore = false;
-            // mCurrentListPageNumber = 0;
-            // mNovelList.clear();
-            // addToListView(novels);
+            isNoMore.set(false);
             mCollectionAdapter.replaceWith(threadList);
             /*if (getResources().getBoolean(R.bool.isTablet)) {
                 //isLoadingMore = true;
@@ -340,18 +334,18 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     @Override
      public void setLoading(Boolean value) {
-        isLoading = value;
+        isLoading.set(value);
         mThreadCollectionView.getSwipeToRefresh().setRefreshing(value);
     }
 
     @Override
     public Boolean isLoading() {
-        return isLoading;
+        return isLoading.get();
     }
 
     @Override
     public void setLoadingMore(boolean value) {
-        isLoadingMore = value;
+        isLoadingMore.set(value);
         mThreadCollectionView.setLoadingMore(value);
         if(value)
             mThreadCollectionView.showMoreProgress();
@@ -361,7 +355,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     @Override
     public boolean isLoadingMore() {
-        return isLoadingMore;
+        return isLoadingMore.get();
     }
 
     public ThreadListPresenter getPresenter() {

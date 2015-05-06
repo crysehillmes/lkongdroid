@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
@@ -63,8 +64,14 @@ public class PreferenceModule {
     }
 
     @Provides
-     @PrefsReadFontSize
-     StringPreference provideReadFontSize(SharedPreferences preferences) {
+    @PrefsReadFontSize
+    StringPreference provideReadFontSize(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_READ_FONT, PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE);
+    }
+
+    @Provides
+    @PrefsForumsFirst
+    BooleanPreference provideForumsFirst(SharedPreferences preferences) {
+        return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST, PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST_VALUE);
     }
 }

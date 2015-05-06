@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.NotificationActivity;
@@ -19,9 +20,12 @@ import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.PostListActivity;
+import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
+import org.cryse.lkong.ui.ThreadListActivity;
 import org.cryse.lkong.ui.TimelineFragment;
+import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
 
 public class AndroidNavigation {
@@ -101,6 +105,11 @@ public class AndroidNavigation {
         context.startActivity(intent);
     }
 
+    public void navigateToSearchActivity(Context context) {
+        Intent intent = new Intent(context, SearchActivity.class);
+        context.startActivity(intent);
+    }
+
     public void navigateToSignInActivity(Context context, boolean startMainActivity) {
         Intent intent = new Intent(context, SignInActivity.class);
         intent.putExtra(SignInActivity.START_MAIN_ACTIVITY, startMainActivity);
@@ -149,6 +158,16 @@ public class AndroidNavigation {
         activity.startActivity(intent);
     }
 
+    public void openActivityForPostListByTimelineModel(Context context, TimelineModel item) {
+        if(item.getId().startsWith("thread_")) {
+            openActivityForPostListByThreadId(context, Long.valueOf(item.getId().substring(7)));
+        } else if(item.getId().startsWith("post_")) {
+            openActivityForPostListByPostId(context, Long.valueOf(item.getId().substring(5)));
+        } else {
+            openActivityForPostListByThreadId(context, item.getTid());
+        }
+    }
+
     public void openActivityForPostListByPostId(Context context, long postId) {
         Intent intent = new Intent(context, PostListActivity.class);
         intent.putExtra(DataContract.BUNDLE_POST_ID, postId);
@@ -164,5 +183,18 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_THREAD_ID, threadId);
         intent.putExtra(DataContract.BUNDLE_THREAD_CURRENT_PAGE, page);
         context.startActivity(intent);
+    }
+
+    public void openActivityForForumByForumId(Context context, long forumId, String forumName, String forumDescription) {
+        Intent intent = new Intent(context, ThreadListActivity.class);
+        intent.putExtra(DataContract.BUNDLE_FORUM_ID, forumId);
+        intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
+        intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, forumDescription);
+        context.startActivity(intent);
+    }
+
+    public void openActivityForUserProfile(Activity context, int[] startingLocation, long uid) {
+        UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
+        context.overridePendingTransition(0, 0);
     }
 }

@@ -283,6 +283,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
             }
+
+            @Override
+            public void onProfileImageClick(View view, int position) {
+                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                int[] startingLocation = new int[2];
+                view.getLocationOnScreen(startingLocation);
+                startingLocation[0] += view.getWidth() / 2;
+                mAndroidNavigation.openActivityForUserProfile(PostListActivity.this, startingLocation, postItem.getAuthorId());
+            }
         });
         mCollectionAdapter.setOnSpanClickListener(new PostItemView.OnSpanClickListener() {
             @Override

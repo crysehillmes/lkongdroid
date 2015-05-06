@@ -2,13 +2,11 @@ package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -17,12 +15,12 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -35,6 +33,7 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.ui.navigation.PicassoProfileDrawerItem;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -47,6 +46,9 @@ public class MainActivity extends AbstractThemeableActivity {
     AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsForumsFirst
+    BooleanPreference mForumsFirst;
 
     AccountHeader.Result mAccountHeader;
     Drawer.Result mNaviagtionDrawer;
@@ -104,17 +106,38 @@ public class MainActivity extends AbstractThemeableActivity {
         AccountHeader accountHeader = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
-        accountHeader.withOnAccountHeaderListener((view, profile) -> {
-            if (profile.getIdentifier() == -3001) {
+        accountHeader.withOnAccountHeaderListener((view, iProfile, b) -> {
+            if (iProfile.getIdentifier() == -3001) {
                 mNavigation.navigateToSignInActivity(MainActivity.this, false);
             } else {
-                long uid = profile.getIdentifier();
-                mUserAccountManager.setCurrentUserAccount(uid);
-                getEventBus().sendEvent(new CurrentAccountChangedEvent());
+                long uid = iProfile.getIdentifier();
+                if(mUserAccountManager.getCurrentUserId() == uid) {
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mNavigation.openActivityForUserProfile(this, startingLocation, uid);
+                } else {
+                    mUserAccountManager.setCurrentUserAccount(uid);
+                    getEventBus().sendEvent(new CurrentAccountChangedEvent());
+                }
             }
+            return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeader.build();
+        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
+        IDrawerItem forumsDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
+        IDrawerItem[] drawerItems = new IDrawerItem[5];
+        if(mForumsFirst.get()) {
+            drawerItems[0] = forumsDrawerItem;
+            drawerItems[1] = timelineDrawerItem;
+        } else {
+            drawerItems[0] = timelineDrawerItem;
+            drawerItems[1] = forumsDrawerItem;
+        }
 
+        drawerItems[2] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
+        drawerItems[3] = new DividerDrawerItem();
+        drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new Drawer()
                 .withActivity(this)
@@ -122,12 +145,7 @@ public class MainActivity extends AbstractThemeableActivity {
                 .withAccountHeader(mAccountHeader)
                 .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false)
-
+                        drawerItems
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -145,20 +163,23 @@ public class MainActivity extends AbstractThemeableActivity {
                         }
                     }
                 })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
-                            mCurrentSelection = drawerItem.getIdentifier();
-                        mPendingRunnable = () ->  onNavigationSelected(drawerItem);
-                    }
+                .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
+                    // do something with the clicked item :D
+                    if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
+                        mCurrentSelection = drawerItem.getIdentifier();
+                    mPendingRunnable = () ->  onNavigationSelected(drawerItem);
                 })
                 .build();
         addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
-            mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-            mNavigation.navigateToTimelineFragment();
+            if(mForumsFirst.get()) {
+                mNaviagtionDrawer.setSelectionByIdentifier(1002, false);
+                mNavigation.navigateToForumListFragment(null);
+            } else {
+                mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
+                mNavigation.navigateToTimelineFragment();
+            }
+            // mNavigation.navigateToTimelineFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
         }

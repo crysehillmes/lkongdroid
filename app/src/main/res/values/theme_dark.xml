@@ -6,6 +6,9 @@
         <item name="colorPrimaryDark">@color/md_grey_700</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
         <item name="android:windowIsTranslucent">true</item>
         <item name="actionBarInsetStart">@dimen/keyline_2_minus_16dp</item>
         <item name="windowActionModeOverlay">true</item>
@@ -31,5 +34,9 @@
 
     <style name="LKongDroidTheme.Dark.NoTranslucent" parent="LKongDroidTheme.Dark">
         <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <style name="LKongDroidTheme.Dark.Translucent" parent="LKongDroidTheme.Dark">
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>
