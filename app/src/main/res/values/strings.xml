@@ -182,4 +182,9 @@
     <string name="profile_header_threads">Threads</string>
     <string name="profile_header_posts">Posts</string>
     <string name="profile_header_count_zero">0</string>
+    <string-array name="string_array_user_profile_tabs">
+        <item>All</item>
+        <item>Threads</item>
+        <item>Digests</item>
+    </string-array>
 </resources>

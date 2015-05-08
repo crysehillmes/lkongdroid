@@ -20,8 +20,6 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
-import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -29,6 +27,7 @@ import org.cryse.widget.slidingtabs.SlidingTabLayout;
 import org.cryse.widget.slidingtabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -84,9 +83,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mColorAccent = ColorUtils.getColorFromAttr(context, R.attr.colorAccent);
         this.mOptionTabTitles = new ArrayList<String>();
-        this.mOptionTabTitles.add("All");
-        this.mOptionTabTitles.add("Threads");
-        this.mOptionTabTitles.add("Digests");
+        Collections.addAll(this.mOptionTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
     }
 
     public void setPrimaryColor(int primaryColor) {
@@ -188,7 +185,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.vButtons.setTextColor(Color.WHITE);
             holder.vButtons.setTitles(mOptionTabTitles);
             holder.userNameTextView.setText(mUserInfo.getUserName());
-            holder.extraInfoTextView.setText(mUserInfo.getBlacklists());
+            holder.extraInfoTextView.setText("");
             holder.statusTextView.setText(mUserInfo.getCustomStatus());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));
