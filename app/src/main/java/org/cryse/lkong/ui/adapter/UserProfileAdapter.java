@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -191,6 +192,12 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));
             holder.threadCountTextView.setText(Integer.toString(mUserInfo.getThreads()));
             holder.postCountTextView.setText(Integer.toString(mUserInfo.getPosts()));
+            if(mUserInfo.getPunchResult() != null) {
+                holder.btnFollow.setText(String.format("Punched %d day", mUserInfo.getPunchResult().getPunchDay()));
+                holder.btnFollow.setVisibility(View.VISIBLE);
+            } else {
+                holder.btnFollow.setVisibility(View.GONE);
+            }
         }
         // Animate
         holder.vUserProfileRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
