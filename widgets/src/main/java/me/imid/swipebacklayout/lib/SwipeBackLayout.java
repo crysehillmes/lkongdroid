@@ -358,6 +358,22 @@ public class SwipeBackLayout extends FrameLayout {
         invalidate();
     }
 
+    /**
+     * Scroll out contentView and finish the activity
+     */
+    public void scrollBottomToFinishActivity() {
+        final int childWidth = mContentView.getWidth();
+        final int childHeight = mContentView.getHeight();
+
+        int left = 0, top = 0;
+
+        top = -childHeight - mShadowBottom.getIntrinsicHeight() - OVERSCROLL_DISTANCE;
+        mTrackingEdge = EDGE_BOTTOM;
+
+        mDragHelper.smoothSlideViewTo(mContentView, left, top);
+        invalidate();
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!mEnable) {

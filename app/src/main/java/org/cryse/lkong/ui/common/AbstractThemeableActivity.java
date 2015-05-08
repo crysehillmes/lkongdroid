@@ -3,6 +3,7 @@ package org.cryse.lkong.ui.common;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -22,7 +23,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     private SwipeBackActivityHelper mHelper;
     @Inject
     ThemeEngine mThemeEngine;
-
+    protected Handler mMainThreadHandler;
     private int mDarkTheme = R.style.LKongDroidTheme_Dark;
     private int mLightTheme = R.style.LKongDroidTheme_Light;
     private int mTheme;
@@ -34,6 +35,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         mTheme = getAppTheme();
         setTheme(mTheme);
         super.onCreate(savedInstanceState);
+        mMainThreadHandler = new Handler();
         if(hasSwipeBackLayout()) {
             mHelper = new SwipeBackActivityHelper(this);
             mHelper.onActivityCreate();
@@ -178,6 +180,14 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
             }
             if(getSupportActionBar() != null)
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            mHelper.getSwipeBackLayout().scrollToFinishActivity();
+            mMainThreadHandler.postDelayed(this::supportFinishAfterTransition, 500);
         }
     }
 }
