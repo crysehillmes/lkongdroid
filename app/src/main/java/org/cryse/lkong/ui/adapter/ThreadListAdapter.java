@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -111,6 +112,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
+        @InjectView(R.id.recyclerview_item_thread_relative_layout_root)
+        RelativeLayout mRootView;
         @InjectView(R.id.recyclerview_item_thread_imageview_icon)
         public ImageView mThreadIconImageView;
         @InjectView(R.id.recyclerview_item_thread_textview_title)

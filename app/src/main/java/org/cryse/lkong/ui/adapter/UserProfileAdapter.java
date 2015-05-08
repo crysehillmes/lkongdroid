@@ -193,7 +193,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.threadCountTextView.setText(Integer.toString(mUserInfo.getThreads()));
             holder.postCountTextView.setText(Integer.toString(mUserInfo.getPosts()));
             if(mUserInfo.getPunchResult() != null) {
-                holder.btnFollow.setText(String.format("Punched %d day", mUserInfo.getPunchResult().getPunchDay()));
+                holder.btnFollow.setText(context.getResources().getString(R.string.format_punchday_count, mUserInfo.getPunchResult().getPunchDay()));
                 holder.btnFollow.setVisibility(View.VISIBLE);
             } else {
                 holder.btnFollow.setVisibility(View.GONE);
@@ -229,6 +229,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder,
                 timelineModel
         );
+        // animateTimeline(holder);
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 
@@ -243,6 +244,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 mCircleTransform,
                 holder,
                 threadModel);
+        // animateThread(holder);
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 
@@ -272,24 +274,51 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void animatePhoto(TimelineAdapter.ViewHolder viewHolder) {
+    private void animateTimeline(TimelineAdapter.ViewHolder viewHolder) {
         if (!lockedAnimations) {
-            if (lastAnimatedItem == viewHolder.getPosition()) {
+            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
                 setLockedAnimations(true);
             }
 
             long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
             if (profileHeaderAnimationStartTime == 0) {
-                animationDelay = viewHolder.getPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
+                animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
             } else if (animationDelay < 0) {
-                animationDelay = viewHolder.getPosition() * 30;
+                animationDelay = viewHolder.getAdapterPosition() * 30;
             } else {
-                animationDelay += viewHolder.getPosition() * 30;
+                animationDelay += viewHolder.getAdapterPosition() * 30;
             }
 
             viewHolder.mRootCardView.setScaleY(0);
             viewHolder.mRootCardView.setScaleX(0);
             viewHolder.mRootCardView.animate()
+                    .scaleY(1)
+                    .scaleX(1)
+                    .setDuration(200)
+                    .setInterpolator(INTERPOLATOR)
+                    .setStartDelay(animationDelay)
+                    .start();
+        }
+    }
+
+    private void animateThread(ThreadListAdapter.ViewHolder viewHolder) {
+        if (!lockedAnimations) {
+            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
+                setLockedAnimations(true);
+            }
+
+            long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
+            if (profileHeaderAnimationStartTime == 0) {
+                animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
+            } else if (animationDelay < 0) {
+                animationDelay = viewHolder.getAdapterPosition() * 30;
+            } else {
+                animationDelay += viewHolder.getAdapterPosition() * 30;
+            }
+
+            viewHolder.mRootView.setScaleY(0);
+            viewHolder.mRootView.setScaleX(0);
+            viewHolder.mRootView.animate()
                     .scaleY(1)
                     .scaleX(1)
                     .setDuration(200)

@@ -160,4 +160,5 @@
         <item>主题</item>
         <item>精华</item>
     </string-array>
+    <string name="format_punchday_count">已签到 %1$d 天</string>
 </resources>
