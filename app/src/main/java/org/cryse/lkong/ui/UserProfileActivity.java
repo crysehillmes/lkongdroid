@@ -199,7 +199,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
             );
             userPhotosAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
                 @Override
-                public void onTimelineItemClick(View view, int adapterPosition) {
+                public void onItemTimelineClick(View view, int adapterPosition) {
                     Object object = userPhotosAdapter.getItem(adapterPosition);
                     if(object != null && object instanceof TimelineModel) {
                         TimelineModel model = (TimelineModel) object;
@@ -208,7 +208,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                 }
 
                 @Override
-                public void onThreadItemClick(View view, int adapterPosition) {
+                public void onItemThreadClick(View view, int adapterPosition) {
                     Object object = userPhotosAdapter.getItem(adapterPosition);
                     if(object != null && object instanceof ThreadModel) {
                         ThreadModel model = (ThreadModel) object;

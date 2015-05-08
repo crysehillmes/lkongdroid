@@ -76,7 +76,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
             }
 
             @Override
-            public void onTimelineItemClick(View view, int adapterPosition) {
+            public void onItemTimelineClick(View view, int adapterPosition) {
                 int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
                 if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                     TimelineModel model = mCollectionAdapter.getItem(itemIndex);

@@ -27,7 +27,6 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.ThreadListPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
@@ -130,13 +129,28 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 mThreadCollectionView.hideMoreProgress();
             }
         });
-        mCollectionAdapter.setOnThreadItemClickListener((view, adapterPosition) -> {
-            int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-            if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                ThreadModel item = mCollectionAdapter.getItem(itemIndex);
-                String idString = item.getId().substring(7);
-                long tid = Long.parseLong(idString);
-                mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
+        mCollectionAdapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
+            @Override
+            public void onProfileAreaClick(View view, int position, long uid) {
+                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mAndroidNavigation.openActivityForUserProfile(ThreadListActivity.this, startingLocation, model.getUid());
+                }
+            }
+
+            @Override
+            public void onItemThreadClick(View view, int adapterPosition) {
+                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
+                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    ThreadModel item = mCollectionAdapter.getItem(itemIndex);
+                    String idString = item.getId().substring(7);
+                    long tid = Long.parseLong(idString);
+                    mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
+                }
             }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);

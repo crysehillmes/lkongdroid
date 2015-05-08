@@ -20,8 +20,8 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
-import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
-import org.cryse.lkong.ui.listener.OnTimelineItemClickListener;
+import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
+import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -389,7 +389,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mOnProfileItemClickListener = onProfileItemClickListener;
     }
 
-    public interface OnProfileItemClickListener extends TimelineAdapter.OnTimelineModelItemClickListener, OnItemProfileAreaClickListener, OnThreadItemClickListener, OnTimelineItemClickListener {
+    public interface OnProfileItemClickListener extends TimelineAdapter.OnTimelineModelItemClickListener, ThreadListAdapter.OnThreadItemClickListener, OnItemProfileAreaClickListener {
     }
 }
 
