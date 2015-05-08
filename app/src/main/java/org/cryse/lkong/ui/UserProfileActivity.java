@@ -224,6 +224,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                         view.getLocationOnScreen(startingLocation);
                         startingLocation[0] += view.getWidth() / 2;
                         mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
+                    } else if(object != null && object instanceof ThreadModel) {
+                        ThreadModel model = (ThreadModel) object;
+                        int[] startingLocation = new int[2];
+                        view.getLocationOnScreen(startingLocation);
+                        startingLocation[0] += view.getWidth() / 2;
+                        mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUid());
                     }
                 }
             });
