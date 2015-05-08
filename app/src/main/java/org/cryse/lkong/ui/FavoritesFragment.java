@@ -17,6 +17,7 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
+import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
@@ -133,7 +134,17 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        return new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        adapter.setOnThreadItemClickListener((view, adapterPosition) -> {
+            int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
+            if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                ThreadModel item = mCollectionAdapter.getItem(adapterPosition);
+                String idString = item.getId().substring(7);
+                long tid = Long.parseLong(idString);
+                mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+            }
+        });
+        return adapter;
     }
 
     @Override
