@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,24 +7,22 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
-import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.ui.adapter.UserProfileAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -106,7 +103,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         rvUserProfile.measure(0, 0);
-        getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid);
+        getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
     }
 
     @Override
@@ -199,7 +196,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
             );
             userPhotosAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
                 @Override
-                public void onTimelineItemClick(View view, int adapterPosition) {
+                public void onItemTimelineClick(View view, int adapterPosition) {
                     Object object = userPhotosAdapter.getItem(adapterPosition);
                     if(object != null && object instanceof TimelineModel) {
                         TimelineModel model = (TimelineModel) object;
@@ -208,7 +205,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                 }
 
                 @Override
-                public void onThreadItemClick(View view, int adapterPosition) {
+                public void onItemThreadClick(View view, int adapterPosition) {
                     Object object = userPhotosAdapter.getItem(adapterPosition);
                     if(object != null && object instanceof ThreadModel) {
                         ThreadModel model = (ThreadModel) object;
@@ -227,6 +224,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                         view.getLocationOnScreen(startingLocation);
                         startingLocation[0] += view.getWidth() / 2;
                         mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
+                    } else if(object != null && object instanceof ThreadModel) {
+                        ThreadModel model = (ThreadModel) object;
+                        int[] startingLocation = new int[2];
+                        view.getLocationOnScreen(startingLocation);
+                        startingLocation[0] += view.getWidth() / 2;
+                        mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUid());
                     }
                 }
             });
@@ -246,6 +249,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
             });
             rvUserProfile.setAdapter(userPhotosAdapter);
             if(mUserModelInfo != null) userPhotosAdapter.setUserInfo(mUserModelInfo);
+            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
         } else {
             rvUserProfile.setVisibility(View.INVISIBLE);
         }

@@ -16,12 +16,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
-import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
-import org.cryse.lkong.ui.listener.OnTimelineItemClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -29,6 +28,7 @@ import org.cryse.widget.slidingtabs.SlidingTabLayout;
 import org.cryse.widget.slidingtabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -84,9 +84,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mColorAccent = ColorUtils.getColorFromAttr(context, R.attr.colorAccent);
         this.mOptionTabTitles = new ArrayList<String>();
-        this.mOptionTabTitles.add("All");
-        this.mOptionTabTitles.add("Threads");
-        this.mOptionTabTitles.add("Digests");
+        Collections.addAll(this.mOptionTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
     }
 
     public void setPrimaryColor(int primaryColor) {
@@ -188,12 +186,18 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.vButtons.setTextColor(Color.WHITE);
             holder.vButtons.setTitles(mOptionTabTitles);
             holder.userNameTextView.setText(mUserInfo.getUserName());
-            holder.extraInfoTextView.setText(mUserInfo.getBlacklists());
+            holder.extraInfoTextView.setText("");
             holder.statusTextView.setText(mUserInfo.getCustomStatus());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));
             holder.threadCountTextView.setText(Integer.toString(mUserInfo.getThreads()));
             holder.postCountTextView.setText(Integer.toString(mUserInfo.getPosts()));
+            if(mUserInfo.getPunchResult() != null) {
+                holder.btnFollow.setText(context.getResources().getString(R.string.format_punchday_count, mUserInfo.getPunchResult().getPunchDay()));
+                holder.btnFollow.setVisibility(View.VISIBLE);
+            } else {
+                holder.btnFollow.setVisibility(View.GONE);
+            }
         }
         // Animate
         holder.vUserProfileRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -225,6 +229,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder,
                 timelineModel
         );
+        // animateTimeline(holder);
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 
@@ -239,6 +244,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 mCircleTransform,
                 holder,
                 threadModel);
+        // animateThread(holder);
         if (lastAnimatedItem < position) lastAnimatedItem = position;
     }
 
@@ -268,24 +274,51 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void animatePhoto(TimelineAdapter.ViewHolder viewHolder) {
+    private void animateTimeline(TimelineAdapter.ViewHolder viewHolder) {
         if (!lockedAnimations) {
-            if (lastAnimatedItem == viewHolder.getPosition()) {
+            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
                 setLockedAnimations(true);
             }
 
             long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
             if (profileHeaderAnimationStartTime == 0) {
-                animationDelay = viewHolder.getPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
+                animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
             } else if (animationDelay < 0) {
-                animationDelay = viewHolder.getPosition() * 30;
+                animationDelay = viewHolder.getAdapterPosition() * 30;
             } else {
-                animationDelay += viewHolder.getPosition() * 30;
+                animationDelay += viewHolder.getAdapterPosition() * 30;
             }
 
             viewHolder.mRootCardView.setScaleY(0);
             viewHolder.mRootCardView.setScaleX(0);
             viewHolder.mRootCardView.animate()
+                    .scaleY(1)
+                    .scaleX(1)
+                    .setDuration(200)
+                    .setInterpolator(INTERPOLATOR)
+                    .setStartDelay(animationDelay)
+                    .start();
+        }
+    }
+
+    private void animateThread(ThreadListAdapter.ViewHolder viewHolder) {
+        if (!lockedAnimations) {
+            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
+                setLockedAnimations(true);
+            }
+
+            long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
+            if (profileHeaderAnimationStartTime == 0) {
+                animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
+            } else if (animationDelay < 0) {
+                animationDelay = viewHolder.getAdapterPosition() * 30;
+            } else {
+                animationDelay += viewHolder.getAdapterPosition() * 30;
+            }
+
+            viewHolder.mRootView.setScaleY(0);
+            viewHolder.mRootView.setScaleX(0);
+            viewHolder.mRootView.animate()
                     .scaleY(1)
                     .scaleX(1)
                     .setDuration(200)
@@ -389,7 +422,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mOnProfileItemClickListener = onProfileItemClickListener;
     }
 
-    public interface OnProfileItemClickListener extends TimelineAdapter.OnTimelineModelItemClickListener, OnItemProfileAreaClickListener, OnThreadItemClickListener, OnTimelineItemClickListener {
+    public interface OnProfileItemClickListener extends TimelineAdapter.OnTimelineModelItemClickListener, ThreadListAdapter.OnThreadItemClickListener, OnItemProfileAreaClickListener {
     }
 }
 

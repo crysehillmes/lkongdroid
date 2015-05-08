@@ -8,13 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.ui.listener.OnThreadItemClickListener;
+import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
+import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -110,6 +112,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
+        @InjectView(R.id.recyclerview_item_thread_relative_layout_root)
+        RelativeLayout mRootView;
         @InjectView(R.id.recyclerview_item_thread_imageview_icon)
         public ImageView mThreadIconImageView;
         @InjectView(R.id.recyclerview_item_thread_textview_title)
@@ -126,11 +130,20 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
             super(v);
             ButterKnife.inject(this, v);
             mOnThreadItemClickListener = listener;
+            mThreadIconImageView.setOnClickListener(view -> {
+                if(mOnThreadItemClickListener != null) {
+                    mOnThreadItemClickListener.onProfileAreaClick(view, getAdapterPosition(), 0);
+                }
+            });
             itemView.setOnClickListener(view -> {
                 if(mOnThreadItemClickListener != null) {
-                    mOnThreadItemClickListener.onThreadItemClick(view, getAdapterPosition());
+                    mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
         }
+    }
+
+    public interface OnThreadItemClickListener extends OnItemThreadClickListener, OnItemProfileAreaClickListener {
+
     }
 }

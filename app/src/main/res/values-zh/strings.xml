@@ -154,4 +154,11 @@
     <string name="profile_header_following">关注</string>
     <string name="profile_header_posts">回复</string>
     <string name="profile_header_threads">主题</string>
+
+    <string-array name="string_array_user_profile_tabs">
+        <item>全部</item>
+        <item>主题</item>
+        <item>精华</item>
+    </string-array>
+    <string name="format_punchday_count">已签到 %1$d 天</string>
 </resources>

@@ -133,7 +133,32 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        return new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
+            @Override
+            public void onProfileAreaClick(View view, int position, long uid) {
+                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
+                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
+                }
+            }
+
+            @Override
+            public void onItemThreadClick(View view, int adapterPosition) {
+                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
+                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                    ThreadModel item = mCollectionAdapter.getItem(itemIndex);
+                    String idString = item.getId().substring(7);
+                    long tid = Long.parseLong(idString);
+                    mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+                }
+            }
+        });
+        return adapter;
     }
 
     @Override

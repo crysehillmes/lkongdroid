@@ -292,4 +292,12 @@ public class MainActivity extends AbstractThemeableActivity {
         }
         getEventBus().sendEvent(new CurrentAccountChangedEvent());
     }
+
+    @Override
+    public void onBackPressed() {
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            supportFinishAfterTransition();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        }
+    }
 }

@@ -45,6 +45,7 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
@@ -68,6 +69,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -656,6 +658,32 @@ public class LKongRestService {
         List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
         clearCookies();
         return threadList;
+    }
+
+    public PunchResult punch(LKAuthObject authObject) throws Exception {
+        checkSignInStatus(authObject, true);
+        applyAuthCookies(authObject);
+        String url = "http://lkong.cn/index.php?mod=ajax&action=punch";
+        Request request = new Request.Builder()
+                .addHeader("Accept-Encoding", "gzip")
+                .url(url)
+                .build();
+
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        String responseString = getStringFromGzipResponse(response);
+        JSONObject jsonObject = new JSONObject(responseString);
+        if(!jsonObject.has("punchtime") || !jsonObject.has("punchday")) {
+            clearCookies();
+            return null;
+        }
+        PunchResult result = new PunchResult();
+        long dateLong = jsonObject.getLong("punchtime");
+        int punchDay = jsonObject.getInt("punchday");
+        result.setPunchDay(punchDay);
+        result.setPunchTime(new Date(dateLong * 1000));
+        clearCookies();
+        return result;
     }
 
     public void saveToSDCard(String filename, String content)throws Exception {

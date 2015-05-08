@@ -22,7 +22,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
-import org.cryse.lkong.ui.listener.OnTimelineItemClickListener;
+import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
@@ -198,7 +198,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             });
             itemView.setOnClickListener(v1 -> {
                 if(mOnTimelineModelItemClickListener != null) {
-                    mOnTimelineModelItemClickListener.onTimelineItemClick(v1, getAdapterPosition());
+                    mOnTimelineModelItemClickListener.onItemTimelineClick(v1, getAdapterPosition());
                 }
             });
         }
@@ -208,7 +208,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         this.mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
     }
 
-    public interface OnTimelineModelItemClickListener extends OnItemProfileAreaClickListener, OnTimelineItemClickListener {
+    public interface OnTimelineModelItemClickListener extends OnItemProfileAreaClickListener, OnItemTimelineClickListener {
 
     }
 }

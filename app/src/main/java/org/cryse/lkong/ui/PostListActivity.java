@@ -347,6 +347,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
                             goToPage(i + 1);
+                            return true;
                         });
                 MaterialDialog dialog = dialogBuilder.build();
                 dialog.show();
@@ -805,7 +806,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         PostModel postModel = mCollectionAdapter.getItem(itemPosition);
             MaterialDialog rateListDialog = new MaterialDialog.Builder(this)
                     .title(R.string.dialog_title_rate)
-                    .adapter(new PostRateAdapter(this, postModel.getRateLog()))
+                    .adapter(new PostRateAdapter(this, postModel.getRateLog()), new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+
+                        }
+                    })
                     .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .positiveText(android.R.string.ok)
                     .neutralText(R.string.button_rate).callback(new MaterialDialog.ButtonCallback() {

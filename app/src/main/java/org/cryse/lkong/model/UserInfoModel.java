@@ -19,6 +19,7 @@ public class UserInfoModel implements Serializable {
     private int digestPosts;
     private int posts;
     private int threads;
+    private PunchResult punchResult;
 
     public int getEmail() {
         return email;
@@ -138,5 +139,13 @@ public class UserInfoModel implements Serializable {
 
     public void setThreads(int threads) {
         this.threads = threads;
+    }
+
+    public PunchResult getPunchResult() {
+        return punchResult;
+    }
+
+    public void setPunchResult(PunchResult punchResult) {
+        this.punchResult = punchResult;
     }
 }

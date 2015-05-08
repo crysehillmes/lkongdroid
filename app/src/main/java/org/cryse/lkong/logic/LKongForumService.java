@@ -13,6 +13,7 @@ import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadModel;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.functions.Func2;
 import timber.log.Timber;
 
 public class LKongForumService {
@@ -93,8 +95,17 @@ public class LKongForumService {
         });
     }
 
-    public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid) {
-        return Observable.create(subscriber -> {
+    public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid, boolean isSelf) {
+        Observable<PunchResult> punchObservable = Observable.create(subscriber -> {
+            try {
+                PunchResult result = mLKongRestService.punch(authObject);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+        Observable<UserInfoModel> userProfileObservable =  Observable.create(subscriber -> {
             try {
                 UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
                 subscriber.onNext(userInfoModel);
@@ -103,6 +114,20 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
+        if(isSelf) {
+            return Observable.zip(userProfileObservable, punchObservable, new Func2<UserInfoModel, PunchResult, UserInfoModel>() {
+                @Override
+                public UserInfoModel call(UserInfoModel userInfoModel, PunchResult punchResult) {
+                    if (userInfoModel != null && punchResult != null) {
+                        userInfoModel.setPunchResult(punchResult);
+                    }
+                    return userInfoModel;
+                }
+            });
+        } else {
+            return userProfileObservable;
+        }
+
     }
 
     /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
@@ -362,6 +387,18 @@ public class LKongForumService {
             try {
                 List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, start, uid, isDigest);
                 subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<PunchResult> punch(LKAuthObject authObject) {
+        return Observable.create(subscriber -> {
+            try {
+                PunchResult result = mLKongRestService.punch(authObject);
+                subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

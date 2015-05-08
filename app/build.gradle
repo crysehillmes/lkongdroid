@@ -75,7 +75,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.jakewharton.timber:timber:2.5.0'
     compile 'org.jsoup:jsoup:1.8.1'
-    compile 'com.afollestad:material-dialogs:0.6.0'
+    compile 'com.afollestad:material-dialogs:0.7.3.3'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'org.apache.tika:tika-core:1.7'

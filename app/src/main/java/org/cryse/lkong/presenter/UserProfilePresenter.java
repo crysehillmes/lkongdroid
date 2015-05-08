@@ -28,10 +28,10 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
         this.mLKongForumService = forumService;
     }
 
-    public void getUserProfile(LKAuthObject authObject, long uid) {
+    public void getUserProfile(LKAuthObject authObject, long uid, boolean isSelf) {
         SubscriptionUtils.checkAndUnsubscribe(mSearchSubscription);
         setLoadingStatus(false, true);
-        mSearchSubscription = mLKongForumService.getUserInfo(authObject, uid)
+        mSearchSubscription = mLKongForumService.getUserInfo(authObject, uid, isSelf)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -42,7 +42,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         error -> {
                             if(mView != null) {
                                 mView.onLoadUserProfileError(error);
-                                Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
+                                Timber.e(error, "UserProfilePresenter::getUserProfile() onError().", LOG_TAG);
                                 mView.setLoading(false);
                             }
                             setLoadingStatus(false, false);
@@ -67,7 +67,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         error -> {
                             if(mView != null) {
                                 mView.onLoadUserAllData(new ArrayList<TimelineModel>(), isLoadingMore);
-                                Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
+                                Timber.e(error, "UserProfilePresenter::getUserAllData() onError().", LOG_TAG);
                             }
                             setLoadingStatus(isLoadingMore, false);
                         },
@@ -91,7 +91,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         error -> {
                             if(mView != null) {
                                 mView.onLoadUserThreads(new ArrayList<ThreadModel>(), digest, isLoadingMore);
-                                Timber.e(error, "SearchPresenter::search() onError().", LOG_TAG);
+                                Timber.e(error, "UserProfilePresenter::getUserThreads() onError().", LOG_TAG);
                             }
                             setLoadingStatus(isLoadingMore, false);
                         },
