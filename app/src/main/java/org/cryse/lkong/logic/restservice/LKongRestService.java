@@ -658,6 +658,7 @@ public class LKongRestService {
         List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
         for(ThreadModel model : threadList) {
             model.setUid(uid);
+            model.setUserIcon(ModelConverter.uidToAvatarUrl(uid));
         }
         clearCookies();
         return threadList;
