@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -252,6 +251,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             }
         });
         mCollectionAdapter.setOnItemButtonClickListener(new PostListAdapter.OnItemButtonClickListener() {
+            @Override
+            public void onPostTextLongClick(View view, int position) {
+                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                if(postItem != null) {
+                    MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
+                            .title(R.string.dialog_title_copy_content)
+                            .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                            .content(postItem.getPostDisplayCache().getSpannableString())
+                            .show();
+                    materialDialog.getContentView().setTextIsSelectable(true);
+                }
+            }
+
             @Override
             public void onRateClick(View view, int position) {
                 view.post(() -> openRateDialog(position - mCollectionAdapter.getHeaderViewCount()));
