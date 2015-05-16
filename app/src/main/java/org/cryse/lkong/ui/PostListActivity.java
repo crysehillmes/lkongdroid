@@ -519,10 +519,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    finishAfterTransition();
-                else
-                    finish();
+                closeActivityWithTransition();
                 return true;
             case R.id.action_thread_goto_floor:
                 onClickGotoFloor();

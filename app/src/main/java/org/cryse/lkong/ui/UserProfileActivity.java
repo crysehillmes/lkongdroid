@@ -259,7 +259,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finishCompat();
+                closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);

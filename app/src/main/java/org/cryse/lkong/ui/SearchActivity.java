@@ -176,7 +176,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
             case R.id.menu_search:
                 return true;
             case android.R.id.home:
-                finish();
+                closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);

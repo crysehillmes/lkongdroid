@@ -267,7 +267,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finishCompat();
+                closeActivityWithTransition();
                 return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());

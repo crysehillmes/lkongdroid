@@ -187,7 +187,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 setNightMode(!isNightMode());
                 return true;
             case android.R.id.home:
-                finishCompat();
+                closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -239,7 +239,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 mProgressDialog.setCancelable(true);
                 mProgressDialog.setCanceledOnTouchOutside(false);
-                mProgressDialog.setOnDismissListener(dialog -> finishCompat());
+                mProgressDialog.setOnDismissListener(dialog -> closeActivityWithTransition());
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(replaceBackToImageSpan(spannableContent)));
                 if(!isInEditMode())
@@ -521,7 +521,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
             if (result != null && result.isSuccess()) {
-                new Handler().postDelayed(this::finishCompat, 300);
+                new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
                     ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);

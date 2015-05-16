@@ -128,7 +128,7 @@ public class NotificationFragment extends InActivityFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                getThemedActivity().finishCompat();
+                getThemedActivity().closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);

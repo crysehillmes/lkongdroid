@@ -106,7 +106,7 @@ public class NewPostActivity extends AbstractPostActivity {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
             if (result != null && result.isSuccess()) {
-                new Handler().postDelayed(this::finishCompat, 300);
+                new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
                     ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
