@@ -56,12 +56,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.vRevealBackground)
-    RevealBackgroundView vRevealBackground;
-    @InjectView(R.id.rvUserProfile)
-    SuperRecyclerView rvUserProfile;
+    @InjectView(R.id.activity_profile_reveal_bg_layout)
+    RevealBackgroundView mActivityRevealBackground;
+    @InjectView(R.id.activity_profile_content_superlistview)
+    SuperRecyclerView mProfileCollectionView;
 
-    private UserProfileAdapter userPhotosAdapter;
+    private UserProfileAdapter mProfileAdapter;
 
     private long mUid;
 
@@ -89,7 +89,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         ViewCompat.setElevation(getToolbar(), 0f);
-        vRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
+        mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
@@ -107,7 +107,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        rvUserProfile.measure(0, 0);
+        mProfileCollectionView.measure(0, 0);
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
     }
 
@@ -117,40 +117,40 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     }
 
     private void setupRevealBackground(Bundle savedInstanceState) {
-        vRevealBackground.setOnStateChangeListener(this);
+        mActivityRevealBackground.setOnStateChangeListener(this);
         if (savedInstanceState == null) {
             final int[] startingLocation = getIntent().getIntArrayExtra(ARG_REVEAL_START_LOCATION);
-            vRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            mActivityRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    vRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
-                    vRevealBackground.startFromLocation(startingLocation);
+                    mActivityRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mActivityRevealBackground.startFromLocation(startingLocation);
                     return true;
                 }
             });
         } else {
-            vRevealBackground.setToFinishedFrame();
-            userPhotosAdapter.setLockedAnimations(true);
+            mActivityRevealBackground.setToFinishedFrame();
+            mProfileAdapter.setLockedAnimations(true);
         }
     }
 
     private void setupUserProfileGrid() {
-        UIUtils.InsetsValue insetsValue =  UIUtils.getInsets(this, rvUserProfile, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        rvUserProfile.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        UIUtils.InsetsValue insetsValue =  UIUtils.getInsets(this, mProfileCollectionView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        mProfileCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
 
         // final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        rvUserProfile.setLayoutManager(new LinearLayoutManager(this));
-        rvUserProfile.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mProfileCollectionView.setLayoutManager(new LinearLayoutManager(this));
+        mProfileCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                userPhotosAdapter.setLockedAnimations(true);
+                mProfileAdapter.setLockedAnimations(true);
             }
         });
-        rvUserProfile.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mProfileCollectionView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 isNoMore = false;
-                int currentListType = userPhotosAdapter.getCurrentListType();
+                int currentListType = mProfileAdapter.getCurrentListType();
                 switch (currentListType) {
                     case UserProfileAdapter.LIST_ALL:
                         getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
@@ -164,10 +164,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                 }
             }
         });
-        rvUserProfile.setOnMoreListener((overallItemsCount, itemsBeforeMore, maxLastVisiblePosition) -> {
-            long lastSortKey = userPhotosAdapter.getLastSortKey();
+        mProfileCollectionView.setOnMoreListener((overallItemsCount, itemsBeforeMore, maxLastVisiblePosition) -> {
+            long lastSortKey = mProfileAdapter.getLastSortKey();
             if (!isNoMore && !isLoadingMore && lastSortKey != -1) {
-                int currentListType = userPhotosAdapter.getCurrentListType();
+                int currentListType = mProfileAdapter.getCurrentListType();
                 switch (currentListType) {
                     case UserProfileAdapter.LIST_ALL:
                         getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), lastSortKey, mUid, true);
@@ -180,8 +180,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                         break;
                 }
             } else {
-                rvUserProfile.setLoadingMore(false);
-                rvUserProfile.hideMoreProgress();
+                mProfileCollectionView.setLoadingMore(false);
+                mProfileCollectionView.hideMoreProgress();
             }
         });
     }
@@ -189,8 +189,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void onStateChange(int state) {
         if (RevealBackgroundView.STATE_FINISHED == state) {
-            rvUserProfile.setVisibility(View.VISIBLE);
-            userPhotosAdapter = new UserProfileAdapter(
+            mProfileCollectionView.setVisibility(View.VISIBLE);
+            mProfileAdapter = new UserProfileAdapter(
                     this,
                     mPicasso,
                     mUserAvatarUrl,
@@ -199,11 +199,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     mItemList
 
             );
-            userPhotosAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
+            mProfileAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
                 @Override
                 public void onItemTimelineClick(View view, int adapterPosition) {
-                    Object object = userPhotosAdapter.getItem(adapterPosition);
-                    if(object != null && object instanceof TimelineModel) {
+                    Object object = mProfileAdapter.getItem(adapterPosition);
+                    if (object != null && object instanceof TimelineModel) {
                         TimelineModel model = (TimelineModel) object;
                         mNavigation.openActivityForPostListByTimelineModel(UserProfileActivity.this, model);
                     }
@@ -211,8 +211,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
 
                 @Override
                 public void onItemThreadClick(View view, int adapterPosition) {
-                    Object object = userPhotosAdapter.getItem(adapterPosition);
-                    if(object != null && object instanceof ThreadModel) {
+                    Object object = mProfileAdapter.getItem(adapterPosition);
+                    if (object != null && object instanceof ThreadModel) {
                         ThreadModel model = (ThreadModel) object;
                         String idString = model.getId().substring(7);
                         long tid = Long.parseLong(idString);
@@ -222,14 +222,14 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
 
                 @Override
                 public void onProfileAreaClick(View view, int position, long uid) {
-                    Object object = userPhotosAdapter.getItem(position);
-                    if(object != null && object instanceof TimelineModel) {
+                    Object object = mProfileAdapter.getItem(position);
+                    if (object != null && object instanceof TimelineModel) {
                         TimelineModel model = (TimelineModel) object;
                         int[] startingLocation = new int[2];
                         view.getLocationOnScreen(startingLocation);
                         startingLocation[0] += view.getWidth() / 2;
                         mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
-                    } else if(object != null && object instanceof ThreadModel) {
+                    } else if (object != null && object instanceof ThreadModel) {
                         ThreadModel model = (ThreadModel) object;
                         int[] startingLocation = new int[2];
                         view.getLocationOnScreen(startingLocation);
@@ -238,7 +238,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     }
                 }
             });
-            userPhotosAdapter.setOnTabListener(position -> {
+            mProfileAdapter.setOnTabListener(position -> {
                 isNoMore = false;
                 switch (position) {
                     case 0:
@@ -252,11 +252,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                         break;
                 }
             });
-            rvUserProfile.setAdapter(userPhotosAdapter);
-            if(mUserModelInfo != null) userPhotosAdapter.setUserInfo(mUserModelInfo);
+            mProfileCollectionView.setAdapter(mProfileAdapter);
+            if(mUserModelInfo != null) mProfileAdapter.setUserInfo(mUserModelInfo);
             getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
         } else {
-            rvUserProfile.setVisibility(View.INVISIBLE);
+            mProfileCollectionView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -306,8 +306,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void onLoadUserProfileComplete(UserInfoModel userInfoModel) {
         mUserModelInfo = userInfoModel;
-        if(userPhotosAdapter != null) {
-            userPhotosAdapter.setUserInfo(userInfoModel);
+        if(mProfileAdapter != null) {
+            mProfileAdapter.setUserInfo(userInfoModel);
             getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
         }
     }
@@ -319,29 +319,29 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
 
     @Override
     public void onLoadUserAllData(List<TimelineModel> items, boolean isLoadingMore) {
-        if(userPhotosAdapter != null) {
+        if(mProfileAdapter != null) {
             if(items.size() == 0) {
                 isNoMore = true;
                 return;
             }
             if(!isLoadingMore) {
-                userPhotosAdapter.clear();
+                mProfileAdapter.clear();
             }
-            userPhotosAdapter.addAll(items);
+            mProfileAdapter.addAll(items);
         }
     }
 
     @Override
     public void onLoadUserThreads(List<ThreadModel> items, boolean isDigest, boolean isLoadingMore) {
-        if(userPhotosAdapter != null) {
+        if(mProfileAdapter != null) {
             if(items.size() == 0) {
                 isNoMore = true;
                 return;
             }
             if(!isLoadingMore) {
-                userPhotosAdapter.clear();
+                mProfileAdapter.clear();
             }
-            userPhotosAdapter.addAll(items);
+            mProfileAdapter.addAll(items);
         }
     }
 
@@ -366,17 +366,17 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void setLoadingMore(boolean value) {
         isLoadingMore = value;
-        rvUserProfile.setLoadingMore(value);
+        mProfileCollectionView.setLoadingMore(value);
         if(value)
-            rvUserProfile.showMoreProgress();
+            mProfileCollectionView.showMoreProgress();
         else
-            rvUserProfile.hideMoreProgress();
+            mProfileCollectionView.hideMoreProgress();
     }
 
     @Override
     public void setLoading(Boolean value) {
         isLoading = value;
-        rvUserProfile.getSwipeToRefresh().setRefreshing(value);
+        mProfileCollectionView.getSwipeToRefresh().setRefreshing(value);
     }
 
     @Override
