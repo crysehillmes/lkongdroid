@@ -131,6 +131,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
+        this.setSwipeBackEnable(false);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
