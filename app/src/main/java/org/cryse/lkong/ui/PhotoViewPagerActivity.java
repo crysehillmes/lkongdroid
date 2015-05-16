@@ -117,7 +117,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finishCompat();
+                closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);

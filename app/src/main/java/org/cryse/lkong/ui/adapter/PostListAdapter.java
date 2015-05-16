@@ -137,40 +137,47 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         @InjectView(R.id.recyclerview_item_post_button_replay)
         ImageButton mReplyButton;
 
-        OnItemButtonClickListener mOnItemReplyClickListener;
+        OnItemButtonClickListener mOnItemButtonClickListener;
         public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
             super(v);
             ButterKnife.inject(this, v);
-            mOnItemReplyClickListener = onItemReplyClickListener;
+            mOnItemButtonClickListener = onItemReplyClickListener;
             mReplyButton.setOnClickListener(view -> {
-                if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onReplyClick(view, getAdapterPosition());
+                if(mOnItemButtonClickListener != null) {
+                    mOnItemButtonClickListener.onReplyClick(view, getAdapterPosition());
                 }
             });
             mRateButton.setOnClickListener(view -> {
-                if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onRateClick(view, getAdapterPosition());
+                if(mOnItemButtonClickListener != null) {
+                    mOnItemButtonClickListener.onRateClick(view, getAdapterPosition());
                 }
             });
             mEditButton.setOnClickListener(view -> {
-                if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onEditClick(view, getAdapterPosition());
+                if(mOnItemButtonClickListener != null) {
+                    mOnItemButtonClickListener.onEditClick(view, getAdapterPosition());
                 }
             });
             mAvatarImageView.setOnClickListener(view -> {
-                if(mOnItemReplyClickListener != null) {
-                    mOnItemReplyClickListener.onProfileImageClick(view, getAdapterPosition());
+                if(mOnItemButtonClickListener != null) {
+                    mOnItemButtonClickListener.onProfileImageClick(view, getAdapterPosition());
                 }
             });
             if(mOnSpanClickListener != null)
                 mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
+            mPostItemView.setLongClickable(true);
+            mPostItemView.setOnTextLongPressedListener(view -> {
+                if (mOnItemButtonClickListener != null) {
+                    mOnItemButtonClickListener.onPostTextLongClick(view, getAdapterPosition());
+                }
+            });
         }
     }
 
     public interface OnItemButtonClickListener {
-        public void onRateClick(View view, int position);
-        public void onReplyClick(View view, int position);
-        public void onEditClick(View view, int position);
-        public void onProfileImageClick(View view, int position);
+        void onPostTextLongClick(View view, int position);
+        void onRateClick(View view, int position);
+        void onReplyClick(View view, int position);
+        void onEditClick(View view, int position);
+        void onProfileImageClick(View view, int position);
     }
 }

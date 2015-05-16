@@ -78,6 +78,11 @@
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
     <string name="dialog_title_rate">Rate</string>
+    <string name="dialog_exit_new_post_title">Discard your post?</string>
+    <string name="dialog_exit_confirm">Confirm</string>
+    <string name="dialog_exit_cancel">Cancel</string>
+    <string name="dialog_exit_discard">Discard</string>
+    <string name="dialog_title_copy_content">Copy Content</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>

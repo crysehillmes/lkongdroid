@@ -91,8 +91,16 @@ public class Pointer {
         return mUpY;
     }
 
-    public boolean existedWithinTimeLimit(int pTimeLimit) {
-        return mUpTime - mDownTime <= pTimeLimit;
+    public boolean existedWithinTimeLimitMost(int time) {
+        return mUpTime - mDownTime <= time;
+    }
+
+    public boolean existedWithinTimeLimitMost(int least, int most) {
+        return mUpTime - mDownTime >= least && mUpTime - mDownTime <= most;
+    }
+
+    public boolean existedWithinTimeLimitLeast(int least) {
+        return mUpTime - mDownTime >= least;
     }
 
     public boolean tapped() {

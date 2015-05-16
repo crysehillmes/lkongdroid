@@ -170,13 +170,6 @@ public abstract class AbstractActivity extends AppCompatActivity {
             mPreLShadow.setVisibility(visibility);
     }
 
-    public void finishCompat() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            this.finishAfterTransition();
-        else
-            this.finish();
-    }
-
     protected abstract void analyticsTrackEnter();
 
     protected abstract void analyticsTrackExit();

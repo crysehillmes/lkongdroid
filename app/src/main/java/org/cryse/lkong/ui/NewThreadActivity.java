@@ -103,7 +103,7 @@ public class NewThreadActivity extends AbstractPostActivity {
         if (event instanceof NewThreadDoneEvent) {
             NewThreadResult result = ((NewThreadDoneEvent) event).getNewThreadResult();
             if (result != null && result.isSuccess()) {
-                new Handler().postDelayed(this::finishCompat, 300);
+                new Handler().postDelayed(this::closeActivityWithTransition, 300);
 
             } else {
                 if (result != null) {

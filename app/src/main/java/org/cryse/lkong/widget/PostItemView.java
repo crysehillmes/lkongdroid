@@ -45,6 +45,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     private int px_margin_8 = 0;
 
     private OnSpanClickListener mOnSpanClickListener;
+    private OnTextLongPressedListener mOnTextLongPressedListener;
     private boolean mShowImages = true;
 
     public PostItemView(Context context) {
@@ -209,6 +210,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
     // Gesture ids for one-finger gestures.
     public static final int TAP = 0;
+    public static final int LONG_TAP = 1112;
     public static final int SWIPE_UP = 1;
     public static final int SWIPE_DOWN = 2;
     public static final int SWIPE_LEFT = 3;
@@ -242,8 +244,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         if (mTotalPointerCount == 1) {
             Pointer mPointer = mPointers.get(0);
 
-            if (mPointer.existedWithinTimeLimit(TIME_LIMIT)) {
-                if (mPointer.tapped() && mPointer.existedWithinTimeLimit(100)) {
+            if (mPointer.existedWithinTimeLimitMost(TIME_LIMIT)) {
+                if (mPointer.tapped() && mPointer.existedWithinTimeLimitMost(100)) {
                     return TAP;
                 } else if (mPointer.swipedUp()) {
                     return SWIPE_UP;
@@ -256,6 +258,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                 } else {
                     return INVALID_GESTURE;
                 }
+            } else if (mPointer.tapped() && mPointer.existedWithinTimeLimitLeast(1000)) {
+                return LONG_TAP;
             } else {
                 return INVALID_GESTURE;
             }
@@ -263,8 +267,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
             Pointer mPointerI = mPointers.get(0);
             Pointer mPointerII = mPointers.get(1);
 
-            if (mPointerI.existedWithinTimeLimit(TIME_LIMIT) &&
-                    mPointerII.existedWithinTimeLimit(TIME_LIMIT)) {
+            if (mPointerI.existedWithinTimeLimitMost(TIME_LIMIT) &&
+                    mPointerII.existedWithinTimeLimitMost(TIME_LIMIT)) {
 
                 if (mPointerI.tapped() &&
                         mPointerII.tapped()) {
@@ -302,13 +306,17 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     public boolean onGesture(int gestureId, MotionEvent motionEvent) {
+        int viewWidth = getWidth();
+        int viewHeight = getHeight();
+        int x = (int)motionEvent.getX();
+        int y = (int)motionEvent.getY();
         if(gestureId == TAP) {
-            int viewWidth = getWidth();
-            int viewHeight = getHeight();
-            int x = (int)motionEvent.getX();
-            int y = (int)motionEvent.getY();
             if((x > (px_margin_16 ) && x < (viewWidth - px_margin_16)) && (y > (px_margin_72) && y < (px_margin_72 + (mPostDisplayCache.getTextLayout() == null ? 0 : mPostDisplayCache.getTextLayout().getHeight())))) {
                 return onTextTouched(x, y);
+            }
+        } else if(gestureId == LONG_TAP) {
+            if(mOnTextLongPressedListener != null && (x > (px_margin_16 ) && x < (viewWidth - px_margin_16)) && (y > (px_margin_72) && y < (px_margin_72 + (mPostDisplayCache.getTextLayout() == null ? 0 : mPostDisplayCache.getTextLayout().getHeight())))) {
+                mOnTextLongPressedListener.onTextPressed(this);
             }
         }
         return false;
@@ -435,6 +443,10 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         this.mOnSpanClickListener = listener;
     }
 
+    public void setOnTextLongPressedListener(OnTextLongPressedListener listener) {
+        this.mOnTextLongPressedListener = listener;
+    }
+
     public Object getPicassoTag() {
         return mPicassoTag;
     }
@@ -446,5 +458,9 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     public interface OnSpanClickListener {
         public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl);
         public boolean onUrlSpanClick(long postId, URLSpan span, String target);
+    }
+
+    public interface OnTextLongPressedListener {
+        void onTextPressed(View iew);
     }
 }

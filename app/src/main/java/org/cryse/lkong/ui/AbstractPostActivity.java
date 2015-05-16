@@ -39,6 +39,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -129,6 +131,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
+        this.setSwipeBackEnable(false);
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
@@ -187,7 +190,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 setNightMode(!isNightMode());
                 return true;
             case android.R.id.home:
-                finishCompat();
+                closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -238,8 +241,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             if (mSendServiceBinder != null) {
                 mProgressDialog = ProgressDialog.show(this, "", getString(R.string.dialog_new_post_sending));
                 mProgressDialog.setCancelable(true);
-                mProgressDialog.setCanceledOnTouchOutside(false);
-                mProgressDialog.setOnDismissListener(dialog -> finishCompat());
+                mProgressDialog.setCanceledOnTouchOutside(false);/*
+                mProgressDialog.setOnDismissListener(dialog -> closeActivityWithTransition());*/
                 StringBuilder sendContentBuilder = new StringBuilder();
                 sendContentBuilder.append(android.text.Html.toHtml(replaceBackToImageSpan(spannableContent)));
                 if(!isInEditMode())
@@ -521,7 +524,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
             if (result != null && result.isSuccess()) {
-                new Handler().postDelayed(this::finishCompat, 300);
+                new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
                     ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
@@ -580,5 +583,38 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             }
         }
         return document.html();
+    }
+
+    @Override
+    public void onBackPressed() {
+        /*super.onBackPressed();*/
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        } else {
+            if (mContentEditText != null && !TextUtils.isEmpty(mContentEditText.getText())) {
+                new MaterialDialog.Builder(this)
+                        .content(getString(R.string.dialog_exit_new_post_title, getString(R.string.app_name)))
+                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)  // the default is light, so you don't need this line
+                        .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
+                        .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                dialog.dismiss();
+                                AbstractPostActivity.this.finish();
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .build()
+                        .show();
+
+            } else {
+                super.onBackPressed();
+            }
+        }
     }
 }

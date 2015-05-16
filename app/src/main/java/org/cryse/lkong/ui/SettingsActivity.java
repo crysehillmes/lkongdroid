@@ -65,7 +65,7 @@ public class SettingsActivity extends AbstractThemeableActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                closeActivityWithTransition();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

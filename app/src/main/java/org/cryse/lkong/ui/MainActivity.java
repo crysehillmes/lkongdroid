@@ -287,7 +287,7 @@ public class MainActivity extends AbstractThemeableActivity {
             );
         } catch (NeedSignInException ex) {
             mNavigation.navigateToSignInActivity(this, true);
-            finishCompat();
+            closeActivityWithTransition();
             return;
         }
         getEventBus().sendEvent(new CurrentAccountChangedEvent());
