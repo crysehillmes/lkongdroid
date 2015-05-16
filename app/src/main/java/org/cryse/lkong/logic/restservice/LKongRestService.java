@@ -656,6 +656,9 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
         List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
+        for(ThreadModel model : threadList) {
+            model.setUid(uid);
+        }
         clearCookies();
         return threadList;
     }
