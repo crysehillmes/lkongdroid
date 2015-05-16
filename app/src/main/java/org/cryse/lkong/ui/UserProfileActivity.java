@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -17,7 +18,6 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
-import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -30,6 +30,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.UserProfileView;
+import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +89,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         ViewCompat.setElevation(getToolbar(), 0f);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        vRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
         if(mUid == 0l)
             throw new IllegalArgumentException("Must set uid in intent.");
