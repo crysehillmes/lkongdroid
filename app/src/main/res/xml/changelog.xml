@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion
+        changeDate="May 16, 2015"
+        versionCode="804"
+        versionName="0.8.4">
+        <changelogbug>Fix：Some user avatar not display in profile page</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="May 16, 2015"
+        versionCode="803"
+        versionName="0.8.3">
+        <changelogtext>New: Long press to copy post content</changelogtext>
+        <changelogtext>Improvement: User could cancel send/edit/reply, prevent content loss.</changelogtext>
+        <changelogbug>Fix：Theme error in dark mode</changelogbug>
+        <changelogbug>Fix：No Animation for home as up button</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="May 9, 2015"
+        versionCode="802"
+        versionName="0.8.2">
+        <changelogtext>New: Auto punch in current user's profile page</changelogtext>
+        <changelogtext>Improvement: Animation when back button pressed</changelogtext>
+        <changelogbug>Fix: Some touch/click event error</changelogbug>
+        <changelogbug>Fix: Touch error in Favorites list</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="May 6, 2015"
+        versionCode="801"
+        versionName="0.8.1">
+        <changelogbug>Fix: Theme Error</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="May 6, 2015"
+        versionCode="800"
+        versionName="0.8.0">
+        <changelogtext>New: Search for threads/forums/users</changelogtext>
+        <changelogtext>New: User profile page</changelogtext>
+        <changelogtext>New：New option could let you put forum list on first page</changelogtext>
+        <changelogbug>Fix: Wrong margin and padding on pre-Lollipop devices</changelogbug>
+    </changelogversion>
+</changelog>
