@@ -5,11 +5,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 
+import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.RxEventBus;
@@ -20,10 +21,6 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
@@ -127,33 +124,15 @@ public class SettingsFragment extends PreferenceFragment {
 
         Preference changelogPref = findPreference("prefs_about_changelog");
         changelogPref.setOnPreferenceClickListener(preference -> {
-            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+            ChangeLogUtils reader = new ChangeLogUtils(getActivity(), R.xml.changelog);
+
+            MaterialDialog materialDialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.settings_item_change_log_title)
-                    .customView(R.layout.dialog_webview, false)
-                    .positiveText(android.R.string.ok)
-                    .build();
-            WebView webView = (WebView) dialog.getCustomView().findViewById(R.id.webview);
-            try {
-                String data = readChangelogFromAssets();
-                webView.loadDataWithBaseURL(null, data, "text/html", "UTF-8", null);
-            } catch (Exception e) {
-                webView.loadUrl("file:///android_asset/changelog.html");
-            }
-            dialog.show();
+                    .theme(((AbstractThemeableActivity) getActivity()).isNightMode() ? Theme.DARK : Theme.LIGHT)
+                    .content(reader.toSpannable())
+                    .show();
             return true;
         });
-    }
-
-    private String readChangelogFromAssets() throws Exception {
-        StringBuilder buffer = new StringBuilder();
-        InputStream inputStream = getActivity().getAssets().open("changelog.html");
-        BufferedReader textReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-        String str;
-        while ((str = textReader.readLine()) != null) {
-            buffer.append(str);
-        }
-        textReader.close();
-        return buffer.toString();
     }
 
     private void setupFeedbackPreference() {

@@ -114,4 +114,6 @@ allprojects {
 
 
     ext.supportlibraryVersion = '22.1.1'
+    ext.retroLambdaVersion = '2.0.1'
+    ext.gradleRetroLambdaVersion = '22.1.1'
 }
