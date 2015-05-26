@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年5月27日"
+        versionCode="805"
+        versionName="0.8.5">
+        <changelogtext>改进: 搜索帖子的结果中显示主题的发表时间</changelogtext>
+        <changelogbug>修复：一些导致崩溃的错误</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年5月16日"
         versionCode="804"
         versionName="0.8.4">
