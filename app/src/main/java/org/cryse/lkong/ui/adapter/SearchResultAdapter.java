@@ -19,6 +19,8 @@ import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -28,6 +30,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private int mResultType = 0;
     private Picasso mPicasso;
     private CircleTransform mCircleTransform;
+    private DateFormat mDateFormat;
     public void setDataSet(SearchDataSet searchDataSet) {
         this.clear();
         if(searchDataSet != null) {
@@ -46,6 +49,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         super(context, new ArrayList<AbstractSearchResult>());
         this.mPicasso = picasso;
         this.mCircleTransform = new CircleTransform();
+        this.mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
@@ -88,7 +92,12 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(getString(R.string.format_search_post_result_reply_count, item.getReplyCount()));
+        viewHolder.secondaryTextView.setText(
+                getString(
+                        R.string.format_search_post_result_reply_count,
+                        item.getDateline() == null ? "" : mDateFormat.format(item.getDateline()),
+                        item.getReplyCount())
+        );
     }
 
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {

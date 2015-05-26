@@ -7,7 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SearchDataSet {
@@ -63,15 +67,30 @@ public class SearchDataSet {
         setDataType(TYPE_POST);
         searchResultItems.clear();
         int count = dataArray.length();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for(int i = 0; i < count; i++) {
             JSONObject jsonObject = dataArray.getJSONObject(i);
             SearchPostItem item = new SearchPostItem();
-            item.setId(jsonObject.getString("id"));
-            item.setSortKey(jsonObject.getLong("sortkey"));
-            item.setSubject(Html.fromHtml(jsonObject.getString("subject")));
-            item.setReplyCount(Integer.valueOf(jsonObject.getString("replynum")));
-            item.setUserId(Long.valueOf(jsonObject.getString("uid")));
-            item.setUserName(jsonObject.getString("username"));
+            if(jsonObject.has("id"))
+                item.setId(jsonObject.getString("id"));
+            if(jsonObject.has("sortkey"))
+                item.setSortKey(jsonObject.getLong("sortkey"));
+            if(jsonObject.has("subject"))
+                item.setSubject(Html.fromHtml(jsonObject.getString("subject")));
+            if(jsonObject.has("replynum"))
+                item.setReplyCount(Integer.valueOf(jsonObject.getString("replynum")));
+            if(jsonObject.has("uid"))
+                item.setUserId(Long.valueOf(jsonObject.getString("uid")));
+            if(jsonObject.has("username"))
+                item.setUserName(jsonObject.getString("username"));
+            if(jsonObject.has("dateline")) {
+                try {
+                    Date result =  df.parse(jsonObject.getString("dateline"));
+                    item.setDateline(result);
+                } catch (ParseException e) {
+                    item.setDateline(null);
+                }
+            }
             searchResultItems.add(item);
         }
     }
@@ -83,13 +102,20 @@ public class SearchDataSet {
         for(int i = 0; i < count; i++) {
             JSONObject jsonObject = dataArray.getJSONObject(i);
             SearchUserItem item = new SearchUserItem();
-            item.setId(jsonObject.getString("id"));
-            item.setUserId(Long.valueOf(jsonObject.getString("uid")));
-            item.setUserName(htmlToCharSequence(jsonObject.getString("username")));
-            item.setGender(jsonObject.getInt("gender"));
-            item.setSignHtml(htmlToCharSequence(jsonObject.getString("sightml")));
-            item.setCustomStatus(htmlToCharSequence(jsonObject.getString("customstatus")));
-            item.setAvatarUrl(ModelConverter.uidToAvatarUrl(item.getUserId()));
+            if(jsonObject.has("id"))
+                item.setId(jsonObject.getString("id"));
+            if(jsonObject.has("uid"))
+                item.setUserId(Long.valueOf(jsonObject.getString("uid")));
+            if(jsonObject.has("username"))
+                item.setUserName(htmlToCharSequence(jsonObject.getString("username")));
+            if(jsonObject.has("gender"))
+                item.setGender(jsonObject.getInt("gender"));
+            if(jsonObject.has("sightml"))
+                item.setSignHtml(htmlToCharSequence(jsonObject.getString("sightml")));
+            if(jsonObject.has("customstatus"))
+                item.setCustomStatus(htmlToCharSequence(jsonObject.getString("customstatus")));
+            if(jsonObject.has("uid"))
+                item.setAvatarUrl(ModelConverter.uidToAvatarUrl(item.getUserId()));
             searchResultItems.add(item);
         }
     }
@@ -101,12 +127,18 @@ public class SearchDataSet {
         for(int i = 0; i < count; i++) {
             JSONObject jsonObject = dataArray.getJSONObject(i);
             SearchGroupItem item = new SearchGroupItem();
-            item.setId(jsonObject.getString("id"));
-            item.setForumId(Long.valueOf(jsonObject.getString("fid")));
-            item.setFansCount(Integer.valueOf(jsonObject.getString("fansnum")));
-            item.setGroupName(htmlToCharSequence(jsonObject.getString("name")));
-            item.setGroupDescription(htmlToCharSequence(jsonObject.getString("description")));
-            item.setIconUrl(ModelConverter.fidToForumIconUrl(item.getForumId()));
+            if(jsonObject.has("id"))
+                item.setId(jsonObject.getString("id"));
+            if(jsonObject.has("fid"))
+                item.setForumId(Long.valueOf(jsonObject.getString("fid")));
+            if(jsonObject.has("fansnum"))
+                item.setFansCount(Integer.valueOf(jsonObject.getString("fansnum")));
+            if(jsonObject.has("name"))
+                item.setGroupName(htmlToCharSequence(jsonObject.getString("name")));
+            if(jsonObject.has("description"))
+                item.setGroupDescription(htmlToCharSequence(jsonObject.getString("description")));
+            if(jsonObject.has("fid"))
+                item.setIconUrl(ModelConverter.fidToForumIconUrl(item.getForumId()));
             searchResultItems.add(item);
         }
     }
