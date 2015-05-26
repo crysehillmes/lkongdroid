@@ -9,7 +9,9 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -50,8 +52,8 @@ public class MainActivity extends AbstractThemeableActivity {
     @PrefsForumsFirst
     BooleanPreference mForumsFirst;
 
-    AccountHeader.Result mAccountHeader;
-    Drawer.Result mNaviagtionDrawer;
+    AccountHeader mAccountHeader;
+    Drawer mNaviagtionDrawer;
 
     Picasso mPicasso;
     UserAccountEntity mCurrentAccount = null;
@@ -103,10 +105,12 @@ public class MainActivity extends AbstractThemeableActivity {
 
     private void initDrawer() {
         // Create the AccountHeader
-        AccountHeader accountHeader = new AccountHeader()
+        AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light);
-        accountHeader.withOnAccountHeaderListener((view, iProfile, b) -> {
+                .withHeaderBackground(
+                        isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light
+                );
+        accountHeaderBuilder.withOnAccountHeaderListener((view, iProfile, b) -> {
             if (iProfile.getIdentifier() == -3001) {
                 mNavigation.navigateToSignInActivity(MainActivity.this, false);
             } else {
@@ -123,7 +127,7 @@ public class MainActivity extends AbstractThemeableActivity {
             }
             return true;
         }).withCurrentProfileHiddenInList(true);
-        mAccountHeader = accountHeader.build();
+        mAccountHeader = accountHeaderBuilder.build();
         IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         IDrawerItem forumsDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
         IDrawerItem[] drawerItems = new IDrawerItem[5];
@@ -139,7 +143,7 @@ public class MainActivity extends AbstractThemeableActivity {
         drawerItems[3] = new DividerDrawerItem();
         drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
         //Now create your drawer and pass the AccountHeader.Result
-        mNaviagtionDrawer = new Drawer()
+        mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(getToolbar())
                 .withAccountHeader(mAccountHeader)
@@ -162,12 +166,18 @@ public class MainActivity extends AbstractThemeableActivity {
                             mPendingRunnable = null;
                         }
                     }
+
+                    @Override
+                    public void onDrawerSlide(View view, float v) {
+
+                    }
                 })
                 .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
                     // do something with the clicked item :D
                     if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
                         mCurrentSelection = drawerItem.getIdentifier();
                     mPendingRunnable = () ->  onNavigationSelected(drawerItem);
+                    return false;
                 })
                 .build();
         addAccountProfile();
