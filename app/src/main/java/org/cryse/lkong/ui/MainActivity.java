@@ -295,6 +295,11 @@ public class MainActivity extends AbstractThemeableActivity {
 
     @Override
     public void onBackPressed() {
+        closeActivityWithTransition();
+    }
+
+    @Override
+    public void closeActivityWithTransition() {
         if (!getSupportFragmentManager().popBackStackImmediate()) {
             supportFinishAfterTransition();
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
