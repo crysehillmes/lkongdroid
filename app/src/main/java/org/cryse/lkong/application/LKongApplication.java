@@ -111,7 +111,7 @@ public class LKongApplication extends Application {
     }
 
     /** A tree which logs important information for crash reporting. */
-    private static class CrashReportingTree extends Timber.HollowTree {
+    private static class CrashReportingTree extends Timber.DebugTree {
         @Override public void i(String message, Object... args) {
             if (BuildConfig.DEBUG) {
                 Log.i((String) args[0], message);
@@ -137,8 +137,8 @@ public class LKongApplication extends Application {
             e(message, args);
             if (BuildConfig.DEBUG) {
                 Log.e((String) args[0], message, t);
+                Crashlytics.logException(t);
             }
-            Crashlytics.logException(t);
         }
 
         @Override

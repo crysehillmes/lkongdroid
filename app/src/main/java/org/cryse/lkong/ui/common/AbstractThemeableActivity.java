@@ -191,8 +191,11 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     public void closeActivityWithTransition() {
         if (!getSupportFragmentManager().popBackStackImmediate()) {
             if(mHelper != null && mHelper.getSwipeBackLayout() != null) {
-                mHelper.getSwipeBackLayout().scrollToFinishActivity();
-                mMainThreadHandler.postDelayed(this::supportFinishAfterTransition, 500);
+                try {
+                    mHelper.getSwipeBackLayout().scrollToFinishActivity();
+                } catch (Exception e) {
+                    finish();
+                }
             } else {
                 supportFinishAfterTransition();
             }

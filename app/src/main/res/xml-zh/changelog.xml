@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion
+        changeDate="2015年5月27日"
+        versionCode="805"
+        versionName="0.8.5">
+        <changelogtext>改进: 搜索帖子的结果中显示主题的发表时间</changelogtext>
+        <changelogbug>修复：一些导致崩溃的错误</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="2015年5月16日"
+        versionCode="804"
+        versionName="0.8.4">
+        <changelogbug>修复：用户信息界面部分头像不显示的问题</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="2015年5月16日"
+        versionCode="803"
+        versionName="0.8.3">
+        <changelogtext>新功能：长按复制帖子文字</changelogtext>
+        <changelogtext>改进：更新发帖/回帖/编辑，当正在发送时可以按返回键取消，内容非空时弹出对话框提示防止误操作</changelogtext>
+        <changelogbug>修复：夜间模式用户信息页面颜色错误的问题</changelogbug>
+        <changelogbug>修复：通过左上角返回时没有动画的问题</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="2015年5月9日"
+        versionCode="802"
+        versionName="0.8.2">
+        <changelogtext>新功能：在自己的资料页面自动签到</changelogtext>
+        <changelogtext>改进：按返回键返回时加入动画过渡</changelogtext>
+        <changelogbug>修复：许多地方不响应点击事件的问题</changelogbug>
+        <changelogbug>修复：在我的收藏中无法打开帖子的问题</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="2015年5月6日"
+        versionCode="801"
+        versionName="0.8.1">
+        <changelogbug>修复：一处主题错误</changelogbug>
+    </changelogversion>
+    <changelogversion
+        changeDate="2015年5月6日"
+        versionCode="801"
+        versionName="0.8.0">
+        <changelogtext>新功能：搜索</changelogtext>
+        <changelogtext>新功能：用户资料页面</changelogtext>
+        <changelogtext>新功能：可选板块列表为首页</changelogtext>
+        <changelogbug>修复：在 Lollipop 之前版本中列表的错误空白</changelogbug>
+    </changelogversion>
+</changelog>
