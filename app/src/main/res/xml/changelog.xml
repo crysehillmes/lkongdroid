@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="May 27, 2015"
+        versionCode="805"
+        versionName="0.8.5">
+        <changelogtext>Improvement: Search post result now would display create time</changelogtext>
+        <changelogbug>Fix：Some fatal bugs</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="May 16, 2015"
         versionCode="804"
         versionName="0.8.4">
