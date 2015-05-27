@@ -5,13 +5,13 @@
         versionCode="805"
         versionName="0.8.5">
         <changelogtext>Improvement: Search post result now would display create time</changelogtext>
-        <changelogbug>Fix：Some fatal bugs</changelogbug>
+        <changelogbug>Fix: Some fatal bugs</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="May 16, 2015"
         versionCode="804"
         versionName="0.8.4">
-        <changelogbug>Fix：Some user avatar not display in profile page</changelogbug>
+        <changelogbug>Fix: Some user avatar not display in profile page</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="May 16, 2015"
@@ -19,8 +19,8 @@
         versionName="0.8.3">
         <changelogtext>New: Long press to copy post content</changelogtext>
         <changelogtext>Improvement: User could cancel send/edit/reply, prevent content loss.</changelogtext>
-        <changelogbug>Fix：Theme error in dark mode</changelogbug>
-        <changelogbug>Fix：No Animation for home as up button</changelogbug>
+        <changelogbug>Fix: Theme error in dark mode</changelogbug>
+        <changelogbug>Fix: No Animation for home as up button</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="May 9, 2015"
@@ -43,7 +43,7 @@
         versionName="0.8.0">
         <changelogtext>New: Search for threads/forums/users</changelogtext>
         <changelogtext>New: User profile page</changelogtext>
-        <changelogtext>New：New option could let you put forum list on first page</changelogtext>
+        <changelogtext>New: New option could let you put forum list on first page</changelogtext>
         <changelogbug>Fix: Wrong margin and padding on pre-Lollipop devices</changelogbug>
     </changelogversion>
 </changelog>
