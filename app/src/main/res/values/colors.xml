@@ -72,6 +72,7 @@
         <item>@color/md_brown_500</item>
         <item>@color/md_grey_500</item>
         <item>@color/md_blue_grey_500</item>
+        <item>@android:color/background_dark</item>
     </array>
     <array name="primaryDarkColors">
         <item>@color/md_red_700</item>
@@ -93,5 +94,6 @@
         <item>@color/md_brown_700</item>
         <item>@color/md_grey_700</item>
         <item>@color/md_blue_grey_700</item>
+        <item>@android:color/background_dark</item>
     </array>
 </resources>
