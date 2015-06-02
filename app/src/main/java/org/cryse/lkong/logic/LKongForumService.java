@@ -79,6 +79,7 @@ public class LKongForumService {
                 subscriber.onCompleted();
             } catch (Exception e) {
                 subscriber.onError(e);
+                Timber.i("SIGNIN_FAILED_WITH_EXCEPTION", LOG_TAG, e.getMessage());
             }
         });
     }

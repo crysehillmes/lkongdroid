@@ -113,9 +113,9 @@ public class LKongApplication extends Application {
     /** A tree which logs important information for crash reporting. */
     private static class CrashReportingTree extends Timber.DebugTree {
         @Override public void i(String message, Object... args) {
-            if (BuildConfig.DEBUG) {
-                Log.i((String) args[0], message);
-            }
+            Log.i((String) args[0], message);
+            if(args.length >= 2)
+                Crashlytics.log(args[0] + "<||>" + message + "<||>" + (String) args[1]);
         }
 
         @Override
