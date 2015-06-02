@@ -448,31 +448,35 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if (event instanceof NewPostDoneEvent) {
-            NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
-            long tid = doneEvent.getPostResult().getTid();
-            if (tid == mThreadId) {
-                int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
-                if (newReplyCount > mThreadModel.getReplies())
-                    mThreadModel.setReplies(newReplyCount);
-                int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
-                if (newPageCount > mPageCount) {
-                    mPageCount = newPageCount;
-                    mPageIndicatorItems = new String[mPageCount];
-                    for (int i = 1; i <= mPageCount; i++) {
-                        mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+        try {
+            if (event instanceof NewPostDoneEvent) {
+                NewPostDoneEvent doneEvent = (NewPostDoneEvent) event;
+                long tid = doneEvent.getPostResult().getTid();
+                if (tid == mThreadId) {
+                    int newReplyCount = doneEvent.getPostResult().getReplyCount(); // 这里楼主本身的一楼是被计算了的
+                    if (newReplyCount > mThreadModel.getReplies())
+                        mThreadModel.setReplies(newReplyCount);
+                    int newPageCount = newReplyCount == 0 ? 1 : (int) Math.ceil((double) newReplyCount / 20d);
+                    if (newPageCount > mPageCount) {
+                        mPageCount = newPageCount;
+                        mPageIndicatorItems = new String[mPageCount];
+                        for (int i = 1; i <= mPageCount; i++) {
+                            mPageIndicatorItems[i - 1] = getString(R.string.format_post_list_page_indicator_detail, i, (i - 1) * 20 + 1, i * 20);
+                        }
+                        updatePageIndicator();
                     }
-                    updatePageIndicator();
+                    if (newPageCount == mCurrentPage) {
+                        getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE);
+                    }
                 }
-                if (newPageCount == mCurrentPage) {
-                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, mCurrentPage, false, SHOW_MODE_REPLACE);
-                }
-            }
 
-        } else if(event instanceof ThemeColorChangedEvent) {
-            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
-        } else if(event instanceof EditPostDoneEvent) {
-            refreshCurrentPage();
+            } else if(event instanceof ThemeColorChangedEvent) {
+                setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
+            } else if(event instanceof EditPostDoneEvent) {
+                refreshCurrentPage();
+            }
+        } catch (Exception ex) {
+            Timber.e(ex, ex.getMessage(), LOG_TAG);
         }
     }
 
