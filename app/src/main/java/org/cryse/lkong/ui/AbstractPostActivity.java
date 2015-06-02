@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.SpanWatcher;
 import android.text.Spannable;
@@ -42,6 +44,7 @@ import android.widget.RelativeLayout;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
@@ -62,6 +65,7 @@ import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
@@ -348,12 +352,16 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 {
                     selectedImageUri = data == null ? null : data.getData();
                 }
-                try {
-                    Bitmap yourSelectedImage = mPicasso.load(selectedImageUri).resize((int)(mContentTextSize * 4), (int)(mContentTextSize * 4)).centerCrop().get();
-                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                AsyncTargetDrawable drawable = new AsyncTargetDrawable(
+                        this,
+                        null,
+                        getLogTag(),
+                        (int)(mContentTextSize * 4),
+                        (int)(mContentTextSize * 4),
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme())
+                );
+                mPicasso.load(selectedImageUri).placeholder(R.drawable.image_placeholder).resize((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
+                addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
             }
         }
     }
