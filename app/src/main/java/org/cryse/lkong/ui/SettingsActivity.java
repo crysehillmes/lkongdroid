@@ -58,7 +58,9 @@ public class SettingsActivity extends AbstractThemeableActivity {
 
     @Override
     public void onBackPressed() {
-        this.finish();
+        if(!getSupportFragmentManager().popBackStackImmediate()) {
+            this.finish();
+        }
     }
 
     @Override
