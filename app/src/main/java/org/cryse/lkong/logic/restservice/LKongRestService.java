@@ -121,11 +121,13 @@ public class LKongRestService {
             String errorMessage = jsonObject.getString("error");
             signInResult.setSuccess(false);
             signInResult.setErrorMessage(TextUtils.isEmpty(errorMessage) ? "" : errorMessage);
+            Timber.i("SIGNIN_FAILED" + errorMessage, LOG_TAG, responseBody);
             return signInResult;
         }
         boolean success = jsonObject.getBoolean("success");
         UserInfoModel me = getUserConfigInfo();
 
+        Timber.i("SIGNIN_SUCCESS", LOG_TAG, responseBody);
         signInResult.setSuccess(success);
         signInResult.setMe(me);
         readCookies(signInResult);

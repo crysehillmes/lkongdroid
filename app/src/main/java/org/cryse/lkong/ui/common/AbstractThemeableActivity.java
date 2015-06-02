@@ -185,20 +185,20 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     @Override
     public void onBackPressed() {
-        closeActivityWithTransition();
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            closeActivityWithTransition();
+        }
     }
 
     public void closeActivityWithTransition() {
-        if (!getSupportFragmentManager().popBackStackImmediate()) {
-            if(mHelper != null && mHelper.getSwipeBackLayout() != null) {
-                try {
-                    mHelper.getSwipeBackLayout().scrollToFinishActivity();
-                } catch (Exception e) {
-                    finish();
-                }
-            } else {
-                supportFinishAfterTransition();
+        if (mHelper != null && mHelper.getSwipeBackLayout() != null) {
+            try {
+                mHelper.getSwipeBackLayout().scrollToFinishActivity();
+            } catch (Exception e) {
+                finish();
             }
+        } else {
+            supportFinishAfterTransition();
         }
     }
 }

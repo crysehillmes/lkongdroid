@@ -87,7 +87,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
-
     @Inject
     UserAccountManager mUserAccountManager;
 
@@ -350,10 +349,9 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                     selectedImageUri = data == null ? null : data.getData();
                 }
                 try {
-                    InputStream imageStream = getContentResolver().openInputStream(selectedImageUri);
-                    Bitmap yourSelectedImage = BitmapFactory.decodeStream(imageStream);
+                    Bitmap yourSelectedImage = mPicasso.load(selectedImageUri).resize((int)(mContentTextSize * 4), (int)(mContentTextSize * 4)).centerCrop().get();
                     addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -588,32 +586,34 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @Override
     public void onBackPressed() {
         /*super.onBackPressed();*/
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        } else {
-            if (mContentEditText != null && !TextUtils.isEmpty(mContentEditText.getText())) {
-                new MaterialDialog.Builder(this)
-                        .content(getString(R.string.dialog_exit_new_post_title, getString(R.string.app_name)))
-                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)  // the default is light, so you don't need this line
-                        .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
-                        .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                dialog.dismiss();
-                                AbstractPostActivity.this.finish();
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .build()
-                        .show();
-
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
             } else {
-                super.onBackPressed();
+                if (mContentEditText != null && !TextUtils.isEmpty(mContentEditText.getText())) {
+                    new MaterialDialog.Builder(this)
+                            .content(getString(R.string.dialog_exit_new_post_title, getString(R.string.app_name)))
+                            .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)  // the default is light, so you don't need this line
+                            .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
+                            .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    dialog.dismiss();
+                                    AbstractPostActivity.this.finish();
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .build()
+                            .show();
+
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
     }

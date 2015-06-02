@@ -102,6 +102,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
     }
 
     public void setLoadingStatus(boolean loadingMore, boolean isLoading) {
+        if(mView == null) return;
         if (loadingMore)
             mView.setLoadingMore(isLoading);
         else

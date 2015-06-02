@@ -33,7 +33,8 @@ public class ThemeEngine {
             R.color.md_deep_orange_500,
             R.color.md_brown_500,
             R.color.md_grey_500,
-            R.color.md_blue_grey_500
+            R.color.md_blue_grey_500,
+            android.R.color.background_dark
     };
 
     int[] mPrimaryDarkColors = new int[]{
@@ -55,7 +56,8 @@ public class ThemeEngine {
             R.color.md_deep_orange_700,
             R.color.md_brown_700,
             R.color.md_grey_700,
-            R.color.md_blue_grey_700
+            R.color.md_blue_grey_700,
+            android.R.color.background_dark
     };
 
     @Inject

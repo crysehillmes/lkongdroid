@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年6月2日"
+        versionCode="806"
+        versionName="0.8.6">
+        <changelogtext>改进：添加纯黑主题色</changelogtext>
+        <changelogbug>修复：几个导致崩溃的错误</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年5月27日"
         versionCode="805"
         versionName="0.8.5">
-        <changelogtext>改进: 搜索帖子的结果中显示主题的发表时间</changelogtext>
+        <changelogtext>改进：搜索帖子的结果中显示主题的发表时间</changelogtext>
         <changelogbug>修复：一些导致崩溃的错误</changelogbug>
     </changelogversion>
     <changelogversion
