@@ -32,6 +32,11 @@ public abstract class AbstractDao<T, K> {
 
     public long insert(T entity) {
         ContentValues values = entityToContentValues(entity);
+        return mDatabase.insertWithOnConflict(mTableName, null, values, SQLiteDatabase.CONFLICT_ROLLBACK);
+    }
+
+    public long insertOrReplace(T entity) {
+        ContentValues values = entityToContentValues(entity);
         return mDatabase.insertWithOnConflict(mTableName, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 

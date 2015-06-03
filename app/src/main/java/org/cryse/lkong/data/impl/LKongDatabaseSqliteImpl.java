@@ -5,7 +5,9 @@ import com.google.gson.reflect.TypeToken;
 
 import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.dao.PinnedForumDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
+import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
 
@@ -16,6 +18,7 @@ import javax.inject.Inject;
 public class LKongDatabaseSqliteImpl implements LKongDatabase {
     CacheObjectDao mCacheObjectDao;
     UserAccountDao mUserAccountDao;
+    PinnedForumDao mPinnedForumDao;
     Gson mGson;
 
     @Inject
@@ -42,7 +45,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     @Override
     public void addUserAccount(UserAccountEntity userAccountEntity) throws Exception {
-        mUserAccountDao.insert(userAccountEntity);
+        mUserAccountDao.insertOrReplace(userAccountEntity);
     }
 
     @Override
@@ -91,5 +94,25 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public boolean isCachedForumList() throws Exception {
         return mCacheObjectDao.exist(CACHE_KEY_FORUM_LIST);
+    }
+
+    @Override
+    public void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception {
+        mPinnedForumDao.insertOrReplace(pinnedForumEntity);
+    }
+
+    @Override
+    public void removePinnedForum(long fid) throws Exception {
+        mPinnedForumDao.delete(fid);
+    }
+
+    @Override
+    public boolean isForumPinned(long fid) throws Exception {
+        return mPinnedForumDao.exist(fid);
+    }
+
+    @Override
+    public List<PinnedForumEntity> loadAllPinnedForums() throws Exception {
+        return mPinnedForumDao.loadAll();
     }
 }

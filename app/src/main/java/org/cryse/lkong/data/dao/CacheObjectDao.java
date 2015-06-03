@@ -36,6 +36,10 @@ public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
                 "'" + COLUMN_EXPIRE_TIME + "' LONG);"); // 3: expireTime
     }
 
+    public static void dropTable(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
+    }
+
     @Override
     public ContentValues entityToContentValues(CacheObjectEntity entity) {
         ContentValues values = new ContentValues();
