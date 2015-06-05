@@ -3,7 +3,7 @@ package org.cryse.lkong.presenter;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
-import org.cryse.lkong.view.ThreadListView;
+import org.cryse.lkong.view.ForumView;
 
 import java.util.List;
 
@@ -14,14 +14,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ThreadListPresenter implements BasePresenter<ThreadListView> {
-    public static final String LOG_TAG = ThreadListPresenter.class.getName();
+public class ForumPresenter implements BasePresenter<ForumView> {
+    public static final String LOG_TAG = ForumPresenter.class.getName();
     LKongForumService mLKongForumService;
-    ThreadListView mView;
+    ForumView mView;
     Subscription mLoadThreadListSubscription;
 
     @Inject
-    public ThreadListPresenter(LKongForumService forumService) {
+    public ForumPresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
     }
 
@@ -40,7 +40,7 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
                             mView.showThreadList(result, loadingMore);
                         },
                         error -> {
-                            Timber.e(error, "ThreadListPresenter::loadThreadList() onError().", LOG_TAG);
+                            Timber.e(error, "ForumPresenter::loadThreadList() onError().", LOG_TAG);
                             setLoadingStatus(loadingMore, false);
                         },
                         () -> {
@@ -51,7 +51,7 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
 
 
     @Override
-    public void bindView(ThreadListView view) {
+    public void bindView(ForumView view) {
         this.mView = view;
     }
 
@@ -72,7 +72,7 @@ public class ThreadListPresenter implements BasePresenter<ThreadListView> {
             mView.setLoading(isLoading);
     }
 
-    private class EmptyTheadListView implements ThreadListView {
+    private class EmptyTheadListView implements ForumView {
 
         @Override
         public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {

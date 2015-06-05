@@ -24,7 +24,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.presenter.ThreadListPresenter;
+import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -32,7 +32,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.view.ThreadListView;
+import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -46,15 +46,15 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
-    public static final String LOG_TAG = ThreadListActivity.class.getName();
+public class ForumActivity extends AbstractThemeableActivity implements ForumView {
+    public static final String LOG_TAG = ForumActivity.class.getName();
     private AtomicBoolean isNoMore = new AtomicBoolean(false);
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
     Picasso mPicasso;
     @Inject
-    ThreadListPresenter mPresenter;
+    ForumPresenter mPresenter;
 
     @Inject
     AndroidNavigation mAndroidNavigation;
@@ -99,7 +99,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             mForumDescription = intent.getStringExtra(DataContract.BUNDLE_FORUM_DESCRIPTION);
         }
         if(mForumId == -1 || TextUtils.isEmpty(mForumName))
-            throw new IllegalStateException("ThreadListActivity missing extra in intent.");
+            throw new IllegalStateException("ForumActivity missing extra in intent.");
         setTitle(mForumName);
 
 
@@ -138,7 +138,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(ThreadListActivity.this, startingLocation, model.getUid());
+                    mAndroidNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
                 }
             }
 
@@ -149,7 +149,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
+                    mAndroidNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
                 }
             }
         });
@@ -372,7 +372,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         return isLoadingMore.get();
     }
 
-    public ThreadListPresenter getPresenter() {
+    public ForumPresenter getPresenter() {
         return mPresenter;
     }
 
