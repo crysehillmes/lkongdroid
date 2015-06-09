@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 public abstract class SimpleCollectionFragment<
         ItemType extends SimpleCollectionItem,
@@ -55,6 +57,9 @@ public abstract class SimpleCollectionFragment<
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @Optional
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
@@ -80,9 +85,8 @@ public abstract class SimpleCollectionFragment<
     }
 
     private void initRecyclerView() {
-        getRecyclerViewInsets();
-        UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
-        mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        //UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
+        //mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);

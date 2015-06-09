@@ -75,7 +75,7 @@ public class MainActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
@@ -128,7 +128,7 @@ public class MainActivity extends AbstractThemeableActivity {
             return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
+        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         IDrawerItem forumsDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
         IDrawerItem[] drawerItems = new IDrawerItem[5];
         if(mForumsFirst.get()) {
@@ -145,7 +145,6 @@ public class MainActivity extends AbstractThemeableActivity {
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(getToolbar())
                 .withAccountHeader(mAccountHeader)
                 .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
                 .addDrawerItems(
@@ -187,9 +186,9 @@ public class MainActivity extends AbstractThemeableActivity {
                 mNavigation.navigateToForumListFragment(null);
             } else {
                 mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-                mNavigation.navigateToTimelineFragment();
+                mNavigation.navigateToHomePageFragment();
             }
-            // mNavigation.navigateToTimelineFragment();
+            // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
         }
@@ -199,7 +198,7 @@ public class MainActivity extends AbstractThemeableActivity {
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case 1001:
-                mNavigation.navigateToTimelineFragment();
+                mNavigation.navigateToHomePageFragment();
                 break;
             case 1002:
                 mNavigation.navigateToForumListFragment(null);
@@ -305,6 +304,10 @@ public class MainActivity extends AbstractThemeableActivity {
 
     @Override
     public void onBackPressed() {
+        if(mNaviagtionDrawer != null && mNaviagtionDrawer.isDrawerOpen()) {
+            mNaviagtionDrawer.closeDrawer();
+            return;
+        }
         if (!getSupportFragmentManager().popBackStackImmediate()) {
             closeActivityWithTransition();
         }
@@ -314,5 +317,9 @@ public class MainActivity extends AbstractThemeableActivity {
     public void closeActivityWithTransition() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    public Drawer getNavigationDrawer() {
+        return mNaviagtionDrawer;
     }
 }

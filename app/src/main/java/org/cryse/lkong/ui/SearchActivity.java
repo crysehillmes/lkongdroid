@@ -8,7 +8,6 @@ import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -62,7 +61,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         int actionBarSize = UIUtils.calculateActionBarSize(this);
         getToolbar().setContentInsetsAbsolute(actionBarSize, 0);

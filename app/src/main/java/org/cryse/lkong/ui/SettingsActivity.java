@@ -19,7 +19,7 @@ public class SettingsActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         FragmentManager fragmentManager = getFragmentManager();

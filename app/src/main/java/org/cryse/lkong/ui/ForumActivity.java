@@ -85,7 +85,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         getSupportActionBar().setHomeButtonEnabled(true);

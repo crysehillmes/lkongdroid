@@ -55,7 +55,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
         setIsOverrideToolbarColor(false);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

@@ -16,6 +16,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.ForumsFragment;
+import org.cryse.lkong.ui.HomePageFragment;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
@@ -88,6 +89,14 @@ public class AndroidNavigation {
     public void navigateToFavoritesFragment(Bundle args) {
         if(isAttachToMainActivity()) {
             Fragment fragment = FavoritesFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
+    public void navigateToHomePageFragment() {
+        if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            Fragment fragment = HomePageFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }
     }

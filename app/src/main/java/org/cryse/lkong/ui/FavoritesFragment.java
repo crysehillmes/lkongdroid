@@ -2,10 +2,14 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -13,6 +17,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
@@ -23,6 +28,8 @@ import org.cryse.lkong.utils.UIUtils;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import butterknife.InjectView;
 
 public class FavoritesFragment extends SimpleCollectionFragment<
         ThreadModel,
@@ -50,6 +57,19 @@ public class FavoritesFragment extends SimpleCollectionFragment<
         injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getThemedActivity().setSupportActionBar(mToolbar);
+        mToolbar.setBackgroundColor(getPrimaryColor());
+        final ActionBar actionBar = getThemedActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        return view;
     }
 
     @Override
@@ -91,6 +111,13 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     getThemedActivity().setNightMode(!isNightMode());
                 }
                 return true;
+            case android.R.id.home:
+                if(getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).getNavigationDrawer().openDrawer();
+                    return true;
+                } else {
+                    return false;
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -123,7 +150,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_simple_collection;
+        return R.layout.fragment_favorites;
     }
 
     @Override

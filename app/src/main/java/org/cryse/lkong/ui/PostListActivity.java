@@ -151,7 +151,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
