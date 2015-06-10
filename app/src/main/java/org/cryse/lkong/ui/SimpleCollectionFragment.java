@@ -85,8 +85,9 @@ public abstract class SimpleCollectionFragment<
     }
 
     private void initRecyclerView() {
-        //UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
-        //mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
+        if(insetsValue != null)
+            mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);

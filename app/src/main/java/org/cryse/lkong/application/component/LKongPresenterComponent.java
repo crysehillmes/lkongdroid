@@ -14,6 +14,7 @@ import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
+import org.cryse.lkong.ui.PinnedForumsFragment;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SignInActivity;
@@ -37,6 +38,7 @@ public interface LKongPresenterComponent {
     void inject(NewThreadActivity activity);
     void inject(HomePageFragment activity);
     void inject(FavoritesFragment fragment);
+    void inject(PinnedForumsFragment fragment);
     void inject(TimelineFragment fragment);
     void inject(MentionsFragment fragment);
     void inject(NotificationFragment fragment);

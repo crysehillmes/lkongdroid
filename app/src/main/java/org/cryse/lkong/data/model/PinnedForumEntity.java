@@ -1,6 +1,13 @@
 package org.cryse.lkong.data.model;
 
-public class PinnedForumEntity {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.cryse.lkong.model.SimpleCollectionItem;
+
+import java.io.Serializable;
+
+public class PinnedForumEntity implements Serializable, SimpleCollectionItem {
     private long forumId;
     private long userId;
     private String forumName;
@@ -52,7 +59,44 @@ public class PinnedForumEntity {
         return sortValue;
     }
 
+    @Override
+    public long getSortKey() {
+        return sortValue;
+    }
+
     public void setSortValue(long sortValue) {
         this.sortValue = sortValue;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.forumId);
+        dest.writeLong(this.userId);
+        dest.writeString(this.forumName);
+        dest.writeString(this.forumIcon);
+        dest.writeLong(this.sortValue);
+    }
+
+    protected PinnedForumEntity(Parcel in) {
+        this.forumId = in.readLong();
+        this.userId = in.readLong();
+        this.forumName = in.readString();
+        this.forumIcon = in.readString();
+        this.sortValue = in.readLong();
+    }
+
+    public static final Parcelable.Creator<PinnedForumEntity> CREATOR = new Parcelable.Creator<PinnedForumEntity>() {
+        public PinnedForumEntity createFromParcel(Parcel source) {
+            return new PinnedForumEntity(source);
+        }
+
+        public PinnedForumEntity[] newArray(int size) {
+            return new PinnedForumEntity[size];
+        }
+    };
 }

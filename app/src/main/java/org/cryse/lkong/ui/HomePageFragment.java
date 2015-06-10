@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -123,6 +124,7 @@ public class HomePageFragment extends AbstractFragment {
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
         adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+        adapter.addFragment(PinnedForumsFragment.newInstance(null), getString(R.string.drawer_item_pinned_forums));
         viewPager.setAdapter(adapter);
     }
 
@@ -227,7 +229,7 @@ public class HomePageFragment extends AbstractFragment {
         }
     }
 
-    static class Adapter extends FragmentPagerAdapter {
+    static class Adapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
 

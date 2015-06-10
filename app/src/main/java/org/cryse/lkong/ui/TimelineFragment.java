@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -115,7 +114,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
-        return UIUtils.getInsets(getActivity(), mCollectionView, false, false, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height) + UIUtils.dp2px(getActivity(), 48f));
+        return null;
     }
 
 
