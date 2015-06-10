@@ -9,6 +9,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.PinnedForumsPresenter;
 import org.cryse.lkong.ui.adapter.PinnedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -101,6 +102,9 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+        if (event instanceof CurrentAccountChangedEvent) {
+            getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+        }
     }
 
     @Override
