@@ -10,7 +10,7 @@ import org.cryse.lkong.data.dao.UserAccountDao;
 
 public class LKongDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "lkong.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public LKongDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -22,9 +22,10 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     Gson mGson;
 
     @Inject
-    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao) {
+    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao, PinnedForumDao pinnedForumDao) {
         this.mCacheObjectDao = cacheObjectDao;
         this.mUserAccountDao = userAccountDao;
+        this.mPinnedForumDao = pinnedForumDao;
         this.mGson = new Gson();
     }
 
@@ -102,13 +103,18 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     @Override
-    public void removePinnedForum(long fid) throws Exception {
-        mPinnedForumDao.delete(fid);
+    public void removePinnedForum(long uid, long fid) throws Exception {
+        mPinnedForumDao.unpinForum(uid, fid);
     }
 
     @Override
-    public boolean isForumPinned(long fid) throws Exception {
-        return mPinnedForumDao.exist(fid);
+    public boolean isForumPinned(long uid, long fid) throws Exception {
+        return mPinnedForumDao.isPinned(uid, fid);
+    }
+
+    @Override
+    public List<PinnedForumEntity> loadAllForUser(long uid) throws Exception {
+        return mPinnedForumDao.loadAllForUser(uid);
     }
 
     @Override

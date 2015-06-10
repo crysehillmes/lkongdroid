@@ -54,8 +54,8 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public LKongDatabase provideLKongDatabase(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao) {
-        return new LKongDatabaseSqliteImpl(cacheObjectDao, userAccountDao);
+    public LKongDatabase provideLKongDatabase(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao, PinnedForumDao pinnedForumDao) {
+        return new LKongDatabaseSqliteImpl(cacheObjectDao, userAccountDao, pinnedForumDao);
     }
 
     @Singleton

@@ -24,6 +24,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
+import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -48,6 +49,7 @@ import butterknife.InjectView;
 
 public class ForumActivity extends AbstractThemeableActivity implements ForumView {
     public static final String LOG_TAG = ForumActivity.class.getName();
+    private static final String FORUM_PINNED_KEY = "forum_pinned";
     private AtomicBoolean isNoMore = new AtomicBoolean(false);
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
@@ -70,7 +72,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     View mHeaderView;
     View mTopPaddingHeaderView;
     Spinner mListTypeSpinner;
-
+    MenuItem mPinForumMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
@@ -79,6 +81,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     private String mForumName = "";
     private String mForumDescription = "";
     private int mCurrentListType = ThreadListType.TYPE_SORT_BY_REPLY;
+    private Boolean mIsForumPinned;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,6 +213,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
+            if(savedInstanceState.containsKey(FORUM_PINNED_KEY))
+                mIsForumPinned = savedInstanceState.getBoolean(FORUM_PINNED_KEY);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
             mForumDescription = savedInstanceState.getString(DataContract.BUNDLE_FORUM_DESCRIPTION);
@@ -219,6 +224,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
+            getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
             getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
         mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -249,6 +255,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if(mIsForumPinned != null)
+            outState.putBoolean(FORUM_PINNED_KEY, mIsForumPinned);
         outState.putLong(DataContract.BUNDLE_FORUM_ID, mForumId);
         outState.putString(DataContract.BUNDLE_FORUM_NAME, mForumName);
         outState.putString(DataContract.BUNDLE_FORUM_DESCRIPTION, mForumDescription);
@@ -260,7 +268,27 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_thread_list, menu);
+        mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mPinForumMenuItem.setVisible(false);
+        else if(mItemList.size() > 0 && mIsForumPinned != null) {
+            mPinForumMenuItem.setVisible(true);
+            if(mIsForumPinned) {
+                mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);
+            }
+            else {
+                mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_pin_to_home);
+            }
+        } else if(mIsForumPinned == null) {
+            mPinForumMenuItem.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -272,6 +300,15 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
+            case R.id.action_forum_pin_to_home:
+                if(mIsForumPinned != null) {
+                    if(mIsForumPinned)
+                        unpinForum();
+                    else
+                        pinForum();
+                    return true;
+                }
+                return false;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -294,6 +331,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Override
     protected void onResume() {
         super.onResume();
+        getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
     }
 
     @Override
@@ -342,6 +380,12 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     }
 
     @Override
+    public void checkPinnedStatusDone(boolean isPinned) {
+        mIsForumPinned = isPinned;
+        invalidateOptionsMenu();
+    }
+
+    @Override
     public void showToast(int text_value, int toastType) {
         ToastProxy.showToast(this, getString(text_value), toastType);
     }
@@ -379,5 +423,13 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
         mFab.setColorNormal(primaryColor);
         mFab.setColorPressed(primaryDarkColor);
+    }
+
+    private void pinForum() {
+        getPresenter().pinForum(mUserAccountManager.getCurrentUserId(), mForumId, mForumName, ModelConverter.fidToForumIconUrl(mForumId));
+    }
+
+    private void unpinForum() {
+        getPresenter().unpinForum(mUserAccountManager.getCurrentUserId(), mForumId);
     }
 }

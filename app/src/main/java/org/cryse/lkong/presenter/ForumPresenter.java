@@ -19,6 +19,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
     LKongForumService mLKongForumService;
     ForumView mView;
     Subscription mLoadThreadListSubscription;
+    Subscription mCheckPinnedSubscription;
 
     @Inject
     public ForumPresenter(LKongForumService forumService) {
@@ -49,6 +50,56 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 );
     }
 
+    public void unpinForum(long uid, long fid) {
+        SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
+        mCheckPinnedSubscription = mLKongForumService.unpinForum(uid, fid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            mView.checkPinnedStatusDone(false);
+                        },
+                        error -> {
+                            Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void pinForum(long uid, long fid, String forumName, String forumIcon) {
+        SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
+        mCheckPinnedSubscription = mLKongForumService.pinForum(uid, fid, forumName, forumIcon)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            mView.checkPinnedStatusDone(result);
+                        },
+                        error -> {
+                            Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void isForumPinned(long uid, long fid) {
+        SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
+        mCheckPinnedSubscription = mLKongForumService.isForumPinned(uid, fid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            mView.checkPinnedStatusDone(result);
+                        },
+                        error -> {
+                            Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
+                        },
+                        () -> {
+                        }
+                );
+    }
 
     @Override
     public void bindView(ForumView view) {
@@ -63,6 +114,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
     @Override
     public void destroy() {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadListSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
     }
 
     private void setLoadingStatus(boolean loadingMore, boolean isLoading) {
@@ -76,6 +128,11 @@ public class ForumPresenter implements BasePresenter<ForumView> {
 
         @Override
         public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
+
+        }
+
+        @Override
+        public void checkPinnedStatusDone(boolean isPinned) {
 
         }
 

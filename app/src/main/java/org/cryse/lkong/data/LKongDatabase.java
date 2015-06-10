@@ -24,7 +24,8 @@ public interface LKongDatabase {
     boolean isCachedForumList() throws Exception;
 
     void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception;
-    void removePinnedForum(long fid) throws Exception;
-    boolean isForumPinned(long fid) throws Exception;
+    void removePinnedForum(long uid, long fid) throws Exception;
+    boolean isForumPinned(long uid, long fid) throws Exception;
+    List<PinnedForumEntity> loadAllForUser(long uid) throws Exception;
     List<PinnedForumEntity> loadAllPinnedForums() throws Exception;
 }
