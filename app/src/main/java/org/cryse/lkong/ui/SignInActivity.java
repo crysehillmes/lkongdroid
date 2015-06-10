@@ -220,4 +220,11 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         else
             return R.style.LKongDroidTheme_Light_NoTranslucent;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            finish();
+        }
+    }
 }
