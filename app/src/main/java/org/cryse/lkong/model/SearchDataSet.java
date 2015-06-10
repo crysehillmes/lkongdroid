@@ -76,7 +76,7 @@ public class SearchDataSet {
             if(jsonObject.has("sortkey"))
                 item.setSortKey(jsonObject.getLong("sortkey"));
             if(jsonObject.has("subject"))
-                item.setSubject(Html.fromHtml(jsonObject.getString("subject")));
+                item.setSubject(Html.fromHtml(jsonObject.getString("subject").replace("<em>","").replace("</em>","")));
             if(jsonObject.has("replynum"))
                 item.setReplyCount(Integer.valueOf(jsonObject.getString("replynum")));
             if(jsonObject.has("uid"))
@@ -107,7 +107,7 @@ public class SearchDataSet {
             if(jsonObject.has("uid"))
                 item.setUserId(Long.valueOf(jsonObject.getString("uid")));
             if(jsonObject.has("username"))
-                item.setUserName(htmlToCharSequence(jsonObject.getString("username")));
+                item.setUserName(htmlToCharSequence(jsonObject.getString("username").replace("<em>","").replace("</em>","")));
             if(jsonObject.has("gender"))
                 item.setGender(jsonObject.getInt("gender"));
             if(jsonObject.has("sightml"))
@@ -134,7 +134,7 @@ public class SearchDataSet {
             if(jsonObject.has("fansnum"))
                 item.setFansCount(Integer.valueOf(jsonObject.getString("fansnum")));
             if(jsonObject.has("name"))
-                item.setGroupName(htmlToCharSequence(jsonObject.getString("name")));
+                item.setGroupName(htmlToCharSequence(jsonObject.getString("name").replace("<em>","").replace("</em>","")));
             if(jsonObject.has("description"))
                 item.setGroupDescription(htmlToCharSequence(jsonObject.getString("description")));
             if(jsonObject.has("fid"))

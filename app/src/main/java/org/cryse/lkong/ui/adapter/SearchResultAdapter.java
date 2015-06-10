@@ -92,12 +92,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(
-                getString(
-                        R.string.format_search_post_result_reply_count,
-                        item.getDateline() == null ? "" : mDateFormat.format(item.getDateline()),
-                        item.getReplyCount())
-        );
+        viewHolder.secondaryTextView.setText(item.getDateline() == null ? "" : mDateFormat.format(item.getDateline()));
+        viewHolder.replyCountTextView.setText(Integer.toString(item.getReplyCount()));
     }
 
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {
@@ -137,6 +133,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         TextView titleTextView;
         @InjectView(R.id.recyclerview_item_search_post_secondary)
         TextView secondaryTextView;
+        @InjectView(R.id.recyclerview_item_search_post_reply_count)
+        TextView replyCountTextView;
         public SearchPostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);
