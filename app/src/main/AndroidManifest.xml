@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.SignInActivity"/>
-        <activity android:name=".ui.ThreadListActivity"/>
+        <activity android:name=".ui.ForumActivity"/>
         <activity android:name=".ui.PostListActivity"/>
         <activity android:name=".ui.NewPostActivity"/>
         <activity android:name=".ui.NewThreadActivity"/>

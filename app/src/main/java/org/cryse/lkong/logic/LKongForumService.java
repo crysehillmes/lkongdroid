@@ -2,6 +2,7 @@ package org.cryse.lkong.logic;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
@@ -23,6 +24,7 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -399,6 +401,60 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 PunchResult result = mLKongRestService.punch(authObject);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> pinForum(long uid, long fid, String forumName, String forumIcon) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.pinForum(new PinnedForumEntity(
+                        fid,
+                        uid,
+                        forumName,
+                        forumIcon,
+                        new Date().getTime()
+                ));
+                subscriber.onNext(mLKongDatabase.isForumPinned(uid, fid));
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Void> unpinForum(long uid, long fid) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.removePinnedForum(uid, fid);
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> isForumPinned(long uid, long fid) {
+        return Observable.create(subscriber -> {
+            try {
+                boolean isForumPinned = mLKongDatabase.isForumPinned(uid, fid);
+                subscriber.onNext(isForumPinned);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<PinnedForumEntity>> loadUserPinnedForums(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                List<PinnedForumEntity> result = mLKongDatabase.loadAllForUser(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

@@ -11,6 +11,8 @@
     <string name="action_settings">设置</string>
     <string name="action_thread_add_favorite">收藏</string>
     <string name="action_thread_remove_favorite">移除收藏</string>
+    <string name="action_pin_to_home">收藏版块</string>
+    <string name="action_unpin_from_home">取消收藏</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
@@ -23,6 +25,8 @@
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
     <string name="drawer_item_timeline">信息流</string>
+    <string name="drawer_item_pinned_forums">收藏的板块</string>
+    <string name="drawer_item_homepage">个人主页</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
     <string name="toast_failure_new_post">回复失败，请重试。</string>
     <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>

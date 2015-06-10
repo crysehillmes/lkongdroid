@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 
+import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,5 +114,21 @@ public abstract class AbstractFragment extends Fragment {
 
     protected void onEvent(AbstractEvent event) {
 
+    }
+
+    protected int getPrimaryColor() {
+        if(getThemedActivity() != null) {
+            return getThemedActivity().getThemeEngine().getPrimaryColor(getActivity());
+        } else {
+            return ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimary);
+        }
+    }
+
+    protected int getPrimaryDarkColor() {
+        if(getThemedActivity() != null) {
+            return getThemedActivity().getThemeEngine().getPrimaryDarkColor(getActivity());
+        } else {
+            return ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimaryDark);
+        }
     }
 }

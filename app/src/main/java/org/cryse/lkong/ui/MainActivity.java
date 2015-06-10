@@ -1,12 +1,16 @@
 package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -17,6 +21,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -32,9 +37,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.ui.navigation.PicassoProfileDrawerItem;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.List;
@@ -75,7 +78,7 @@ public class MainActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
+        //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
@@ -104,6 +107,23 @@ public class MainActivity extends AbstractThemeableActivity {
     }
 
     private void initDrawer() {
+        DrawerImageLoader.init(new DrawerImageLoader.IDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                mPicasso.load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                mPicasso.cancelRequest(imageView);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx) {
+                return null;
+            }
+        });
+
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -128,7 +148,7 @@ public class MainActivity extends AbstractThemeableActivity {
             return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
+        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         IDrawerItem forumsDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
         IDrawerItem[] drawerItems = new IDrawerItem[5];
         if(mForumsFirst.get()) {
@@ -145,7 +165,6 @@ public class MainActivity extends AbstractThemeableActivity {
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(getToolbar())
                 .withAccountHeader(mAccountHeader)
                 .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
                 .addDrawerItems(
@@ -187,9 +206,9 @@ public class MainActivity extends AbstractThemeableActivity {
                 mNavigation.navigateToForumListFragment(null);
             } else {
                 mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-                mNavigation.navigateToTimelineFragment();
+                mNavigation.navigateToHomePageFragment();
             }
-            // mNavigation.navigateToTimelineFragment();
+            // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
         }
@@ -199,7 +218,7 @@ public class MainActivity extends AbstractThemeableActivity {
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case 1001:
-                mNavigation.navigateToTimelineFragment();
+                mNavigation.navigateToHomePageFragment();
                 break;
             case 1002:
                 mNavigation.navigateToForumListFragment(null);
@@ -275,17 +294,11 @@ public class MainActivity extends AbstractThemeableActivity {
             mUserAccountList = mUserAccountManager.getUserAccounts();
             for (UserAccountEntity entity : mUserAccountList) {
 
-                ProfileDrawerItem profileDrawerItem = new PicassoProfileDrawerItem()
-                        .withContext(MainActivity.this, mAccountHeader, entity.getUserId())
+                ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
+                        .withIcon(entity.getUserAvatar())
                         .withName(entity.getUserName())
                         .withEmail(entity.getEmail())
                         .withIdentifier((int) entity.getUserId());
-                        //.withIcon(getResources().getDrawable(R.drawable.ic_default_avatar))
-                mPicasso.load(entity.getUserAvatar())
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
-                        .transform(new CircleTransform()).into((PicassoProfileDrawerItem)profileDrawerItem);
                 mAccountHeader.addProfiles(profileDrawerItem);
             }
             mAccountHeader.addProfiles(
@@ -305,6 +318,10 @@ public class MainActivity extends AbstractThemeableActivity {
 
     @Override
     public void onBackPressed() {
+        if(mNaviagtionDrawer != null && mNaviagtionDrawer.isDrawerOpen()) {
+            mNaviagtionDrawer.closeDrawer();
+            return;
+        }
         if (!getSupportFragmentManager().popBackStackImmediate()) {
             closeActivityWithTransition();
         }
@@ -314,5 +331,9 @@ public class MainActivity extends AbstractThemeableActivity {
     public void closeActivityWithTransition() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    public Drawer getNavigationDrawer() {
+        return mNaviagtionDrawer;
     }
 }
