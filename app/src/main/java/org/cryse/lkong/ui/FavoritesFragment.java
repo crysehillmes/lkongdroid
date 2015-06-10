@@ -3,7 +3,6 @@ package org.cryse.lkong.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +16,6 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
@@ -28,8 +26,6 @@ import org.cryse.lkong.utils.UIUtils;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import butterknife.InjectView;
 
 public class FavoritesFragment extends SimpleCollectionFragment<
         ThreadModel,

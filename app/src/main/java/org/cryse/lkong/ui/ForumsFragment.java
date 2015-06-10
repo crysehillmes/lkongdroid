@@ -17,7 +17,6 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.presenter.ForumsPresenter;

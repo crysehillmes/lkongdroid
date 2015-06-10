@@ -15,7 +15,6 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.SimpleCollectionItem;
 import org.cryse.lkong.presenter.BasePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
