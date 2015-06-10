@@ -221,7 +221,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
-        return UIUtils.getInsets(getActivity(), mCollectionView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        return null;
     }
 
     protected void checkNewNoticeCount() {
