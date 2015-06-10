@@ -353,9 +353,9 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     protected int getAppTheme() {
         if(isNightMode())
-            return R.style.LKongDroidTheme_Dark_Translucent;
+            return R.style.LKongDroidTheme_Dark_Transparent;
         else
-            return R.style.LKongDroidTheme_Light_Translucent;
+            return R.style.LKongDroidTheme_Light_Transparent;
     }
 
     @Override

@@ -9,7 +9,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="android:windowIsTranslucent">true</item>
         <item name="actionBarInsetStart">@dimen/keyline_2_minus_16dp</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowActionModeOverlay">true</item>
@@ -32,11 +31,15 @@
         <item name="theme_arrow_forward_drawable">@drawable/ic_arrow_forward_white</item>
     </style>
 
-    <style name="LKongDroidTheme.Light.NoTranslucent" parent="LKongDroidTheme.Light">
+    <style name="LKongDroidTheme.Light.NoTranslucent">
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
-    <style name="LKongDroidTheme.Light.Translucent" parent="LKongDroidTheme.Light">
+    <style name="LKongDroidTheme.Light.Translucent">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="LKongDroidTheme.Light.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>

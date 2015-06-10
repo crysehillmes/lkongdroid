@@ -1,16 +1,24 @@
 package org.cryse.lkong.ui.common;
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.utils.ThemeEngine;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.inject.Inject;
 
@@ -24,8 +32,10 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     @Inject
     ThemeEngine mThemeEngine;
     protected Handler mMainThreadHandler;
-    private int mDarkTheme = R.style.LKongDroidTheme_Dark;
-    private int mLightTheme = R.style.LKongDroidTheme_Light;
+    private static final int DarkTheme = R.style.LKongDroidTheme_Dark;
+    private static final int LightTheme = R.style.LKongDroidTheme_Light;
+    private static final int DarkThemeTranslucent = R.style.LKongDroidTheme_Dark_Translucent;
+    private static final int LightThemeTranslucent = R.style.LKongDroidTheme_Light_Translucent;
     private int mTheme;
     private boolean mIsOverrideStatusBarColor = true;
     private boolean mIsOverrideToolbarColor = true;
@@ -46,7 +56,12 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
             getSwipeBackLayout().setSensitivity(this, 0.5f);
             getSwipeBackLayout().setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            updateTaskDescription();
     }
+
+
+
     protected boolean hasSwipeBackLayout() {
         return true;
     }
@@ -129,9 +144,9 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     protected int getAppTheme() {
         if(isNightMode())
-            return mDarkTheme;
+            return hasSwipeBackLayout() ? DarkThemeTranslucent : DarkTheme;
         else
-            return mLightTheme;
+            return hasSwipeBackLayout() ? LightThemeTranslucent : LightTheme;
     }
 
     public void setNightMode(boolean isNightMode) {
@@ -144,18 +159,21 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     @Override
     public SwipeBackLayout getSwipeBackLayout() {
+        if(mHelper == null) return null;
         return mHelper.getSwipeBackLayout();
     }
 
     @Override
     public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
+        if(getSwipeBackLayout() != null)
+            getSwipeBackLayout().setEnableGesture(enable);
     }
 
     @Override
     public void scrollToFinishActivity() {
         Utils.convertActivityToTranslucent(this);
-        getSwipeBackLayout().scrollToFinishActivity();
+        if(getSwipeBackLayout() != null)
+            getSwipeBackLayout().scrollToFinishActivity();
     }
 
     public void setIsOverrideStatusBarColor(boolean isOverrideStatusBarColor) {
@@ -177,6 +195,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(mIsOverrideStatusBarColor)
                     getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+                updateTaskDescription();
             }
             if(getSupportActionBar() != null)
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
@@ -200,5 +219,18 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         } else {
             supportFinishAfterTransition();
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    protected void updateTaskDescription() {
+        Bitmap iconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        setTaskDescription(
+                new ActivityManager.TaskDescription(
+                        getTitle().toString(),
+                        iconBitmap,
+                        mThemeEngine.getPrimaryColor(this)
+                )
+        );
+        iconBitmap.recycle();
     }
 }

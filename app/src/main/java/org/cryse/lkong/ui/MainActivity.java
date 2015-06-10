@@ -83,8 +83,8 @@ public class MainActivity extends AbstractThemeableActivity {
         setIsOverrideStatusBarColor(false);
         mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
-        getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));*/
-        getSwipeBackLayout().setEnableGesture(false);
+        getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
+        getSwipeBackLayout().setEnableGesture(false);*/
         if(savedInstanceState!=null && savedInstanceState.containsKey("selection_item_position")) {
             mCurrentSelection = savedInstanceState.getInt("selection_item_position");
             mIsRestorePosition = true;
@@ -252,6 +252,11 @@ public class MainActivity extends AbstractThemeableActivity {
     }
 
     @Override
+    protected boolean hasSwipeBackLayout() {
+        return false;
+    }
+
+    @Override
     protected void analyticsTrackEnter() {
         AnalyticsUtils.trackFragmentActivityEnter(this, LOG_TAG);
     }
@@ -323,7 +328,7 @@ public class MainActivity extends AbstractThemeableActivity {
             return;
         }
         if (!getSupportFragmentManager().popBackStackImmediate()) {
-            closeActivityWithTransition();
+            finish();
         }
     }
 

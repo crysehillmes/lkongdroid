@@ -23,17 +23,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.SignInActivity"/>
-        <activity android:name=".ui.ForumActivity"/>
-        <activity android:name=".ui.PostListActivity"/>
-        <activity android:name=".ui.NewPostActivity"/>
-        <activity android:name=".ui.NewThreadActivity"/>
-        <activity android:name=".ui.SettingsActivity"/>
-        <activity android:name=".ui.NotificationActivity"/>
-        <activity android:name=".ui.PhotoViewPagerActivity"/>
+        <activity
+            android:name=".ui.SignInActivity"/>
+        <activity
+            android:name=".ui.ForumActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.PostListActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.NewPostActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.NewThreadActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.NotificationActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.PhotoViewPagerActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity
             android:name=".ui.SearchActivity"
-            android:label="">
+            android:label=""
+            android:theme="@style/LKongDroidTheme.Light.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

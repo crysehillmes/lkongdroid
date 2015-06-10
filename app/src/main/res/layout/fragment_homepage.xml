@@ -9,7 +9,8 @@
         android:id="@+id/fragment_homepage_appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:elevation="@dimen/toolbar_elevation">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/fragment_homepage_toolbar"
