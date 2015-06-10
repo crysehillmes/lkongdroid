@@ -1,12 +1,16 @@
 package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -17,6 +21,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
@@ -32,9 +37,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.ui.navigation.PicassoProfileDrawerItem;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.List;
@@ -104,6 +107,23 @@ public class MainActivity extends AbstractThemeableActivity {
     }
 
     private void initDrawer() {
+        DrawerImageLoader.init(new DrawerImageLoader.IDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                mPicasso.load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                mPicasso.cancelRequest(imageView);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx) {
+                return null;
+            }
+        });
+
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -274,17 +294,11 @@ public class MainActivity extends AbstractThemeableActivity {
             mUserAccountList = mUserAccountManager.getUserAccounts();
             for (UserAccountEntity entity : mUserAccountList) {
 
-                ProfileDrawerItem profileDrawerItem = new PicassoProfileDrawerItem()
-                        .withContext(MainActivity.this, mAccountHeader, entity.getUserId())
+                ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
+                        .withIcon(entity.getUserAvatar())
                         .withName(entity.getUserName())
                         .withEmail(entity.getEmail())
                         .withIdentifier((int) entity.getUserId());
-                        //.withIcon(getResources().getDrawable(R.drawable.ic_default_avatar))
-                mPicasso.load(entity.getUserAvatar())
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .resizeDimen(R.dimen.size_avatar_large, R.dimen.size_avatar_large)
-                        .transform(new CircleTransform()).into((PicassoProfileDrawerItem)profileDrawerItem);
                 mAccountHeader.addProfiles(profileDrawerItem);
             }
             mAccountHeader.addProfiles(
