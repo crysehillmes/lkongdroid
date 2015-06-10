@@ -183,7 +183,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
 
     private void search(String query) {
         mQueryString = query;
-        setTitle(mQueryString);
+        //setTitle(mQueryString);
         mSearchResultAdapter.setDataSet(null);
         if(mQueryString != null && mQueryString.length() > 0) {
             getPresenter().search(mUserAccountManager.getAuthObject(), 0, query, false);

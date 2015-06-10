@@ -56,6 +56,7 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     @Override
     public void onResume() {
         super.onResume();
+        loadData(null, 0, false);
     }
 
     @Override

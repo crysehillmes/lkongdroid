@@ -274,8 +274,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mPinForumMenuItem.setVisible(false);
-        else if(mItemList.size() > 0 && mIsForumPinned != null) {
+        if(mIsForumPinned != null) {
             mPinForumMenuItem.setVisible(true);
             if(mIsForumPinned) {
                 mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
@@ -285,7 +284,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                 mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
                 mPinForumMenuItem.setTitle(R.string.action_pin_to_home);
             }
-        } else if(mIsForumPinned == null) {
+        } else {
             mPinForumMenuItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -371,7 +370,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                 loadMore(mCurrentListPageNumber);
             }*/
         }
-        if(mCollectionAdapter.getItemCount() > 0) {
+        if(mCollectionAdapter.getItemCount() - mCollectionAdapter.getHeaderViewCount() > 0 ) {
             ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1 - mCollectionAdapter.getHeaderViewCount());
             mLastItemSortKey = lastItem.getSortKey();
         } else {
