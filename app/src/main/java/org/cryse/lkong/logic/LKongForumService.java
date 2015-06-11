@@ -397,11 +397,13 @@ public class LKongForumService {
         });
     }
 
-    public Observable<PunchResult> punch(LKAuthObject authObject) {
+    public Observable<PunchResult> punch(List<LKAuthObject> authObjectList) {
         return Observable.create(subscriber -> {
             try {
-                PunchResult result = mLKongRestService.punch(authObject);
-                subscriber.onNext(result);
+                for(LKAuthObject authObject: authObjectList) {
+                    PunchResult result = mLKongRestService.punch(authObject);
+                    subscriber.onNext(result);
+                }
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

@@ -688,6 +688,7 @@ public class LKongRestService {
         int punchDay = jsonObject.getInt("punchday");
         result.setPunchDay(punchDay);
         result.setPunchTime(new Date(dateLong * 1000));
+        result.setUserId(authObject.getUserId());
         clearCookies();
         return result;
     }

@@ -5,6 +5,7 @@ import java.util.Date;
 public class PunchResult {
     private Date punchTime;
     private int punchDay;
+    private long userId;
 
     public Date getPunchTime() {
         return punchTime;
@@ -20,5 +21,13 @@ public class PunchResult {
 
     public void setPunchDay(int punchDay) {
         this.punchDay = punchDay;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }
