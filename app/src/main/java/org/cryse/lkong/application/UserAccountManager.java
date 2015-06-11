@@ -111,4 +111,12 @@ public class UserAccountManager {
             Collections.swap(mUserAccounts, 0, index);
         }
     }
+
+    public UserAccountEntity getUserAccount(long uid) {
+        for (UserAccountEntity userAccount : mUserAccounts) {
+            if(uid == userAccount.getUserId())
+                return userAccount;
+        }
+        return null;
+    }
 }

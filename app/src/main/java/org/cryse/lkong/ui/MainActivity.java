@@ -372,7 +372,12 @@ public class MainActivity extends AbstractThemeableActivity implements MainActiv
             for (int i = 0; i < profilesCount; i++) {
                 IProfile profile = profiles.get(i);
                 if(((long)profile.getIdentifier()) == punchResult.getUserId()) {
-                    profile.setEmail(getString(R.string.format_punchday_count, punchResult.getPunchDay()));
+                    UserAccountEntity userAccount = mUserAccountManager.getUserAccount(punchResult.getUserId());
+                    if(userAccount != null) {
+                        String userName = userAccount.getUserName();
+                        String punchString = getString(R.string.format_punchday_count, punchResult.getPunchDay());
+                        profile.setName(userName + "    [" + punchString + "]");
+                    }
                     mAccountHeader.updateProfileByIdentifier(profile);
                     break;
                 }

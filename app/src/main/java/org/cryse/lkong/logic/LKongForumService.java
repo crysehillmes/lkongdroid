@@ -99,16 +99,7 @@ public class LKongForumService {
     }
 
     public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid, boolean isSelf) {
-        Observable<PunchResult> punchObservable = Observable.create(subscriber -> {
-            try {
-                PunchResult result = mLKongRestService.punch(authObject);
-                subscriber.onNext(result);
-                subscriber.onCompleted();
-            } catch (Exception ex) {
-                subscriber.onError(ex);
-            }
-        });
-        Observable<UserInfoModel> userProfileObservable =  Observable.create(subscriber -> {
+        return Observable.create(subscriber -> {
             try {
                 UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
                 subscriber.onNext(userInfoModel);
@@ -117,20 +108,6 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
-        if(isSelf) {
-            return Observable.zip(userProfileObservable, punchObservable, new Func2<UserInfoModel, PunchResult, UserInfoModel>() {
-                @Override
-                public UserInfoModel call(UserInfoModel userInfoModel, PunchResult punchResult) {
-                    if (userInfoModel != null && punchResult != null) {
-                        userInfoModel.setPunchResult(punchResult);
-                    }
-                    return userInfoModel;
-                }
-            });
-        } else {
-            return userProfileObservable;
-        }
-
     }
 
     /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
