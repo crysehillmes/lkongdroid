@@ -43,6 +43,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
+import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -73,6 +74,7 @@ import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
+import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
@@ -113,6 +115,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
+    @Inject
+    @PrefsUseInAppBrowser
+    BooleanPreference mUserInAppBrowser;
 
     @InjectView(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
@@ -1103,9 +1108,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void openUrlIntent(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
-        startActivity(intent);
+        if(mUserInAppBrowser.get()) {
+            Intent intent = new Intent(this, InAppBrowserActivity.class);
+            intent.putExtra("url", url);
+            startActivity(intent);
+        } else {
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
+            startActivity(intent);
+        }
     }
 }

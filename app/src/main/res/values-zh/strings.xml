@@ -143,6 +143,9 @@
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
     <string name="settings_item_font_size_dialog_title">字体大小</string>
     <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小。</string>
+    <string name="settings_item_use_in_app_browser_title">使用应用内浏览器</string>
+    <string name="settings_item_use_in_app_browser_summary">使用应用内浏览器而不是跳转到浏览器应用</string>
+
     <string name="settings_item_font_size_title">文字大小</string>
     <string name="button_edit">编辑</string>
     <string name="toast_error_open_origin_image">图片加载失败</string>
@@ -170,4 +173,8 @@
     <string name="dialog_title_copy_content">复制内容</string>
     <string name="card_title_sign_in">登陆龙的天空</string>
     <string name="action_punch">签到</string>
+    <string name="action_open_in_browser">在浏览器中打开</string>
+    <string name="text_loading">加载中…</string>
+    <string name="text_punching">正在签到…</string>
+    <string name="title_null_or_empty">标题不能为空</string>
 </resources>

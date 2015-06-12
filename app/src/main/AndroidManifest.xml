@@ -62,6 +62,11 @@
             android:name=".ui.UserProfileActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"
             android:label=""/>
+        <activity
+            android:name=".ui.InAppBrowserActivity"
+            android:label=""
+            android:theme="@style/LKongDroidTheme.Light.Translucent" />
+
         <service android:name=".service.SendPostService"/>
         <service android:name=".service.CheckNoticeService"/>
 

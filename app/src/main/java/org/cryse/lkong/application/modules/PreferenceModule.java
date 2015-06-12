@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
@@ -66,5 +67,11 @@ public class PreferenceModule {
     @PrefsReadFontSize
     StringPreference provideReadFontSize(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_READ_FONT, PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE);
+    }
+
+    @Provides
+    @PrefsUseInAppBrowser
+    BooleanPreference provideUseInAppBrowser(SharedPreferences preferences) {
+        return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER, PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER_VALUE);
     }
 }

@@ -6,6 +6,7 @@ import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.HomePageFragment;
+import org.cryse.lkong.ui.InAppBrowserActivity;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.MentionsFragment;
 import org.cryse.lkong.ui.NoticeFragment;
@@ -47,4 +48,5 @@ public interface LKongPresenterComponent {
     void inject(NotificationActivity activity);
     void inject(SearchActivity activity);
     void inject(UserProfileActivity activity);
+    void inject(InAppBrowserActivity inAppBrowserActivity);
 }

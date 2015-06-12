@@ -18,4 +18,6 @@ public class PreferenceConstant {
     public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 4;
     public static final String SHARED_PREFERENCE_READ_FONT = "prefs_read_font_size";
     public static final String SHARED_PREFERENCE_READ_FONT_VALUE = "16";
+    public static final String SHARED_PREFERENCE_USE_IN_APP_BROWSER = "prefs_use_in_app_browser";
+    public static final Boolean SHARED_PREFERENCE_USE_IN_APP_BROWSER_VALUE = true;
 }
