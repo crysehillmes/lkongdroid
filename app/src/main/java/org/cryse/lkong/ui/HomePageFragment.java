@@ -15,17 +15,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.NoticeCountModel;
+import org.cryse.lkong.model.PunchResult;
+import org.cryse.lkong.presenter.HomePagePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.view.HomePageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +43,26 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class HomePageFragment extends AbstractFragment {
+public class HomePageFragment extends AbstractFragment implements HomePageView {
     public static final String LOG_TAG = HomePageFragment.class.getName();
-    private static final String TABLAYOUT_TAG = "TABLAYOUT_TAG";
     private Picasso mPicasso = null;
 
     @Inject
     AndroidNavigation mNavigation;
+    @Inject
+    HomePagePresenter mPresenter;
+    @Inject
+    UserAccountManager mUserAccountManager;
     @InjectView(R.id.fragment_homepage_tablayout)
     TabLayout mTabLayout;
     @InjectView(R.id.fragment_homepage_viewpager)
     ViewPager mViewPager;
     @InjectView(R.id.fragment_homepage_toolbar)
     Toolbar mToolbar;
+    @InjectView(R.id.fragment_homepage_top_textview)
+    TextView mTopTextView;
+    @InjectView(R.id.fragment_homepage_top_container)
+    RelativeLayout mTopContainer;
 
     protected MenuItem mChangeThemeMenuItem;
     private MenuItem mNotificationMenuItem;
@@ -79,6 +93,7 @@ public class HomePageFragment extends AbstractFragment {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mToolbar.setBackgroundColor(getPrimaryColor());
+        mTopContainer.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
             mTabLayout.setupWithViewPager(mViewPager);
@@ -97,22 +112,31 @@ public class HomePageFragment extends AbstractFragment {
     public void onResume() {
         super.onResume();
         checkNewNoticeCount();
+        mPresenter.punch(mUserAccountManager.getAuthObject());
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
+        mPresenter.bindView(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        mPresenter.unbindView();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPicasso.shutdown();
+        mPresenter.destroy();
     }
 
     @Override
@@ -209,6 +233,9 @@ public class HomePageFragment extends AbstractFragment {
         } else if(event instanceof ThemeColorChangedEvent) {
             int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
             if(mTabLayout != null) mTabLayout.setBackgroundColor(newPrimaryColor);
+            if(mTopContainer != null) mTopContainer.setBackgroundColor(newPrimaryColor);
+        } else if (event instanceof CurrentAccountChangedEvent) {
+            mPresenter.punch(mUserAccountManager.getAuthObject());
         }
     }
 
@@ -226,6 +253,12 @@ public class HomePageFragment extends AbstractFragment {
             MainActivity mainActivity = (MainActivity)activity;
             mainActivity.onSectionAttached(getString(R.string.drawer_item_homepage));
         }
+    }
+
+    @Override
+    public void onPunchUserComplete(PunchResult punchResult) {
+        String punchString = getString(R.string.format_punchday_count, punchResult.getPunchDay());
+        mTopTextView.setText(punchString);
     }
 
     static class Adapter extends FragmentStatePagerAdapter {

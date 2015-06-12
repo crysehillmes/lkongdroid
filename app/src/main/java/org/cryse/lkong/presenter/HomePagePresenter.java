@@ -3,9 +3,7 @@ package org.cryse.lkong.presenter;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
-import org.cryse.lkong.view.MainActivityView;
-
-import java.util.List;
+import org.cryse.lkong.view.HomePageView;
 
 import javax.inject.Inject;
 
@@ -14,20 +12,20 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivityPresenter implements BasePresenter<MainActivityView> {
-    public static final String LOG_TAG = MainActivityPresenter.class.getName();
+public class HomePagePresenter implements BasePresenter<HomePageView> {
+    public static final String LOG_TAG = HomePagePresenter.class.getName();
     LKongForumService mLKongForumService;
     Subscription mPunchSubscription;
-    MainActivityView mView;
+    HomePageView mView;
 
     @Inject
-    public MainActivityPresenter(LKongForumService forumService) {
+    public HomePagePresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
         this.mView = null;
     }
-    public void punch(List<LKAuthObject> authObjectList) {
+    public void punch(LKAuthObject authObject) {
         SubscriptionUtils.checkAndUnsubscribe(mPunchSubscription);
-        mPunchSubscription = mLKongForumService.punch(authObjectList)
+        mPunchSubscription = mLKongForumService.punch(authObject)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -36,7 +34,7 @@ public class MainActivityPresenter implements BasePresenter<MainActivityView> {
                                 mView.onPunchUserComplete(result);
                         },
                         error -> {
-                            Timber.e(error, "MainActivityPresenter::punch() onError().", LOG_TAG);
+                            Timber.e(error, "HomePagePresenter::punch() onError().", LOG_TAG);
                         },
                         () -> {
                         }
@@ -44,7 +42,7 @@ public class MainActivityPresenter implements BasePresenter<MainActivityView> {
     }
 
     @Override
-    public void bindView(MainActivityView view) {
+    public void bindView(HomePageView view) {
         mView = view;
     }
 

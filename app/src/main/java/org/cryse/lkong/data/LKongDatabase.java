@@ -3,6 +3,7 @@ package org.cryse.lkong.data;
 import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.PunchResult;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ public interface LKongDatabase {
     boolean isForumPinned(long uid, long fid) throws Exception;
     List<PinnedForumEntity> loadAllForUser(long uid) throws Exception;
     List<PinnedForumEntity> loadAllPinnedForums() throws Exception;
+
+    void cachePunchResult(PunchResult punchResult);
+    void removePunchResult(long uid);
+    PunchResult getCachePunchResult(long uid);
 }

@@ -24,6 +24,26 @@
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_scrollFlags="scroll|enterAlways" />
 
+        <RelativeLayout
+            android:id="@+id/fragment_homepage_top_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+            <TextView
+                android:id="@+id/fragment_homepage_top_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="72dp"
+                android:textSize="@dimen/text_size_body1"
+                android:textColor="@color/text_color_primary_dark"
+                android:drawableLeft="@drawable/ic_action_punch"
+                android:gravity="center_vertical"
+                android:text="@string/text_punching"/>
+        </RelativeLayout>
+
         <android.support.design.widget.TabLayout
             android:id="@+id/fragment_homepage_tablayout"
             android:layout_width="match_parent"

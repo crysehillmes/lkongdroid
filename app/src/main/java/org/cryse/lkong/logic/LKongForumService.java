@@ -1,5 +1,7 @@
 package org.cryse.lkong.logic;
 
+import android.text.format.DateUtils;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.PinnedForumEntity;
@@ -374,11 +376,41 @@ public class LKongForumService {
         });
     }
 
+    public Observable<PunchResult> punch(LKAuthObject authObject) {
+        return Observable.create(subscriber -> {
+            try {
+                    PunchResult result = null;
+                    result = mLKongDatabase.getCachePunchResult(authObject.getUserId());
+                    if(result != null && result.getPunchTime() != null && DateUtils.isToday(result.getPunchTime().getTime())) {
+                        subscriber.onNext(result);
+                        return;
+                    } else {
+                        result = mLKongRestService.punch(authObject);
+                        if(result != null)
+                            mLKongDatabase.cachePunchResult(result);
+                    }
+                    subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
     public Observable<PunchResult> punch(List<LKAuthObject> authObjectList) {
         return Observable.create(subscriber -> {
             try {
                 for(LKAuthObject authObject: authObjectList) {
-                    PunchResult result = mLKongRestService.punch(authObject);
+                    PunchResult result = null;
+                    result = mLKongDatabase.getCachePunchResult(authObject.getUserId());
+                    if(result != null && result.getPunchTime() != null && DateUtils.isToday(result.getPunchTime().getTime())) {
+                        subscriber.onNext(result);
+                        return;
+                    } else {
+                        result = mLKongRestService.punch(authObject);
+                        if(result != null)
+                            mLKongDatabase.cachePunchResult(result);
+                    }
                     subscriber.onNext(result);
                 }
                 subscriber.onCompleted();

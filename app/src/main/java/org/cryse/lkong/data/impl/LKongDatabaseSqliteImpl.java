@@ -1,5 +1,7 @@
 package org.cryse.lkong.data.impl;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -10,6 +12,7 @@ import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.PunchResult;
 
 import java.util.List;
 
@@ -75,6 +78,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
+    private static final String CACHE_KEY_PUNCH_RESULT = "cache_forum_list";
     @Override
     public void cacheForumList(List<ForumModel> forumModels) throws Exception {
         String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {}.getType());
@@ -120,5 +124,28 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public List<PinnedForumEntity> loadAllPinnedForums() throws Exception {
         return mPinnedForumDao.loadAll();
+    }
+
+    @Override
+    public void cachePunchResult(PunchResult punchResult) {
+        String json = mGson.toJson(punchResult, PunchResult.class);
+        mCacheObjectDao.putCache(generatePunchResultKey(punchResult.getUserId()), json, null);
+    }
+
+    @Override
+    public void removePunchResult(long uid) {
+        mCacheObjectDao.delete(generatePunchResultKey(uid));
+    }
+
+    @Override
+    public PunchResult getCachePunchResult(long uid) {
+        String json = mCacheObjectDao.getCache(generatePunchResultKey(uid));
+        if(TextUtils.isEmpty(json))
+            return null;
+        return mGson.fromJson(json, PunchResult.class);
+    }
+
+    private String generatePunchResultKey(long uid) {
+        return CACHE_KEY_PUNCH_RESULT + "|||" + uid;
     }
 }

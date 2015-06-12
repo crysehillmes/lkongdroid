@@ -21,7 +21,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
 
@@ -35,29 +34,23 @@ import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
-import org.cryse.lkong.model.PunchResult;
-import org.cryse.lkong.presenter.MainActivityPresenter;
 import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.view.MainActivityView;
 import org.cryse.utils.preference.BooleanPreference;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AbstractThemeableActivity implements MainActivityView {
+public class MainActivity extends AbstractThemeableActivity{
     private static final String LOG_TAG = MainActivity.class.getName();
     @Inject
     AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    MainActivityPresenter mPresenter;
     @Inject
     @PrefsForumsFirst
     BooleanPreference mForumsFirst;
@@ -251,7 +244,6 @@ public class MainActivity extends AbstractThemeableActivity implements MainActiv
     protected void onDestroy() {
         super.onDestroy();
         mPicasso.shutdown();
-        mPresenter.destroy();
     }
 
     @Override
@@ -327,7 +319,6 @@ public class MainActivity extends AbstractThemeableActivity implements MainActiv
             return;
         }
         getEventBus().sendEvent(new CurrentAccountChangedEvent());
-        mPresenter.punch(mUserAccountManager.getAllUserAuthObjects());
     }
 
     @Override
@@ -344,13 +335,11 @@ public class MainActivity extends AbstractThemeableActivity implements MainActiv
     @Override
     protected void onStop() {
         super.onStop();
-        mPresenter.unbindView();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mPresenter.bindView(this);
     }
 
     @Override
@@ -361,27 +350,5 @@ public class MainActivity extends AbstractThemeableActivity implements MainActiv
 
     public Drawer getNavigationDrawer() {
         return mNaviagtionDrawer;
-    }
-
-    @Override
-    public void onPunchUserComplete(PunchResult punchResult) {
-        if(mAccountHeader == null) return;
-        ArrayList<IProfile> profiles = mAccountHeader.getProfiles();
-        if(profiles != null) {
-            int profilesCount = profiles.size();
-            for (int i = 0; i < profilesCount; i++) {
-                IProfile profile = profiles.get(i);
-                if(((long)profile.getIdentifier()) == punchResult.getUserId()) {
-                    UserAccountEntity userAccount = mUserAccountManager.getUserAccount(punchResult.getUserId());
-                    if(userAccount != null) {
-                        String userName = userAccount.getUserName();
-                        String punchString = getString(R.string.format_punchday_count, punchResult.getPunchDay());
-                        profile.setName(userName + "    [" + punchString + "]");
-                    }
-                    mAccountHeader.updateProfileByIdentifier(profile);
-                    break;
-                }
-            }
-        }
     }
 }
