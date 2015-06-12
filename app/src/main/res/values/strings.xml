@@ -19,6 +19,7 @@
     <string name="action_send_post">Send</string>
     <string name="action_open_notification">Notifications</string>
     <string name="action_open_search">Search</string>
+    <string name="action_punch">Punch</string>
     <string name="action_pin_to_home">Pin to home</string>
     <string name="action_unpin_from_home">Unpin from home</string>
 

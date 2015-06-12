@@ -15,8 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +30,8 @@ import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.HomePageView;
 
 import java.util.ArrayList;
@@ -59,14 +59,12 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     ViewPager mViewPager;
     @InjectView(R.id.fragment_homepage_toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.fragment_homepage_top_textview)
-    TextView mTopTextView;
-    @InjectView(R.id.fragment_homepage_top_container)
-    RelativeLayout mTopContainer;
 
     protected MenuItem mChangeThemeMenuItem;
     private MenuItem mNotificationMenuItem;
+    private MenuItem mPunchMenuItem;
     private boolean mHasNotification = false;
+    private PunchResult mCurrentUserPunchResult;
     public static HomePageFragment newInstance(Bundle args) {
         HomePageFragment fragment = new HomePageFragment();
         if(args != null)
@@ -93,7 +91,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mToolbar.setBackgroundColor(getPrimaryColor());
-        mTopContainer.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
             mTabLayout.setupWithViewPager(mViewPager);
@@ -158,6 +155,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         inflater.inflate(R.menu.menu_timeline, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
+        mPunchMenuItem = menu.findItem(R.id.action_punch);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -174,6 +172,14 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         if(mNotificationMenuItem != null) {
             if(mHasNotification) mNotificationMenuItem.setIcon(R.drawable.ic_action_notification_red_dot);
             else mNotificationMenuItem.setIcon(R.drawable.ic_action_notification);
+        }
+        if(mPunchMenuItem != null) {
+            if(mCurrentUserPunchResult == null) {
+                mPunchMenuItem.setTitle(getString(R.string.action_punch));
+            } else {
+                String punchString = getString(R.string.format_punchday_count, mCurrentUserPunchResult.getPunchDay());
+                mPunchMenuItem.setTitle(punchString);
+            }
         }
         super.onPrepareOptionsMenu(menu);
     }
@@ -199,6 +205,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                 } else {
                     return false;
                 }
+            case R.id.action_punch:
+                if(mCurrentUserPunchResult != null) {
+                    String punchString = getString(R.string.format_punchday_count, mCurrentUserPunchResult.getPunchDay());
+                    ToastProxy.showToast(getActivity(), punchString, ToastSupport.TOAST_INFO);
+                } else {
+                    mPresenter.punch(mUserAccountManager.getAuthObject());
+                    ToastProxy.showToast(getActivity(), getString(R.string.text_punching), ToastSupport.TOAST_INFO);
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -233,8 +248,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         } else if(event instanceof ThemeColorChangedEvent) {
             int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
             if(mTabLayout != null) mTabLayout.setBackgroundColor(newPrimaryColor);
-            if(mTopContainer != null) mTopContainer.setBackgroundColor(newPrimaryColor);
         } else if (event instanceof CurrentAccountChangedEvent) {
+            mCurrentUserPunchResult = null;
+            getThemedActivity().invalidateOptionsMenu();
             mPresenter.punch(mUserAccountManager.getAuthObject());
         }
     }
@@ -257,8 +273,8 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     @Override
     public void onPunchUserComplete(PunchResult punchResult) {
-        String punchString = getString(R.string.format_punchday_count, punchResult.getPunchDay());
-        mTopTextView.setText(punchString);
+        mCurrentUserPunchResult = punchResult;
+        getThemedActivity().invalidateOptionsMenu();
     }
 
     static class Adapter extends FragmentStatePagerAdapter {
