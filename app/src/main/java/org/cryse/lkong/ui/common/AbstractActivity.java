@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.example.android.systemuivis.SystemUiHelper;
 
+import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -182,5 +183,9 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     protected RxEventBus getEventBus() {
         return mEventBus;
+    }
+
+    public boolean isTablet() {
+        return getResources().getBoolean(R.bool.isTablet);
     }
 }

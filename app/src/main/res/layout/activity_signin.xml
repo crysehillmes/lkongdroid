@@ -1,82 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    
-    <LinearLayout
-        android:id="@+id/signin_input_container"
+    android:layout_height="match_parent"
+    android:background="@color/activity_bg_sign_in">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/activity_sign_in_cardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_button_container"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="48dp"
-        android:orientation="vertical">
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="?theme_card_bg_color"
+        >
 
-        <org.cryse.widget.FloatLabelLayout
+        <RelativeLayout
+            android:id="@+id/signin_input_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
-
-            <EditText
-                android:id="@+id/edit_email"
+            android:layout_above="@+id/bottom_button_container"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="32dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="@dimen/text_size_headline"
+                android:text="@string/card_title_sign_in"/>
+            <org.cryse.lkong.widget.TempFixTextInputLayout
+                android:id="@+id/edit_email_textlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_account_email"
-                android:imeOptions="actionNext"
-                android:inputType="textEmailAddress"
-                android:nextFocusDown="@+id/edit_password"
-                android:singleLine="true" />
+                android:layout_below="@+id/card_title">
 
-        </org.cryse.widget.FloatLabelLayout>
+                <EditText
+                    android:id="@+id/edit_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_account_email"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:nextFocusDown="@+id/edit_password"
+                    android:singleLine="true" />
 
-        <org.cryse.widget.FloatLabelLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
+            </org.cryse.lkong.widget.TempFixTextInputLayout>
 
-            <EditText
-                android:id="@+id/edit_password"
+            <org.cryse.lkong.widget.TempFixTextInputLayout
+                android:id="@+id/edit_password_textlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_account_password"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword"
-                android:singleLine="true" />
+                android:layout_below="@+id/edit_email_textlayout">
 
-        </org.cryse.widget.FloatLabelLayout>
-        <TextView
-            android:id="@+id/sign_in_result_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:singleLine="true"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="@dimen/text_size_subhead"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/bottom_button_container"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:background="#DDDDDD">
-        <Button
-            android:id="@+id/button_sign_up"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?selectableItemBackground"
-            android:text="@string/button_sign_up"
-            style="?android:buttonBarButtonStyle"/>
-        <Button
-            android:id="@+id/button_sign_in"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?selectableItemBackground"
-            android:text="@string/button_sign_in"
-            style="?android:buttonBarButtonStyle"/>
-        </LinearLayout>
-</RelativeLayout>
+                <EditText
+                    android:id="@+id/edit_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_account_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:singleLine="true" />
+
+            </org.cryse.lkong.widget.TempFixTextInputLayout>
+            <TextView
+                android:id="@+id/sign_in_result_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_password_textlayout"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="@dimen/text_size_subhead"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_sign_in"
+        app:layout_anchor="@id/activity_sign_in_cardview"
+        app:layout_anchorGravity="bottom|center"
+        app:fab_type="mini"
+        app:elevation="8dp"
+        app:borderWidth="0dp" />
+
+
+    <Button
+        android:id="@+id/button_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="32dp"
+        android:text="@string/button_sign_up"
+        android:background="?selectableItemBackgroundBorderless"
+        android:textSize="@dimen/text_size_title"
+        android:textColor="#FFFFFF"/>
+</android.support.design.widget.CoordinatorLayout>

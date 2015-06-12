@@ -31,4 +31,6 @@
     <dimen name="size_avatar_user_profile">88dp</dimen>
     <dimen name="size_avatar_large">64dp</dimen>
     <dimen name="size_avatar_default">40dp</dimen>
+
+    <dimen name="width_signin_cardview">512dp</dimen>
 </resources>

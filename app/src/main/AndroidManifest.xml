@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SignInActivity"/>
+            android:name=".ui.SignInActivity"
+            android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
         <activity
             android:name=".ui.ForumActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
