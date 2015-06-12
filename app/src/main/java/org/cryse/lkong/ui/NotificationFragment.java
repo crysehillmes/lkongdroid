@@ -32,9 +32,9 @@ import butterknife.InjectView;
 public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
-    @InjectView(R.id.fragment_notification_toolbar)
+    @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.fragment_notification_tablayout)
+    @InjectView(R.id.tablayout)
     TabLayout mTabLayout;
     @InjectView(R.id.fragment_notification_viewpager)
     ViewPager mViewPager;

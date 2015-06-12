@@ -55,11 +55,11 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     HomePagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.fragment_homepage_tablayout)
+    @InjectView(R.id.tablayout)
     TabLayout mTabLayout;
     @InjectView(R.id.fragment_homepage_viewpager)
     ViewPager mViewPager;
-    @InjectView(R.id.fragment_homepage_toolbar)
+    @InjectView(R.id.toolbar)
     Toolbar mToolbar;
 
     protected MenuItem mChangeThemeMenuItem;

@@ -8,7 +8,7 @@
     <dimen name="navigation_drawer_width">288dp</dimen>
     <dimen name="keyline_2_minus_16dp">56dp</dimen>
 
-    <dimen name="toolbar_shadow_height">8.0dip</dimen>
+    <dimen name="toolbar_shadow_height">8dp</dimen>
     <dimen name="toolbar_elevation">8dp</dimen>
     <dimen name="toolbar_progressbar_elevation">9dp</dimen>
     <dimen name="content_default_elevation">2dp</dimen>

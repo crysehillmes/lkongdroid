@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/toolbar" />
+    <include
+        layout="@layout/layout_appbar"/>
 
     <org.cryse.widget.recyclerview.SuperRecyclerView
         android:id="@+id/simple_collection_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay" />
-</LinearLayout>
+        app:srv_scrollbarStyle="outsideOverlay"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</android.support.design.widget.CoordinatorLayout>
