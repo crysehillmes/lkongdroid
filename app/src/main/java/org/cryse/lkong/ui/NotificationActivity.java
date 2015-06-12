@@ -11,8 +11,7 @@ public class NotificationActivity extends SimpleContainerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setStatusBarColor();
     }
 
     @Override

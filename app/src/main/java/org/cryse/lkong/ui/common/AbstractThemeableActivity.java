@@ -74,7 +74,19 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if(mIsOverrideStatusBarColor)
-                getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+                setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+        }
+    }
+
+    public void setStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+        }
+    }
+
+    public void setStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(color);
         }
     }
 
@@ -194,7 +206,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         if(event instanceof ThemeColorChangedEvent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(mIsOverrideStatusBarColor)
-                    getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+                    setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
                 updateTaskDescription();
             }
             if(getSupportActionBar() != null)

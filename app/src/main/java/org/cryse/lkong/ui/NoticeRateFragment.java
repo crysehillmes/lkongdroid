@@ -10,6 +10,7 @@ import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.presenter.NoticeRatePresenter;
 import org.cryse.lkong.ui.adapter.NoticeRateCollectionAdapter;
 import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;
 
@@ -65,6 +66,11 @@ public class NoticeRateFragment extends SimpleCollectionFragment<
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
         getPresenter().loadNotice(authObject, start, isLoadingMore);
+    }
+
+    @Override
+    protected UIUtils.InsetsValue getRecyclerViewInsets() {
+        return null;
     }
 
     @Override

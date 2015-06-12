@@ -1,12 +1,14 @@
 package org.cryse.lkong.ui;
 
-import android.graphics.Color;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,7 +25,6 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.ColorUtils;
-import org.cryse.widget.slidingtabs.SlidingTabLayout;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -31,8 +32,10 @@ import butterknife.InjectView;
 public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
-    @InjectView(R.id.fragment_notification_sliding_tabs)
-    SlidingTabLayout mTabLayout;
+    @InjectView(R.id.fragment_notification_toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.fragment_notification_tablayout)
+    TabLayout mTabLayout;
     @InjectView(R.id.fragment_notification_viewpager)
     ViewPager mViewPager;
     NotificationFragmentPagerAdapter mHomePagerAdapter;
@@ -69,27 +72,24 @@ public class NotificationFragment extends InActivityFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViewPager();
-        mTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-
-            @Override
-            public int getIndicatorColor(int position) {
-                return Color.WHITE;
-            }
-
-            @Override
-            public int getDividerColor(int position) {
-                return Color.TRANSPARENT;
-            }
-
-        });
+        final ActionBar actionBar = getThemedActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        mToolbar.setBackgroundColor(getPrimaryColor());
+        if (mViewPager != null) {
+            initViewPager();
+            mTabLayout.setupWithViewPager(mViewPager);
+            mTabLayout.setBackgroundColor(getPrimaryColor());
+        }
     }
 
     private void initViewPager() {
         mHomePagerAdapter = new NotificationFragmentPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mHomePagerAdapter);
-        mTabLayout.setTextColor(Color.WHITE);
-        mTabLayout.setViewPager(mViewPager);
-        mTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        getThemedActivity().setSupportActionBar(mToolbar);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -102,15 +102,15 @@ public class NotificationFragment extends InActivityFragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if(mViewPager.getCurrentItem() == 0) {
-                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity)getActivity();
+                if (mViewPager.getCurrentItem() == 0) {
+                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity) getActivity();
                     DisplayMetrics displaymetrics = new DisplayMetrics();
                     containerActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                     int width = displaymetrics.widthPixels;
                     containerActivity.getSwipeBackLayout().setEnableGesture(true);
                     containerActivity.getSwipeBackLayout().setEdgeSize(width);
                 } else {
-                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity)getActivity();
+                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity) getActivity();
                     containerActivity.getSwipeBackLayout().setEnableGesture(false);
                     containerActivity.getSwipeBackLayout().setEdgeSize(0);
                 }

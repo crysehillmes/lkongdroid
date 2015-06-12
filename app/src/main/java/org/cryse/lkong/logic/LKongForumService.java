@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 public class LKongForumService {
