@@ -18,6 +18,4 @@ public class PreferenceConstant {
     public static final int SHARED_PREFERENCE_THEME_COLOR_VALUE = 4;
     public static final String SHARED_PREFERENCE_READ_FONT = "prefs_read_font_size";
     public static final String SHARED_PREFERENCE_READ_FONT_VALUE = "16";
-    public static final String SHARED_PREFERENCE_FORUMS_FIRST = "prefs_use_forums_first";
-    public static final boolean SHARED_PREFERENCE_FORUMS_FIRST_VALUE = false;
 }
