@@ -19,6 +19,8 @@ public class UserInfoModel implements Serializable {
     private int digestPosts;
     private int posts;
     private int threads;
+    private String sigHtml;
+    private String smartMessage;
     private PunchResult punchResult;
 
     public int getEmail() {
@@ -139,6 +141,22 @@ public class UserInfoModel implements Serializable {
 
     public void setThreads(int threads) {
         this.threads = threads;
+    }
+
+    public String getSigHtml() {
+        return sigHtml;
+    }
+
+    public void setSigHtml(String sigHtml) {
+        this.sigHtml = sigHtml;
+    }
+
+    public String getSmartMessage() {
+        return smartMessage;
+    }
+
+    public void setSmartMessage(String smartMessage) {
+        this.smartMessage = smartMessage;
     }
 
     public PunchResult getPunchResult() {

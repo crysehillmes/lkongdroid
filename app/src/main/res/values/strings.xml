@@ -22,6 +22,7 @@
     <string name="action_punch">Punch</string>
     <string name="action_pin_to_home">Pin to home</string>
     <string name="action_unpin_from_home">Unpin from home</string>
+    <string name="action_open_in_browser">Open In Browser</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
@@ -76,6 +77,7 @@
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
     <string name="text_punching">Punching…</string>
+    <string name="text_loading">Loading…</string>
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
@@ -154,6 +156,8 @@
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
     <string name="settings_category_navigation">Navigation</string>
+    <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
+    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app.</string>
 
     <string-array name="image_download_policy_arrays">
         <item>Always</item>

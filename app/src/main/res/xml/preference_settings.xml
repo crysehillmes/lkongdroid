@@ -13,7 +13,11 @@
             android:summary="@string/settings_item_theme_color_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_navigation">
-
+        <SwitchPreference
+            android:key="prefs_use_in_app_browser"
+            android:title="@string/settings_item_use_in_app_browser_title"
+            android:summary="@string/settings_item_use_in_app_browser_summary"
+            android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
         <ListPreference

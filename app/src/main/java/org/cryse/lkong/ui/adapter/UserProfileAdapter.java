@@ -191,8 +191,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder.mTabLayout.addTab(holder.mTabLayout.newTab().setText(title));
             }
             holder.userNameTextView.setText(mUserInfo.getUserName());
-            holder.extraInfoTextView.setText("");
-            holder.statusTextView.setText(mUserInfo.getCustomStatus());
+            holder.extraInfoTextView.setText(mUserInfo.getCustomStatus());
+            holder.statusTextView.setText(mUserInfo.getSigHtml());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));
             holder.threadCountTextView.setText(Integer.toString(mUserInfo.getThreads()));
