@@ -25,22 +25,19 @@ public class PinnedForumsPresenter extends SimpleCollectionPresenter<PinnedForum
 
     public void loadPinnedForums(long uid) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
-        setLoadingStatus(false, true);
         mLoadDataSubscription = mLKongForumService.loadUserPinnedForums(uid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("ForumsPresenter::loadData() onNext().", LOG_TAG);
+                            Timber.d("PinnedForumsPresenter::loadData() onNext().", LOG_TAG);
                             mView.showSimpleData(result, false);
                         },
                         error -> {
-                            Timber.e(error, "ForumsPresenter::loadData() onError().", LOG_TAG);
-                            setLoadingStatus(false, false);
+                            Timber.e(error, "PinnedForumsPresenter::loadData() onError().", LOG_TAG);
                         },
                         () -> {
-                            Timber.d("ForumsPresenter::loadData() onComplete().", LOG_TAG);
-                            setLoadingStatus(false, false);
+                            Timber.d("PinnedForumsPresenter::loadData() onComplete().", LOG_TAG);
                         }
                 );
     }

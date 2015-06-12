@@ -48,6 +48,7 @@ public class PinnedForumsAdapter extends RecyclerViewBaseAdapter<PinnedForumEnti
                         .load(forumModel.getForumIcon())
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
+                        .noFade()
                         .into(viewHolder.mForumIconImageView);
             }
         }

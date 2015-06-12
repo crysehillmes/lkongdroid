@@ -2,6 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +31,7 @@ import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.view.HomePageView;
@@ -103,6 +105,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setActivityTitle();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -173,7 +176,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             if(mHasNotification) mNotificationMenuItem.setIcon(R.drawable.ic_action_notification_red_dot);
             else mNotificationMenuItem.setIcon(R.drawable.ic_action_notification);
         }
-        if(mPunchMenuItem != null) {
+        if(mPunchMenuItem != null && isAdded()) {
             if(mCurrentUserPunchResult == null) {
                 mPunchMenuItem.setTitle(getString(R.string.action_punch));
             } else {
@@ -220,12 +223,12 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     @Override
     protected void analyticsTrackEnter() {
-
+        AnalyticsUtils.trackFragmentEnter(this, LOG_TAG);
     }
 
     @Override
     protected void analyticsTrackExit() {
-
+        AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.cryse.lkong.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -238,18 +239,32 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
                     }
                 }
             });
-            mProfileAdapter.setOnTabListener(position -> {
-                isNoMore = false;
-                switch (position) {
-                    case 0:
-                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
-                        break;
-                    case 1:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
-                        break;
-                    case 2:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
-                        break;
+            mProfileAdapter.setOnTabListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    int position = tab.getPosition();
+                    isNoMore = false;
+                    switch (position) {
+                        case 0:
+                            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+                            break;
+                        case 1:
+                            getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
+                            break;
+                        case 2:
+                            getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
                 }
             });
             mProfileCollectionView.setAdapter(mProfileAdapter);

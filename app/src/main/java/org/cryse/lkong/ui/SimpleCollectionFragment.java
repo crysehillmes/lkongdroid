@@ -115,7 +115,6 @@ public abstract class SimpleCollectionFragment<
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
         } else {
             mCollectionView.getSwipeToRefresh().measure(1,1);
-            mCollectionView.getSwipeToRefresh().setRefreshing(true);
             loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
         }
     }

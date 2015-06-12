@@ -51,6 +51,7 @@
     <color name="text_color_button_dark">@color/white_87_percent</color><!-- 87% -->
 
     <color name="activity_bg_sign_in">@color/md_blue_500</color>
+    <color name="tab_indicator">#FFFFFFFF</color>
 
     <array name="primaryColors">
         <item>@color/md_red_500</item>

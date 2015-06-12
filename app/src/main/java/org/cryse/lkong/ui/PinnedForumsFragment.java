@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -112,6 +113,13 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
         return null;
     }
 
+    @Override
+    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
+        return null;
+    }
+    protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
+        return null;
+    }
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
         return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_column_count));
