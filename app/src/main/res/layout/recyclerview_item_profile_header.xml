@@ -43,7 +43,6 @@
                 android:id="@+id/recyclerview_item_profile_header_extra_info_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="\@jsmith"
                 android:textSize="12sp"
                 android:textColor="#bbbbbb" />
 
@@ -52,7 +51,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:text="Mobile development passionate."
                 android:textColor="#ffffff" />
 
             <Button

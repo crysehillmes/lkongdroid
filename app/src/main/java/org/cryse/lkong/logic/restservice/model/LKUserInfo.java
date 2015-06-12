@@ -37,6 +37,8 @@ public class LKUserInfo {
     private String todaypostnum;
     private String id;
     private boolean isok;
+    private String sightml;
+    private String smartmessage;
 
     public int getEmail() {
         return email;
@@ -286,12 +288,28 @@ public class LKUserInfo {
         this.id = id;
     }
 
-    public boolean isIsok() {
+    public boolean isOk() {
         return isok;
     }
 
     public void setIsok(boolean isok) {
         this.isok = isok;
+    }
+
+    public String getSightml() {
+        return sightml;
+    }
+
+    public void setSightml(String sightml) {
+        this.sightml = sightml;
+    }
+
+    public String getSmartmessage() {
+        return smartmessage;
+    }
+
+    public void setSmartmessage(String smartmessage) {
+        this.smartmessage = smartmessage;
     }
 }
 
