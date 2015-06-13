@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -71,15 +73,17 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         return true;
     }
 
-    @Override
-    protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
-        super.setUpToolbar(toolbarLayoutId, customToolbarShadowId);
-        if(getSupportActionBar() != null && mIsOverrideToolbarColor)
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if(mIsOverrideStatusBarColor)
-                setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            if(mIsOverrideToolbarColor)
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if(mIsOverrideStatusBarColor)
+                    setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+            }
         }
     }
 

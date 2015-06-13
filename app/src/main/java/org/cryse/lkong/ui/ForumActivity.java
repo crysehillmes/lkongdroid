@@ -2,9 +2,11 @@ package org.cryse.lkong.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,6 +65,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
     @InjectView(R.id.fab)
@@ -86,11 +90,9 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
         Intent intent = getIntent();

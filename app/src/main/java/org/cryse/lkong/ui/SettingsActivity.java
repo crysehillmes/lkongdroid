@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.cryse.lkong.R;
@@ -11,17 +13,22 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class SettingsActivity extends AbstractThemeableActivity {
     public static final String LOG_TAG = SettingsActivity.class.getName();
+
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        ButterKnife.inject(this);
+        setUpToolbar(mToolbar);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction =
                 fragmentManager.beginTransaction();

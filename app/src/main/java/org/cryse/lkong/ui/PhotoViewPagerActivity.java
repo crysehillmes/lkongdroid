@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -47,6 +49,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     private List<String> mPhotoUrls = new ArrayList<String>();
     private String mInitUrl;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.photo_viewpager)
     ViewPager mViewPager;
     PhotoPagerAdapter mPagerAdapter;
@@ -56,12 +60,10 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
         setIsOverrideToolbarColor(false);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ButterKnife.inject(this);
+        setUpToolbar(mToolbar);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
-        ButterKnife.inject(this);
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL) && intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST)) {
             this.mPhotoUrls.addAll(intent.getStringArrayListExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST));

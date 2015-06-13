@@ -18,6 +18,8 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpanWatcher;
 import android.text.Spannable;
@@ -94,6 +96,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
     @InjectView(R.id.activity_new_thread_edittext_content)
@@ -126,12 +130,9 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
-        this.setSwipeBackEnable(false);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         ButterKnife.inject(this);
+        setSwipeBackEnable(false);
+        setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);

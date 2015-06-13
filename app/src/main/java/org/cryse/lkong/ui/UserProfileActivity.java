@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -57,6 +57,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_profile_reveal_bg_layout)
     RevealBackgroundView mActivityRevealBackground;
     @InjectView(R.id.activity_profile_content_superlistview)
@@ -87,15 +89,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         mItemList = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
-        ViewCompat.setElevation(getToolbar(), 0f);
+        ViewCompat.setElevation(mToolbar, 0f);
+        setUpToolbar(mToolbar);
         mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
         mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
         if(mUid == 0l)
             throw new IllegalArgumentException("Must set uid in intent.");

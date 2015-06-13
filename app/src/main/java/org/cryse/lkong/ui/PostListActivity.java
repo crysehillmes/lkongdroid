@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
@@ -119,6 +121,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @PrefsUseInAppBrowser
     BooleanPreference mUserInAppBrowser;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
     @InjectView(R.id.fab)
@@ -156,10 +160,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
-        setUpToolbar(R.id.toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(mToolbar);
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
@@ -209,21 +211,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
-        mToolbarQuickReturn = new QuickReturnUtils(getToolbar(), QuickReturnUtils.ANIMATE_DIRECTION_UP);
-        mPostCollectionView.getRefreshableView().setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mToolbarQuickReturn = new QuickReturnUtils(mToolbar, QuickReturnUtils.ANIMATE_DIRECTION_UP);
+        mPostCollectionView.getRefreshableView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean dragging = false;
             int mNegativeDyAmount = 0;
             private int mAmountScrollY = 0;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
-                if(newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
                 }
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
                 } else {
                     mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
@@ -236,18 +239,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
-                int toolbarHeight = getToolbar().getHeight();
+                int toolbarHeight = mToolbar.getHeight();
                 if (dy > 0) {
                     mNegativeDyAmount = 0;
-                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
+                    if (mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         mToolbarQuickReturn.hide();
                         mFooterPagerControl.hide();
                         mFab.hide();
                     }
-                } else if(dy < 0) {
+                } else if (dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
-                    if(Math.abs(mNegativeDyAmount - mBaseTranslationY) > toolbarHeight) {
+                    if (Math.abs(mNegativeDyAmount - mBaseTranslationY) > toolbarHeight) {
                         mToolbarQuickReturn.show();
                         mFooterPagerControl.show();
                         mFab.show();
