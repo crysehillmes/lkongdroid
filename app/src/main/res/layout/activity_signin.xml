@@ -86,7 +86,7 @@
         android:src="@drawable/ic_action_sign_in"
         app:layout_anchor="@id/activity_sign_in_cardview"
         app:layout_anchorGravity="bottom|center"
-        app:fab_type="mini"
+        app:fabSize="mini"
         app:elevation="8dp"
         app:borderWidth="0dp" />
 

@@ -215,11 +215,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     }
 
     @Override
-    public void showToast(int text_value, int toastType) {
-
-    }
-
-    @Override
     public void onSearchDone(SearchDataSet dataSet, boolean isLoadingMore) {
         if(isLoadingMore) {
             if (dataSet.getSearchResultItems() == null || dataSet.getSearchResultItems().size() == 0) mIsNoMore.set(true);

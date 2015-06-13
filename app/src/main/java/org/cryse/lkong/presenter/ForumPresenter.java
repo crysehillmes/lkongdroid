@@ -1,11 +1,8 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
-import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.ForumView;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -38,7 +35,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.showThreadList(result, loadingMore);
+                            if (mView != null) {
+                                mView.showThreadList(result, loadingMore);
+                            }
                         },
                         error -> {
                             Timber.e(error, "ForumPresenter::loadThreadList() onError().", LOG_TAG);
@@ -57,7 +56,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.checkPinnedStatusDone(false);
+                            if (mView != null) {
+                                mView.checkPinnedStatusDone(false);
+                            }
                         },
                         error -> {
                             Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
@@ -74,7 +75,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.checkPinnedStatusDone(result);
+                            if (mView != null) {
+                                mView.checkPinnedStatusDone(result);
+                            }
                         },
                         error -> {
                             Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
@@ -91,7 +94,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.checkPinnedStatusDone(result);
+                            if (mView != null) {
+                                mView.checkPinnedStatusDone(result);
+                            }
                         },
                         error -> {
                             Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
@@ -108,7 +113,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
 
     @Override
     public void unbindView() {
-        this.mView = new EmptyTheadListView();
+        this.mView = null;
     }
 
     @Override
@@ -118,47 +123,10 @@ public class ForumPresenter implements BasePresenter<ForumView> {
     }
 
     private void setLoadingStatus(boolean loadingMore, boolean isLoading) {
-        if(loadingMore)
+        if (mView == null) return;
+        if (loadingMore)
             mView.setLoadingMore(isLoading);
         else
             mView.setLoading(isLoading);
-    }
-
-    private class EmptyTheadListView implements ForumView {
-
-        @Override
-        public void showThreadList(List<ThreadModel> threadList, boolean isLoadMore) {
-
-        }
-
-        @Override
-        public void checkPinnedStatusDone(boolean isPinned) {
-
-        }
-
-        @Override
-        public boolean isLoadingMore() {
-            return false;
-        }
-
-        @Override
-        public void setLoadingMore(boolean value) {
-
-        }
-
-        @Override
-        public void setLoading(Boolean value) {
-
-        }
-
-        @Override
-        public Boolean isLoading() {
-            return null;
-        }
-
-        @Override
-        public void showToast(int text_value, int toastType) {
-
-        }
     }
 }

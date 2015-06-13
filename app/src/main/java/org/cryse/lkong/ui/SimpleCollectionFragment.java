@@ -1,11 +1,13 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +24,10 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.LKAuthObject;
-import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
+import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
@@ -194,11 +198,6 @@ public abstract class SimpleCollectionFragment<
     @Override
     public Boolean isLoading() {
         return isLoading;
-    }
-
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(getActivity(), getString(text_value), toastType);
     }
 
     protected abstract String getLogTag();

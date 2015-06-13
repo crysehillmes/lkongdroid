@@ -1,16 +1,11 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
-import org.cryse.lkong.model.DataItemLocationModel;
-import org.cryse.lkong.model.PostModel;
-import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
-import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.PostListView;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,6 +27,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
     @Inject
     public PostListPresenter(LKongForumService forumService) {
         this.mLKongForumService = forumService;
+        this.mView = null;
     }
 
     public void getPostLocation(LKAuthObject authObject, long pid, boolean loadThreadInfo) {
@@ -42,11 +38,15 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.onGetPostLocationComplete(result, loadThreadInfo);
+                            if (mView != null) {
+                                mView.onGetPostLocationComplete(result, loadThreadInfo);
+                            }
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
-                            mView.setLoading(false);
+                            if (mView != null) {
+                                mView.setLoading(false);
+                            }
                         },
                         () -> {
                         }
@@ -61,11 +61,15 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.onLoadThreadInfoComplete(result);
+                            if (mView != null) {
+                                mView.onLoadThreadInfoComplete(result);
+                            }
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
-                            mView.setLoading(false);
+                            if (mView != null) {
+                                mView.setLoading(false);
+                            }
                         },
                         () -> {
                         }
@@ -80,14 +84,20 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.showPostList(page, result, refreshPosition, showMode);
+                            if (mView != null) {
+                                mView.showPostList(page, result, refreshPosition, showMode);
+                            }
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadPostList() onError().", LOG_TAG);
-                            mView.setLoading(false);
+                            {
+                                mView.setLoading(false);
+                            }
                         },
                         () -> {
-                            mView.setLoading(false);
+                            if (mView != null) {
+                                mView.setLoading(false);
+                            }
                         }
                 );
     }
@@ -99,7 +109,9 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.onAddOrRemoveFavoriteComplete(result);
+                            if (mView != null) {
+                                mView.onAddOrRemoveFavoriteComplete(result);
+                            }
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::addOrRemoveFavorite() onError().", LOG_TAG);
@@ -116,10 +128,19 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            mView.onRatePostComplete(result);
+                            if (mView != null) {
+                                mView.onRatePostComplete(result);
+                            }
                         },
                         error -> {
-                            mView.showToast(ToastErrorConstant.errorCodeToStringRes(ToastErrorConstant.TOAST_FAILURE_RATE_POST), ToastSupport.TOAST_ALERT);
+                            if (mView != null) {
+                                mView.showSnackbar(
+                                        null,
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT,
+                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST
+                                );
+                            }
                             Timber.e(error, "PostListPresenter::ratePost() onError().", LOG_TAG);
                         },
                         () -> {
@@ -134,7 +155,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
 
     @Override
     public void unbindView() {
-        this.mView = new EmptyPostListView();
+        this.mView = null;
     }
 
     @Override
@@ -144,48 +165,5 @@ public class PostListPresenter implements BasePresenter<PostListView> {
         SubscriptionUtils.checkAndUnsubscribe(mAddOrRemoveFavoriteSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mDataItemLocationSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mRatePostSubscription);
-    }
-
-    private class EmptyPostListView implements PostListView {
-
-        @Override
-        public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
-
-        }
-
-        @Override
-        public void onGetPostLocationComplete(DataItemLocationModel locationModel, boolean loadThreadInfo) {
-
-        }
-
-        @Override
-        public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
-
-        }
-
-        @Override
-        public void onAddOrRemoveFavoriteComplete(boolean isFavorite) {
-
-        }
-
-        @Override
-        public void onRatePostComplete(PostModel.PostRate postRate) {
-
-        }
-
-        @Override
-        public void setLoading(Boolean value) {
-
-        }
-
-        @Override
-        public Boolean isLoading() {
-            return null;
-        }
-
-        @Override
-        public void showToast(int text_value, int toastType) {
-
-        }
     }
 }

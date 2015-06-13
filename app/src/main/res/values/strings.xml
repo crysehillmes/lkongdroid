@@ -76,6 +76,7 @@
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
+    <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
     <string name="text_loading">Loading…</string>
 

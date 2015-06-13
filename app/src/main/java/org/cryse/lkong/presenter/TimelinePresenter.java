@@ -14,6 +14,7 @@ import timber.log.Timber;
 
 public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel> {
     private static final String LOG_TAG = TimelinePresenter.class.getName();
+
     @Inject
     public TimelinePresenter(LKongForumService forumService) {
         super(forumService);
@@ -39,13 +40,15 @@ public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel> 
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
         setLoadingStatus(isLoadingMore, true);
-        mLoadDataSubscription = mLKongForumService.getTimeline(authObject, start, (Integer)extraArgs[0])
+        mLoadDataSubscription = mLKongForumService.getTimeline(authObject, start, (Integer) extraArgs[0])
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             Timber.d("TimelinePresenter::loadData() onNext().", LOG_TAG);
-                            mView.showSimpleData(result, isLoadingMore);
+                            if (mView != null) {
+                                mView.showSimpleData(result, isLoadingMore);
+                            }
                         },
                         error -> {
                             Timber.e(error, "TimelinePresenter::loadData() onError().", LOG_TAG);

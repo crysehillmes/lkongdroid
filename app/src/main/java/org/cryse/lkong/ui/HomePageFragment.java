@@ -32,8 +32,7 @@ import org.cryse.lkong.presenter.HomePagePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
 
 import java.util.ArrayList;
@@ -211,10 +210,18 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             case R.id.action_punch:
                 if(mCurrentUserPunchResult != null) {
                     String punchString = getString(R.string.format_punchday_count, mCurrentUserPunchResult.getPunchDay());
-                    ToastProxy.showToast(getActivity(), punchString, ToastSupport.TOAST_INFO);
+                    showSnackbar(
+                            punchString,
+                            SimpleSnackbarType.INFO,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 } else {
                     mPresenter.punch(mUserAccountManager.getAuthObject());
-                    ToastProxy.showToast(getActivity(), getString(R.string.text_punching), ToastSupport.TOAST_INFO);
+                    showSnackbar(
+                            getString(R.string.text_punching),
+                            SimpleSnackbarType.INFO,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 }
                 return true;
         }

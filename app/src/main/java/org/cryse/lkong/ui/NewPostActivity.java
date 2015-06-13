@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -17,12 +18,13 @@ import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
+import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
 public class NewPostActivity extends AbstractPostActivity {
     public static final String LOG_TAG = NewPostActivity.class.getName();
@@ -109,9 +111,17 @@ public class NewPostActivity extends AbstractPostActivity {
                 new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
-                    ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 } else {
-                    ToastProxy.showToast(this, getString(R.string.toast_failure_new_post), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            getString(R.string.toast_failure_new_post),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 }
             }
         }

@@ -13,6 +13,7 @@ import timber.log.Timber;
 
 public class PinnedForumsPresenter extends SimpleCollectionPresenter<PinnedForumEntity> {
     private static final String LOG_TAG = PinnedForumsPresenter.class.getName();
+
     @Inject
     public PinnedForumsPresenter(LKongForumService forumService) {
         super(forumService);
@@ -31,7 +32,9 @@ public class PinnedForumsPresenter extends SimpleCollectionPresenter<PinnedForum
                 .subscribe(
                         result -> {
                             Timber.d("PinnedForumsPresenter::loadData() onNext().", LOG_TAG);
-                            mView.showSimpleData(result, false);
+                            if (mView != null) {
+                                mView.showSimpleData(result, false);
+                            }
                         },
                         error -> {
                             Timber.e(error, "PinnedForumsPresenter::loadData() onError().", LOG_TAG);

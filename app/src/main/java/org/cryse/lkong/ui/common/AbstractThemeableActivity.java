@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,10 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.utils.ThemeEngine;
+import org.cryse.lkong.utils.ToastErrorConstant;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
+import org.cryse.lkong.utils.snackbar.SnackbarSupport;
+import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,7 +32,7 @@ import me.imid.swipebacklayout.lib.Utils;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 
-public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase {
+public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase, SnackbarSupport {
     private SwipeBackActivityHelper mHelper;
     @Inject
     ThemeEngine mThemeEngine;
@@ -244,5 +249,25 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
                 )
         );
         iconBitmap.recycle();
+    }
+
+    @Override
+    public void showSnackbar(CharSequence text, SimpleSnackbarType type, Object... args) {
+        SnackbarUtils.makeSimple(
+                getSnackbarRootView(),
+                text,
+                type,
+                SimpleSnackbarType.LENGTH_SHORT
+        ).show();
+    }
+
+    @Override
+    public void showSnackbar(int errorCode, SimpleSnackbarType type, Object... args) {
+        SnackbarUtils.makeSimple(
+                getSnackbarRootView(),
+                getString(ToastErrorConstant.errorCodeToStringRes(errorCode)),
+                type,
+                SimpleSnackbarType.LENGTH_SHORT
+        ).show();
     }
 }

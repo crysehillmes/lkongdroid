@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,13 +62,12 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
@@ -738,11 +738,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         return null;
     }
 
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(this, getString(text_value), toastType);
-    }
-
     public PostListPresenter getPresenter() {
         return mPresenter;
     }
@@ -795,7 +790,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                                     getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
                                 }
                             } else {
-                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_invalid_floor), TOAST_ALERT);
+                                showSnackbar(
+                                        getString(R.string.toast_error_invalid_floor),
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
                             }
                         }
                     }
@@ -855,14 +854,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                                                     int score = Integer.valueOf(scoreText);
                                                     getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
                                                 } else {
-                                                    ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_score_empty), TOAST_ALERT);
+                                                    showSnackbar(
+                                                            getString(R.string.toast_error_rate_score_empty),
+                                                            SimpleSnackbarType.ERROR,
+                                                            SimpleSnackbarType.LENGTH_SHORT
+                                                    );
                                                 }
                                             }
                                         })
                                         .build();
                                 ratePostDialog.show();
                             } else {
-                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_self), TOAST_ALERT);
+                                showSnackbar(
+                                        getString(R.string.toast_error_rate_self),
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
                             }
                         }
                     })
@@ -890,7 +897,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                             showPostListInternal(page, posts, refreshPosition, showMode);
                         },
                         error -> {
-                            showToast(R.string.notification_content_network_error, ToastSupport.TOAST_ALERT);
+                            showSnackbar(
+                                    getString(R.string.notification_content_network_error),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
                             Timber.e(error, "PostListActivity::createSpan() onError().", LOG_TAG);
                         },
                         () -> {
@@ -1072,7 +1083,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     else if(page != -1)
                         goToPage(page);
                     else
-                        showToast(R.string.toast_error_link_to_current_thread, TOAST_INFO);
+                        showSnackbar(
+                                getString(R.string.toast_error_link_to_current_thread),
+                                SimpleSnackbarType.INFO,
+                                SimpleSnackbarType.LENGTH_SHORT
+                        );
                 } else {
                     if(pid != -1l)
                         mAndroidNavigation.openActivityForPostListByPostId(this, pid);

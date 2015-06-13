@@ -57,13 +57,12 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.utils.preference.StringPreference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -231,7 +230,11 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         Editable spannableContent = mContentEditText.getText();
         if(!TextUtils.isEmpty(spannableContent)) {
             if(hasTitleField() && TextUtils.isEmpty(title)) {
-                ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
+                showSnackbar(
+                        getString(R.string.toast_error_title_empty),
+                        SimpleSnackbarType.ERROR,
+                        SimpleSnackbarType.LENGTH_SHORT
+                );
                 return;
             }
             if (mSendServiceBinder != null) {
@@ -245,10 +248,18 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                     sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));
                 sendData(hasTitleField() ? title : null, sendContentBuilder.toString());
             }
-        } else if(hasTitleField() && TextUtils.isEmpty(title)){
-            ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
+        } else if (hasTitleField() && TextUtils.isEmpty(title)) {
+            showSnackbar(
+                    getString(R.string.toast_error_title_empty),
+                    SimpleSnackbarType.ERROR,
+                    SimpleSnackbarType.LENGTH_SHORT
+            );
         } else {
-            ToastProxy.showToast(this, getString(R.string.toast_error_content_empty), ToastSupport.TOAST_ALERT);
+            showSnackbar(
+                    getString(R.string.toast_error_content_empty),
+                    SimpleSnackbarType.ERROR,
+                    SimpleSnackbarType.LENGTH_SHORT
+            );
         }
     }
 
@@ -526,9 +537,17 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
-                    ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 } else {
-                    ToastProxy.showToast(this, getString(R.string.toast_failure_new_post), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            getString(R.string.toast_failure_new_post),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 }
             }
         }

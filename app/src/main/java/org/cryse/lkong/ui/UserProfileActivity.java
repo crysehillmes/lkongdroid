@@ -361,11 +361,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     }
 
     @Override
-    public void showToast(int text_value, int toastType) {
-
-    }
-
-    @Override
     protected int getAppTheme() {
         if(isNightMode())
             return R.style.LKongDroidTheme_Dark_Transparent;

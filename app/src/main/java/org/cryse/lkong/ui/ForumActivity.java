@@ -31,7 +31,6 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
@@ -70,7 +69,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
-    View mTopPaddingHeaderView;
     Spinner mListTypeSpinner;
     MenuItem mPinForumMenuItem;
     ThreadListAdapter mCollectionAdapter;
@@ -115,13 +113,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mPicasso, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
-
-        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
-        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
-        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
@@ -382,11 +373,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     public void checkPinnedStatusDone(boolean isPinned) {
         mIsForumPinned = isPinned;
         invalidateOptionsMenu();
-    }
-
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(this, getString(text_value), toastType);
     }
 
     @Override

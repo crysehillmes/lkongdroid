@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
@@ -28,8 +29,9 @@ import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
-import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
+import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 import org.cryse.lkong.view.SignInView;
 import org.cryse.utils.preference.LongPreference;
 
@@ -237,11 +239,6 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     @Override
     public Boolean isLoading() {
         return null;
-    }
-
-    @Override
-    public void showToast(int text, int toastType) {
-        ToastProxy.showToast(this, getString(ToastErrorConstant.errorCodeToStringRes(text)), toastType);
     }
 
     private SignInPresenter getPresenter() {

@@ -31,6 +31,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
     private SystemUiHelper mSystemUiHelper;
     private Toolbar mToolbar;
     private View mPreLShadow;
+    private View mSnackbarRootView;
     private ActionMode mActionMode;
     private Subscription mEventBusSubscription;
     @Inject
@@ -44,6 +45,12 @@ public abstract class AbstractActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onEvent);
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        mSnackbarRootView =  findViewById(android.R.id.content);
     }
 
     protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
@@ -187,5 +194,11 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     public boolean isTablet() {
         return getResources().getBoolean(R.bool.isTablet);
+    }
+
+    protected View getSnackbarRootView() {
+        if(mSnackbarRootView == null)
+            mSnackbarRootView = findViewById(android.R.id.content);
+        return mSnackbarRootView;
     }
 }
