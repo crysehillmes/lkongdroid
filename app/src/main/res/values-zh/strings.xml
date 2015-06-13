@@ -6,6 +6,8 @@
     <string name="action_dark_theme">夜间模式</string>
     <string name="action_insert_emoji">插入表情</string>
     <string name="action_insert_image">插入图片</string>
+    <string name="hint_title">标题</string>
+    <string name="hint_content">内容</string>
     <string name="action_light_theme">日间模式</string>
     <string name="action_send_post">发送</string>
     <string name="action_settings">设置</string>

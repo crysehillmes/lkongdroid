@@ -82,6 +82,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @Inject
@@ -137,11 +138,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
-        if(!hasTitleField()) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)mContentEditText.getLayoutParams();
-            int actionBarSize = UIUtils.calculateActionBarSize(this);
-            layoutParams.setMargins(0, actionBarSize, 0, actionBarSize);
-        }
+
         readDataFromIntent(getIntent());
         setTitle(getTitleString());
         mBackgroundServiceConnection = new ServiceConnection() {
@@ -269,7 +266,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 Drawable emoji = Drawable.createFromStream(AbstractPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
                 addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), (int)mContentTextSize * 2, (int)mContentTextSize * 2);
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e, e.getMessage(), getLogTag());
             }
         });
     }

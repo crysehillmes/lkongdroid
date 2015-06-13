@@ -37,6 +37,8 @@
     <string name="drawer_item_account_add">Add account</string>
     <string name="hint_account_email">Your Email</string>
     <string name="hint_account_password">Password</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_content">Content</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
     <string name="hint_search_label">Search</string>
