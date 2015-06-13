@@ -4,14 +4,8 @@ import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-
-import org.cryse.lkong.R;
-import org.cryse.lkong.utils.ToastErrorConstant;
-
-import javax.inject.Inject;
 
 public class SnackbarUtils {
     public static final int LENGTH_SHORT = Snackbar.LENGTH_SHORT;

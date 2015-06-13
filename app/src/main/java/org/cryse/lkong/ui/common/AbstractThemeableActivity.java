@@ -8,11 +8,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import org.cryse.lkong.R;
@@ -23,9 +21,6 @@ import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarSupport;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import javax.inject.Inject;
 

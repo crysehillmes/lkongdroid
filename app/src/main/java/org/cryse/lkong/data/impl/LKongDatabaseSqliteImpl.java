@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.dao.PinnedForumDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.model.PinnedForumEntity;

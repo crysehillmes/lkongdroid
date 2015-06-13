@@ -5,8 +5,6 @@ import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 
-import java.util.List;
-
 import rx.Subscription;
 
 public abstract class SimpleCollectionPresenter<ItemType> implements BasePresenter<SimpleCollectionView<ItemType>> {

@@ -6,11 +6,11 @@ import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
-import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.application.qualifier.PrefsThemeColor;
+import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.LongPreference;

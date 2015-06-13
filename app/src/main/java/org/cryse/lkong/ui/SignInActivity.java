@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
@@ -28,10 +27,7 @@ import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
-import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 import org.cryse.lkong.view.SignInView;
 import org.cryse.utils.preference.LongPreference;
 

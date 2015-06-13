@@ -18,7 +18,6 @@ import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
-
 import java.util.List;
 
 import javax.inject.Inject;

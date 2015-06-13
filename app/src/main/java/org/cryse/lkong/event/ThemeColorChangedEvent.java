@@ -1,7 +1,5 @@
 package org.cryse.lkong.event;
 
-import android.content.Context;
-
 public class ThemeColorChangedEvent extends AbstractEvent {
     private int newPrimaryColor;
     private int newPrimaryDarkColor;

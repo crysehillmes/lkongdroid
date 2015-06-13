@@ -2,7 +2,6 @@ package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
