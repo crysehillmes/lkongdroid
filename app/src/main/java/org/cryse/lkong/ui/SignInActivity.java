@@ -214,7 +214,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
             }
-            closeActivityWithTransition();
+            finish();
         } else {
             Timber.d("SignInActivity::signInComplete() failed().", LOG_TAG);
             String errorMessage = signInResult == null ? "" : signInResult.getErrorMessage();

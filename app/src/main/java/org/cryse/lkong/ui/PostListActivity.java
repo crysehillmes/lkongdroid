@@ -273,7 +273,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onRateClick(View view, int position) {
                 int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
-                if(itemPosition > 0 && itemPosition < mCollectionAdapter.getItemCount())
+                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount())
                     view.post(() -> openRateDialog(itemPosition));
             }
 
