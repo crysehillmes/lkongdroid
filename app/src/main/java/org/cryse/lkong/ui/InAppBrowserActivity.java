@@ -38,7 +38,7 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
     @InjectView(R.id.activity_browser_toolbar)
     Toolbar mToolbar;
     @InjectView(R.id.activity_browser_webview)
-    HTML5WebView browser;
+    HTML5WebView mBrowserView;
     @InjectView(R.id.activity_browser_progressbar)
     ProgressBar mProgressBar;
     public Context context;
@@ -63,20 +63,25 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
-        browser.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        mBrowserView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         url = getIntent().getStringExtra("url");
         mProgressBar.setMax(100);
-        browser.setOnLoadProgressChangedListener((webView, newProgress) -> {
+        mBrowserView.setOnLoadProgressChangedListener((webView, newProgress) -> {
             mProgressBar.setProgress(newProgress);
         });
+
         if (url.contains("youtu") || url.contains("play.google.com")) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         } else {
-            browser.loadUrl(url);
+            if (savedInstanceState == null) {
+                mBrowserView.loadUrl(url);
+            } else {
+                mBrowserView.restoreState(savedInstanceState);
+            }
         }
 
-        browser.setWebViewClient(new CustomWebClient(this, mProgressBar));
+        mBrowserView.setWebViewClient(new CustomWebClient(this, mProgressBar));
         int currentOrientation = getResources().getConfiguration().orientation;
         if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -85,11 +90,13 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
         }
 
         context = this;
+    }
 
-        //overridePendingTransition(R.anim.slide_in_left, R.anim.activity_zoom_exit);
-
-        //settings = AppSettings.getInstance(this);
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState )
+    {
+        super.onSaveInstanceState(outState);
+        mBrowserView.saveState(outState);
     }
 
     @Override
@@ -107,13 +114,15 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
             case android.R.id.home:
                 finish();
                 return true;
-
+            case R.id.action_refresh:
+                mBrowserView.reload();
+                return true;
             case R.id.action_open_web:
                 try {
                     Uri weburi;
 
-                    if (browser != null) {
-                        weburi = Uri.parse(browser.getUrl());
+                    if (mBrowserView != null) {
+                        weburi = Uri.parse(mBrowserView.getUrl());
                     } else { // on plain text
                         weburi = Uri.parse(url);
                     }
@@ -134,7 +143,7 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
     @Override
     public void onDestroy() {
         try {
-            browser.destroy();
+            mBrowserView.destroy();
         } catch (Exception e) {
             // plain text browser
         }
@@ -161,8 +170,8 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
 
     @Override
     public void onBackPressed() {
-        if (browser != null && browser.canGoBack() && !browser.getUrl().equals(url)) {
-            browser.goBack();
+        if (mBrowserView != null && mBrowserView.canGoBack() && !mBrowserView.getUrl().equals(url)) {
+            mBrowserView.goBack();
         } else {
             super.onBackPressed();
         }

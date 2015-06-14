@@ -184,4 +184,5 @@
     <string name="text_punching">正在签到…</string>
     <string name="title_null_or_empty">标题不能为空</string>
     <string name="text_new_version_changes">新版改动</string>
+    <string name="action_refresh">刷新</string>
 </resources>
