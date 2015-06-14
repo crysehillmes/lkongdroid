@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.utils.NumberFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -29,7 +30,7 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_forum, parent, false);
+                .inflate(R.layout.recyclerview_item_forum_detail, parent, false);
         return new ViewHolder(v);
     }
 
@@ -41,9 +42,43 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
             Object item = getObjectItem(position);
             if(item instanceof ForumModel) {
                 ForumModel forumModel = (ForumModel)item;
-
                 viewHolder.mForumTitleTextView.setText(forumModel.getName());
-                /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
+                String todayPostsCount;
+                String threadsCount;
+                if(getContext().getResources().getConfiguration().locale.getLanguage().equalsIgnoreCase("zh")) {
+                    todayPostsCount  = NumberFormatUtils.numberToTenKiloString(
+                            forumModel.getTodayPosts(),
+                            getString(R.string.format_unit_ten_kilo),
+                            false,
+                            true
+                    );
+                    threadsCount = NumberFormatUtils.numberToTenKiloString(
+                            forumModel.getThreads(),
+                            getString(R.string.format_unit_ten_kilo),
+                            false,
+                            true
+                    );
+                } else {
+                    todayPostsCount  = NumberFormatUtils.numberToKiloString(
+                            forumModel.getTodayPosts(),
+                            getString(R.string.format_unit_kilo),
+                            false,
+                            true
+                    );
+                    threadsCount = NumberFormatUtils.numberToKiloString(
+                            forumModel.getThreads(),
+                            getString(R.string.format_unit_kilo),
+                            false,
+                            true
+                    );
+                }
+
+                String secondaryInfo = getString(R.string.format_forum_item_summary, threadsCount, todayPostsCount);
+                // String todayPosts = getString(R.string.format_forum_item_todayposts, forumModel.getTodayPosts());
+                viewHolder.mForumSecondaryTextView.setText(secondaryInfo);
+
+
+
                 mPicasso
                         .load(forumModel.getIcon())
                         .placeholder(R.drawable.image_placeholder)
@@ -60,8 +95,8 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
         public ImageView mForumIconImageView;
         @InjectView(R.id.recyclerview_item_forum_textview_title)
         public TextView mForumTitleTextView;
-        /*@InjectView(R.id.recyclerview_item_forum_textview_secondary)
-        public TextView mForumSecondaryTextView;*/
+        @InjectView(R.id.recyclerview_item_forum_textview_secondary)
+        public TextView mForumSecondaryTextView;
 
         public ViewHolder(View v) {
             super(v);

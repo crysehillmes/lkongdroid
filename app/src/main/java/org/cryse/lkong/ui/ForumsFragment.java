@@ -215,7 +215,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
-        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_column_count));
+        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_detail_column_count));
     }
 
     @Override

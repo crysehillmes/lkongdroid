@@ -46,7 +46,11 @@
 
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
-    <string name="format_forum_item_threads_todayposts">Threads: %1$d \nToday Posts: %2$d</string>
+    <string name="format_forum_item_summary">%1$s Threads · %2$s Posts today</string>
+    <string name="format_unit_kilo">k</string>
+    <string name="format_unit_ten_kilo">0k</string>
+    <string name="format_forum_item_todayposts">Today: %1$d</string>
+    <string name="format_forum_item_threads_count">Threads: %1$d</string>
 
     <string name="format_post_ordinal">#%1$d</string>
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>

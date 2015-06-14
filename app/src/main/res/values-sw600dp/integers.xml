@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="forumlist_column_count">8</integer>
+    <integer name="forumlist_detail_column_count">2</integer>
 </resources>

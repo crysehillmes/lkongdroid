@@ -44,7 +44,11 @@
     <string name="format_post_ordinal">%1$d 楼</string>
     <string name="format_post_list_page_indicator_detail">%1$d 页 (%2$d - %3$d)</string>
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
-    <string name="format_forum_item_threads_todayposts">主题数: %1$d \n今日回复: %2$d</string>
+    <string name="format_forum_item_summary">主题 %1$s · 今日 %2$s</string>
+    <string name="format_unit_kilo">千</string>
+    <string name="format_unit_ten_kilo">万</string>
+    <string name="format_forum_item_todayposts">今日：%1$d</string>
+    <string name="format_forum_item_threads_count">主题： %1$d</string>
     <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
     <string name="drawer_item_mentions">提及我的</string>
     <string name="drawer_item_notice">通知</string>
