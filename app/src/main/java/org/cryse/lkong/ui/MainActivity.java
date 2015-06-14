@@ -3,6 +3,7 @@ package org.cryse.lkong.ui;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -24,9 +27,11 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
 
+import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -37,11 +42,18 @@ import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.utils.preference.IntegerPreference;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MainActivity extends AbstractThemeableActivity{
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -49,6 +61,9 @@ public class MainActivity extends AbstractThemeableActivity{
     AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsVersionCode
+    IntegerPreference mVersionCodePref;
 
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
@@ -196,6 +211,12 @@ public class MainActivity extends AbstractThemeableActivity{
 
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        checkVersionCode();
+    }
+
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case 1001:
@@ -331,5 +352,40 @@ public class MainActivity extends AbstractThemeableActivity{
 
     public Drawer getNavigationDrawer() {
         return mNaviagtionDrawer;
+    }
+
+    public void checkVersionCode() {
+        Observable.create((Subscriber<? super Integer> subscriber) -> {
+            try {
+                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                if (versionCode > mVersionCodePref.get()) {
+                    mVersionCodePref.set(versionCode);
+                    subscriber.onNext(versionCode);
+                    return;
+                }
+                subscriber.onNext(0);
+                subscriber.onCompleted();
+            } catch (PackageManager.NameNotFoundException e) {
+                subscriber.onError(e);
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        versionCode -> {
+                            if(versionCode > 0) {
+                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
+
+                                new MaterialDialog.Builder(this)
+                                        .title(R.string.text_new_version_changes)
+                                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                                        .content(reader.toSpannable(versionCode))
+                                        .show();
+                            }
+                        },
+                        error -> {
+                            Timber.d(error, error.getMessage(), LOG_TAG);
+                        },
+                        () -> {
+                        });
     }
 }

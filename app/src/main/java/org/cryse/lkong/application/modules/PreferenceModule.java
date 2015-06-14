@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
+import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
@@ -73,5 +74,11 @@ public class PreferenceModule {
     @PrefsUseInAppBrowser
     BooleanPreference provideUseInAppBrowser(SharedPreferences preferences) {
         return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER, PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER_VALUE);
+    }
+
+    @Provides
+    @PrefsVersionCode
+    IntegerPreference provideVersionCode(SharedPreferences preferences) {
+        return new IntegerPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE, PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE);
     }
 }
