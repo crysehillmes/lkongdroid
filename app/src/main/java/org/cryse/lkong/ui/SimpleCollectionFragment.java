@@ -116,7 +116,7 @@ public abstract class SimpleCollectionFragment<
     }
 
     public void loadInitialData() {
-        loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
+        loadData(mUserAccountManager.getAuthObject(), -1, false);
     }
 
     @Override
