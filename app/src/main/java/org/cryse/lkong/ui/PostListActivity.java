@@ -615,6 +615,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         setLoading(false);
+        // Resume tag when display new items.
+        mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
