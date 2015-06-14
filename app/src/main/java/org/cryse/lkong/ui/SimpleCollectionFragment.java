@@ -112,10 +112,11 @@ public abstract class SimpleCollectionFragment<
             ArrayList<ItemType> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
-        } else {
-            mCollectionView.getSwipeToRefresh().measure(1,1);
-            loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
         }
+    }
+
+    public void loadInitialData() {
+        loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
     }
 
     @Override
@@ -127,6 +128,7 @@ public abstract class SimpleCollectionFragment<
     public void onStart() {
         super.onStart();
         getPresenter().bindView(this);
+        loadInitialData();
     }
 
     @Override
@@ -187,6 +189,8 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void setLoading(Boolean value) {
         isLoading = value;
+        if(mCollectionView.getSwipeToRefresh().getMeasuredHeight() == 0)
+            mCollectionView.getSwipeToRefresh().measure(0, 0);
         mCollectionView.getSwipeToRefresh().setRefreshing(value);
     }
 
