@@ -74,6 +74,14 @@ public class UserAccountManager {
         return mAuthObject;
     }
 
+    public List<LKAuthObject> getAllUserAuthObjects() {
+        List<LKAuthObject> authObjects = new ArrayList<>(mUserAccounts.size());
+        for (UserAccountEntity userAccount : mUserAccounts) {
+            authObjects.add(userAccount.getAuthObject());
+        }
+        return authObjects;
+    }
+
     public boolean isSignedIn() {
         if(mCurrentUserAccount != null || mUserAccounts.size() > 0)
             return true;
@@ -102,5 +110,13 @@ public class UserAccountManager {
         if(index != -1) {
             Collections.swap(mUserAccounts, 0, index);
         }
+    }
+
+    public UserAccountEntity getUserAccount(long uid) {
+        for (UserAccountEntity userAccount : mUserAccounts) {
+            if(uid == userAccount.getUserId())
+                return userAccount;
+        }
+        return null;
     }
 }

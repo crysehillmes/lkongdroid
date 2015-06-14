@@ -7,10 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -20,6 +17,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpanWatcher;
 import android.text.Spannable;
@@ -59,12 +58,12 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.utils.preference.StringPreference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -72,9 +71,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +82,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @Inject
@@ -98,6 +96,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
     @InjectView(R.id.activity_new_thread_edittext_content)
@@ -130,22 +130,15 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
-        this.setSwipeBackEnable(false);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         ButterKnife.inject(this);
+        setSwipeBackEnable(false);
+        setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
-        if(!hasTitleField()) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)mContentEditText.getLayoutParams();
-            int actionBarSize = UIUtils.calculateActionBarSize(this);
-            layoutParams.setMargins(0, actionBarSize, 0, actionBarSize);
-        }
+
         readDataFromIntent(getIntent());
         setTitle(getTitleString());
         mBackgroundServiceConnection = new ServiceConnection() {
@@ -234,7 +227,11 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         Editable spannableContent = mContentEditText.getText();
         if(!TextUtils.isEmpty(spannableContent)) {
             if(hasTitleField() && TextUtils.isEmpty(title)) {
-                ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
+                showSnackbar(
+                        getString(R.string.toast_error_title_empty),
+                        SimpleSnackbarType.ERROR,
+                        SimpleSnackbarType.LENGTH_SHORT
+                );
                 return;
             }
             if (mSendServiceBinder != null) {
@@ -248,10 +245,18 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                     sendContentBuilder.append(PostTailUtils.getPostTail(this, mPostTailText.get()));
                 sendData(hasTitleField() ? title : null, sendContentBuilder.toString());
             }
-        } else if(hasTitleField() && TextUtils.isEmpty(title)){
-            ToastProxy.showToast(this, getString(R.string.toast_error_title_empty), ToastSupport.TOAST_ALERT);
+        } else if (hasTitleField() && TextUtils.isEmpty(title)) {
+            showSnackbar(
+                    getString(R.string.toast_error_title_empty),
+                    SimpleSnackbarType.ERROR,
+                    SimpleSnackbarType.LENGTH_SHORT
+            );
         } else {
-            ToastProxy.showToast(this, getString(R.string.toast_error_content_empty), ToastSupport.TOAST_ALERT);
+            showSnackbar(
+                    getString(R.string.toast_error_content_empty),
+                    SimpleSnackbarType.ERROR,
+                    SimpleSnackbarType.LENGTH_SHORT
+            );
         }
     }
 
@@ -261,7 +266,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 Drawable emoji = Drawable.createFromStream(AbstractPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
                 addImageBetweenText(emoji, ContentProcessor.IMG_TYPE_EMOJI, emoticonName.substring(0, emoticonName.indexOf(".gif")), (int)mContentTextSize * 2, (int)mContentTextSize * 2);
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e, e.getMessage(), getLogTag());
             }
         });
     }
@@ -348,12 +353,16 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 {
                     selectedImageUri = data == null ? null : data.getData();
                 }
-                try {
-                    Bitmap yourSelectedImage = mPicasso.load(selectedImageUri).resize((int)(mContentTextSize * 4), (int)(mContentTextSize * 4)).centerCrop().get();
-                    addImageBetweenText(new BitmapDrawable(getResources(), yourSelectedImage), ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                AsyncTargetDrawable drawable = new AsyncTargetDrawable(
+                        this,
+                        null,
+                        getLogTag(),
+                        (int)(mContentTextSize * 4),
+                        (int)(mContentTextSize * 4),
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme())
+                );
+                mPicasso.load(selectedImageUri).placeholder(R.drawable.image_placeholder).resize((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
+                addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
             }
         }
     }
@@ -525,9 +534,17 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 new Handler().postDelayed(this::closeActivityWithTransition, 300);
             } else {
                 if (result != null) {
-                    ToastProxy.showToast(this, TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 } else {
-                    ToastProxy.showToast(this, getString(R.string.toast_failure_new_post), ToastSupport.TOAST_ALERT);
+                    showSnackbar(
+                            getString(R.string.toast_failure_new_post),
+                            SimpleSnackbarType.ERROR,
+                            SimpleSnackbarType.LENGTH_SHORT
+                    );
                 }
             }
         }

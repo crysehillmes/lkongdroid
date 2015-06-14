@@ -10,7 +10,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -43,6 +46,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
+import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -60,19 +64,19 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.QuickReturnUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
+import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
@@ -113,7 +117,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
+    @Inject
+    @PrefsUseInAppBrowser
+    BooleanPreference mUserInAppBrowser;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
     @InjectView(R.id.fab)
@@ -129,6 +138,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     TextView mThreadTitleTextView;
     QuickReturnUtils mToolbarQuickReturn;
     MenuItem mFavoriteMenuItem;
+    MenuItem mChangeThemeMenuItem;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
@@ -151,10 +161,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(mToolbar);
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
 
@@ -204,21 +212,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
-        mToolbarQuickReturn = new QuickReturnUtils(getToolbar(), QuickReturnUtils.ANIMATE_DIRECTION_UP);
-        mPostCollectionView.getRefreshableView().setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mToolbarQuickReturn = new QuickReturnUtils(mToolbar, QuickReturnUtils.ANIMATE_DIRECTION_UP);
+        mPostCollectionView.getRefreshableView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean dragging = false;
             int mNegativeDyAmount = 0;
             private int mAmountScrollY = 0;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 dragging = RecyclerView.SCROLL_STATE_DRAGGING == newState;
-                if(newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && isRecyclerViewAtBottom(recyclerView)) {
                     mFooterPagerControl.show();
                     mFab.show();
                     mToolbarQuickReturn.show();
                 }
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
                 } else {
                     mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
@@ -231,18 +240,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
 
                 mAmountScrollY = mAmountScrollY + dy;
-                int toolbarHeight = getToolbar().getHeight();
+                int toolbarHeight = mToolbar.getHeight();
                 if (dy > 0) {
                     mNegativeDyAmount = 0;
-                    if(mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
+                    if (mAmountScrollY - mBaseTranslationY - toolbarHeight > toolbarHeight) {
                         mToolbarQuickReturn.hide();
                         mFooterPagerControl.hide();
                         mFab.hide();
                     }
-                } else if(dy < 0) {
+                } else if (dy < 0) {
                     mAmountScrollY = 0;
                     mNegativeDyAmount = mNegativeDyAmount + dy;
-                    if(Math.abs(mNegativeDyAmount - mBaseTranslationY) > toolbarHeight) {
+                    if (Math.abs(mNegativeDyAmount - mBaseTranslationY) > toolbarHeight) {
                         mToolbarQuickReturn.show();
                         mFooterPagerControl.show();
                         mFab.show();
@@ -267,7 +276,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onRateClick(View view, int position) {
                 int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
-                if(itemPosition > 0 && itemPosition < mCollectionAdapter.getItemCount())
+                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount())
                     view.post(() -> openRateDialog(itemPosition));
             }
 
@@ -511,11 +520,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_list, menu);
         mFavoriteMenuItem = menu.findItem(R.id.action_thread_favorite);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mChangeThemeMenuItem != null) {
+            if (isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
         if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
         else if(mItemList.size() > 0 && mIsFavorite != null) {
             mFavoriteMenuItem.setVisible(true);
@@ -609,6 +625,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         setLoading(false);
+        // Resume tag when display new items.
+        mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
@@ -733,11 +751,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         return null;
     }
 
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(this, getString(text_value), toastType);
-    }
-
     public PostListPresenter getPresenter() {
         return mPresenter;
     }
@@ -767,36 +780,46 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void onClickGotoFloor() {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
+        final int[] inputFloorNumber = {0};
+        new MaterialDialog.Builder(this)
                 .title(R.string.action_thread_goto_floor)
-                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                .customView(R.layout.dialog_input_floor, false)
-                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                .inputType(InputType.TYPE_CLASS_NUMBER)
+                .positiveText(android.R.string.ok)
+                .alwaysCallInputCallback() // this forces the callback to be invoked with every input change
+                .input(R.string.hint_goto_floor, 0, false, new MaterialDialog.InputCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.edit_floor);
-                        String content = editText.getText().toString();
-                        if(!TextUtils.isEmpty(content) && TextUtils.isDigitsOnly(content)) {
-                            int floor = Integer.valueOf(content);
-
-                            int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
-                            if(floor > 0 && floor <= replyCount) {
-                                int page = (replyCount - 1 == 0) ? 1 : (int)Math.ceil((double) floor / 20d);
-                                if(page == mCurrentPage)  {
-                                    scrollToOrdinal(floor);
-                                } else {
-                                    mTargetOrdinal = floor;
-                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
-                                }
-                            } else {
-                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_invalid_floor), TOAST_ALERT);
-                            }
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                        if (TextUtils.isEmpty(input) || !TextUtils.isDigitsOnly(input)) {
+                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                            return;
                         }
+                        inputFloorNumber[0] = Integer.valueOf(input.toString());
                     }
                 })
-                .build();
-        dialog.show();
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                        int floor = inputFloorNumber[0];
+
+                        int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
+                        if (floor > 0 && floor <= replyCount) {
+                            int page = (replyCount - 1 == 0) ? 1 : (int) Math.ceil((double) floor / 20d);
+                            if (page == mCurrentPage) {
+                                scrollToOrdinal(floor);
+                            } else {
+                                mTargetOrdinal = floor;
+                                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
+                            }
+                        } else {
+                            showSnackbar(
+                                    getString(R.string.toast_error_invalid_floor),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
+                        }
+                    }
+                }).show();
     }
 
     private void scrollToOrdinal(int targetOrdinal) {
@@ -850,14 +873,22 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                                                     int score = Integer.valueOf(scoreText);
                                                     getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
                                                 } else {
-                                                    ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_score_empty), TOAST_ALERT);
+                                                    showSnackbar(
+                                                            getString(R.string.toast_error_rate_score_empty),
+                                                            SimpleSnackbarType.ERROR,
+                                                            SimpleSnackbarType.LENGTH_SHORT
+                                                    );
                                                 }
                                             }
                                         })
                                         .build();
                                 ratePostDialog.show();
                             } else {
-                                ToastProxy.showToast(PostListActivity.this, getString(R.string.toast_error_rate_self), TOAST_ALERT);
+                                showSnackbar(
+                                        getString(R.string.toast_error_rate_self),
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
                             }
                         }
                     })
@@ -885,7 +916,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                             showPostListInternal(page, posts, refreshPosition, showMode);
                         },
                         error -> {
-                            showToast(R.string.notification_content_network_error, ToastSupport.TOAST_ALERT);
+                            showSnackbar(
+                                    getString(R.string.notification_content_network_error),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
                             Timber.e(error, "PostListActivity::createSpan() onError().", LOG_TAG);
                         },
                         () -> {
@@ -1067,7 +1102,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     else if(page != -1)
                         goToPage(page);
                     else
-                        showToast(R.string.toast_error_link_to_current_thread, TOAST_INFO);
+                        showSnackbar(
+                                getString(R.string.toast_error_link_to_current_thread),
+                                SimpleSnackbarType.INFO,
+                                SimpleSnackbarType.LENGTH_SHORT
+                        );
                 } else {
                     if(pid != -1l)
                         mAndroidNavigation.openActivityForPostListByPostId(this, pid);
@@ -1103,9 +1142,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void openUrlIntent(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
-        startActivity(intent);
+        if(mUserInAppBrowser.get()) {
+            Intent intent = new Intent(this, InAppBrowserActivity.class);
+            intent.putExtra("url", url);
+            startActivity(intent);
+        } else {
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
+            startActivity(intent);
+        }
     }
 }

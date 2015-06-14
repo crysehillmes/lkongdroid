@@ -14,8 +14,8 @@ import org.cryse.lkong.application.component.DaggerSendServiceComponet;
 import org.cryse.lkong.application.component.DaggerSimpleActivityComponent;
 import org.cryse.lkong.application.component.DaggerUserAccountComponent;
 import org.cryse.lkong.application.component.LKongPresenterComponent;
-import org.cryse.lkong.application.component.SimpleActivityComponent;
 import org.cryse.lkong.application.component.SendServiceComponet;
+import org.cryse.lkong.application.component.SimpleActivityComponent;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
@@ -46,8 +46,10 @@ public class LKongApplication extends Application {
         Timber.plant(new CrashReportingTree());
         AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
         Crashlytics.start(this);
-        UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
-        UmengUpdateAgent.update(this);
+        if(BuildConfig.InAppUpdate) {
+            UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
+            UmengUpdateAgent.update(this);
+        }
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         mEventBus = new RxEventBus();
@@ -113,7 +115,9 @@ public class LKongApplication extends Application {
     /** A tree which logs important information for crash reporting. */
     private static class CrashReportingTree extends Timber.DebugTree {
         @Override public void i(String message, Object... args) {
-            Log.i((String) args[0], message);
+            if (BuildConfig.DEBUG) {
+                Log.i((String) args[0], message);
+            }
             if(args.length >= 2)
                 Crashlytics.log(args[0] + "<||>" + message + "<||>" + (String) args[1]);
         }
@@ -137,6 +141,7 @@ public class LKongApplication extends Application {
             e(message, args);
             if (BuildConfig.DEBUG) {
                 Log.e((String) args[0], message, t);
+            } else {
                 Crashlytics.logException(t);
             }
         }

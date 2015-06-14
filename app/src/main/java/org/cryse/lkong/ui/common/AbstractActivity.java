@@ -7,12 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.example.android.systemuivis.SystemUiHelper;
 
+import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -27,8 +26,7 @@ import rx.schedulers.Schedulers;
 public abstract class AbstractActivity extends AppCompatActivity {
     private LUtils mLUtils;
     private SystemUiHelper mSystemUiHelper;
-    private Toolbar mToolbar;
-    private View mPreLShadow;
+    private View mSnackbarRootView;
     private ActionMode mActionMode;
     private Subscription mEventBusSubscription;
     @Inject
@@ -44,20 +42,10 @@ public abstract class AbstractActivity extends AppCompatActivity {
                 .subscribe(this::onEvent);
     }
 
-    protected void setUpToolbar(int toolbarLayoutId, int customToolbarShadowId) {
-        if (mToolbar == null) {
-            mToolbar = (Toolbar) findViewById(toolbarLayoutId);
-            mPreLShadow = findViewById(customToolbarShadowId);
-            if (mToolbar != null) {
-                //UIUtils.setInsets(this, mToolbar, false);
-                if(Build.VERSION.SDK_INT < 21 && mPreLShadow != null) {
-                    mPreLShadow.setVisibility(View.VISIBLE);
-                }
-                setSupportActionBar(mToolbar);
-            } else {
-                Log.e("AbstractActivity", "Toolbar is null");
-            }
-        }
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        mSnackbarRootView =  findViewById(android.R.id.content);
     }
 
     @Override
@@ -149,10 +137,6 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     protected abstract void injectThis();
 
-    public Toolbar getToolbar() {
-        return mToolbar;
-    }
-
     public Context getThemedContext() {
         return getSupportActionBar().getThemedContext();
     }
@@ -163,11 +147,6 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     public void setActionMode(ActionMode actionMode) {
         this.mActionMode = actionMode;
-    }
-
-    public void setPreLShadowVisibility(int visibility) {
-        if(mPreLShadow != null)
-            mPreLShadow.setVisibility(visibility);
     }
 
     protected abstract void analyticsTrackEnter();
@@ -181,5 +160,15 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     protected RxEventBus getEventBus() {
         return mEventBus;
+    }
+
+    public boolean isTablet() {
+        return getResources().getBoolean(R.bool.isTablet);
+    }
+
+    protected View getSnackbarRootView() {
+        if(mSnackbarRootView == null)
+            mSnackbarRootView = findViewById(android.R.id.content);
+        return mSnackbarRootView;
     }
 }

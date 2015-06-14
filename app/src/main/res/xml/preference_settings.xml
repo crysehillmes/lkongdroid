@@ -6,7 +6,8 @@
             android:key="prefs_is_night_mode"
             android:title="@string/settings_item_is_night_mode_title"
             android:summary="@string/settings_item_is_night_mode_summary"
-            android:defaultValue="false"/>
+            android:defaultValue="false"
+            android:widgetLayout="@layout/layout_switch_preference_compat"/>
         <Preference
             android:key="prefs_theme_color"
             android:title="@string/settings_item_theme_color_title"
@@ -14,13 +15,14 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_navigation">
         <CheckBoxPreference
-            android:key="prefs_use_forums_first"
-            android:title="@string/settings_item_use_forums_first_title"
-            android:summary="@string/settings_item_use_forums_first_summary"
-            android:defaultValue="false"/>
+            android:key="prefs_use_in_app_browser"
+            android:title="@string/settings_item_use_in_app_browser_title"
+            android:summary="@string/settings_item_use_in_app_browser_summary"
+            android:defaultValue="true"
+            android:widgetLayout="@layout/layout_switch_preference_compat"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
-        <ListPreference
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="prefs_read_font_size"
             android:defaultValue="16"
             android:dialogTitle="@string/settings_item_font_size_dialog_title"
@@ -28,14 +30,14 @@
             android:entryValues="@array/readview_font_size_entries"
             android:summary="@string/settings_item_font_size_summary"
             android:title="@string/settings_item_font_size_title" />
-        <ListPreference
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="prefs_image_download_policy"
             android:defaultValue="0"
             android:dialogTitle="@string/settings_item_image_download_policy_title"
             android:entries="@array/image_download_policy_arrays"
             android:entryValues="@array/image_download_policy_values_arrays"
             android:title="@string/settings_item_image_download_policy_title" />
-        <EditTextPreference
+        <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
             android:key="prefs_post_extra_tail_text"
             android:title="@string/settings_item_post_extra_tail_text_title"
             android:summary="@string/settings_item_post_extra_tail_text_summary"

@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.Html.ImageGetter;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -17,7 +16,6 @@ import com.squareup.picasso.Target;
 import org.cryse.lkong.application.LKongApplication;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 public class UrlImageGetter implements ImageGetter {
     Context mContext;

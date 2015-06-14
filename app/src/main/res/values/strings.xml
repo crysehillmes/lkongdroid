@@ -19,11 +19,18 @@
     <string name="action_send_post">Send</string>
     <string name="action_open_notification">Notifications</string>
     <string name="action_open_search">Search</string>
+    <string name="action_punch">Punch</string>
+    <string name="action_pin_to_home">Pin to home</string>
+    <string name="action_unpin_from_home">Unpin from home</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_open_in_browser">Open In Browser</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_timeline">Timeline</string>
+    <string name="drawer_item_pinned_forums">Pinned Forums</string>
+    <string name="drawer_item_homepage">Home Page</string>
     <string name="drawer_item_mentions">Mentions</string>
     <string name="drawer_item_notice">Notice</string>
     <string name="drawer_item_notice_rate">Rate</string>
@@ -31,6 +38,9 @@
     <string name="drawer_item_account_add">Add account</string>
     <string name="hint_account_email">Your Email</string>
     <string name="hint_account_password">Password</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_content">Content</string>
+    <string name="hint_goto_floor">Floor Number</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
     <string name="hint_search_label">Search</string>
@@ -38,7 +48,11 @@
 
     <string name="format_account_threads_posts_summary">Threads: %1$d \t\t Posts: %2$d </string>
 
-    <string name="format_forum_item_threads_todayposts">Threads: %1$d \nToday Posts: %2$d</string>
+    <string name="format_forum_item_summary">%1$s Threads · %2$s Posts today</string>
+    <string name="format_unit_kilo">k</string>
+    <string name="format_unit_ten_kilo">0k</string>
+    <string name="format_forum_item_todayposts">Today: %1$d</string>
+    <string name="format_forum_item_threads_count">Threads: %1$d</string>
 
     <string name="format_post_ordinal">#%1$d</string>
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
@@ -70,6 +84,9 @@
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
+    <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
+    <string name="text_punching">Punching…</string>
+    <string name="text_loading">Loading…</string>
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
@@ -89,6 +106,8 @@
     <string name="button_reply">Reply</string>
     <string name="button_rate">Rate</string>
     <string name="button_edit">Edit</string>
+
+    <string name="card_title_sign_in">Sign In</string>
 
     <string name="input_error_email">Please enter your email here.</string>
     <string name="input_error_password">Please enter your password here.</string>
@@ -146,8 +165,8 @@
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
     <string name="settings_category_navigation">Navigation</string>
-    <string name="settings_item_use_forums_first_title">Forums first</string>
-    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app).</string>
+    <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
+    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app.</string>
 
     <string-array name="image_download_policy_arrays">
         <item>Always</item>
@@ -167,6 +186,7 @@
 
     <string name="text_load_prev_page">Load previous page</string>
     <string name="text_load_next_page">Load next page</string>
+    <string name="text_new_version_changes">New Version Changes</string>
 
     <string name="text_extcredits_lb">龙币</string>
     <string name="text_extcredits_lj">龙晶</string>

@@ -1,13 +1,18 @@
 package org.cryse.lkong.data.impl;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.dao.CacheObjectDao;
+import org.cryse.lkong.data.dao.PinnedForumDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
+import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.PunchResult;
 
 import java.util.List;
 
@@ -16,12 +21,14 @@ import javax.inject.Inject;
 public class LKongDatabaseSqliteImpl implements LKongDatabase {
     CacheObjectDao mCacheObjectDao;
     UserAccountDao mUserAccountDao;
+    PinnedForumDao mPinnedForumDao;
     Gson mGson;
 
     @Inject
-    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao) {
+    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao, PinnedForumDao pinnedForumDao) {
         this.mCacheObjectDao = cacheObjectDao;
         this.mUserAccountDao = userAccountDao;
+        this.mPinnedForumDao = pinnedForumDao;
         this.mGson = new Gson();
     }
 
@@ -42,7 +49,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     @Override
     public void addUserAccount(UserAccountEntity userAccountEntity) throws Exception {
-        mUserAccountDao.insert(userAccountEntity);
+        mUserAccountDao.insertOrReplace(userAccountEntity);
     }
 
     @Override
@@ -71,6 +78,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
+    private static final String CACHE_KEY_PUNCH_RESULT = "cache_forum_list";
     @Override
     public void cacheForumList(List<ForumModel> forumModels) throws Exception {
         String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {}.getType());
@@ -91,5 +99,53 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public boolean isCachedForumList() throws Exception {
         return mCacheObjectDao.exist(CACHE_KEY_FORUM_LIST);
+    }
+
+    @Override
+    public void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception {
+        mPinnedForumDao.insertOrReplace(pinnedForumEntity);
+    }
+
+    @Override
+    public void removePinnedForum(long uid, long fid) throws Exception {
+        mPinnedForumDao.unpinForum(uid, fid);
+    }
+
+    @Override
+    public boolean isForumPinned(long uid, long fid) throws Exception {
+        return mPinnedForumDao.isPinned(uid, fid);
+    }
+
+    @Override
+    public List<PinnedForumEntity> loadAllForUser(long uid) throws Exception {
+        return mPinnedForumDao.loadAllForUser(uid);
+    }
+
+    @Override
+    public List<PinnedForumEntity> loadAllPinnedForums() throws Exception {
+        return mPinnedForumDao.loadAll();
+    }
+
+    @Override
+    public void cachePunchResult(PunchResult punchResult) {
+        String json = mGson.toJson(punchResult, PunchResult.class);
+        mCacheObjectDao.putCache(generatePunchResultKey(punchResult.getUserId()), json, null);
+    }
+
+    @Override
+    public void removePunchResult(long uid) {
+        mCacheObjectDao.delete(generatePunchResultKey(uid));
+    }
+
+    @Override
+    public PunchResult getCachePunchResult(long uid) {
+        String json = mCacheObjectDao.getCache(generatePunchResultKey(uid));
+        if(TextUtils.isEmpty(json))
+            return null;
+        return mGson.fromJson(json, PunchResult.class);
+    }
+
+    private String generatePunchResultKey(long uid) {
+        return CACHE_KEY_PUNCH_RESULT + "|||" + uid;
     }
 }

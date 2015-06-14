@@ -3,8 +3,15 @@ package org.cryse.lkong.ui;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -20,8 +27,7 @@ import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.presenter.SignInPresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.ToastErrorConstant;
-import org.cryse.lkong.utils.ToastProxy;
+import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SignInView;
 import org.cryse.utils.preference.LongPreference;
 
@@ -43,16 +49,21 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
     @Inject
     UserAccountManager mUserAccountManager;
 
-
+    @InjectView(R.id.activity_sign_in_cardview)
+    CardView mSignInCardView;
     @InjectView(R.id.edit_email)
     EditText mEmailEditText;
     @InjectView(R.id.edit_password)
     EditText mPasswordEditText;
+    @InjectView(R.id.edit_email_textlayout)
+    TextInputLayout mEmailTextLayout;
+    @InjectView(R.id.edit_password_textlayout)
+    TextInputLayout mPasswordTextLayout;
     @InjectView(R.id.sign_in_result_textview)
     TextView mResultTextView;
 
-    @InjectView(R.id.button_sign_in)
-    Button mSignInButton;
+    @InjectView(R.id.fab_sign_up)
+    FloatingActionButton mSignInButton;
     @InjectView(R.id.button_sign_up)
     Button mSignUpButton;
 
@@ -69,6 +80,27 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_signin);
         ButterKnife.inject(this);
+
+        CoordinatorLayout.LayoutParams cardViewLayoutParams;
+        if(isTablet()) {
+            cardViewLayoutParams = new CoordinatorLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.width_signin_cardview),
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        } else {
+            cardViewLayoutParams = new CoordinatorLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            int marginValue = UIUtils.dp2px(this, 16f);
+            cardViewLayoutParams.setMargins(marginValue, marginValue, marginValue, marginValue);
+        }
+        cardViewLayoutParams.gravity = Gravity.CENTER;
+        mSignInCardView.setLayoutParams(cardViewLayoutParams);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.activity_bg_sign_in));
+        }
+
         getSwipeBackLayout().setEnableGesture(false);
         Intent intent = getIntent();
         if(intent.hasExtra(START_MAIN_ACTIVITY)) {
@@ -89,9 +121,11 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         mEmailEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 if (mEmailEditText.getText().length() <= 0)
-                    mEmailEditText.setError(getString(R.string.input_error_email));
-                else
+                    mEmailTextLayout.setError(getString(R.string.input_error_email));
+                else {
+                    mEmailTextLayout.setError("");
                     mPasswordEditText.requestFocus();
+                }
                 return true;
             }
             return false;
@@ -110,12 +144,16 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         mEmailText = mEmailEditText.getText();
         mPasswordText = mPasswordEditText.getText();
         if (TextUtils.isEmpty(mEmailText)) {
-            mEmailEditText.setError(getString(R.string.input_error_email));
+            mEmailTextLayout.setError(getString(R.string.input_error_email));
             return false;
+        } else {
+            mEmailTextLayout.setError("");
         }
         if (TextUtils.isEmpty(mPasswordText)) {
-            mPasswordEditText.setError(getString(R.string.input_error_password));
+            mPasswordTextLayout.setError(getString(R.string.input_error_password));
             return false;
+        } else {
+            mPasswordTextLayout.setError("");
         }
         return true;
     }
@@ -176,7 +214,7 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
             }
-            closeActivityWithTransition();
+            finish();
         } else {
             Timber.d("SignInActivity::signInComplete() failed().", LOG_TAG);
             String errorMessage = signInResult == null ? "" : signInResult.getErrorMessage();
@@ -199,11 +237,6 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
         return null;
     }
 
-    @Override
-    public void showToast(int text, int toastType) {
-        ToastProxy.showToast(this, getString(ToastErrorConstant.errorCodeToStringRes(text)), toastType);
-    }
-
     private SignInPresenter getPresenter() {
         return mPresenter;
     }
@@ -219,5 +252,12 @@ public class SignInActivity extends AbstractThemeableActivity implements SignInV
             return R.style.LKongDroidTheme_Dark_NoTranslucent;
         else
             return R.style.LKongDroidTheme_Light_NoTranslucent;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            finish();
+        }
     }
 }

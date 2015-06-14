@@ -19,7 +19,7 @@ public class ToastErrorConstant {
             case TOAST_FAILURE_RATE_POST:
                 return R.string.toast_failure_rate_post;
             default:
-                throw new IllegalArgumentException("Unknown error code.");
+                return R.string.toast_error_universal_try_again;
         }
     }
 }

@@ -151,7 +151,8 @@ public class AsyncTargetDrawable extends Drawable implements Target{
 
     @Override
     public void invalidateSelf() {
-        mInnerDrawable.invalidateSelf();
+        if(mInnerDrawable != null)
+            mInnerDrawable.invalidateSelf();
     }
 
     @Override

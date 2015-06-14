@@ -1,7 +1,10 @@
 package org.cryse.lkong.logic;
 
+import android.text.format.DateUtils;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
+import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
@@ -16,20 +19,20 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.LKAuthObject;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 public class LKongForumService {
@@ -97,16 +100,7 @@ public class LKongForumService {
     }
 
     public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid, boolean isSelf) {
-        Observable<PunchResult> punchObservable = Observable.create(subscriber -> {
-            try {
-                PunchResult result = mLKongRestService.punch(authObject);
-                subscriber.onNext(result);
-                subscriber.onCompleted();
-            } catch (Exception ex) {
-                subscriber.onError(ex);
-            }
-        });
-        Observable<UserInfoModel> userProfileObservable =  Observable.create(subscriber -> {
+        return Observable.create(subscriber -> {
             try {
                 UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
                 subscriber.onNext(userInfoModel);
@@ -115,20 +109,6 @@ public class LKongForumService {
                 subscriber.onError(e);
             }
         });
-        if(isSelf) {
-            return Observable.zip(userProfileObservable, punchObservable, new Func2<UserInfoModel, PunchResult, UserInfoModel>() {
-                @Override
-                public UserInfoModel call(UserInfoModel userInfoModel, PunchResult punchResult) {
-                    if (userInfoModel != null && punchResult != null) {
-                        userInfoModel.setPunchResult(punchResult);
-                    }
-                    return userInfoModel;
-                }
-            });
-        } else {
-            return userProfileObservable;
-        }
-
     }
 
     /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
@@ -398,7 +378,93 @@ public class LKongForumService {
     public Observable<PunchResult> punch(LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
-                PunchResult result = mLKongRestService.punch(authObject);
+                    PunchResult result = null;
+                    result = mLKongDatabase.getCachePunchResult(authObject.getUserId());
+                    if(result != null && result.getPunchTime() != null && DateUtils.isToday(result.getPunchTime().getTime())) {
+                        subscriber.onNext(result);
+                        return;
+                    } else {
+                        result = mLKongRestService.punch(authObject);
+                        if(result != null)
+                            mLKongDatabase.cachePunchResult(result);
+                    }
+                    subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<PunchResult> punch(List<LKAuthObject> authObjectList) {
+        return Observable.create(subscriber -> {
+            try {
+                for(LKAuthObject authObject: authObjectList) {
+                    PunchResult result = null;
+                    result = mLKongDatabase.getCachePunchResult(authObject.getUserId());
+                    if(result != null && result.getPunchTime() != null && DateUtils.isToday(result.getPunchTime().getTime())) {
+                        subscriber.onNext(result);
+                        return;
+                    } else {
+                        result = mLKongRestService.punch(authObject);
+                        if(result != null)
+                            mLKongDatabase.cachePunchResult(result);
+                    }
+                    subscriber.onNext(result);
+                }
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> pinForum(long uid, long fid, String forumName, String forumIcon) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.pinForum(new PinnedForumEntity(
+                        fid,
+                        uid,
+                        forumName,
+                        forumIcon,
+                        new Date().getTime()
+                ));
+                subscriber.onNext(mLKongDatabase.isForumPinned(uid, fid));
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Void> unpinForum(long uid, long fid) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.removePinnedForum(uid, fid);
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> isForumPinned(long uid, long fid) {
+        return Observable.create(subscriber -> {
+            try {
+                boolean isForumPinned = mLKongDatabase.isForumPinned(uid, fid);
+                subscriber.onNext(isForumPinned);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<PinnedForumEntity>> loadUserPinnedForums(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                List<PinnedForumEntity> result = mLKongDatabase.loadAllForUser(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

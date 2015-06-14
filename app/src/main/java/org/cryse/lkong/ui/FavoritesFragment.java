@@ -2,10 +2,13 @@ package org.cryse.lkong.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -53,6 +56,19 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getThemedActivity().setSupportActionBar(mToolbar);
+        mToolbar.setBackgroundColor(getPrimaryColor());
+        final ActionBar actionBar = getThemedActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        return view;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_favorites, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
@@ -91,6 +107,13 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     getThemedActivity().setNightMode(!isNightMode());
                 }
                 return true;
+            case android.R.id.home:
+                if(getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).getNavigationDrawer().openDrawer();
+                    return true;
+                } else {
+                    return false;
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -123,7 +146,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_simple_collection;
+        return R.layout.fragment_favorites;
     }
 
     @Override
@@ -211,7 +234,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
-        return UIUtils.getInsets(getActivity(), mCollectionView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
+        return null;
     }
 
     protected void checkNewNoticeCount() {

@@ -265,6 +265,7 @@ public class SuperRecyclerView extends FrameLayout {
      * @param listener
      */
     public void setRefreshListener(SwipeRefreshLayout.OnRefreshListener listener) {
+        if(listener == null) return;
         mPtrLayout.setEnabled(true);
         mPtrLayout.setOnRefreshListener(listener);
     }
@@ -350,6 +351,7 @@ public class SuperRecyclerView extends FrameLayout {
     }
 
     public void setOnMoreListener(OnMoreListener onMoreListener) {
+        if(onMoreListener == null) return;
         mOnMoreListener = onMoreListener;
     }
 
@@ -437,6 +439,7 @@ public class SuperRecyclerView extends FrameLayout {
     }
 
     public void setItemAnimator(RecyclerView.ItemAnimator itemAnimator) {
+        if(itemAnimator == null) return;
         mItemAnimator = itemAnimator;
         if(mRecyclerView != null)
             mRecyclerView.setItemAnimator(mItemAnimator);

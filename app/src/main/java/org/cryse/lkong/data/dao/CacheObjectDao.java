@@ -36,6 +36,10 @@ public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
                 "'" + COLUMN_EXPIRE_TIME + "' LONG);"); // 3: expireTime
     }
 
+    public static void dropTable(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
+    }
+
     @Override
     public ContentValues entityToContentValues(CacheObjectEntity entity) {
         ContentValues values = new ContentValues();
@@ -68,7 +72,7 @@ public class CacheObjectDao extends AbstractDao<CacheObjectEntity, String> {
     }
 
     public void putCache(String key, String value, Date expireTime) {
-        long ret = this.insert(new CacheObjectEntity(key, value, new Date(), expireTime));
+        long ret = this.insertOrReplace(new CacheObjectEntity(key, value, new Date(), expireTime));
         if(ret == -1)
             throw new RuntimeException("Cache object insert error.");
     }

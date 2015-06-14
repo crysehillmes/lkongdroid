@@ -1,5 +1,9 @@
 package org.cryse.lkong.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -12,10 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 
 public class PersistentCookieStore implements CookieStore {

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:orientation="vertical">
 
-    <org.cryse.widget.FloatLabelLayout
+    <org.cryse.lkong.widget.TempFixTextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/edit_reason"
@@ -23,12 +21,11 @@
             android:maxLength="20"
             android:singleLine="true" />
 
-    </org.cryse.widget.FloatLabelLayout>
+    </org.cryse.lkong.widget.TempFixTextInputLayout>
 
-    <org.cryse.widget.FloatLabelLayout
+    <org.cryse.lkong.widget.TempFixTextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:floatLabelTextAppearance="?theme_float_label_layout_text_appearence">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/edit_score"
@@ -40,5 +37,5 @@
             android:inputType="number"
             android:singleLine="true" />
 
-    </org.cryse.widget.FloatLabelLayout>
+    </org.cryse.lkong.widget.TempFixTextInputLayout>
 </LinearLayout>

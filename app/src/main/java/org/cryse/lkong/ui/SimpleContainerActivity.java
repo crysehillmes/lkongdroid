@@ -14,7 +14,6 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simple_container);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         setUpFragment();
     }
 

@@ -13,6 +13,7 @@ import timber.log.Timber;
 
 public class NoticeRatePresenter extends SimpleCollectionPresenter<NoticeRateModel> {
     private static final String LOG_TAG = NoticeRatePresenter.class.getName();
+
     @Inject
     public NoticeRatePresenter(LKongForumService forumService) {
         super(forumService);
@@ -36,7 +37,9 @@ public class NoticeRatePresenter extends SimpleCollectionPresenter<NoticeRateMod
                 .subscribe(
                         result -> {
                             Timber.d("NoticeRatePresenter::loadData() onNext().", LOG_TAG);
-                            mView.showSimpleData(result, isLoadingMore);
+                            if (mView != null) {
+                                mView.showSimpleData(result, isLoadingMore);
+                            }
                         },
                         error -> {
                             Timber.e(error, "NoticeRatePresenter::loadData() onError().", LOG_TAG);

@@ -126,7 +126,7 @@ public class SettingsFragment extends PreferenceFragment {
         changelogPref.setOnPreferenceClickListener(preference -> {
             ChangeLogUtils reader = new ChangeLogUtils(getActivity(), R.xml.changelog);
 
-            MaterialDialog materialDialog = new MaterialDialog.Builder(getActivity())
+            new MaterialDialog.Builder(getActivity())
                     .title(R.string.settings_item_change_log_title)
                     .theme(((AbstractThemeableActivity) getActivity()).isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .content(reader.toSpannable())

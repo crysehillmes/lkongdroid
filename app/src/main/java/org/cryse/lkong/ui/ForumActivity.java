@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -24,15 +24,15 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.presenter.ThreadListPresenter;
+import org.cryse.lkong.model.converter.ModelConverter;
+import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.view.ThreadListView;
+import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -46,15 +46,16 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ThreadListActivity extends AbstractThemeableActivity implements ThreadListView {
-    public static final String LOG_TAG = ThreadListActivity.class.getName();
+public class ForumActivity extends AbstractThemeableActivity implements ForumView {
+    public static final String LOG_TAG = ForumActivity.class.getName();
+    private static final String FORUM_PINNED_KEY = "forum_pinned";
     private AtomicBoolean isNoMore = new AtomicBoolean(false);
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
     Picasso mPicasso;
     @Inject
-    ThreadListPresenter mPresenter;
+    ForumPresenter mPresenter;
 
     @Inject
     AndroidNavigation mAndroidNavigation;
@@ -62,15 +63,17 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
     @InjectView(R.id.fab)
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
-    View mTopPaddingHeaderView;
     Spinner mListTypeSpinner;
-
+    MenuItem mPinForumMenuItem;
+    MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
@@ -79,17 +82,16 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     private String mForumName = "";
     private String mForumDescription = "";
     private int mCurrentListType = ThreadListType.TYPE_SORT_BY_REPLY;
+    private Boolean mIsForumPinned;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         ButterKnife.inject(this);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
         Intent intent = getIntent();
@@ -99,7 +101,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             mForumDescription = intent.getStringExtra(DataContract.BUNDLE_FORUM_DESCRIPTION);
         }
         if(mForumId == -1 || TextUtils.isEmpty(mForumName))
-            throw new IllegalStateException("ThreadListActivity missing extra in intent.");
+            throw new IllegalStateException("ForumActivity missing extra in intent.");
         setTitle(mForumName);
 
 
@@ -112,13 +114,6 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mPicasso, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
-
-        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
-        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
-        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
@@ -138,7 +133,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(ThreadListActivity.this, startingLocation, model.getUid());
+                    mAndroidNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
                 }
             }
 
@@ -149,7 +144,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(ThreadListActivity.this, tid);
+                    mAndroidNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
                 }
             }
         });
@@ -210,6 +205,8 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
             ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
+            if(savedInstanceState.containsKey(FORUM_PINNED_KEY))
+                mIsForumPinned = savedInstanceState.getBoolean(FORUM_PINNED_KEY);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
             mForumDescription = savedInstanceState.getString(DataContract.BUNDLE_FORUM_DESCRIPTION);
@@ -219,6 +216,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
+            getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
             getPresenter().loadThreadList(mForumId, mCurrentListType, false);
         }
         mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -249,6 +247,8 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if(mIsForumPinned != null)
+            outState.putBoolean(FORUM_PINNED_KEY, mIsForumPinned);
         outState.putLong(DataContract.BUNDLE_FORUM_ID, mForumId);
         outState.putString(DataContract.BUNDLE_FORUM_NAME, mForumName);
         outState.putString(DataContract.BUNDLE_FORUM_DESCRIPTION, mForumDescription);
@@ -259,8 +259,34 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_thread_list, menu);
+        getMenuInflater().inflate(R.menu.menu_forum, menu);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
+        mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mChangeThemeMenuItem != null) {
+            if (isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
+        if(mIsForumPinned != null) {
+            mPinForumMenuItem.setVisible(true);
+            if(mIsForumPinned) {
+                mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);
+            }
+            else {
+                mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_pin_to_home);
+            }
+        } else {
+            mPinForumMenuItem.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -272,6 +298,15 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
                 return true;
+            case R.id.action_forum_pin_to_home:
+                if(mIsForumPinned != null) {
+                    if(mIsForumPinned)
+                        unpinForum();
+                    else
+                        pinForum();
+                    return true;
+                }
+                return false;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -294,6 +329,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     @Override
     protected void onResume() {
         super.onResume();
+        getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
     }
 
     @Override
@@ -333,7 +369,7 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
                 loadMore(mCurrentListPageNumber);
             }*/
         }
-        if(mCollectionAdapter.getItemCount() > 0) {
+        if(mCollectionAdapter.getItemCount() - mCollectionAdapter.getHeaderViewCount() > 0 ) {
             ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1 - mCollectionAdapter.getHeaderViewCount());
             mLastItemSortKey = lastItem.getSortKey();
         } else {
@@ -342,8 +378,9 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
     }
 
     @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(this, getString(text_value), toastType);
+    public void checkPinnedStatusDone(boolean isPinned) {
+        mIsForumPinned = isPinned;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -372,12 +409,20 @@ public class ThreadListActivity extends AbstractThemeableActivity implements Thr
         return isLoadingMore.get();
     }
 
-    public ThreadListPresenter getPresenter() {
+    public ForumPresenter getPresenter() {
         return mPresenter;
     }
 
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
         mFab.setColorNormal(primaryColor);
         mFab.setColorPressed(primaryDarkColor);
+    }
+
+    private void pinForum() {
+        getPresenter().pinForum(mUserAccountManager.getCurrentUserId(), mForumId, mForumName, ModelConverter.fidToForumIconUrl(mForumId));
+    }
+
+    private void unpinForum() {
+        getPresenter().unpinForum(mUserAccountManager.getCurrentUserId(), mForumId);
     }
 }

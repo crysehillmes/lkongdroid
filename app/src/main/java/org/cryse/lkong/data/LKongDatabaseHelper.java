@@ -5,11 +5,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import org.cryse.lkong.data.dao.CacheObjectDao;
+import org.cryse.lkong.data.dao.PinnedForumDao;
 import org.cryse.lkong.data.dao.UserAccountDao;
 
 public class LKongDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "lkong.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public LKongDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -19,10 +20,14 @@ public class LKongDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         UserAccountDao.createTableStatement(db, false);
         CacheObjectDao.createTableStatement(db, false);
+        PinnedForumDao.createTableStatement(db, false);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        CacheObjectDao.dropTable(db);
+        PinnedForumDao.dropTable(db);
+        CacheObjectDao.createTableStatement(db, false);
+        PinnedForumDao.createTableStatement(db, false);
     }
 }

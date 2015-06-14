@@ -108,7 +108,7 @@ public class SendPostService extends Service {
     }
 
     public void sendPost(SendPostTask task) {
-        Log.d(LOG_TAG, "sendPost");
+        //Log.d(LOG_TAG, "sendPost");
         NotificationCompat.Builder progressNotificationBuilder;
 
         progressNotificationBuilder = new NotificationCompat.Builder(SendPostService.this);

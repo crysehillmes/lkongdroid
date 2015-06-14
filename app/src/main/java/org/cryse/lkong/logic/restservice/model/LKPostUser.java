@@ -1,7 +1,5 @@
 package org.cryse.lkong.logic.restservice.model;
 
-import java.util.Date;
-
 public class LKPostUser {
     private String adminid;
     private String customstatus;

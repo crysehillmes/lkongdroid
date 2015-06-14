@@ -4,6 +4,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 
 public class LKAuthObject {
+    long mUserId;
     URI mAuthURI;
     URI mDzsbheyURI;
     URI mIdentityURI;
@@ -11,13 +12,22 @@ public class LKAuthObject {
     HttpCookie mDzsbheyHttpCookie;
     HttpCookie mIdentityHttpCookie;
 
-    public LKAuthObject(String auth, String dzsbhey, String identity) {
+    public LKAuthObject(long userId, String auth, String dzsbhey, String identity) {
+        mUserId = userId;
         mAuthURI = CookieUtils.deserializeHttpCookieForURI(auth);
         mAuthHttpCookie = CookieUtils.deserializeHttpCookieForCookie(auth);
         mDzsbheyURI = CookieUtils.deserializeHttpCookieForURI(dzsbhey);
         mDzsbheyHttpCookie = CookieUtils.deserializeHttpCookieForCookie(dzsbhey);
         mIdentityURI = CookieUtils.deserializeHttpCookieForURI(identity);
         mIdentityHttpCookie = CookieUtils.deserializeHttpCookieForCookie(identity);
+    }
+
+    public long getUserId() {
+        return mUserId;
+    }
+
+    public void setUserId(long userId) {
+        this.mUserId = userId;
     }
 
     public URI getAuthURI() {

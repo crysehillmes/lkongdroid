@@ -10,7 +10,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.DimenRes;
-import android.text.*;
+import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -19,7 +20,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 
 import org.cryse.lkong.R;
 
@@ -140,18 +140,18 @@ public class UIUtils {
             return "\u3000\u3000" + text;
     }
 
-    public static InsetsValue getInsets(Activity context, View view, boolean translucentStatusBar, boolean traslucentNavBar, boolean withToolbar, int customShadowHeight) {
+    public static InsetsValue getInsets(Activity context, View view, boolean translucentStatusBar, boolean traslucentNavBar, boolean withToolbar, int extraHeight) {
         InsetsValue value;
         SystemBarConfig systemBarConfig = new SystemBarConfig(context, translucentStatusBar, traslucentNavBar);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             // Pre-Kitkat
             int paddingTop = withToolbar ? calculateActionBarSize(context) : 0;
-            paddingTop = paddingTop + customShadowHeight;
+            paddingTop = paddingTop + extraHeight;
             value = new InsetsValue(0, paddingTop, 0, 0);
         } else {
             // Kitkat
             int paddingTop = systemBarConfig.getPixelInsetTop(withToolbar);
-            paddingTop = paddingTop + customShadowHeight;
+            paddingTop = paddingTop + extraHeight;
             value = new InsetsValue(0, paddingTop, systemBarConfig.getPixelInsetRight(), systemBarConfig.getPixelInsetBottom());
         }
         return value;

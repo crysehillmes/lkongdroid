@@ -48,8 +48,8 @@ import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
-import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
@@ -154,7 +154,7 @@ public class LKongRestService {
     public UserInfoModel getUserInfo(LKAuthObject authObject, long uid) throws Exception {
         checkSignInStatus(authObject, false);
         applyAuthCookies(authObject);
-        String url = LKONG_INDEX_URL + String.format("?mod=ajax&action=userconfig_%06d", uid);
+        String url = LKONG_DOMAIN_URL + String.format("/user/index.php?mod=ajax&action=userconfig_%06d", uid);
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(url)
@@ -322,19 +322,19 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseBody = getStringFromGzipResponse(response);
-        Timber.d(responseBody, LOG_TAG);
+        //Timber.d(responseBody, LOG_TAG);
         LKNewPostResult lkNewPostResult = gson.fromJson(responseBody, LKNewPostResult.class);
         NewPostResult newPostResult = new NewPostResult();
         if(lkNewPostResult == null || !lkNewPostResult.isSuccess()) {
             newPostResult.setSuccess(false);
             newPostResult.setErrorMessage(lkNewPostResult != null ? lkNewPostResult.getError() : "");
-            Timber.d("NewPost failed", LOG_TAG);
+            //Timber.d("NewPost failed", LOG_TAG);
         } else {
             newPostResult.setSuccess(true);
             newPostResult.setTid(lkNewPostResult.getTid());
             newPostResult.setPageCount(lkNewPostResult.getPage());
             newPostResult.setReplyCount(lkNewPostResult.getLou());
-            Timber.d("NewPost success", LOG_TAG);
+            //Timber.d("NewPost success", LOG_TAG);
         }
         clearCookies();
 
@@ -360,18 +360,18 @@ public class LKongRestService {
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseBody = getStringFromGzipResponse(response);
-        Timber.d(responseBody, LOG_TAG);
+        //Timber.d(responseBody, LOG_TAG);
         LKNewThreadResult lkNewThreadResult = gson.fromJson(responseBody, LKNewThreadResult.class);
         NewThreadResult newThreadResult = new NewThreadResult();
         if(lkNewThreadResult == null || !lkNewThreadResult.isSuccess()) {
             newThreadResult.setSuccess(false);
             newThreadResult.setErrorMessage(lkNewThreadResult != null ? lkNewThreadResult.getError() : "");
-            Timber.d("newPostThread failed", LOG_TAG);
+            //Timber.d("newPostThread failed", LOG_TAG);
         } else {
             newThreadResult.setSuccess(true);
             newThreadResult.setTid(lkNewThreadResult.getTid());
             newThreadResult.setType(lkNewThreadResult.getType());
-            Timber.d("newPostThread success", LOG_TAG);
+            //Timber.d("newPostThread success", LOG_TAG);
         }
         clearCookies();
 
@@ -688,6 +688,7 @@ public class LKongRestService {
         int punchDay = jsonObject.getInt("punchday");
         result.setPunchDay(punchDay);
         result.setPunchTime(new Date(dateLong * 1000));
+        result.setUserId(authObject.getUserId());
         clearCookies();
         return result;
     }

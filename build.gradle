@@ -113,7 +113,6 @@ allprojects {
     ext.appBuildToolsVersion = '22.0.1'
 
 
-    ext.supportlibraryVersion = '22.1.1'
+    ext.supportlibraryVersion = '22.2.0'
     ext.retroLambdaVersion = '2.0.1'
-    ext.gradleRetroLambdaVersion = '22.1.1'
 }

@@ -22,9 +22,9 @@ import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
-import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.ThreadInfoModel;
+import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
@@ -62,6 +62,8 @@ public class ModelConverter {
         userInfoModel.setUserName(lkUserInfo.getUsername());
         userInfoModel.setUserIcon(uidToAvatarUrl(lkUserInfo.getUid()));
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
+        userInfoModel.setSigHtml(lkUserInfo.getSightml());
+        userInfoModel.setSmartMessage(lkUserInfo.getSmartmessage());
         return userInfoModel;
     }
 

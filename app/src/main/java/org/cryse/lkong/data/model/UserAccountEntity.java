@@ -31,7 +31,7 @@ public class UserAccountEntity {
     public LKAuthObject getAuthObject() {
         if(!TextUtils.isEmpty(authCookie) && !TextUtils.isEmpty(dzsbheyCookie) && !TextUtils.isEmpty(identityCookie)) {
             if(authObject == null) {
-                authObject = new LKAuthObject(authCookie, dzsbheyCookie, identityCookie);
+                authObject = new LKAuthObject(userId, authCookie, dzsbheyCookie, identityCookie);
             }
             return authObject;
         }

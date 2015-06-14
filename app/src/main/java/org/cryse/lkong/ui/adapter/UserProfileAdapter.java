@@ -1,7 +1,7 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -24,8 +23,6 @@ import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
-import org.cryse.widget.slidingtabs.SlidingTabLayout;
-import org.cryse.widget.slidingtabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,32 +48,35 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
 
 
-    private final Context context;
+    private final Context mContext;
     private final Picasso mPicasso;
-    private final int avatarSize;
+    private final int mSelfAvatarSize;
     private int mColorAccent;
 
-    private final String profilePhoto;
+    private final String mProfilePhoto;
     private final List<Object> mItemList;
     private UserInfoModel mUserInfo;
-    private boolean lockedAnimations = false;
-    private long profileHeaderAnimationStartTime = 0;
-    private int lastAnimatedItem = 0;
+    private boolean mLockedAnimations = false;
+    private long mProfileHeaderAnimationStartTime = 0;
+    private int mLastAnimatedItem = 0;
     private int mPrimaryColor;
     private final String mTodayPrefix;
     private final String mImageTaskTag;
     private final int mAvatarSize;
     private int mCurrentListType = 0;
-    private TabLayout.OnTabListener mOnTabListener;
+    private TabLayout.OnTabSelectedListener mOnTabListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     private List<String> mOptionTabTitles;
     private OnProfileItemClickListener mOnProfileItemClickListener;
 
+    int mTabColorNormal = 0;
+    int mTabColorSelected = 0;
+
     public UserProfileAdapter(Context context, Picasso picasso, String profilePhoto, int primaryColor, String imgTaskTag, List<Object> itemList) {
-        this.context = context;
+        this.mContext = context;
         this.mPicasso = picasso;
-        this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
-        this.profilePhoto = profilePhoto;
+        this.mSelfAvatarSize = context.getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
+        this.mProfilePhoto = profilePhoto;
         this.mItemList = itemList;
         this.mPrimaryColor = primaryColor;
         this.mTodayPrefix = context.getString(R.string.datetime_today);
@@ -85,6 +85,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mColorAccent = ColorUtils.getColorFromAttr(context, R.attr.colorAccent);
         this.mOptionTabTitles = new ArrayList<String>();
         Collections.addAll(this.mOptionTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
+        this.mTabColorNormal = mContext.getResources().getColor(R.color.text_color_secondary_dark);
+        this.mTabColorSelected = mContext.getResources().getColor(R.color.text_color_primary_dark);
     }
 
     public void setPrimaryColor(int primaryColor) {
@@ -114,13 +116,13 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (TYPE_PROFILE_HEADER == viewType) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_profile_header, parent, false);
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.recyclerview_item_profile_header, parent, false);
             return new ProfileHeaderViewHolder(view);
         } else if (TYPE_TIMELINE_ITEM == viewType) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_timeline, parent, false);
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.recyclerview_item_timeline, parent, false);
             return new TimelineAdapter.ViewHolder(view, mOnProfileItemClickListener);
         } else if(TYPE_THREAD_ITEM == viewType) {
-            final View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_item_thread, parent, false);
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.recyclerview_item_thread, parent, false);
             return new ThreadListAdapter.ViewHolder(view, mOnProfileItemClickListener);
         }
 
@@ -144,60 +146,57 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindProfileHeader(final ProfileHeaderViewHolder holder) {
         holder.itemView.setBackgroundColor(mPrimaryColor);
-        Picasso.with(context)
-                .load(profilePhoto)
+        Picasso.with(mContext)
+                .load(mProfilePhoto)
                 .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
+                .resize(mSelfAvatarSize, mSelfAvatarSize)
                 .centerCrop()
                 .transform(new CircleTransform())
                 .into(holder.ivUserProfilePhoto);
         // Set user info values
         if(mUserInfo != null) {
-            holder.vButtons.setOnTabListener(position -> {
-                switch (position) {
-                    case 0:
-                        mCurrentListType = LIST_ALL;
-                        break;
-                    case 1:
-                        mCurrentListType = LIST_THREADS;
-                        break;
-                    case 2:
-                        mCurrentListType = LIST_DIGEST;
-                        break;
-                }
-                if(mOnTabListener != null)
-                    mOnTabListener.onTabSelect(position);
-                clear();
-            });
-            holder.vButtons.setBackgroundColor(mPrimaryColor);
-            holder.vButtons.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-
+            holder.mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
-                public int getIndicatorColor(int position) {
-                    return Color.WHITE;
+                public void onTabSelected(TabLayout.Tab tab) {
+                    int position = tab.getPosition();
+                    switch (position) {
+                        case 0:
+                            mCurrentListType = LIST_ALL;
+                            break;
+                        case 1:
+                            mCurrentListType = LIST_THREADS;
+                            break;
+                        case 2:
+                            mCurrentListType = LIST_DIGEST;
+                            break;
+                    }
+                    if (mOnTabListener != null)
+                        mOnTabListener.onTabSelected(tab);
+
                 }
 
                 @Override
-                public int getDividerColor(int position) {
-                    return Color.TRANSPARENT;
+                public void onTabUnselected(TabLayout.Tab tab) {
+
                 }
 
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
             });
-            holder.vButtons.setTextColor(Color.WHITE);
-            holder.vButtons.setTitles(mOptionTabTitles);
+            holder.mTabLayout.setBackgroundColor(mPrimaryColor);
+            for(String title : mOptionTabTitles) {
+                holder.mTabLayout.setTabTextColors(mTabColorNormal, mTabColorSelected);
+                holder.mTabLayout.addTab(holder.mTabLayout.newTab().setText(title));
+            }
             holder.userNameTextView.setText(mUserInfo.getUserName());
-            holder.extraInfoTextView.setText("");
-            holder.statusTextView.setText(mUserInfo.getCustomStatus());
+            holder.extraInfoTextView.setText(mUserInfo.getCustomStatus());
+            holder.statusTextView.setText(mUserInfo.getSigHtml());
             holder.followerCountTextView.setText(Integer.toString(mUserInfo.getFansCount()));
             holder.followingCountTextView.setText(Integer.toString(mUserInfo.getFollowCount()));
             holder.threadCountTextView.setText(Integer.toString(mUserInfo.getThreads()));
             holder.postCountTextView.setText(Integer.toString(mUserInfo.getPosts()));
-            if(mUserInfo.getPunchResult() != null) {
-                holder.btnFollow.setText(context.getResources().getString(R.string.format_punchday_count, mUserInfo.getPunchResult().getPunchDay()));
-                holder.btnFollow.setVisibility(View.VISIBLE);
-            } else {
-                holder.btnFollow.setVisibility(View.GONE);
-            }
         }
         // Animate
         holder.vUserProfileRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -208,10 +207,10 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return false;
             }
         });
-        holder.vButtons.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        holder.mTabLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                holder.vButtons.getViewTreeObserver().removeOnPreDrawListener(this);
+                holder.mTabLayout.getViewTreeObserver().removeOnPreDrawListener(this);
                 animateUserProfileOptions(holder);
                 return false;
             }
@@ -220,7 +219,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindTimeline(final TimelineAdapter.ViewHolder holder, int position, TimelineModel timelineModel) {
         TimelineAdapter.bindTimelineItem(
-                context,
+                mContext,
                 mPicasso,
                 mTodayPrefix,
                 mImageTaskTag,
@@ -230,12 +229,12 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 timelineModel
         );
         // animateTimeline(holder);
-        if (lastAnimatedItem < position) lastAnimatedItem = position;
+        if (mLastAnimatedItem < position) mLastAnimatedItem = position;
     }
 
     private void bindThread(final ThreadListAdapter.ViewHolder holder, int position, ThreadModel threadModel) {
         ThreadListAdapter.bindThreadModel(
-                context,
+                mContext,
                 mPicasso,
                 mTodayPrefix,
                 mImageTaskTag,
@@ -245,12 +244,12 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder,
                 threadModel);
         // animateThread(holder);
-        if (lastAnimatedItem < position) lastAnimatedItem = position;
+        if (mLastAnimatedItem < position) mLastAnimatedItem = position;
     }
 
     private void animateUserProfileHeader(ProfileHeaderViewHolder viewHolder) {
-        if (!lockedAnimations) {
-            profileHeaderAnimationStartTime = System.currentTimeMillis();
+        if (!mLockedAnimations) {
+            mProfileHeaderAnimationStartTime = System.currentTimeMillis();
 
             viewHolder.vUserProfileRoot.setTranslationY(-viewHolder.vUserProfileRoot.getHeight());
             viewHolder.ivUserProfilePhoto.setTranslationY(-viewHolder.ivUserProfilePhoto.getHeight());
@@ -265,23 +264,23 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void animateUserProfileOptions(ProfileHeaderViewHolder viewHolder) {
-        if (!lockedAnimations) {
-            viewHolder.vButtons.setTranslationY(-viewHolder.vButtons.getHeight());
-            viewHolder.vButtons.setAlpha(0f);
+        if (!mLockedAnimations) {
+            viewHolder.mTabLayout.setTranslationY(-viewHolder.mTabLayout.getHeight());
+            viewHolder.mTabLayout.setAlpha(0f);
 
-            viewHolder.vButtons.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
-            viewHolder.vButtons.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+            viewHolder.mTabLayout.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+            viewHolder.mTabLayout.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
         }
     }
 
     private void animateTimeline(TimelineAdapter.ViewHolder viewHolder) {
-        if (!lockedAnimations) {
-            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
+        if (!mLockedAnimations) {
+            if (mLastAnimatedItem == viewHolder.getAdapterPosition()) {
                 setLockedAnimations(true);
             }
 
-            long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
-            if (profileHeaderAnimationStartTime == 0) {
+            long animationDelay = mProfileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
+            if (mProfileHeaderAnimationStartTime == 0) {
                 animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
             } else if (animationDelay < 0) {
                 animationDelay = viewHolder.getAdapterPosition() * 30;
@@ -302,13 +301,13 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void animateThread(ThreadListAdapter.ViewHolder viewHolder) {
-        if (!lockedAnimations) {
-            if (lastAnimatedItem == viewHolder.getAdapterPosition()) {
+        if (!mLockedAnimations) {
+            if (mLastAnimatedItem == viewHolder.getAdapterPosition()) {
                 setLockedAnimations(true);
             }
 
-            long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
-            if (profileHeaderAnimationStartTime == 0) {
+            long animationDelay = mProfileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
+            if (mProfileHeaderAnimationStartTime == 0) {
                 animationDelay = viewHolder.getAdapterPosition() * 30 + MAX_PHOTO_ANIMATION_DELAY;
             } else if (animationDelay < 0) {
                 animationDelay = viewHolder.getAdapterPosition() * 30;
@@ -363,8 +362,8 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @InjectView(R.id.recyclerview_item_profile_header_post_count_textview)
         TextView postCountTextView;
 
-        @InjectView(R.id.vButtons)
-        TabLayout vButtons;
+        @InjectView(R.id.recyclerview_item_profile_header_tablayout)
+        TabLayout mTabLayout;
         public ProfileHeaderViewHolder(View view) {
             super(view);
             ButterKnife.inject(this, view);
@@ -372,7 +371,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void setLockedAnimations(boolean lockedAnimations) {
-        this.lockedAnimations = lockedAnimations;
+        this.mLockedAnimations = lockedAnimations;
     }
 
     public void clear() {
@@ -389,7 +388,7 @@ public class UserProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyItemRangeInserted(headerCount + itemCount, items.size());
     }
 
-    public void setOnTabListener(TabLayout.OnTabListener listener) {
+    public void setOnTabListener(TabLayout.OnTabSelectedListener listener) {
         this.mOnTabListener = listener;
     }
 

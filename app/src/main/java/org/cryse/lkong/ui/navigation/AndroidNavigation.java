@@ -3,27 +3,28 @@ package org.cryse.lkong.ui.navigation;
 
 import android.app.Activity;
 import android.app.Application;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.FavoritesFragment;
+import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.ForumsFragment;
-import org.cryse.lkong.ui.NotificationActivity;
+import org.cryse.lkong.ui.HomePageFragment;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
+import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.SignInActivity;
-import org.cryse.lkong.ui.ThreadListActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
@@ -88,6 +89,14 @@ public class AndroidNavigation {
     public void navigateToFavoritesFragment(Bundle args) {
         if(isAttachToMainActivity()) {
             Fragment fragment = FavoritesFragment.newInstance(args);
+            switchContentFragment(fragment, null);
+        }
+    }
+
+    public void navigateToHomePageFragment() {
+        if(isAttachToMainActivity()) {
+            Bundle args = new Bundle();
+            Fragment fragment = HomePageFragment.newInstance(args);
             switchContentFragment(fragment, null);
         }
     }
@@ -186,7 +195,7 @@ public class AndroidNavigation {
     }
 
     public void openActivityForForumByForumId(Context context, long forumId, String forumName, String forumDescription) {
-        Intent intent = new Intent(context, ThreadListActivity.class);
+        Intent intent = new Intent(context, ForumActivity.class);
         intent.putExtra(DataContract.BUNDLE_FORUM_ID, forumId);
         intent.putExtra(DataContract.BUNDLE_FORUM_NAME, forumName);
         intent.putExtra(DataContract.BUNDLE_FORUM_DESCRIPTION, forumDescription);

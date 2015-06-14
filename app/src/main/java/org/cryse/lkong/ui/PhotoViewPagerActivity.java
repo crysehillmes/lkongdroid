@@ -5,10 +5,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,8 +29,8 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.OriginImageDownloader;
 import org.cryse.lkong.utils.SubscriptionUtils;
-import org.cryse.lkong.utils.ToastProxy;
-import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
+import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     private List<String> mPhotoUrls = new ArrayList<String>();
     private String mInitUrl;
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.photo_viewpager)
     ViewPager mViewPager;
     PhotoPagerAdapter mPagerAdapter;
@@ -55,12 +59,10 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
         setIsOverrideToolbarColor(false);
-        setUpToolbar(R.id.my_awesome_toolbar, R.id.toolbar_shadow);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ButterKnife.inject(this);
+        setUpToolbar(mToolbar);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
-        ButterKnife.inject(this);
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL) && intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST)) {
             this.mPhotoUrls.addAll(intent.getStringArrayListExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST));
@@ -204,19 +206,31 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
 
                 @Override
                 public void onPreviewLoadError(Exception e) {
-                    OriginImageDownloader.removeCachedImage(getActivity().getCacheDir(), SUB_CACHE_DIR, OriginImageDownloader.urlToFileName(mImageUrl));
-                    ToastProxy.showToast(getActivity(), getString(R.string.toast_error_open_origin_image), ToastSupport.TOAST_ALERT);
+                    onOpenImageError();
                 }
 
                 @Override
                 public void onImageLoadError(Exception e) {
-                    OriginImageDownloader.removeCachedImage(getActivity().getCacheDir(), SUB_CACHE_DIR, OriginImageDownloader.urlToFileName(mImageUrl));
-                    ToastProxy.showToast(getActivity(), getString(R.string.toast_error_open_origin_image), ToastSupport.TOAST_ALERT);
+                    onOpenImageError();
                 }
 
                 @Override
                 public void onTileLoadError(Exception e) {
 
+                }
+
+                private void onOpenImageError() {
+                    OriginImageDownloader.removeCachedImage(
+                            getActivity().getCacheDir(),
+                            SUB_CACHE_DIR,
+                            OriginImageDownloader.urlToFileName(mImageUrl)
+                    );
+                    SnackbarUtils.makeSimple(
+                            getSnackbarRootView(),
+                            getString(R.string.toast_error_open_origin_image),
+                            SimpleSnackbarType.ERROR,
+                            Snackbar.LENGTH_SHORT
+                    );
                 }
             });
             return contentView;
@@ -248,6 +262,10 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         public void onDestroy() {
             super.onDestroy();
             SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
+        }
+
+        protected View getSnackbarRootView() {
+            return getView();
         }
     }
 }

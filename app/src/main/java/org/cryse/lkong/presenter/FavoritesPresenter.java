@@ -13,6 +13,7 @@ import timber.log.Timber;
 
 public class FavoritesPresenter extends SimpleCollectionPresenter<ThreadModel> {
     private static final String LOG_TAG = FavoritesPresenter.class.getName();
+
     @Inject
     public FavoritesPresenter(LKongForumService forumService) {
         super(forumService);
@@ -36,7 +37,9 @@ public class FavoritesPresenter extends SimpleCollectionPresenter<ThreadModel> {
                 .subscribe(
                         result -> {
                             Timber.d("TimelinePresenter::loadData() onNext().", LOG_TAG);
-                            mView.showSimpleData(result, isLoadingMore);
+                            if (mView != null) {
+                                mView.showSimpleData(result, isLoadingMore);
+                            }
                         },
                         error -> {
                             Timber.e(error, "TimelinePresenter::loadData() onError().", LOG_TAG);

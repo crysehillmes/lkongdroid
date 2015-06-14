@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vUserProfileRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -42,7 +43,6 @@
                 android:id="@+id/recyclerview_item_profile_header_extra_info_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="\@jsmith"
                 android:textSize="12sp"
                 android:textColor="#bbbbbb" />
 
@@ -51,7 +51,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:text="Mobile development passionate."
                 android:textColor="#ffffff" />
 
             <Button
@@ -168,9 +167,10 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
-            <org.cryse.widget.slidingtabs.TabLayout
-                android:id="@+id/vButtons"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="?colorPrimary"/>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/recyclerview_item_profile_header_tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@color/tab_indicator"
+            app:theme="@style/Widget.Design.TabLayout"/>
 </LinearLayout>

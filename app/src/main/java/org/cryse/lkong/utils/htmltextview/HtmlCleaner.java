@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Cleaner;
 import org.jsoup.safety.Whitelist;
-import org.jsoup.select.Elements;
 
 public class HtmlCleaner {
     public static String fixTagBalanceAndRemoveEmpty(String html, Whitelist whitelist) {

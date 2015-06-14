@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.model.SimpleCollectionItem;
 import org.cryse.lkong.presenter.BasePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
@@ -22,7 +22,6 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.LKAuthObject;
-import org.cryse.lkong.utils.ToastProxy;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -36,6 +35,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 public abstract class SimpleCollectionFragment<
         ItemType extends SimpleCollectionItem,
@@ -55,6 +55,9 @@ public abstract class SimpleCollectionFragment<
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @Optional
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
@@ -80,9 +83,9 @@ public abstract class SimpleCollectionFragment<
     }
 
     private void initRecyclerView() {
-        getRecyclerViewInsets();
         UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
-        mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+        if(insetsValue != null)
+            mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
@@ -109,11 +112,11 @@ public abstract class SimpleCollectionFragment<
             ArrayList<ItemType> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
-        } else {
-            mCollectionView.getSwipeToRefresh().measure(1,1);
-            mCollectionView.getSwipeToRefresh().setRefreshing(true);
-            loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, false);
         }
+    }
+
+    public void loadInitialData() {
+        loadData(mUserAccountManager.getAuthObject(), -1, false);
     }
 
     @Override
@@ -125,6 +128,7 @@ public abstract class SimpleCollectionFragment<
     public void onStart() {
         super.onStart();
         getPresenter().bindView(this);
+        loadInitialData();
     }
 
     @Override
@@ -185,17 +189,14 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void setLoading(Boolean value) {
         isLoading = value;
+        if(mCollectionView.getSwipeToRefresh().getMeasuredHeight() == 0)
+            mCollectionView.getSwipeToRefresh().measure(0, 0);
         mCollectionView.getSwipeToRefresh().setRefreshing(value);
     }
 
     @Override
     public Boolean isLoading() {
         return isLoading;
-    }
-
-    @Override
-    public void showToast(int text_value, int toastType) {
-        ToastProxy.showToast(getActivity(), getString(text_value), toastType);
     }
 
     protected abstract String getLogTag();

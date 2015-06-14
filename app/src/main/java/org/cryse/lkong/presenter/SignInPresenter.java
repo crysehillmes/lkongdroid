@@ -4,7 +4,7 @@ import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.ToastErrorConstant;
-import org.cryse.lkong.utils.ToastSupport;
+import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.SignInView;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class SignInPresenter implements BasePresenter<SignInView> {
     @Inject
     public SignInPresenter(LKongForumService lKongForumService) {
         this.mLKongForumService = lKongForumService;
-        this.mView = new EmptySignInView();
+        this.mView = null;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class SignInPresenter implements BasePresenter<SignInView> {
 
     @Override
     public void unbindView() {
-        this.mView = new EmptySignInView();
+        this.mView = null;
     }
 
     @Override
@@ -50,40 +50,26 @@ public class SignInPresenter implements BasePresenter<SignInView> {
                 .subscribe(
                         result -> {
                             Timber.d("SignInPresenter::SignIn() onNext().", LOG_TAG);
-                            mView.signInComplete(result);
+                            if (mView != null) {
+                                mView.signInComplete(result);
+                            }
                         },
                         error -> {
                             Timber.e(error, "SignInPresenter::SignIn() onError().", LOG_TAG);
-                            SignInResult signInResult = new SignInResult();
-                            signInResult.setSuccess(false);
-                            mView.signInComplete(signInResult);
-                            mView.showToast(ToastErrorConstant.TOAST_FAILURE_SIGNIN, ToastSupport.TOAST_ALERT);
+                            if (mView != null) {
+                                SignInResult signInResult = new SignInResult();
+                                signInResult.setSuccess(false);
+                                mView.signInComplete(signInResult);
+                                mView.showSnackbar(
+                                        null,
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT,
+                                        ToastErrorConstant.TOAST_FAILURE_SIGNIN
+                                );
+                            }
                         },
                         () -> {
                             Timber.d("SignInPresenter::SignIn() onComplete().", LOG_TAG);
                         });
-    }
-
-    private class EmptySignInView implements SignInView {
-
-        @Override
-        public void setLoading(Boolean value) {
-
-        }
-
-        @Override
-        public Boolean isLoading() {
-            return null;
-        }
-
-        @Override
-        public void showToast(int text, int toastType) {
-
-        }
-
-        @Override
-        public void signInComplete(SignInResult signInResult) {
-
-        }
     }
 }

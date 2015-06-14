@@ -16,11 +16,10 @@ import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -30,7 +29,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private int mResultType = 0;
     private Picasso mPicasso;
     private CircleTransform mCircleTransform;
-    private DateFormat mDateFormat;
+    private final String mTodayPrefix;
     public void setDataSet(SearchDataSet searchDataSet) {
         this.clear();
         if(searchDataSet != null) {
@@ -49,7 +48,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         super(context, new ArrayList<AbstractSearchResult>());
         this.mPicasso = picasso;
         this.mCircleTransform = new CircleTransform();
-        this.mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        mTodayPrefix = getString(R.string.datetime_today);
     }
 
     @Override
@@ -92,12 +91,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(
-                getString(
-                        R.string.format_search_post_result_reply_count,
-                        item.getDateline() == null ? "" : mDateFormat.format(item.getDateline()),
-                        item.getReplyCount())
-        );
+        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
+        viewHolder.replyCountTextView.setText(Integer.toString(item.getReplyCount()));
     }
 
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {
@@ -137,6 +132,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         TextView titleTextView;
         @InjectView(R.id.recyclerview_item_search_post_secondary)
         TextView secondaryTextView;
+        @InjectView(R.id.recyclerview_item_search_post_reply_count)
+        TextView replyCountTextView;
         public SearchPostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);

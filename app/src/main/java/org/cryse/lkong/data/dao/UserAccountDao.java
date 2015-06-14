@@ -38,6 +38,10 @@ public class UserAccountDao extends AbstractDao<UserAccountEntity, Long> {
                 "'" + COLUMN_IDENTITY_COOKIE + "' TEXT);"); // 6: identityCookie
     }
 
+    public static void dropTable(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
+    }
+
     @Override
     public ContentValues entityToContentValues(UserAccountEntity entity) {
         ContentValues values = new ContentValues();

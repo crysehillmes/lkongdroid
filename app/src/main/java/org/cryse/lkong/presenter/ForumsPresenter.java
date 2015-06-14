@@ -10,8 +10,10 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
 public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel> {
     private static final String LOG_TAG = ForumsPresenter.class.getName();
+
     @Inject
     public ForumsPresenter(LKongForumService forumService) {
         super(forumService);
@@ -25,13 +27,15 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel> {
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
         setLoadingStatus(isLoadingMore, true);
-        mLoadDataSubscription = mLKongForumService.getForumList((Boolean)extraArgs[0])
+        mLoadDataSubscription = mLKongForumService.getForumList((Boolean) extraArgs[0])
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             Timber.d("ForumsPresenter::loadData() onNext().", LOG_TAG);
-                            mView.showSimpleData(result, isLoadingMore);
+                            if (mView != null) {
+                                mView.showSimpleData(result, isLoadingMore);
+                            }
                         },
                         error -> {
                             Timber.e(error, "ForumsPresenter::loadData() onError().", LOG_TAG);

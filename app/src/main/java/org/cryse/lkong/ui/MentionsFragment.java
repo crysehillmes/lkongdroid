@@ -11,6 +11,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;
 
@@ -99,6 +100,11 @@ public class MentionsFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+    }
+
+    @Override
+    protected UIUtils.InsetsValue getRecyclerViewInsets() {
+        return null;
     }
 
     @Override
