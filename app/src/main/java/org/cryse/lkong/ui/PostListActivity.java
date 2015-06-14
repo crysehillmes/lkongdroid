@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -34,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -778,40 +780,46 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void onClickGotoFloor() {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
+        final int[] inputFloorNumber = {0};
+        new MaterialDialog.Builder(this)
                 .title(R.string.action_thread_goto_floor)
-                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                .customView(R.layout.dialog_input_floor, false)
-                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                .inputType(InputType.TYPE_CLASS_NUMBER)
+                .positiveText(android.R.string.ok)
+                .alwaysCallInputCallback() // this forces the callback to be invoked with every input change
+                .input(R.string.hint_goto_floor, 0, false, new MaterialDialog.InputCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.edit_floor);
-                        String content = editText.getText().toString();
-                        if(!TextUtils.isEmpty(content) && TextUtils.isDigitsOnly(content)) {
-                            int floor = Integer.valueOf(content);
-
-                            int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
-                            if(floor > 0 && floor <= replyCount) {
-                                int page = (replyCount - 1 == 0) ? 1 : (int)Math.ceil((double) floor / 20d);
-                                if(page == mCurrentPage)  {
-                                    scrollToOrdinal(floor);
-                                } else {
-                                    mTargetOrdinal = floor;
-                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
-                                }
-                            } else {
-                                showSnackbar(
-                                        getString(R.string.toast_error_invalid_floor),
-                                        SimpleSnackbarType.ERROR,
-                                        SimpleSnackbarType.LENGTH_SHORT
-                                );
-                            }
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                        if (TextUtils.isEmpty(input) || !TextUtils.isDigitsOnly(input)) {
+                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                            return;
                         }
+                        inputFloorNumber[0] = Integer.valueOf(input.toString());
                     }
                 })
-                .build();
-        dialog.show();
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                        int floor = inputFloorNumber[0];
+
+                        int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
+                        if (floor > 0 && floor <= replyCount) {
+                            int page = (replyCount - 1 == 0) ? 1 : (int) Math.ceil((double) floor / 20d);
+                            if (page == mCurrentPage) {
+                                scrollToOrdinal(floor);
+                            } else {
+                                mTargetOrdinal = floor;
+                                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
+                            }
+                        } else {
+                            showSnackbar(
+                                    getString(R.string.toast_error_invalid_floor),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
+                        }
+                    }
+                }).show();
     }
 
     private void scrollToOrdinal(int targetOrdinal) {
