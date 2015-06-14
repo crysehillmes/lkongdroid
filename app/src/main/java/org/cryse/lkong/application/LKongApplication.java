@@ -46,8 +46,10 @@ public class LKongApplication extends Application {
         Timber.plant(new CrashReportingTree());
         AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
         Crashlytics.start(this);
-        UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
-        UmengUpdateAgent.update(this);
+        if(BuildConfig.InAppUpdate) {
+            UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
+            UmengUpdateAgent.update(this);
+        }
         mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
         mEventBus = new RxEventBus();

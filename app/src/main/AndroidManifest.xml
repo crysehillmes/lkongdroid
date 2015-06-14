@@ -78,6 +78,6 @@
             android:name="com.umeng.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
+        <meta-data android:value="@string/track_channel_name" android:name="UMENG_CHANNEL"/>
     </application>
-
 </manifest>
