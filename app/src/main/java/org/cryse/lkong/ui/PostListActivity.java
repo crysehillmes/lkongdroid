@@ -136,6 +136,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     TextView mThreadTitleTextView;
     QuickReturnUtils mToolbarQuickReturn;
     MenuItem mFavoriteMenuItem;
+    MenuItem mChangeThemeMenuItem;
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
@@ -517,11 +518,18 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_list, menu);
         mFavoriteMenuItem = menu.findItem(R.id.action_thread_favorite);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mChangeThemeMenuItem != null) {
+            if (isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
         if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
         else if(mItemList.size() > 0 && mIsFavorite != null) {
             mFavoriteMenuItem.setVisible(true);

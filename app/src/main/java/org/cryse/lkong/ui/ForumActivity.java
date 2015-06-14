@@ -73,6 +73,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     View mHeaderView;
     Spinner mListTypeSpinner;
     MenuItem mPinForumMenuItem;
+    MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
@@ -258,13 +259,20 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_thread_list, menu);
+        getMenuInflater().inflate(R.menu.menu_forum, menu);
+        mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mChangeThemeMenuItem != null) {
+            if (isNightMode())
+                mChangeThemeMenuItem.setTitle(R.string.action_light_theme);
+            else
+                mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
+        }
         if(mIsForumPinned != null) {
             mPinForumMenuItem.setVisible(true);
             if(mIsForumPinned) {

@@ -153,7 +153,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_timeline, menu);
+        inflater.inflate(R.menu.menu_home_page, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
         mPunchMenuItem = menu.findItem(R.id.action_punch);

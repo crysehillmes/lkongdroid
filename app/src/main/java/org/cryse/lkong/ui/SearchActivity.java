@@ -66,6 +66,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         setContentView(R.layout.activity_search);
         ButterKnife.inject(this);
         setUpToolbar(mToolbar);
+        mToolbar.setContentInsetsAbsolute(UIUtils.calculateActionBarSize(this), 0);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         initSearchBox();
     }
@@ -130,19 +131,16 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         final MenuItem searchItem = menu.findItem(R.id.menu_search);
         if (searchItem != null) {
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            final SearchView view = (SearchView) searchItem.getActionView();
-            mSearchView = view;
-            if (view == null) {
-                // LOGW(TAG, "Could not set up search view, view is null.");
-            } else {
-                view.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-                view.setIconified(false);
-                view.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            mSearchView = (SearchView) searchItem.getActionView();
+            if (mSearchView != null) {
+                mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+                mSearchView.setIconified(false);
+                mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String s) {
                         // mSearchResultAdapter.setDataSet(null);
                         search(s);
-                        view.clearFocus();
+                        mSearchView.clearFocus();
                         return true;
                     }
 
@@ -152,17 +150,12 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                         return true;
                     }
                 });
-                view.setOnCloseListener(new SearchView.OnCloseListener() {
-                    @Override
-                    public boolean onClose() {
-                        return false;
-                    }
-                });
-                view.setSubmitButtonEnabled(true);
+                mSearchView.setOnCloseListener(() -> false);
+                mSearchView.setSubmitButtonEnabled(true);
             }
 
-            if (view != null && !TextUtils.isEmpty(mQueryString)) {
-                view.setQuery(mQueryString, false);
+            if (mSearchView != null && !TextUtils.isEmpty(mQueryString)) {
+                mSearchView.setQuery(mQueryString, false);
             }
         }
         return true;
@@ -182,15 +175,9 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
 
     private void search(String query) {
         mQueryString = query;
-        //setTitle(mQueryString);
         mSearchResultAdapter.setDataSet(null);
         if(mQueryString != null && mQueryString.length() > 0) {
             getPresenter().search(mUserAccountManager.getAuthObject(), 0, query, false);
-            /*mListView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().searchNovel(mQueryString, 0, false);*/
-        } else {
-            //mSearchResultAdapter.setDataSet(null);
-            /*mSearchNovelList.clear();*/
         }
     }
 
