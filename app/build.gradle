@@ -39,6 +39,17 @@ android {
         }
     }
 
+    productFlavors {
+        singleApk {
+            resValue 'string', 'track_channel_name', 'singleApk'
+            buildConfigField 'boolean', 'InAppUpdate', 'true'
+        }
+        playStore {
+            resValue 'string', 'track_channel_name', 'playStore'
+            buildConfigField "boolean", "InAppUpdate", "false"
+        }
+    }
+
     lintOptions {
         abortOnError false
     }

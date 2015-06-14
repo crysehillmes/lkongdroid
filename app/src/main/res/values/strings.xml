@@ -22,6 +22,7 @@
     <string name="action_punch">Punch</string>
     <string name="action_pin_to_home">Pin to home</string>
     <string name="action_unpin_from_home">Unpin from home</string>
+    <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
 
     <string name="drawer_item_notification">Notification</string>
@@ -39,6 +40,7 @@
     <string name="hint_account_password">Password</string>
     <string name="hint_title">Title</string>
     <string name="hint_content">Content</string>
+    <string name="hint_goto_floor">Floor Number</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
     <string name="hint_search_label">Search</string>
