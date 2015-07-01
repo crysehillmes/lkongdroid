@@ -15,6 +15,8 @@
     <string name="action_thread_remove_favorite">移除收藏</string>
     <string name="action_pin_to_home">收藏版块</string>
     <string name="action_unpin_from_home">取消收藏</string>
+    <string name="action_pinned_forum">已收藏</string>
+    <string name="action_not_pinned_forum">未收藏</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>

@@ -22,6 +22,8 @@
     <string name="action_punch">Punch</string>
     <string name="action_pin_to_home">Pin to home</string>
     <string name="action_unpin_from_home">Unpin from home</string>
+    <string name="action_pinned_forum">Pinned</string>
+    <string name="action_not_pinned_forum">Unpinned</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
 
