@@ -1,11 +1,7 @@
 package org.cryse.lkong.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import timber.log.Timber;
 
 public class ContentProcessor {
     public static final int IMG_TYPE_LOCAL = 1;
@@ -23,7 +19,7 @@ public class ContentProcessor {
     private static final Pattern mBookNamePattern = Pattern.compile("《([^》]+)》");
     public void run() {
         mResultContent = processImage(mOriginalContent);
-        mResultContent = processBookName(mResultContent);
+        /*mResultContent = processBookName(mResultContent);*/
     }
 
     private String processImage(String content) {
@@ -47,7 +43,7 @@ public class ContentProcessor {
         return replaceBuffer.toString();
     }
 
-    private String processBookName(String content) {
+    /*private String processBookName(String content) {
         Matcher matcher = mBookNamePattern.matcher(content);
         StringBuffer replaceBuffer = new StringBuffer();
         while (matcher.find()) {
@@ -62,7 +58,7 @@ public class ContentProcessor {
         }
         matcher.appendTail(replaceBuffer);
         return replaceBuffer.toString();
-    }
+    }*/
 
     public void setUploadImageCallback(UploadImageCallback uploadImageCallback) {
         this.mUploadImageCallback = uploadImageCallback;
