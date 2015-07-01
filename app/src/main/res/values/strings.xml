@@ -170,6 +170,10 @@
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
     <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app.</string>
 
+    <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
+    <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons.</string>
+
+
     <string-array name="image_download_policy_arrays">
         <item>Always</item>
         <item>Never</item>
