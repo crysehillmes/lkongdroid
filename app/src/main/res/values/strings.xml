@@ -45,6 +45,8 @@
     <string name="hint_goto_floor">Floor Number</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
+    <string name="hint_url_name">Url Text</string>
+    <string name="hint_url_value">Url</string>
     <string name="hint_search_label">Search</string>
     <string name="hint_search_hint">Search forums, threads or people</string>
 
@@ -81,6 +83,7 @@
     <string name="toast_error_invalid_floor">No such floor.</string>
     <string name="toast_error_rate_self">You cannot rate to your own post.</string>
     <string name="toast_error_rate_score_empty">Score could not be empty.</string>
+    <string name="toast_error_url_empty">Url name or value could not be empty.</string>
     <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
     <string name="toast_error_open_origin_image">Failed to load this image.</string>
 
@@ -97,6 +100,7 @@
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
     <string name="dialog_title_rate">Rate</string>
+    <string name="dialog_title_insert_url">Insert Url</string>
     <string name="dialog_exit_new_post_title">Discard your post?</string>
     <string name="dialog_exit_confirm">Confirm</string>
     <string name="dialog_exit_cancel">Cancel</string>

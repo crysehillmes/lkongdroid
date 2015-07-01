@@ -143,12 +143,16 @@
     <string name="hint_goto_floor">楼层号</string>
     <string name="hint_rate_reason">评分理由</string>
     <string name="hint_rate_score">数值</string>
+    <string name="hint_url_name">链接文本</string>
+    <string name="hint_url_value">链接地址</string>
     <string name="header_not_created">Header 创建失败</string>
     <string name="dialog_title_rate">评分</string>
+    <string name="dialog_title_insert_url">插入链接</string>
     <string name="drawer_close"></string>
     <string name="toast_error_rate_self">你不能为自己评分</string>
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
+    <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
     <string name="settings_item_font_size_dialog_title">字体大小</string>
     <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小。</string>
