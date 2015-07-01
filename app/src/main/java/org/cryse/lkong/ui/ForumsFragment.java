@@ -135,7 +135,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
         checkNewNoticeCount();
         if(mNeedRefresh) {
             mNeedRefresh = false;
-            getPresenter().loadForums(mUserAccountManager.getAuthObject(), false);
+            getPresenter().loadForums(mUserAccountManager.getAuthObject(), false, false);
         }
     }
 
@@ -166,7 +166,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadForums(authObject, isLoadingMore);
+        getPresenter().loadForums(authObject, isLoadingMore, true);
     }
 
     @Override

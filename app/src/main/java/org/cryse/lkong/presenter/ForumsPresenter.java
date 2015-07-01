@@ -19,7 +19,7 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel> {
         super(forumService);
     }
 
-    public void loadForums(LKAuthObject authObject, boolean updateFromWeb) {
+    public void loadForums(LKAuthObject authObject, boolean isLoadingMore, boolean updateFromWeb) {
         loadData(authObject, 0, false, updateFromWeb);
     }
 
