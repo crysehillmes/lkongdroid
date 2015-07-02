@@ -138,7 +138,7 @@
     <!-- Settings section -->
     <string name="settings_category_dispaly_title">Display</string>
     <string name="settings_item_is_night_mode_title">Dark Mode</string>
-    <string name="settings_item_is_night_mode_summary">Use dark mode in night could protect your eye.</string>
+    <string name="settings_item_is_night_mode_summary">Use dark mode in night could protect your eye</string>
 
     <string name="settings_category_other_title">Other</string>
     <string name="settings_category_forum_title">Forum</string>
@@ -164,15 +164,15 @@
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_theme_color_title">Theme</string>
-    <string name="settings_item_theme_color_summary">Choose your theme color.</string>
+    <string name="settings_item_theme_color_summary">Choose your theme color</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
-    <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
+    <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable</string>
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
     <string name="settings_category_navigation">Navigation</string>
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
-    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app.</string>
+    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
 
     <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
     <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons.</string>
