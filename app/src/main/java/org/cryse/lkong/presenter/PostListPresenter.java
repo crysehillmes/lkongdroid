@@ -135,10 +135,9 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                         error -> {
                             if (mView != null) {
                                 mView.showSnackbar(
-                                        null,
+                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST,
                                         SimpleSnackbarType.ERROR,
-                                        SimpleSnackbarType.LENGTH_SHORT,
-                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST
+                                        SimpleSnackbarType.LENGTH_SHORT
                                 );
                             }
                             Timber.e(error, "PostListPresenter::ratePost() onError().", LOG_TAG);

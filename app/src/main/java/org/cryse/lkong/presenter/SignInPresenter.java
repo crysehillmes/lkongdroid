@@ -61,10 +61,9 @@ public class SignInPresenter implements BasePresenter<SignInView> {
                                 signInResult.setSuccess(false);
                                 mView.signInComplete(signInResult);
                                 mView.showSnackbar(
-                                        null,
+                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST,
                                         SimpleSnackbarType.ERROR,
-                                        SimpleSnackbarType.LENGTH_SHORT,
-                                        ToastErrorConstant.TOAST_FAILURE_SIGNIN
+                                        SimpleSnackbarType.LENGTH_SHORT
                                 );
                             }
                         },
