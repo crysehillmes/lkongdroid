@@ -12,6 +12,7 @@ import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 
 import java.util.List;
@@ -79,6 +80,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
     private static final String CACHE_KEY_PUNCH_RESULT = "cache_forum_list";
+    private static final String CACHE_KEY_NOTIFICATION_COUNT = "cache_notification_count";
     @Override
     public void cacheForumList(List<ForumModel> forumModels) throws Exception {
         String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {}.getType());
@@ -145,7 +147,30 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
         return mGson.fromJson(json, PunchResult.class);
     }
 
+    @Override
+    public void cacheNoticeCount(long uid, NoticeCountModel noticeCountModel) {
+        String json = mGson.toJson(noticeCountModel, NoticeCountModel.class);
+        mCacheObjectDao.putCache(generateNoticeCountKey(uid), json, null);
+    }
+
+    @Override
+    public void removeNoticeCount(long uid) {
+        mCacheObjectDao.delete(generateNoticeCountKey(uid));
+    }
+
+    @Override
+    public NoticeCountModel loadNoticeCount(long uid) {
+        String json = mCacheObjectDao.getCache(generateNoticeCountKey(uid));
+        if(TextUtils.isEmpty(json))
+            return null;
+        return mGson.fromJson(json, NoticeCountModel.class);
+    }
+
     private String generatePunchResultKey(long uid) {
         return CACHE_KEY_PUNCH_RESULT + "|||" + uid;
+    }
+
+    private String generateNoticeCountKey(long uid) {
+        return CACHE_KEY_NOTIFICATION_COUNT + "|||" + uid;
     }
 }

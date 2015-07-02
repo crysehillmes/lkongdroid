@@ -24,6 +24,7 @@ import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.view.ForumsView;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.List;
@@ -34,7 +35,7 @@ import javax.inject.Inject;
 public class ForumsFragment extends SimpleCollectionFragment<
         ForumModel,
         ForumListAdapter,
-        ForumsPresenter> {
+        ForumsPresenter> implements ForumsView<ForumModel> {
     private static final String LOG_TAG = ForumsFragment.class.getName();
 
     boolean mNeedRefresh = false;
@@ -184,19 +185,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
         if(event instanceof FavoritesChangedEvent)
             mNeedRefresh = true;
         else if(event instanceof NoticeCountEvent) {
-            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
-            if (model.getMentionNotice() != 0
-                    || model.getNotice() != 0
-                    || model.getRateNotice() != 0
-                    /*|| model.getPrivateMessageNotice() != 0
-                    || model.getFansNotice() != 0*/
-                    ) {
-                mHasNotification = true;
-            } else {
-                mHasNotification = false;
-            }
-            if(getActivity() != null)
-                getActivity().invalidateOptionsMenu();
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         }
     }
 
@@ -228,6 +217,15 @@ public class ForumsFragment extends SimpleCollectionFragment<
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).checkNewNoticeCount();
             }
+        }
+    }
+
+    @Override
+    public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
+        if(noticeCountModel != null) {
+            mHasNotification = noticeCountModel.hasNotification();
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
         }
     }
 }

@@ -13,6 +13,7 @@ import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
@@ -465,6 +466,18 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 List<PinnedForumEntity> result = mLKongDatabase.loadAllForUser(uid);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<NoticeCountModel> checkNoticeCountFromDatabase(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                NoticeCountModel result = mLKongDatabase.loadNoticeCount(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

@@ -22,6 +22,7 @@ import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.view.FavoritesView;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import javax.inject.Inject;
 public class FavoritesFragment extends SimpleCollectionFragment<
         ThreadModel,
         ThreadListAdapter,
-        FavoritesPresenter> {
+        FavoritesPresenter> implements FavoritesView<ThreadModel> {
     private static final String LOG_TAG = FavoritesFragment.class.getName();
 
     boolean mNeedRefresh = false;
@@ -206,19 +207,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
         if(event instanceof FavoritesChangedEvent)
             mNeedRefresh = true;
         else if(event instanceof NoticeCountEvent) {
-            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
-            if (model.getMentionNotice() != 0
-                    || model.getNotice() != 0
-                    || model.getRateNotice() != 0
-                    /*|| model.getPrivateMessageNotice() != 0
-                    || model.getFansNotice() != 0*/
-                    ) {
-                mHasNotification = true;
-            } else {
-                mHasNotification = false;
-            }
-            if(getActivity() != null)
-                getActivity().invalidateOptionsMenu();
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         } else if (event instanceof CurrentAccountChangedEvent) {
             loadData(mUserAccountManager.getAuthObject(), 0, false);
         }
@@ -242,6 +231,15 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).checkNewNoticeCount();
             }
+        }
+    }
+
+    @Override
+    public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
+        if(noticeCountModel != null) {
+            mHasNotification = noticeCountModel.hasNotification();
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
         }
     }
 }

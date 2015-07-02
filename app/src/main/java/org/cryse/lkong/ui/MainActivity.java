@@ -2,6 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -337,11 +338,14 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void onStop() {
         super.onStop();
+        this.unbindService(mBackgroundServiceConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Intent service = new Intent(this.getApplicationContext(), CheckNoticeService.class);
+        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override

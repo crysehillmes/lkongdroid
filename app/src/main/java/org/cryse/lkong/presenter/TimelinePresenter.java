@@ -5,6 +5,7 @@ import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.view.SimpleCollectionView;
 
 import javax.inject.Inject;
 
@@ -12,7 +13,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel> {
+public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel, SimpleCollectionView<TimelineModel>> {
     private static final String LOG_TAG = TimelinePresenter.class.getName();
 
     @Inject

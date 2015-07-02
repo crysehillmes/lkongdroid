@@ -4,6 +4,7 @@ import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.view.SimpleCollectionView;
 
 import javax.inject.Inject;
 
@@ -11,7 +12,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class NoticePresenter extends SimpleCollectionPresenter<NoticeModel> {
+public class NoticePresenter extends SimpleCollectionPresenter<NoticeModel, SimpleCollectionView<NoticeModel>> {
     private static final String LOG_TAG = NoticePresenter.class.getName();
 
     @Inject

@@ -76,4 +76,8 @@ public class NoticeCountModel {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    public boolean hasNotification() {
+        return notice > 0 || mentionNotice > 0 || rateNotice > 0/*|| fansNotice > 0 || privateMessageNotice > 0*/;
+    }
 }
