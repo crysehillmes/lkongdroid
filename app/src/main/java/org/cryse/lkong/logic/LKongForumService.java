@@ -352,10 +352,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long start, long uid) {
+    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long uid, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, start, uid);
+                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, uid, start);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -364,10 +364,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) {
+    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long uid, long start, boolean isDigest) {
         return Observable.create(subscriber -> {
             try {
-                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, start, uid, isDigest);
+                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, uid, start, isDigest);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {

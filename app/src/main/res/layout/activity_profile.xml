@@ -1,25 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <io.github.froger.instamaterial.ui.view.RevealBackgroundView
-        android:id="@+id/activity_profile_reveal_bg_layout"
+    <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <com.malinskiy.superrecyclerview.SuperRecyclerView
-        android:id="@+id/activity_profile_content_superlistview"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="72dp"
+            app:contentInsetStart="72dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+
+        <RelativeLayout
+            android:id="@+id/activity_profile_header_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <ImageView
+                android:id="@+id/activity_profile_imageview_avatar"
+                android:layout_width="@dimen/size_avatar_user_profile"
+                android:layout_height="@dimen/size_avatar_user_profile"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_placeholder_avatar"/>
+
+            <LinearLayout
+                android:id="@+id/activity_profile_header_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/activity_profile_imageview_avatar"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/activity_profile_textview_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColor="#ffffff"
+                    android:textSize="24sp"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/activity_profile_textview_user_extra0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#bbbbbb"
+                    android:gravity="center"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/activity_profile_textview_user_extra1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#ffffff"
+                    android:gravity="center"
+                    android:visibility="gone"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/activity_profile_header_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/activity_profile_header_detail"
+                android:paddingTop="16dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingBottom="16dp"
+                style="?buttonBarStyle">
+
+                <TextView
+                    android:id="@+id/activity_profile_textview_follower_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:gravity="center"/>
+                <TextView
+                    android:id="@+id/activity_profile_textview_following_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:gravity="center"/>
+                <TextView
+                    android:id="@+id/activity_profile_textview_thread_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:gravity="center"/>
+                <TextView
+                    android:id="@+id/activity_profile_textview_post_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@color/tab_indicator" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/activity_profile_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_empty="@layout/layout_empty_view"
-        app:layout_moreProgress="@layout/layout_more_progress"
-        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
-        app:recyclerClipToPadding="false"
-        app:scrollbarStyle="outsideOverlay"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <include
-        layout="@layout/toolbar" />
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

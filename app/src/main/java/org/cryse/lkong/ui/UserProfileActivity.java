@@ -1,39 +1,49 @@
 package org.cryse.lkong.ui;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
-import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
-import org.cryse.lkong.ui.adapter.UserProfileAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.CircleTransform;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.UserProfileView;
-import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -41,12 +51,13 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.github.froger.instamaterial.ui.view.RevealBackgroundView;
 
-public class UserProfileActivity extends AbstractThemeableActivity implements RevealBackgroundView.OnStateChangeListener, UserProfileView {
+public class UserProfileActivity extends AbstractThemeableActivity implements /*RevealBackgroundView.OnStateChangeListener, */UserProfileView {
     private static final String LOG_TAG = UserProfileActivity.class.getName();
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
     private static final String LOAD_IMAGE_TASK_TAG = "user_profile_load_image_tag_";
+    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+    private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
 
     Picasso mPicasso;
 
@@ -57,15 +68,44 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Inject
     UserAccountManager mUserAccountManager;
 
+    @InjectView(R.id.appbarlayout)
+    AppBarLayout mAppBarLayout;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_profile_reveal_bg_layout)
-    RevealBackgroundView mActivityRevealBackground;
-    @InjectView(R.id.activity_profile_content_superlistview)
-    SuperRecyclerView mProfileCollectionView;
+    @InjectView(R.id.tablayout)
+    TabLayout mTabLayout;
+    @InjectView(R.id.activity_profile_viewpager)
+    ViewPager mViewPager;
 
-    private UserProfileAdapter mProfileAdapter;
+    @InjectView(R.id.activity_profile_imageview_avatar)
+    ImageView mAvatarImageView;
+    @InjectView(R.id.activity_profile_textview_user_name)
+    TextView mUserNameTextView;
+    @InjectView(R.id.activity_profile_textview_user_extra0)
+    TextView mUserExtra0TextView;
+    @InjectView(R.id.activity_profile_textview_user_extra1)
+    TextView mUserExtra1TextView;
 
+    @InjectView(R.id.activity_profile_textview_follower_count)
+    TextView mUserFollowerCountTextView;
+    @InjectView(R.id.activity_profile_textview_following_count)
+    TextView mUserFollowingCountTextView;
+    @InjectView(R.id.activity_profile_textview_thread_count)
+    TextView mUserThreadCountTextView;
+    @InjectView(R.id.activity_profile_textview_post_count)
+    TextView mUserPostCountTextView;
+
+    @InjectView(R.id.activity_profile_header_root)
+    View mHeaderRootView;
+    @InjectView(R.id.activity_profile_header_detail)
+    View mHeaderDetailView;
+    @InjectView(R.id.activity_profile_header_stats)
+    View mHeaderStatsView;
+
+    private UserDataFragmentPagerAdapter mViewPagerAdapter;
+
+    private boolean mLockedAnimations = false;
+    private long mProfileHeaderAnimationStartTime = 0;
     private long mUid;
 
     private boolean isNoMore = false;
@@ -92,20 +132,23 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         ButterKnife.inject(this);
         ViewCompat.setElevation(mToolbar, 0f);
         setUpToolbar(mToolbar);
-        mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
-        mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
+        /*mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
+        */mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
         if(mUid == 0l)
             throw new IllegalArgumentException("Must set uid in intent.");
-        mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);
+        mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);/*
         setupUserProfileGrid();
-        setupRevealBackground(savedInstanceState);
+        setupRevealBackground(savedInstanceState);*/
+        setupBackground();
+        setupAnimations();
+        initViewPager();
 
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mProfileCollectionView.measure(0, 0);
+        super.onPostCreate(savedInstanceState);/*
+        mProfileCollectionView.measure(0, 0);*/
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
     }
 
@@ -114,162 +157,72 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
     }
 
-    private void setupRevealBackground(Bundle savedInstanceState) {
-        mActivityRevealBackground.setOnStateChangeListener(this);
-        if (savedInstanceState == null) {
-            final int[] startingLocation = getIntent().getIntArrayExtra(ARG_REVEAL_START_LOCATION);
-            mActivityRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mActivityRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
-                    mActivityRevealBackground.startFromLocation(startingLocation);
-                    return true;
-                }
-            });
-        } else {
-            mActivityRevealBackground.setToFinishedFrame();
-            mProfileAdapter.setLockedAnimations(true);
+    private void setupBackground() {
+        mAppBarLayout.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+        //mHeaderRootView.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+    }
+
+    private void setupTabLayout() {
+        List<String> tabTitles = new ArrayList<String>();
+        Collections.addAll(tabTitles, getResources().getStringArray(R.array.string_array_user_profile_tabs));
+        int tabTextColorNormal = getResources().getColor(R.color.text_color_secondary_dark);
+        int tabTextColorSelected = getResources().getColor(R.color.text_color_primary_dark);
+        //mTabLayout.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+        for(String title : tabTitles) {
+            mTabLayout.setTabTextColors(tabTextColorNormal, tabTextColorSelected);
+            mTabLayout.addTab(mTabLayout.newTab().setText(title));
         }
     }
 
-    private void setupUserProfileGrid() {
-        UIUtils.InsetsValue insetsValue =  UIUtils.getInsets(this, mProfileCollectionView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        mProfileCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
+    private void initViewPager() {
+        mViewPagerAdapter = new UserDataFragmentPagerAdapter(this, getSupportFragmentManager(), mUid);
+        mViewPager.setAdapter(mViewPagerAdapter);
 
-        // final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        mProfileCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mProfileCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                mProfileAdapter.setLockedAnimations(true);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
-        });
-        mProfileCollectionView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
             @Override
-            public void onRefresh() {
-                isNoMore = false;
-                int currentListType = mProfileAdapter.getCurrentListType();
-                switch (currentListType) {
-                    case UserProfileAdapter.LIST_ALL:
-                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
-                        break;
-                    case UserProfileAdapter.LIST_THREADS:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
-                        break;
-                    case UserProfileAdapter.LIST_DIGEST:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
-                        break;
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (mViewPager.getCurrentItem() == 0) {
+                    DisplayMetrics displaymetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                    int width = displaymetrics.widthPixels;
+                    getSwipeBackLayout().setEnableGesture(true);
+                    getSwipeBackLayout().setEdgeSize(width);
+                } else {
+                    getSwipeBackLayout().setEnableGesture(false);
+                    getSwipeBackLayout().setEdgeSize(0);
                 }
             }
         });
-        mProfileCollectionView.setOnMoreListener((overallItemsCount, itemsBeforeMore, maxLastVisiblePosition) -> {
-            long lastSortKey = mProfileAdapter.getLastSortKey();
-            if (!isNoMore && !isLoadingMore && lastSortKey != -1) {
-                int currentListType = mProfileAdapter.getCurrentListType();
-                switch (currentListType) {
-                    case UserProfileAdapter.LIST_ALL:
-                        getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), lastSortKey, mUid, true);
-                        break;
-                    case UserProfileAdapter.LIST_THREADS:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), lastSortKey, mUid, false, true);
-                        break;
-                    case UserProfileAdapter.LIST_DIGEST:
-                        getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), lastSortKey, mUid, true, true);
-                        break;
-                }
-            } else {
-                mProfileCollectionView.setLoadingMore(false);
-                mProfileCollectionView.hideMoreProgress();
-            }
-        });
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
-    @Override
-    public void onStateChange(int state) {
-        if (RevealBackgroundView.STATE_FINISHED == state) {
-            mProfileCollectionView.setVisibility(View.VISIBLE);
-            mProfileAdapter = new UserProfileAdapter(
-                    this,
-                    mPicasso,
-                    mUserAvatarUrl,
-                    getThemeEngine().getPrimaryColor(this),
-                    LOAD_IMAGE_TASK_TAG + Long.toString(mUid),
-                    mItemList
-
-            );
-            mProfileAdapter.setOnItemProfileImageClickListener(new UserProfileAdapter.OnProfileItemClickListener() {
-                @Override
-                public void onItemTimelineClick(View view, int adapterPosition) {
-                    Object object = mProfileAdapter.getItem(adapterPosition);
-                    if (object != null && object instanceof TimelineModel) {
-                        TimelineModel model = (TimelineModel) object;
-                        mNavigation.openActivityForPostListByTimelineModel(UserProfileActivity.this, model);
-                    }
-                }
-
-                @Override
-                public void onItemThreadClick(View view, int adapterPosition) {
-                    Object object = mProfileAdapter.getItem(adapterPosition);
-                    if (object != null && object instanceof ThreadModel) {
-                        ThreadModel model = (ThreadModel) object;
-                        String idString = model.getId().substring(7);
-                        long tid = Long.parseLong(idString);
-                        mNavigation.openActivityForPostListByThreadId(UserProfileActivity.this, tid);
-                    }
-                }
-
-                @Override
-                public void onProfileAreaClick(View view, int position, long uid) {
-                    Object object = mProfileAdapter.getItem(position);
-                    if (object != null && object instanceof TimelineModel) {
-                        TimelineModel model = (TimelineModel) object;
-                        int[] startingLocation = new int[2];
-                        view.getLocationOnScreen(startingLocation);
-                        startingLocation[0] += view.getWidth() / 2;
-                        mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUserId());
-                    } else if (object != null && object instanceof ThreadModel) {
-                        ThreadModel model = (ThreadModel) object;
-                        int[] startingLocation = new int[2];
-                        view.getLocationOnScreen(startingLocation);
-                        startingLocation[0] += view.getWidth() / 2;
-                        mNavigation.openActivityForUserProfile(UserProfileActivity.this, startingLocation, model.getUid());
-                    }
-                }
-            });
-            mProfileAdapter.setOnTabListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    int position = tab.getPosition();
-                    isNoMore = false;
-                    switch (position) {
-                        case 0:
-                            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
-                            break;
-                        case 1:
-                            getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, false, false);
-                            break;
-                        case 2:
-                            getPresenter().getUserThreads(mUserAccountManager.getAuthObject(), 0, mUid, true, false);
-                            break;
-                    }
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-
-                }
-            });
-            mProfileCollectionView.setAdapter(mProfileAdapter);
-            if(mUserModelInfo != null) mProfileAdapter.setUserInfo(mUserModelInfo);
-            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
-        } else {
-            mProfileCollectionView.setVisibility(View.INVISIBLE);
-        }
+    public void setupAnimations() {
+        mHeaderRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mHeaderRootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                animateUserProfileHeader();
+                return false;
+            }
+        });
+        mTabLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mTabLayout.getViewTreeObserver().removeOnPreDrawListener(this);
+                animateUserProfileOptions();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -318,10 +271,48 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     @Override
     public void onLoadUserProfileComplete(UserInfoModel userInfoModel) {
         mUserModelInfo = userInfoModel;
-        if(mProfileAdapter != null) {
-            mProfileAdapter.setUserInfo(userInfoModel);
-            getPresenter().getUserAllData(mUserAccountManager.getAuthObject(), 0, mUid, false);
+        int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
+        mPicasso.load(mUserModelInfo.getUserIcon())
+                .placeholder(R.drawable.ic_placeholder_avatar)
+                .resize(avatarSize, avatarSize)
+                .centerCrop()
+                .transform(new CircleTransform())
+                .noFade()
+                .into(mAvatarImageView);
+        mUserNameTextView.setText(buildUserName(mUserModelInfo.getUserName(), mUserModelInfo.getGender()));
+        if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
+            mUserExtra0TextView.setVisibility(View.VISIBLE);
+            mUserExtra0TextView.setText(mUserModelInfo.getCustomStatus());
+        } else {
+            mUserExtra0TextView.setVisibility(View.GONE);
         }
+        if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
+            mUserExtra1TextView.setVisibility(View.VISIBLE);
+            mUserExtra1TextView.setText(mUserModelInfo.getSigHtml());
+        } else {
+            mUserExtra1TextView.setVisibility(View.GONE);
+        }
+        int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
+        mUserFollowerCountTextView.setText(
+                getUserStatsText(mUserModelInfo.getFansCount(),
+                        getString(R.string.profile_header_followers),
+                        statsTextSize)
+        );
+        mUserFollowingCountTextView.setText(
+                getUserStatsText(mUserModelInfo.getFollowCount(),
+                        getString(R.string.profile_header_following),
+                        statsTextSize)
+        );
+        mUserThreadCountTextView.setText(
+                getUserStatsText(mUserModelInfo.getThreads(),
+                        getString(R.string.profile_header_threads),
+                        statsTextSize)
+        );
+        mUserPostCountTextView.setText(
+                getUserStatsText(mUserModelInfo.getPosts(),
+                        getString(R.string.profile_header_posts),
+                        statsTextSize)
+        );
     }
 
     @Override
@@ -330,64 +321,109 @@ public class UserProfileActivity extends AbstractThemeableActivity implements Re
     }
 
     @Override
-    public void onLoadUserAllData(List<TimelineModel> items, boolean isLoadingMore) {
-        if(mProfileAdapter != null) {
-            if(items.size() == 0) {
-                isNoMore = true;
-                return;
-            }
-            if(!isLoadingMore) {
-                mProfileAdapter.clear();
-            }
-            mProfileAdapter.addAll(items);
-        }
-    }
-
-    @Override
-    public void onLoadUserThreads(List<ThreadModel> items, boolean isDigest, boolean isLoadingMore) {
-        if(mProfileAdapter != null) {
-            if(items.size() == 0) {
-                isNoMore = true;
-                return;
-            }
-            if(!isLoadingMore) {
-                mProfileAdapter.clear();
-            }
-            mProfileAdapter.addAll(items);
-        }
-    }
-
-    @Override
-    protected int getAppTheme() {
-        if(isNightMode())
-            return R.style.LKongDroidTheme_Dark_Transparent;
-        else
-            return R.style.LKongDroidTheme_Light_Transparent;
-    }
-
-    @Override
-    public boolean isLoadingMore() {
-        return isLoadingMore;
-    }
-
-    @Override
-    public void setLoadingMore(boolean value) {
-        isLoadingMore = value;
-        mProfileCollectionView.setLoadingMore(value);
-        if(value)
-            mProfileCollectionView.showMoreProgress();
-        else
-            mProfileCollectionView.hideMoreProgress();
-    }
-
-    @Override
     public void setLoading(Boolean value) {
-        isLoading = value;
-        mProfileCollectionView.getSwipeToRefresh().setRefreshing(value);
+        isLoading = value;/*
+        mProfileCollectionView.getSwipeToRefresh().setRefreshing(value);*/
     }
 
     @Override
     public Boolean isLoading() {
         return isLoading;
+    }
+
+    private CharSequence getUserStatsText(int value, String describeText, int describeSize) {
+        String valueString = Integer.toString(value);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(valueString).append("\n");
+        int start = builder.length();
+        int end = start + describeText.length();
+        builder.append(describeText);
+        builder.setSpan(new AbsoluteSizeSpan(describeSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return builder;
+    }
+
+    private CharSequence buildUserName(String userName, int gender) {
+        if(gender != 1 && gender != 2) return userName;
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(userName).append("  ");
+        int start = builder.length();
+        int end = start + 1;
+        if(gender == 1)
+            builder.append("\u2642");
+        else
+            builder.append("\u2640");
+        builder.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return builder;
+    }
+
+    private void animateUserProfileHeader() {
+        if (!mLockedAnimations) {
+            //mAppBarLayout.setTranslationY(-mAppBarLayout.getHeight());
+            mProfileHeaderAnimationStartTime = System.currentTimeMillis();
+
+            //mHeaderRootView.setTranslationY(-mHeaderRootView.getHeight());
+            //mAvatarImageView.setTranslationY(-mAvatarImageView.getHeight());
+            mHeaderDetailView.setTranslationY(-mHeaderDetailView.getHeight());
+            mHeaderStatsView.setAlpha(0);
+
+            //mAppBarLayout.animate().translationY(0).setDuration(900).setInterpolator(INTERPOLATOR);
+            //mHeaderRootView.animate().translationY(0).setDuration(300).setInterpolator(INTERPOLATOR);
+            //mAvatarImageView.animate().translationY(0).setDuration(300).setStartDelay(100).setInterpolator(INTERPOLATOR);
+            mHeaderDetailView.animate().translationY(0).setDuration(300).setStartDelay(200).setInterpolator(INTERPOLATOR);
+            mHeaderStatsView.animate().alpha(1).setDuration(200).setStartDelay(400).setInterpolator(INTERPOLATOR).start();
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 0.0f, getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
+            //设置插值器
+            objectAnimator.setStartDelay(400);
+            objectAnimator.setInterpolator(INTERPOLATOR);
+            objectAnimator.setDuration(500);
+            objectAnimator.start();
+        }
+    }
+
+    private void animateUserProfileOptions() {
+        if (!mLockedAnimations) {
+            mTabLayout.setTranslationY(-mTabLayout.getHeight());
+            mTabLayout.setAlpha(0f);
+
+            mTabLayout.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+            mTabLayout.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+        }
+    }
+
+    static class UserDataFragmentPagerAdapter extends FragmentStatePagerAdapter {
+        private List<String> mTabTitles = new ArrayList<String>();
+        private long mUserId;
+        UserDataFragmentPagerAdapter(Context context, FragmentManager fm, long uid) {
+            super(fm);
+            Collections.addAll(mTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
+            mUserId = uid;
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            Fragment fragment = null;
+            switch (i) {
+                case 0:
+                    fragment = UserProfileTimelineFragment.newInstance(mUserId);
+                    break;
+                case 1:
+                    fragment = UserProfileThreadsFragment.newInstance(mUserId, false);
+                    break;
+                case 2:
+                    fragment = UserProfileThreadsFragment.newInstance(mUserId, true);
+                    break;
+            }
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTabTitles.get(position);
+        }
     }
 }

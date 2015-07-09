@@ -619,7 +619,7 @@ public class LKongRestService {
         return dataSet;
     }
 
-    public List<TimelineModel> getUserAll(LKAuthObject authObject, long start, long uid) throws Exception {
+    public List<TimelineModel> getUserAll(LKAuthObject authObject, long uid, long start) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
 
@@ -642,7 +642,7 @@ public class LKongRestService {
         return timelineList;
     }
 
-    public List<ThreadModel> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) throws Exception {
+    public List<ThreadModel> getUserThreads(LKAuthObject authObject, long uid, long start, boolean isDigest) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
         String url = String.format("http://lkong.cn/user/%06d/index.php?mod=data&sars=user/%06d/", uid, uid);

@@ -22,6 +22,8 @@ import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
+import org.cryse.lkong.ui.UserProfileThreadsFragment;
+import org.cryse.lkong.ui.UserProfileTimelineFragment;
 
 import javax.inject.Singleton;
 
@@ -49,4 +51,6 @@ public interface LKongPresenterComponent {
     void inject(SearchActivity activity);
     void inject(UserProfileActivity activity);
     void inject(InAppBrowserActivity inAppBrowserActivity);
+    void inject(UserProfileTimelineFragment fragment);
+    void inject(UserProfileThreadsFragment fragment);
 }
