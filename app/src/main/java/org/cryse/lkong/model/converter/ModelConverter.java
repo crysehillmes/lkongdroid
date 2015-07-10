@@ -63,10 +63,11 @@ public class ModelConverter {
         userInfoModel.setUserIcon(uidToAvatarUrl(lkUserInfo.getUid()));
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
         userInfoModel.setSmartMessage(lkUserInfo.getSmartmessage());
-
-        Document document = Jsoup.parseBodyFragment(lkUserInfo.getSightml());
-        HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
-        userInfoModel.setSigHtml(htmlToPlainText.getPlainText(document));
+        if(!TextUtils.isEmpty(lkUserInfo.getSightml())) {
+            Document document = Jsoup.parseBodyFragment(lkUserInfo.getSightml());
+            HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+            userInfoModel.setSigHtml(htmlToPlainText.getPlainText(document));
+        }
         return userInfoModel;
     }
 
