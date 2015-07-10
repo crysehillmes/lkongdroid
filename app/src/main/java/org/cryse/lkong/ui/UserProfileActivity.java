@@ -4,13 +4,15 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
@@ -18,6 +20,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +35,8 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
@@ -70,6 +75,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
 
     @InjectView(R.id.appbarlayout)
     AppBarLayout mAppBarLayout;
+    @InjectView(R.id.collapseing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbarLayout;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
     @InjectView(R.id.tablayout)
@@ -130,7 +137,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ButterKnife.inject(this);
-        ViewCompat.setElevation(mToolbar, 0f);
+        //ViewCompat.setElevation(mToolbar, 0f);
         setUpToolbar(mToolbar);
         /*mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
         */mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
@@ -158,20 +165,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     private void setupBackground() {
-        mAppBarLayout.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+        int primaryColor = getThemeEngine().getPrimaryColor(this);
+        mCollapsingToolbarLayout.setContentScrimColor(primaryColor);
+        mAppBarLayout.setBackgroundColor(primaryColor);
+        mTabLayout.setBackgroundColor(primaryColor);
         //mHeaderRootView.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
-    }
-
-    private void setupTabLayout() {
-        List<String> tabTitles = new ArrayList<String>();
-        Collections.addAll(tabTitles, getResources().getStringArray(R.array.string_array_user_profile_tabs));
-        int tabTextColorNormal = getResources().getColor(R.color.text_color_secondary_dark);
-        int tabTextColorSelected = getResources().getColor(R.color.text_color_primary_dark);
-        //mTabLayout.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
-        for(String title : tabTitles) {
-            mTabLayout.setTabTextColors(tabTextColorNormal, tabTextColorSelected);
-            mTabLayout.addTab(mTabLayout.newTab().setText(title));
-        }
     }
 
     private void initViewPager() {
@@ -226,6 +224,14 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     @Override
+    protected void onEvent(AbstractEvent event) {
+        super.onEvent(event);
+        if(event instanceof ThemeColorChangedEvent) {
+            mTabLayout.setBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryColor());
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -252,6 +258,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         super.onDestroy();
         getPresenter().destroy();
         mPicasso.shutdown();
+    }
+
+    @Override
+    public int getToolbarColor() {
+        return Color.TRANSPARENT;
     }
 
     @Override
@@ -353,6 +364,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         else
             builder.append("\u2640");
         builder.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(new RelativeSizeSpan(0.8f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return builder;
     }
 
@@ -371,12 +383,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
             //mAvatarImageView.animate().translationY(0).setDuration(300).setStartDelay(100).setInterpolator(INTERPOLATOR);
             mHeaderDetailView.animate().translationY(0).setDuration(300).setStartDelay(200).setInterpolator(INTERPOLATOR);
             mHeaderStatsView.animate().alpha(1).setDuration(200).setStartDelay(400).setInterpolator(INTERPOLATOR).start();
-            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 0.0f, getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
+            /*ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 0.0f, getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
             //设置插值器
             objectAnimator.setStartDelay(400);
             objectAnimator.setInterpolator(INTERPOLATOR);
             objectAnimator.setDuration(500);
-            objectAnimator.start();
+            objectAnimator.start();*/
         }
     }
 
