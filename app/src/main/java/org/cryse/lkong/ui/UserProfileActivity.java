@@ -115,9 +115,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     private long mProfileHeaderAnimationStartTime = 0;
     private long mUid;
 
-    private boolean isNoMore = false;
     private boolean isLoading = false;
-    private boolean isLoadingMore = false;
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
     private ArrayList<Object> mItemList;
@@ -139,6 +137,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         ButterKnife.inject(this);
         //ViewCompat.setElevation(mToolbar, 0f);
         setUpToolbar(mToolbar);
+        mAppBarLayout.setTargetElevation(0f);
         /*mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
         */mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
         if(mUid == 0l)
@@ -157,6 +156,15 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         super.onPostCreate(savedInstanceState);/*
         mProfileCollectionView.measure(0, 0);*/
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
+
+        int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
+        mPicasso.load(mUserAvatarUrl)
+                .placeholder(R.drawable.ic_placeholder_avatar)
+                .resize(avatarSize, avatarSize)
+                .centerCrop()
+                .transform(new CircleTransform())
+                .noFade()
+                .into(mAvatarImageView);
     }
 
     @Override
@@ -282,14 +290,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @Override
     public void onLoadUserProfileComplete(UserInfoModel userInfoModel) {
         mUserModelInfo = userInfoModel;
-        int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
-        mPicasso.load(mUserModelInfo.getUserIcon())
-                .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
-                .centerCrop()
-                .transform(new CircleTransform())
-                .noFade()
-                .into(mAvatarImageView);
         mUserNameTextView.setText(buildUserName(mUserModelInfo.getUserName(), mUserModelInfo.getGender()));
         if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
             mUserExtra0TextView.setVisibility(View.VISIBLE);

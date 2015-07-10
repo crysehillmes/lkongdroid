@@ -204,6 +204,5 @@ public class AndroidNavigation {
 
     public void openActivityForUserProfile(Activity context, int[] startingLocation, long uid) {
         UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
-        context.overridePendingTransition(0, 0);
     }
 }

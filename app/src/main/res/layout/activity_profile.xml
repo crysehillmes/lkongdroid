@@ -16,7 +16,6 @@
             android:id="@+id/collapseing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
@@ -150,7 +149,8 @@
             app:layout_collapseMode="pin"
             app:tabIndicatorColor="@color/tab_indicator"
             app:tabTextColor="@color/text_color_secondary_dark"
-            app:tabSelectedTextColor="@color/text_color_primary_dark"/>
+            app:tabSelectedTextColor="@color/text_color_primary_dark"
+            android:elevation="@dimen/toolbar_elevation"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/activity_profile_viewpager"
