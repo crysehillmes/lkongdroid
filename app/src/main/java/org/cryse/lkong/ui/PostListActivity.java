@@ -27,6 +27,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsFlipPageByVolumeKey;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
@@ -120,6 +122,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsUseInAppBrowser
     BooleanPreference mUserInAppBrowser;
+    @Inject
+    @PrefsFlipPageByVolumeKey
+    BooleanPreference mFlipPageByVolumeKey;
+
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
@@ -136,6 +142,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     View mBottomPaddingFooterView;
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
+    TextView mThreadDetailCountTextView;
     QuickReturnUtils mToolbarQuickReturn;
     MenuItem mFavoriteMenuItem;
     MenuItem mChangeThemeMenuItem;
@@ -209,6 +216,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mThreadIntroHeaderView.setLayoutParams(threadIntroHeaderLP);
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
+        mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
+
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
@@ -777,6 +786,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
         mThreadTitleTextView.setText(spannableTitle);
+        String detailCount = getString(
+                R.string.format_post_header_detail_count,
+                threadInfoModel.getViews(),
+                threadInfoModel.getReplies()
+        );
+        mThreadDetailCountTextView.setText(detailCount);
     }
 
     private void onClickGotoFloor() {
@@ -1152,5 +1167,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onKeyDown (int keyCode, KeyEvent event) {
+        boolean isFlipPageByVolumeKey = mFlipPageByVolumeKey.get();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if(isFlipPageByVolumeKey) {
+                    goToNextPage(true);
+                    return true;
+                }
+                return false;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if(isFlipPageByVolumeKey) {
+                    goToPrevPage(true);
+                    return true;
+                }
+                return false;
+        }
+        return super.onKeyDown (keyCode, event);
     }
 }

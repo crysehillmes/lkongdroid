@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
@@ -19,7 +20,8 @@ public class CheckNoticeService extends Service {
     private static final String LOG_TAG = CheckNoticeService.class.getName();
     @Inject
     LKongRestService mLKRestService;
-
+    @Inject
+    LKongDatabase mLKongDatabase;
     @Inject
     RxEventBus mEventBus;
     boolean mIsStopingService;
@@ -50,10 +52,11 @@ public class CheckNoticeService extends Service {
             try {
                 NoticeCountModel result = mLKRestService.checkNoticeCount(authObject);
                 if (result != null && result.isSuccess()) {
+                    mLKongDatabase.cacheNoticeCount(authObject.getUserId(), result);
                     mEventBus.sendEvent(new NoticeCountEvent(result));
                 }
             } catch (Exception e) {
-                Log.e(LOG_TAG, "sendThread error", e);
+                Log.e(LOG_TAG, "checkNewNotice Error", e);
             }
         }).start();
     }

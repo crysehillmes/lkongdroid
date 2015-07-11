@@ -9,7 +9,11 @@ public class RxEventBus {
     private final Subject<AbstractEvent, AbstractEvent> mInstance = new SerializedSubject<>(PublishSubject.create());
 
     public void sendEvent(AbstractEvent event) {
-        mInstance.onNext(event);
+        try {
+            mInstance.onNext(event);
+        } catch (Exception ex) {
+            mInstance.onError(ex);
+        }
     }
 
     public Observable<AbstractEvent> toObservable() {

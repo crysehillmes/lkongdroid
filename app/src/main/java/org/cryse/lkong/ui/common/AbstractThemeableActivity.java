@@ -74,10 +74,10 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             if(mIsOverrideToolbarColor)
-                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getToolbarColor()));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(mIsOverrideStatusBarColor)
-                    setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+                    setStatusBarColor(getStatusBarColor());
             }
         }
     }
@@ -210,11 +210,11 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
         if(event instanceof ThemeColorChangedEvent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(mIsOverrideStatusBarColor)
-                    setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+                    setStatusBarColor(getStatusBarColor());
                 updateTaskDescription();
             }
             if(getSupportActionBar() != null)
-                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mThemeEngine.getPrimaryColor(this)));
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getToolbarColor()));
         }
     }
 
@@ -268,5 +268,13 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
                 type,
                 SimpleSnackbarType.LENGTH_SHORT
         ).show();
+    }
+
+    public int getStatusBarColor() {
+        return mThemeEngine.getPrimaryDarkColor(this);
+    }
+
+    public int getToolbarColor() {
+        return mThemeEngine.getPrimaryColor(this);
     }
 }

@@ -241,19 +241,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
         if(event instanceof NoticeCountEvent) {
-            NoticeCountModel model = ((NoticeCountEvent) event).getNoticeCount();
-            if (model.getMentionNotice() != 0
-                    || model.getNotice() != 0
-                    || model.getRateNotice() != 0
-                    /*|| model.getPrivateMessageNotice() != 0
-                    || model.getFansNotice() != 0*/
-                    ) {
-                mHasNotification = true;
-            } else {
-                mHasNotification = false;
-            }
-            if(getActivity() != null)
-                getActivity().invalidateOptionsMenu();
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         } else if(event instanceof ThemeColorChangedEvent) {
             int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
             if(mTabLayout != null) mTabLayout.setBackgroundColor(newPrimaryColor);
@@ -284,6 +272,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onPunchUserComplete(PunchResult punchResult) {
         mCurrentUserPunchResult = punchResult;
         getThemedActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
+        if(noticeCountModel != null) {
+            mHasNotification = noticeCountModel.hasNotification();
+            if(getActivity() != null)
+                getActivity().invalidateOptionsMenu();
+        }
     }
 
     static class Adapter extends FragmentStatePagerAdapter {

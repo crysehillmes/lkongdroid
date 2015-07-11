@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -107,6 +108,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     ImageButton mInsertEmoticonButton;
     @InjectView(R.id.action_insert_image)
     ImageButton mInsertImageButton;
+    @InjectView(R.id.action_insert_link)
+    ImageButton mInsertUrlButton;
 
     ImageEditTextHandler mContentEditTextHandler;
     ProgressDialog mProgressDialog;
@@ -152,8 +155,9 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 mSendServiceBinder = null;
             }
         };
-        mInsertEmoticonButton.setOnClickListener(view -> insertEmoticon());
+        mInsertEmoticonButton.setOnClickListener(view -> showInsertEmoticonDialog());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
+        mInsertUrlButton.setOnClickListener(view -> showInsertUrlDialog());
     }
 
     @Override
@@ -260,7 +264,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         }
     }
 
-    private void insertEmoticon() {
+    private void showInsertEmoticonDialog() {
         new EmoticonDialog().show(this, emoticonName -> {
             try {
                 Drawable emoji = Drawable.createFromStream(AbstractPostActivity.this.getAssets().open("emoji/" + emoticonName), null);
@@ -277,7 +281,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         drawable .setBounds(0, 0, width == 0 ? drawable.getIntrinsicWidth() : width, height == 0 ? drawable.getIntrinsicHeight() : height);
         String imageTag = String.format(IMG_TAG_FORMAT, type, src);
 
-        mContentEditTextHandler.insert(imageTag, drawable);
+        mContentEditTextHandler.insertImageSpan(imageTag, drawable);
     }
 
     private static final int SELECT_PICTURE = 1;
@@ -393,18 +397,27 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             message.replace(start, end, charSequence);
         }
 
-        public void insert(String emoticon, Drawable drawable) {
+        public void insertImageSpan(String emoticon, Drawable drawable) {
             // Create the ImageSpan
-            ImageSpan span = new ImageSpan(drawable, emoticon, ImageSpan.ALIGN_BASELINE);
+            ImageSpan imageSpan = new ImageSpan(drawable, emoticon, ImageSpan.ALIGN_BASELINE);
+            insertSpan(emoticon, imageSpan);
+        }
 
+        public void insertUrlSpan(String name, String value) {
+            // Create the ImageSpan
+            URLSpan urlSpan = new URLSpan(value);
+            insertSpan(name, urlSpan);
+        }
+
+        protected void insertSpan(String content, Object span) {
             // Get the selected text.
             int start = mEditor.getSelectionStart();
             int end = mEditor.getSelectionEnd();
             Editable message = mEditor.getEditableText();
 
             // Insert the emoticon.
-            message.replace(start, end, emoticon);
-            message.setSpan(span, start, start + emoticon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            message.replace(start, end, content);
+            message.setSpan(span, start, start + content.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         int mCurrentChangeStart;
@@ -633,5 +646,40 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 }
             }
         }
+    }
+
+    protected void showInsertUrlDialog() {
+        MaterialDialog urlInputDialog = new MaterialDialog.Builder(AbstractPostActivity.this)
+                .title(R.string.dialog_title_insert_url)
+                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                .customView(R.layout.dialog_input_url, false)
+                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog urlInputDialogRef) {
+                        super.onPositive(urlInputDialogRef);
+                        if (urlInputDialogRef != null && urlInputDialogRef.getCustomView() != null) {
+                            EditText nameEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_name);
+                            EditText valueEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_value);
+                            String urlName = nameEditText.getText().toString();
+                            String urlValue = valueEditText.getText().toString();
+                            if (!TextUtils.isEmpty(urlName) && !TextUtils.isEmpty(urlValue)) {
+                                insertUrlSpan(urlName, urlValue);
+                            } else {
+                                showSnackbar(
+                                        getString(R.string.toast_error_url_empty),
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
+                            }
+                        }
+
+                    }
+                })
+                .build();
+        urlInputDialog.show();
+    }
+
+    protected void insertUrlSpan(String name, String value) {
+        mContentEditTextHandler.insertUrlSpan(name, value);
     }
 }

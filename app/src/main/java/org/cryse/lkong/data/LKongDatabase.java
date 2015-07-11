@@ -3,6 +3,7 @@ package org.cryse.lkong.data;
 import org.cryse.lkong.data.model.PinnedForumEntity;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 
 import java.util.List;
@@ -33,4 +34,8 @@ public interface LKongDatabase {
     void cachePunchResult(PunchResult punchResult);
     void removePunchResult(long uid);
     PunchResult getCachePunchResult(long uid);
+
+    void cacheNoticeCount(long uid, NoticeCountModel noticeCountModel);
+    void removeNoticeCount(long uid);
+    NoticeCountModel loadNoticeCount(long uid);
 }

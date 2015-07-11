@@ -7,9 +7,9 @@ import org.cryse.lkong.view.SimpleCollectionView;
 
 import rx.Subscription;
 
-public abstract class SimpleCollectionPresenter<ItemType> implements BasePresenter<SimpleCollectionView<ItemType>> {
+public abstract class SimpleCollectionPresenter<ItemType, ViewType extends SimpleCollectionView<ItemType>> implements BasePresenter<ViewType> {
     protected LKongForumService mLKongForumService;
-    protected SimpleCollectionView mView;
+    protected ViewType mView;
     protected Subscription mLoadDataSubscription;
 
     public SimpleCollectionPresenter(LKongForumService forumService) {
@@ -20,7 +20,7 @@ public abstract class SimpleCollectionPresenter<ItemType> implements BasePresent
     protected abstract void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs);
 
     @Override
-    public void bindView(SimpleCollectionView view) {
+    public void bindView(ViewType view) {
         this.mView = view;
     }
 

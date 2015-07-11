@@ -35,15 +35,21 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private int mColorAccent;
     private final int mAvatarSize;
     Picasso mPicasso;
+    private String mPicassoTag;
 
     OnThreadItemClickListener mOnThreadItemClickListener;
     private CircleTransform mCircleTransform = new CircleTransform();
     public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList) {
+        this(context, picasso, mItemList, THREAD_PICASSO_TAG);
+    }
+
+    public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList, String picassoTag) {
         super(context, mItemList);
-        mPicasso = picasso;
-        mTodayPrefix = getString(R.string.datetime_today);
-        mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
-        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        this.mPicasso = picasso;
+        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
+        this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        this.mPicassoTag = picassoTag;
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
@@ -351,10 +352,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long start, long uid) {
+    public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long uid, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, start, uid);
+                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, uid, start);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -363,10 +364,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long start, long uid, boolean isDigest) {
+    public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long uid, long start, boolean isDigest) {
         return Observable.create(subscriber -> {
             try {
-                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, start, uid, isDigest);
+                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, uid, start, isDigest);
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -465,6 +466,18 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 List<PinnedForumEntity> result = mLKongDatabase.loadAllForUser(uid);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<NoticeCountModel> checkNoticeCountFromDatabase(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                NoticeCountModel result = mLKongDatabase.loadNoticeCount(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

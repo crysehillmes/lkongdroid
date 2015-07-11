@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical">
+
+    <org.cryse.lkong.widget.TempFixTextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edit_url_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_url_name"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            android:nextFocusDown="@+id/edit_score"
+            android:maxLength="20"
+            android:singleLine="true" />
+
+    </org.cryse.lkong.widget.TempFixTextInputLayout>
+
+    <org.cryse.lkong.widget.TempFixTextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edit_url_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_url_value"
+            android:imeOptions="actionDone"
+            android:inputType="textUri"
+            android:singleLine="true" />
+
+    </org.cryse.lkong.widget.TempFixTextInputLayout>
+</LinearLayout>

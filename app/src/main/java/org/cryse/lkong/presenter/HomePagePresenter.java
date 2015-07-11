@@ -16,6 +16,7 @@ public class HomePagePresenter implements BasePresenter<HomePageView> {
     public static final String LOG_TAG = HomePagePresenter.class.getName();
     LKongForumService mLKongForumService;
     Subscription mPunchSubscription;
+    Subscription mCheckNoticeCountSubscription;
     HomePageView mView;
 
     @Inject
@@ -23,6 +24,7 @@ public class HomePagePresenter implements BasePresenter<HomePageView> {
         this.mLKongForumService = forumService;
         this.mView = null;
     }
+
     public void punch(LKAuthObject authObject) {
         SubscriptionUtils.checkAndUnsubscribe(mPunchSubscription);
         mPunchSubscription = mLKongForumService.punch(authObject)
@@ -35,6 +37,24 @@ public class HomePagePresenter implements BasePresenter<HomePageView> {
                         },
                         error -> {
                             Timber.e(error, "HomePagePresenter::punch() onError().", LOG_TAG);
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void checkNoticeCountFromDatabase(long uid) {
+        SubscriptionUtils.checkAndUnsubscribe(mCheckNoticeCountSubscription);
+        mCheckNoticeCountSubscription = mLKongForumService.checkNoticeCountFromDatabase(uid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onCheckNoticeCountComplete(result);
+                        },
+                        error -> {
+                            Timber.e(error, "HomePagePresenter::checkNoticeCountFromDatabase() onError().", LOG_TAG);
                         },
                         () -> {
                         }
@@ -54,5 +74,6 @@ public class HomePagePresenter implements BasePresenter<HomePageView> {
     @Override
     public void destroy() {
         SubscriptionUtils.checkAndUnsubscribe(mPunchSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mCheckNoticeCountSubscription);
     }
 }

@@ -15,6 +15,8 @@
     <string name="action_thread_remove_favorite">移除收藏</string>
     <string name="action_pin_to_home">收藏版块</string>
     <string name="action_unpin_from_home">取消收藏</string>
+    <string name="action_pinned_forum">已收藏</string>
+    <string name="action_not_pinned_forum">未收藏</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
@@ -96,7 +98,7 @@
     <string name="settings_item_author_blog_site">作者网站</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">最近各个版本的改进</string>
-    <string name="settings_item_feedback_value">有关界面、功能改进的建议，或者错误报告都可以~</string>
+    <string name="settings_item_feedback_value">有关界面、功能改进的建议，或者错误报告都可以</string>
     <string name="settings_item_feedback_title">建议与反馈</string>
     <string name="settings_item_version">版本</string>
     <string name="settings_item_post_extra_tail_text_summary">设置你的小尾巴内容</string>
@@ -141,15 +143,19 @@
     <string name="hint_goto_floor">楼层号</string>
     <string name="hint_rate_reason">评分理由</string>
     <string name="hint_rate_score">数值</string>
+    <string name="hint_url_name">链接文本</string>
+    <string name="hint_url_value">链接地址</string>
     <string name="header_not_created">Header 创建失败</string>
     <string name="dialog_title_rate">评分</string>
+    <string name="dialog_title_insert_url">插入链接</string>
     <string name="drawer_close"></string>
     <string name="toast_error_rate_self">你不能为自己评分</string>
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
+    <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
     <string name="settings_item_font_size_dialog_title">字体大小</string>
-    <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小。</string>
+    <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小</string>
     <string name="settings_item_use_in_app_browser_title">使用应用内浏览器</string>
     <string name="settings_item_use_in_app_browser_summary">使用应用内浏览器而不是跳转到浏览器应用</string>
 
@@ -162,6 +168,8 @@
     <string name="hint_search_label">搜索</string>
     <string name="hint_search_hint">搜索位面，主题或用户</string>
     <string name="settings_category_navigation">导航</string>
+    <string name="settings_item_flip_page_by_volume_key_title">音量控制键翻页</string>
+    <string name="settings_item_flip_page_by_volume_key_summary">通过音量键翻页</string>
     <string name="profile_header_followers">粉丝</string>
     <string name="profile_header_following">关注</string>
     <string name="profile_header_posts">回复</string>
@@ -173,6 +181,7 @@
         <item>精华</item>
     </string-array>
     <string name="format_punchday_count">已签到 %1$d 天</string>
+    <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>
     <string name="dialog_exit_new_post_title">要舍弃这条信息吗？</string>
     <string name="dialog_exit_confirm">确认</string>
     <string name="dialog_exit_discard">舍弃</string>

@@ -22,6 +22,8 @@
     <string name="action_punch">Punch</string>
     <string name="action_pin_to_home">Pin to home</string>
     <string name="action_unpin_from_home">Unpin from home</string>
+    <string name="action_pinned_forum">Pinned</string>
+    <string name="action_not_pinned_forum">Unpinned</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
 
@@ -43,6 +45,8 @@
     <string name="hint_goto_floor">Floor Number</string>
     <string name="hint_rate_reason">Reason</string>
     <string name="hint_rate_score">Score</string>
+    <string name="hint_url_name">Url Text</string>
+    <string name="hint_url_value">Url</string>
     <string name="hint_search_label">Search</string>
     <string name="hint_search_hint">Search forums, threads or people</string>
 
@@ -67,6 +71,7 @@
     <string name="format_punchday_count">Punched %1$d days</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
+    <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
@@ -79,6 +84,7 @@
     <string name="toast_error_invalid_floor">No such floor.</string>
     <string name="toast_error_rate_self">You cannot rate to your own post.</string>
     <string name="toast_error_rate_score_empty">Score could not be empty.</string>
+    <string name="toast_error_url_empty">Url name or value could not be empty.</string>
     <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
     <string name="toast_error_open_origin_image">Failed to load this image.</string>
 
@@ -95,6 +101,7 @@
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
     <string name="dialog_title_rate">Rate</string>
+    <string name="dialog_title_insert_url">Insert Url</string>
     <string name="dialog_exit_new_post_title">Discard your post?</string>
     <string name="dialog_exit_confirm">Confirm</string>
     <string name="dialog_exit_cancel">Cancel</string>
@@ -132,7 +139,7 @@
     <!-- Settings section -->
     <string name="settings_category_dispaly_title">Display</string>
     <string name="settings_item_is_night_mode_title">Dark Mode</string>
-    <string name="settings_item_is_night_mode_summary">Use dark mode in night could protect your eye.</string>
+    <string name="settings_item_is_night_mode_summary">Use dark mode in night could protect your eye</string>
 
     <string name="settings_category_other_title">Other</string>
     <string name="settings_category_forum_title">Forum</string>
@@ -158,15 +165,19 @@
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_theme_color_title">Theme</string>
-    <string name="settings_item_theme_color_summary">Choose your theme color.</string>
+    <string name="settings_item_theme_color_summary">Choose your theme color</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
-    <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable.</string>
+    <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable</string>
     <string name="settings_item_feedback_title">Feedback</string>
     <string name="settings_item_version">Version</string>
     <string name="settings_category_navigation">Navigation</string>
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
-    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app.</string>
+    <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
+
+    <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
+    <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons.</string>
+
 
     <string-array name="image_download_policy_arrays">
         <item>Always</item>

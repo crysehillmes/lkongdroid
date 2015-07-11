@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import com.squareup.picasso.Picasso;
@@ -73,6 +75,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     View mHeaderView;
     Spinner mListTypeSpinner;
     MenuItem mPinForumMenuItem;
+    SwitchCompat mPinForumSwitch;
     MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
@@ -262,6 +265,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         getMenuInflater().inflate(R.menu.menu_forum, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
+        if(mPinForumMenuItem != null)
+            mPinForumSwitch = (SwitchCompat) mPinForumMenuItem.getActionView().findViewById(android.R.id.checkbox);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -273,18 +278,25 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mIsForumPinned != null) {
+        if(mIsForumPinned != null && mPinForumSwitch != null) {
             mPinForumMenuItem.setVisible(true);
+            mPinForumSwitch.setVisibility(View.VISIBLE);
             if(mIsForumPinned) {
-                mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
-                mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);
+                /*mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);*/
+                mPinForumSwitch.setText(R.string.action_pinned_forum);
             }
             else {
-                mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
-                mPinForumMenuItem.setTitle(R.string.action_pin_to_home);
+                /*mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
+                mPinForumMenuItem.setTitle(R.string.action_pin_to_home);*/
+                mPinForumSwitch.setText(R.string.action_not_pinned_forum);
             }
+            mPinForumSwitch.setOnCheckedChangeListener(null);
+            mPinForumSwitch.setChecked(mIsForumPinned);
+            mPinForumSwitch.setOnCheckedChangeListener(mOnPinForumCheckedChangeListener);
         } else {
             mPinForumMenuItem.setVisible(false);
+            mPinForumSwitch.setVisibility(View.INVISIBLE);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -299,13 +311,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                 setNightMode(!isNightMode());
                 return true;
             case R.id.action_forum_pin_to_home:
-                if(mIsForumPinned != null) {
-                    if(mIsForumPinned)
-                        unpinForum();
-                    else
-                        pinForum();
-                    return true;
-                }
+
                 return false;
         }
         return super.onOptionsItemSelected(item);
@@ -425,4 +431,11 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     private void unpinForum() {
         getPresenter().unpinForum(mUserAccountManager.getCurrentUserId(), mForumId);
     }
+
+    private CompoundButton.OnCheckedChangeListener mOnPinForumCheckedChangeListener = (buttonView, isChecked) -> {
+        if (isChecked)
+            pinForum();
+        else
+            unpinForum();
+    };
 }
