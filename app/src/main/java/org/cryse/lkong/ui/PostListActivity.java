@@ -142,6 +142,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     View mBottomPaddingFooterView;
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
+    TextView mThreadDetailCountTextView;
     QuickReturnUtils mToolbarQuickReturn;
     MenuItem mFavoriteMenuItem;
     MenuItem mChangeThemeMenuItem;
@@ -215,6 +216,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mThreadIntroHeaderView.setLayoutParams(threadIntroHeaderLP);
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
+        mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
+
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
@@ -783,6 +786,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         }
         spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
         mThreadTitleTextView.setText(spannableTitle);
+        String detailCount = getString(
+                R.string.format_post_header_detail_count,
+                threadInfoModel.getViews(),
+                threadInfoModel.getReplies()
+        );
+        mThreadDetailCountTextView.setText(detailCount);
     }
 
     private void onClickGotoFloor() {

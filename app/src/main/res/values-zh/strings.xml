@@ -181,6 +181,7 @@
         <item>精华</item>
     </string-array>
     <string name="format_punchday_count">已签到 %1$d 天</string>
+    <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>
     <string name="dialog_exit_new_post_title">要舍弃这条信息吗？</string>
     <string name="dialog_exit_confirm">确认</string>
     <string name="dialog_exit_discard">舍弃</string>

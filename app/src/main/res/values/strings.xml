@@ -71,6 +71,7 @@
     <string name="format_punchday_count">Punched %1$d days</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
+    <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
