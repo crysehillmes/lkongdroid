@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年7月11日"
+        versionCode="808"
+        versionName="0.8.8">
+        <changelogtext>新通知小红点</changelogtext>
+        <changelogtext>编辑器现在可插入链接</changelogtext>
+        <changelogtext>看帖时可选择音量翻页</changelogtext>
+        <changelogtext>改进：回复列表的顶端显示查看和回复数量</changelogtext>
+        <changelogtext>改进：调整了用户信息的显示</changelogtext>
+        <changelogbug>修复：板块列表回复数量无法更新的 Bug</changelogbug>
+        <changelogbug>修复：一些导致崩溃的错误</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年6月14日"
         versionCode="807"
         versionName="0.8.7">
