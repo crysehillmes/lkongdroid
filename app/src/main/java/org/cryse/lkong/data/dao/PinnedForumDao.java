@@ -35,7 +35,7 @@ public class PinnedForumDao extends AbstractDao<PinnedForumEntity, Long> {
                 "'" + COLUMN_FORUM_NAME + "' TEXT," + // 2: forumName
                 "'" + COLUMN_FORUM_ICON + "' TEXT," + // 3: forumIcon
                 "'" + COLUMN_SORT_VALUE + "' LONG," +
-                "PRIMARY KEY (" + COLUMN_FORUM_ID + "," + COLUMN_USER_ID +"));" +
+                "PRIMARY KEY (" + COLUMN_FORUM_ID + "," + COLUMN_USER_ID + "));" +
                 "CREATE INDEX 'index_" + COLUMN_USER_ID.toLowerCase() + "' ON '" + TABLE_NAME + "' ('" + COLUMN_USER_ID + "' ASC);");   // 4: sortValue
     }
 
@@ -97,6 +97,13 @@ public class PinnedForumDao extends AbstractDao<PinnedForumEntity, Long> {
                 mTableName,
                 COLUMN_USER_ID + " = ? AND " + COLUMN_FORUM_ID + " = ? ",
                 new String[] { Long.toString(uid), Long.toString(fid) });
+    }
+
+    public int unpinForums(long uid) {
+        return mDatabase.delete(
+                mTableName,
+                COLUMN_USER_ID + " = ?",
+                new String[] { Long.toString(uid)});
     }
 
     public boolean isPinned(long uid, long fid) {

@@ -119,4 +119,11 @@ public class UserAccountManager {
         }
         return null;
     }
+
+    public void signOut(long uid) throws Exception {
+        mLKongDatabase.removeUserAccount(uid);
+        refresh();
+        mCurrentUserAccount = null;
+        getCurrentUserAccount();
+    }
 }

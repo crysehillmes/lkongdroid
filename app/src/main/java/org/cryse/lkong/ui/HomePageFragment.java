@@ -22,9 +22,11 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
@@ -42,6 +44,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class HomePageFragment extends AbstractFragment implements HomePageView {
     public static final String LOG_TAG = HomePageFragment.class.getName();
@@ -223,6 +226,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                     );
                 }
                 return true;
+            case R.id.action_sign_out:
+                signOut();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -280,6 +286,21 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             mHasNotification = noticeCountModel.hasNotification();
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
+        }
+    }
+
+    private void signOut() {
+        long currentUid = mUserAccountManager.getCurrentUserId();
+        try {
+            mUserAccountManager.signOut(currentUid);
+            getEventBus().sendEvent(new AccountRemovedEvent());
+        } catch (NeedSignInException ex) {
+            mNavigation.navigateToSignInActivity(getActivity(), true);
+            Activity parentActivity = getActivity();
+            if(parentActivity instanceof MainActivity)
+                ((MainActivity)parentActivity).closeActivityWithTransition();
+        } catch (Exception e) {
+            Timber.e(e, e.getMessage(), LOG_TAG);
         }
     }
 

@@ -76,6 +76,9 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public void removeUserAccount(long uid) throws Exception {
         mUserAccountDao.delete(uid);
+        removeNoticeCount(uid);
+        removePunchResult(uid);
+        removePinnedForums(uid);
     }
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
@@ -111,6 +114,11 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public void removePinnedForum(long uid, long fid) throws Exception {
         mPinnedForumDao.unpinForum(uid, fid);
+    }
+
+    @Override
+    public void removePinnedForums(long uid) throws Exception {
+        mPinnedForumDao.unpinForums(uid);
     }
 
     @Override

@@ -26,6 +26,7 @@
     <string name="action_not_pinned_forum">Unpinned</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
+    <string name="action_sign_out">Sign Out</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>

@@ -35,6 +35,7 @@ import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
@@ -286,6 +287,8 @@ public class MainActivity extends AbstractThemeableActivity{
             mNaviagtionDrawer.getContent().invalidate();
             // setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
         } else if(event instanceof NewAccountEvent) {
+            addAccountProfile();
+        } else if(event instanceof AccountRemovedEvent) {
             addAccountProfile();
         }
     }

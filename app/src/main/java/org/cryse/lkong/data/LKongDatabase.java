@@ -27,6 +27,7 @@ public interface LKongDatabase {
 
     void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception;
     void removePinnedForum(long uid, long fid) throws Exception;
+    void removePinnedForums(long uid) throws Exception;
     boolean isForumPinned(long uid, long fid) throws Exception;
     List<PinnedForumEntity> loadAllForUser(long uid) throws Exception;
     List<PinnedForumEntity> loadAllPinnedForums() throws Exception;
