@@ -310,7 +310,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     } else {
                         content = postItem.getMessage();
                     }
-                    mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                    if(postItem.getOrdinal() == 1) {
+                        String title = mThreadSubject;
+                        mAndroidNavigation.openActivityForEditThread(PostListActivity.this, mThreadId, postItem.getPid(), title, content);
+                    } else {
+                        mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                    }
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
@@ -491,7 +496,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             } else if(event instanceof ThemeColorChangedEvent) {
                 setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
             } else if(event instanceof EditPostDoneEvent) {
-                refreshCurrentPage();
+                // refreshCurrentPage();
+                getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
             }
         } catch (Exception ex) {
             Timber.e(ex, ex.getMessage(), LOG_TAG);

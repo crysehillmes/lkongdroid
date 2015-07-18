@@ -610,7 +610,10 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 element.remove();
             }
         }
-        return document.html();
+        String result = document.html();
+        if(result.startsWith("\n") && result.length() > 1)
+            result = result.substring(1);
+        return result;
     }
 
     @Override

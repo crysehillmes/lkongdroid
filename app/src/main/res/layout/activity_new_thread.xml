@@ -13,30 +13,45 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
         android:layout_marginBottom="?actionBarSize"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
-        <EditText
-            android:id="@+id/activity_new_thread_edittext_title"
+
+        <org.cryse.lkong.widget.TempFixTextInputLayout
+            android:id="@+id/activity_new_thread_textlayout_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:gravity="top|start"
-            android:inputType="textMultiLine"
-            android:scrollbars="vertical"
-            android:padding="8dp"
-            android:hint="@string/hint_title"
-            android:textSize="@dimen/text_size_edit"
-            android:background="@android:color/transparent"/>
-        <EditText
-            android:id="@+id/activity_new_thread_edittext_content"
+            android:padding="8dp">
+
+            <EditText
+                android:id="@+id/activity_new_thread_edittext_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="top|start"
+                android:hint="@string/hint_title"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:textSize="@dimen/text_size_edit" />
+
+        </org.cryse.lkong.widget.TempFixTextInputLayout>
+
+        <org.cryse.lkong.widget.TempFixTextInputLayout
+            android:id="@+id/activity_new_thread_textlayout_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="top|start"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:scrollbars="vertical"
-            android:padding="8dp"
-            android:hint="@string/hint_content"
-            android:textSize="@dimen/text_size_edit"
-            android:background="@android:color/transparent"/>
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <EditText
+                android:id="@+id/activity_new_thread_edittext_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:gravity="top|start"
+                android:hint="@string/hint_content"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:scrollbars="vertical"
+                android:textSize="@dimen/text_size_edit" />
+        </org.cryse.lkong.widget.TempFixTextInputLayout>
     </LinearLayout>
 
     <LinearLayout
