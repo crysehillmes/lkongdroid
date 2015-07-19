@@ -16,7 +16,7 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <org.cryse.lkong.widget.TempFixTextInputLayout
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/activity_new_thread_textlayout_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,9 +33,9 @@
                 android:scrollbars="vertical"
                 android:textSize="@dimen/text_size_edit" />
 
-        </org.cryse.lkong.widget.TempFixTextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-        <org.cryse.lkong.widget.TempFixTextInputLayout
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/activity_new_thread_textlayout_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:inputType="textMultiLine|textNoSuggestions"
                 android:scrollbars="vertical"
                 android:textSize="@dimen/text_size_edit" />
-        </org.cryse.lkong.widget.TempFixTextInputLayout>
+        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
     <LinearLayout
