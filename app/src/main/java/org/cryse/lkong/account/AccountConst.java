@@ -23,4 +23,6 @@ public class AccountConst {
     public static final String KEY_ACCOUNT_USER_NAME = "KEY_ACCOUNT_USER_NAME";
     public static final String KEY_ACCOUNT_USER_ID = "KEY_ACCOUNT_USER_ID";
     public static final String KEY_ACCOUNT_USER_AVATAR = "KEY_ACCOUNT_USER_AVATAR";
+    public static final String KEY_ACCOUNT_USER_AUTH = "KEY_ACCOUNT_USER_AUTH";
+    public static final String KEY_ACCOUNT_USER_DZSBHEY = "KEY_ACCOUNT_USER_DZSBHEY";
 }

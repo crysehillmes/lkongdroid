@@ -1,10 +1,10 @@
 package org.cryse.lkong.account;
+
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.utils.ToastErrorConstant;
@@ -38,13 +37,13 @@ import timber.log.Timber;
 
 /**
  * The Authenticator activity.
- *
+ * <p>
  * Called by the Authenticator and in charge of identifing the user.
- *
+ * <p>
  * It sends back to the Authenticator the result.
  */
 public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
-    private static  final String LOG_TAG = LKongAuthenticatorActivity.class.getName();
+    private static final String LOG_TAG = LKongAuthenticatorActivity.class.getName();
     public static final String START_MAIN_ACTIVITY = "start_new_activity";
 
     public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
@@ -97,7 +96,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         ButterKnife.inject(this);
 
         CoordinatorLayout.LayoutParams cardViewLayoutParams;
-        if(isTablet()) {
+        if (isTablet()) {
             cardViewLayoutParams = new CoordinatorLayout.LayoutParams(
                     getResources().getDimensionPixelSize(R.dimen.width_signin_cardview),
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -112,12 +111,12 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         }
         cardViewLayoutParams.gravity = Gravity.CENTER;
         mSignInCardView.setLayoutParams(cardViewLayoutParams);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.activity_bg_sign_in));
         }
 
         Intent intent = getIntent();
-        if(intent.hasExtra(START_MAIN_ACTIVITY)) {
+        if (intent.hasExtra(START_MAIN_ACTIVITY)) {
             mStartMainActivity = intent.getBooleanExtra(START_MAIN_ACTIVITY, false);
         }
         mSignInButton.setOnClickListener(view -> signIn());
@@ -169,7 +168,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                 @Override
                 public void call(Subscriber<? super Intent> subscriber) {
 
-                    Log.d("udinic", LOG_TAG + "> Started authenticating");
+                    Log.d(LOG_TAG, "> Started authenticating");
                     String userName = mEmailText.toString();
                     String userPassword = mPasswordText.toString();
                     String authtoken = null;
@@ -183,9 +182,11 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                         data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                         data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                         data.putString(PARAM_USER_PASS, userPassword);
-                        data.putLong(AccountConst.KEY_ACCOUNT_USER_ID, result.userId);
+                        data.putString(AccountConst.KEY_ACCOUNT_USER_ID, Long.toString(result.userId));
                         data.putString(AccountConst.KEY_ACCOUNT_USER_NAME, result.userName);
                         data.putString(AccountConst.KEY_ACCOUNT_USER_AVATAR, result.userAvatar);
+                        data.putString(AccountConst.KEY_ACCOUNT_USER_AUTH, result.authCookie);
+                        data.putString(AccountConst.KEY_ACCOUNT_USER_DZSBHEY, result.dzsbheyCookie);
                     } catch (Exception e) {
                         data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                     }
@@ -244,28 +245,30 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private void finishLogin(Intent intent) {
-        Log.d("udinic", LOG_TAG + "> finishLogin");
+        Log.d(LOG_TAG, "> finishLogin");
 
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 
         if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-            Log.d("udinic", LOG_TAG + "> finishLogin > addAccountExplicitly");
+            Log.d(LOG_TAG, "> finishLogin > addAccountExplicitly");
             String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authtokenType = mAuthTokenType;
 
             Bundle userData = new Bundle();
-            userData.putLong(AccountConst.KEY_ACCOUNT_USER_ID, intent.getLongExtra(AccountConst.KEY_ACCOUNT_USER_ID, 0));
+            userData.putString(AccountConst.KEY_ACCOUNT_USER_ID, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_ID));
             userData.putString(AccountConst.KEY_ACCOUNT_USER_NAME, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_NAME));
             userData.putString(AccountConst.KEY_ACCOUNT_USER_AVATAR, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_AVATAR));
+            userData.putString(AccountConst.KEY_ACCOUNT_USER_AUTH, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_AUTH));
+            userData.putString(AccountConst.KEY_ACCOUNT_USER_DZSBHEY, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_DZSBHEY));
 
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, userData);
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
         } else {
-            Log.d("udinic", LOG_TAG + "> finishLogin > setPassword");
+            Log.d(LOG_TAG, "> finishLogin > setPassword");
             mAccountManager.setPassword(account, accountPassword);
         }
 
@@ -275,12 +278,12 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private void dismissProgressDialog() {
-        if(mSignInProgress != null && mSignInProgress.isShowing())
+        if (mSignInProgress != null && mSignInProgress.isShowing())
             mSignInProgress.dismiss();
     }
 
     public void setLoading(Boolean value) {
-        if(value) {
+        if (value) {
             dismissProgressDialog();
             mSignInProgress = ProgressDialog.show(this, "", getString(R.string.dialog_signing_in));
         } else {
@@ -311,7 +314,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     protected View getSnackbarRootView() {
-        if(mSnackbarRootView == null)
+        if (mSnackbarRootView == null)
             mSnackbarRootView = findViewById(android.R.id.content);
         return mSnackbarRootView;
     }

@@ -6,4 +6,6 @@ public class LKongAuthenticateResult {
     public String userName;
     public long userId;
     public String userAvatar;
+    public String authCookie;
+    public String dzsbheyCookie;
 }

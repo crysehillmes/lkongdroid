@@ -72,11 +72,11 @@ public class LKongServerAuthenticate {
             Timber.i("SIGNIN_SUCCESS", LOG_TAG, responseBody);
             LKongAuthenticateResult result = new LKongAuthenticateResult();
             result.userEmail = email;
-            result.combinedCookie = readCookies();
             UserInfoModel userModel = getUserConfigInfo();
             result.userId = userModel.getUid();
             result.userName = userModel.getUserName();
             result.userAvatar = ModelConverter.uidToAvatarUrl(result.userId);
+            readCookies(result);
             cookieManager.getCookieStore().removeAll();
             return result;
         }
@@ -97,7 +97,7 @@ public class LKongServerAuthenticate {
     }
 
 
-    private String readCookies() {
+    private void readCookies(LKongAuthenticateResult result) {
         URI authURI = null, dzsbheyURI = null, identityURI = null;
         HttpCookie authHttpCookie = null, dzsbheyHttpCookie = null, identityHttpCookie = null;
 
@@ -124,9 +124,8 @@ public class LKongServerAuthenticate {
         }
         if(authURI != null && authHttpCookie != null &&
                 dzsbheyURI != null && dzsbheyHttpCookie != null) {
-            String authCookieString = CookieUtils.serializeHttpCookie(authURI, authHttpCookie);
-            String dzsbheyCookieString = CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie);
-            return CookieUtils.combineToOne(authCookieString, dzsbheyCookieString);
+            result.authCookie = CookieUtils.serializeHttpCookie(authURI, authHttpCookie);
+            result.dzsbheyCookie = CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie);
         } else {
             throw new NeedSignInException("Error");
         }
