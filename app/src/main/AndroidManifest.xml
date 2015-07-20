@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.cryse.lkong" >
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -66,10 +67,18 @@
             android:name=".ui.InAppBrowserActivity"
             android:label=""
             android:theme="@style/LKongDroidTheme.Light.Translucent" />
-
+        <activity
+            android:name=".account.LKongAuthenticatorActivity"
+            android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".service.CheckNoticeService"/>
-
+        <service android:name=".account.LKongAuthenticateService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator" />
+        </service>
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" >
