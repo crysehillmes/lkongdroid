@@ -22,6 +22,21 @@ public class LKAuthObject {
         mIdentityHttpCookie = CookieUtils.deserializeHttpCookieForCookie(identity);
     }
 
+    public LKAuthObject(
+            long userId,
+            URI authURI,
+            HttpCookie authCookie,
+            URI dzsbheyURI,
+            HttpCookie dzsbheyCookie
+
+    ) {
+        mUserId = userId;
+        mAuthURI = authURI;
+        mAuthHttpCookie = authCookie;
+        mDzsbheyURI = dzsbheyURI;
+        mDzsbheyHttpCookie = dzsbheyCookie;
+    }
+
     public long getUserId() {
         return mUserId;
     }

@@ -5,7 +5,6 @@ import android.text.format.DateUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.PinnedForumEntity;
-import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
@@ -56,50 +55,6 @@ public class LKongForumService {
         }
     }
 
-    public Observable<SignInResult> signIn(String email, String password) {
-        return Observable.create(subscriber -> {
-            try {
-                SignInResult signInResult = mLKongRestService.signIn(email, password);
-
-                if(signInResult != null && signInResult.isSuccess()) {
-                    UserAccountEntity userAccountEntity = new UserAccountEntity(
-                            signInResult.getMe().getUid(),
-                            email,
-                            signInResult.getMe().getUserName(),
-                            signInResult.getMe().getUserIcon(),
-                            signInResult.getAuthCookie(),
-                            signInResult.getDzsbheyCookie(),
-                            signInResult.getIdentityCookie()
-                    );
-                    if (mLKongDatabase != null && mLKongDatabase.isOpen()) {
-                        if (mLKongDatabase.isUserAccountExist(userAccountEntity.getUserId())) {
-                            mLKongDatabase.updateUserAccount(userAccountEntity);
-                        } else {
-                            mLKongDatabase.addUserAccount(userAccountEntity);
-                        }
-                    }
-                }
-                subscriber.onNext(signInResult);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-                Timber.i("SIGNIN_FAILED_WITH_EXCEPTION", LOG_TAG, e.getMessage());
-            }
-        });
-    }
-
-    public Observable<UserAccountEntity> getUserAccount(long uid) {
-        return Observable.create(subscriber -> {
-            try {
-
-                subscriber.onNext(mLKongDatabase.getUserAccount(uid));
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        });
-    }
-
     public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid, boolean isSelf) {
         return Observable.create(subscriber -> {
             try {
@@ -127,17 +82,6 @@ public class LKongForumService {
             }
         });
     }*/
-
-    public Observable<List<UserAccountEntity>> getAllUserAccounts() {
-        return Observable.create(subscriber -> {
-            try {
-                subscriber.onNext(mLKongDatabase.getAllUserAccounts());
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        });
-    }
 
     public Observable<List<ForumModel>> getForumList(boolean updateFromWeb) {
         return Observable.create(subscriber -> {

@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Long Kong</string>
+    <string name="account_type">org.cryse.lkong</string>
     <string name="activity_title_post_list">View Thread</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

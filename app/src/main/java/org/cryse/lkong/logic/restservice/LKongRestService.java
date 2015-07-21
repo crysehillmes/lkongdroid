@@ -54,6 +54,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
+import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
@@ -700,17 +701,10 @@ public class LKongRestService {
         outStream.close();
     }
 
-    private static String decompress(byte[] bytes) throws Exception {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-        GZIPInputStream gis = new GZIPInputStream(byteArrayInputStream);
-        String resultString = MiniIOUtils.toString(gis);
-        gis.close();
-        byteArrayInputStream.close();
-        return resultString;
-    }
 
-    private String getStringFromGzipResponse(Response response) throws Exception {
-        return decompress(response.body().bytes());
+
+    private static String getStringFromGzipResponse(Response response) throws Exception {
+        return GzipUtils.decompress(response.body().bytes());
     }
 
     private void checkSignInStatus(LKAuthObject authObject, boolean checkIdentity) {
@@ -721,14 +715,14 @@ public class LKongRestService {
                 throw new NeedSignInException();
             }
         }
-        if(checkIdentity) {
+        /*if(checkIdentity) {
             if(authObject.hasIdentity()) {
                 if(authObject.hasIdentityExpired())
                     throw new IdentityExpiredException();
             } else {
                 throw new NeedIdentityException();
             }
-        }
+        }*/
     }
 
     private void readCookies(SignInResult signInResult) {
@@ -778,7 +772,7 @@ public class LKongRestService {
         clearCookies();
         cookieManager.getCookieStore().add(authObject.getAuthURI(), authObject.getAuthHttpCookie());
         cookieManager.getCookieStore().add(authObject.getDzsbheyURI(), authObject.getDzsbheyHttpCookie());
-        cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
+        // cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
     }
 
     private void clearCookies() {

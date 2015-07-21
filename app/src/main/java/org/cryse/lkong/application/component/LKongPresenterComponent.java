@@ -19,7 +19,6 @@ import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.PinnedForumsFragment;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SearchActivity;
-import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.ui.UserProfileThreadsFragment;
@@ -32,8 +31,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = {ContextModule.class, LKongModule.class, PreferenceModule.class})
 public interface LKongPresenterComponent {
-    void inject(MainActivity mainActivity);
-    void inject(SignInActivity activity);
+    void inject(MainActivity activity);
     void inject(ForumsFragment fragment);
     void inject(ForumActivity activity);
     void inject(PostListActivity activity);
@@ -50,7 +48,7 @@ public interface LKongPresenterComponent {
     void inject(NotificationActivity activity);
     void inject(SearchActivity activity);
     void inject(UserProfileActivity activity);
-    void inject(InAppBrowserActivity inAppBrowserActivity);
+    void inject(InAppBrowserActivity activity);
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
 }
