@@ -715,14 +715,14 @@ public class LKongRestService {
                 throw new NeedSignInException();
             }
         }
-        if(checkIdentity) {
+        /*if(checkIdentity) {
             if(authObject.hasIdentity()) {
                 if(authObject.hasIdentityExpired())
                     throw new IdentityExpiredException();
             } else {
                 throw new NeedIdentityException();
             }
-        }
+        }*/
     }
 
     private void readCookies(SignInResult signInResult) {

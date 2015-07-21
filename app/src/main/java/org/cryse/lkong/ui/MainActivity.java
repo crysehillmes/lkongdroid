@@ -30,10 +30,10 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
-import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -71,14 +71,14 @@ public class MainActivity extends AbstractThemeableActivity{
     Drawer mNaviagtionDrawer;
 
     Picasso mPicasso;
-    UserAccountEntity mCurrentAccount = null;
+    UserAccount mCurrentAccount = null;
 
     ServiceConnection mBackgroundServiceConnection;
     private CheckNoticeService.CheckNoticeCountServiceBinder mCheckNoticeServiceBinder;
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
-    List<UserAccountEntity> mUserAccountList;
+    List<UserAccount> mUserAccountList;
     /**
      * Used to post delay navigation action to improve UX
      */
@@ -93,6 +93,11 @@ public class MainActivity extends AbstractThemeableActivity{
         //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
+        if(!mUserAccountManager.isSignedIn()) {
+            mNavigation.navigateToSignInActivity(this, true);
+            closeActivityWithTransition();
+            return;
+        }
         mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
         getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
@@ -289,7 +294,12 @@ public class MainActivity extends AbstractThemeableActivity{
         } else if(event instanceof NewAccountEvent) {
             addAccountProfile();
         } else if(event instanceof AccountRemovedEvent) {
-            addAccountProfile();
+            if(!mUserAccountManager.isSignedIn()) {
+                mNavigation.navigateToSignInActivity(this, true);
+                closeActivityWithTransition();
+            } else {
+                addAccountProfile();
+            }
         }
     }
 
@@ -303,12 +313,12 @@ public class MainActivity extends AbstractThemeableActivity{
         try {
             mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
             mUserAccountList = mUserAccountManager.getUserAccounts();
-            for (UserAccountEntity entity : mUserAccountList) {
+            for (UserAccount entity : mUserAccountList) {
 
                 ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
                         .withIcon(entity.getUserAvatar())
                         .withName(entity.getUserName())
-                        .withEmail(entity.getEmail())
+                        .withEmail(entity.getUserEmail())
                         .withIdentifier((int) entity.getUserId());
                 mAccountHeader.addProfiles(profileDrawerItem);
             }

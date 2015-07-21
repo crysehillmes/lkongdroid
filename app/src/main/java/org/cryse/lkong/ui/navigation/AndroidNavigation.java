@@ -1,6 +1,9 @@
 package org.cryse.lkong.ui.navigation;
 
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -11,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.AccountConst;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.FavoritesFragment;
@@ -24,7 +28,6 @@ import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
-import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
@@ -119,10 +122,8 @@ public class AndroidNavigation {
         context.startActivity(intent);
     }
 
-    public void navigateToSignInActivity(Context context, boolean startMainActivity) {
-        Intent intent = new Intent(context, SignInActivity.class);
-        intent.putExtra(SignInActivity.START_MAIN_ACTIVITY, startMainActivity);
-        context.startActivity(intent);
+    public void navigateToSignInActivity(Activity activity, boolean startMainActivity) {
+        addNewAccount(activity, activity.getResources().getString(R.string.account_type), AccountConst.AUTHTOKEN_TYPE_FULL_ACCESS);
     }
 
     public void openActivityForReplyToThread(Activity activity, long threadId, String threadSubject) {
@@ -204,5 +205,23 @@ public class AndroidNavigation {
 
     public void openActivityForUserProfile(Activity context, int[] startingLocation, long uid) {
         UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
+    }
+
+    private void addNewAccount(Activity activity, String accountType, String authTokenType) {
+        AccountManager accountManager = AccountManager.get(activity);
+        final AccountManagerFuture<Bundle> future = accountManager.addAccount(accountType, authTokenType, null, null, activity, new AccountManagerCallback<Bundle>() {
+            @Override
+            public void run(AccountManagerFuture<Bundle> future) {
+                try {
+                    Bundle bnd = future.getResult();
+                    /*showMessage("Account was created");
+                    Log.d("udinic", "AddNewAccount Bundle is " + bnd);*/
+
+                } catch (Exception e) {/*
+                    e.printStackTrace();
+                    showMessage(e.getMessage());*/
+                }
+            }
+        }, null);
     }
 }

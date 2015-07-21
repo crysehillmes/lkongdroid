@@ -8,9 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.dao.PinnedForumDao;
-import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.model.PinnedForumEntity;
-import org.cryse.lkong.data.model.UserAccountEntity;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -21,14 +19,12 @@ import javax.inject.Inject;
 
 public class LKongDatabaseSqliteImpl implements LKongDatabase {
     CacheObjectDao mCacheObjectDao;
-    UserAccountDao mUserAccountDao;
     PinnedForumDao mPinnedForumDao;
     Gson mGson;
 
     @Inject
-    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao, PinnedForumDao pinnedForumDao) {
+    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, PinnedForumDao pinnedForumDao) {
         this.mCacheObjectDao = cacheObjectDao;
-        this.mUserAccountDao = userAccountDao;
         this.mPinnedForumDao = pinnedForumDao;
         this.mGson = new Gson();
     }
@@ -45,40 +41,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     @Override
     public boolean isOpen() throws Exception {
-        return mCacheObjectDao.isOpen() && mUserAccountDao.isOpen();
-    }
-
-    @Override
-    public void addUserAccount(UserAccountEntity userAccountEntity) throws Exception {
-        mUserAccountDao.insertOrReplace(userAccountEntity);
-    }
-
-    @Override
-    public void updateUserAccount(UserAccountEntity userAccountEntity) throws Exception {
-        mUserAccountDao.update(userAccountEntity);
-    }
-
-    @Override
-    public UserAccountEntity getUserAccount(long uid) throws Exception {
-        return mUserAccountDao.load(uid);
-    }
-
-    @Override
-    public List<UserAccountEntity> getAllUserAccounts() throws Exception {
-        return mUserAccountDao.loadAll();
-    }
-
-    @Override
-    public boolean isUserAccountExist(long uid) throws Exception {
-        return mUserAccountDao.exist(uid);
-    }
-
-    @Override
-    public void removeUserAccount(long uid) throws Exception {
-        mUserAccountDao.delete(uid);
-        removeNoticeCount(uid);
-        removePunchResult(uid);
-        removePinnedForums(uid);
+        return mCacheObjectDao.isOpen();
     }
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";

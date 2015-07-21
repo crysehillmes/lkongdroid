@@ -1,5 +1,6 @@
 package org.cryse.lkong.application.modules;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import org.cryse.lkong.application.LKongApplication;
@@ -9,7 +10,6 @@ import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabaseHelper;
 import org.cryse.lkong.data.dao.CacheObjectDao;
 import org.cryse.lkong.data.dao.PinnedForumDao;
-import org.cryse.lkong.data.dao.UserAccountDao;
 import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.LKongForumService;
@@ -36,12 +36,6 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public UserAccountDao provideUserAccountDao(LKongDatabaseHelper helper) {
-        return new UserAccountDao(helper);
-    }
-
-    @Singleton
-    @Provides
     public CacheObjectDao provideCacheObjectDao(LKongDatabaseHelper helper) {
         return new CacheObjectDao(helper);
     }
@@ -54,8 +48,8 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public LKongDatabase provideLKongDatabase(CacheObjectDao cacheObjectDao, UserAccountDao userAccountDao, PinnedForumDao pinnedForumDao) {
-        return new LKongDatabaseSqliteImpl(cacheObjectDao, userAccountDao, pinnedForumDao);
+    public LKongDatabase provideLKongDatabase(CacheObjectDao cacheObjectDao, PinnedForumDao pinnedForumDao) {
+        return new LKongDatabaseSqliteImpl(cacheObjectDao, pinnedForumDao);
     }
 
     @Singleton
@@ -66,8 +60,15 @@ public class LKongModule {
 
     @Singleton
     @Provides
-     public UserAccountManager provideUserAccountManager(@ApplicationContext Context context) {
+    public UserAccountManager provideUserAccountManager(@ApplicationContext Context context) {
         LKongApplication application = (LKongApplication)context;
         return application.getUserAccountManager();
+    }
+
+    @Singleton
+    @Provides
+    public AccountManager provideAccountManager(@ApplicationContext Context context) {
+        LKongApplication application = (LKongApplication)context;
+        return AccountManager.get(context);
     }
 }
