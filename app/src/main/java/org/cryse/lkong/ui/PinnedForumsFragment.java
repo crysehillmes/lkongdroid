@@ -8,11 +8,11 @@ import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.PinnedForumsPresenter;
-import org.cryse.lkong.ui.adapter.PinnedForumsAdapter;
+import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
@@ -24,8 +24,8 @@ import javax.inject.Inject;
 
 
 public class PinnedForumsFragment extends SimpleCollectionFragment<
-        PinnedForumEntity,
-        PinnedForumsAdapter,
+        FollowedForum,
+        FollowedForumsAdapter,
         PinnedForumsPresenter> {
     private static final String LOG_TAG = PinnedForumsFragment.class.getName();
 
@@ -81,8 +81,8 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected PinnedForumsAdapter createAdapter(List<PinnedForumEntity> itemList) {
-        return new PinnedForumsAdapter(getActivity(), getPicasso(), mItemList);
+    protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
+        return new FollowedForumsAdapter(getActivity(), getPicasso(), mItemList);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            PinnedForumEntity item = mCollectionAdapter.getItem(position);
+            FollowedForum item = mCollectionAdapter.getItem(position);
             mNavigation.openActivityForForumByForumId(getActivity(), item.getForumId(), item.getForumName(), "");
         }
     }

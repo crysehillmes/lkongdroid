@@ -4,7 +4,8 @@ import android.text.format.DateUtils;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.data.model.FollowedForum;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
@@ -367,9 +368,9 @@ public class LKongForumService {
     public Observable<Boolean> pinForum(long uid, long fid, String forumName, String forumIcon) {
         return Observable.create(subscriber -> {
             try {
-                mLKongDatabase.pinForum(new PinnedForumEntity(
-                        fid,
+                mLKongDatabase.followForum(new FollowedForum(
                         uid,
+                        fid,
                         forumName,
                         forumIcon,
                         new Date().getTime()
@@ -406,10 +407,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<PinnedForumEntity>> loadUserPinnedForums(long uid) {
+    public Observable<List<FollowedForum>> loadUserPinnedForums(long uid) {
         return Observable.create(subscriber -> {
             try {
-                List<PinnedForumEntity> result = mLKongDatabase.loadAllForUser(uid);
+                List<FollowedForum> result = mLKongDatabase.loadAllForUser(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

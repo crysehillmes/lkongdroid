@@ -1,6 +1,7 @@
 package org.cryse.lkong.data;
 
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.data.model.FollowedForum;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -17,12 +18,11 @@ public interface LKongDatabase {
     void removeCachedForumList() throws Exception;
     boolean isCachedForumList() throws Exception;
 
-    void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception;
+    void followForum(FollowedForumModel model) throws Exception;
     void removePinnedForum(long uid, long fid) throws Exception;
     void removePinnedForums(long uid) throws Exception;
     boolean isForumPinned(long uid, long fid) throws Exception;
-    List<PinnedForumEntity> loadAllForUser(long uid) throws Exception;
-    List<PinnedForumEntity> loadAllPinnedForums() throws Exception;
+    List<FollowedForum> loadAllForUser(long uid) throws Exception;
 
     void cachePunchResult(PunchResult punchResult);
     void removePunchResult(long uid);

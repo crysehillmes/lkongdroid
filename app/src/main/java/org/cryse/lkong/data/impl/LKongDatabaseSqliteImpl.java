@@ -1,32 +1,39 @@
 package org.cryse.lkong.data.impl;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.data.LKongDatabase;
-import org.cryse.lkong.data.dao.CacheObjectDao;
-import org.cryse.lkong.data.dao.PinnedForumDao;
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.data.model.FollowedForum;
+import org.cryse.lkong.data.provider.cacheobject.CacheObjectContentValues;
+import org.cryse.lkong.data.provider.cacheobject.CacheObjectCursor;
+import org.cryse.lkong.data.provider.cacheobject.CacheObjectSelection;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumCursor;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumSelection;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 public class LKongDatabaseSqliteImpl implements LKongDatabase {
-    CacheObjectDao mCacheObjectDao;
-    PinnedForumDao mPinnedForumDao;
     Gson mGson;
-
+    ContentResolver mContentResolver;
     @Inject
-    public LKongDatabaseSqliteImpl(CacheObjectDao cacheObjectDao, PinnedForumDao pinnedForumDao) {
-        this.mCacheObjectDao = cacheObjectDao;
-        this.mPinnedForumDao = pinnedForumDao;
+    public LKongDatabaseSqliteImpl(@ApplicationContext Context context) {
         this.mGson = new Gson();
+        this.mContentResolver = context.getContentResolver();
     }
 
     @Override
@@ -41,100 +48,140 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     @Override
     public boolean isOpen() throws Exception {
-        return mCacheObjectDao.isOpen();
+        return mContentResolver != null;
     }
 
     private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
-    private static final String CACHE_KEY_PUNCH_RESULT = "cache_forum_list";
+    private static final String CACHE_KEY_PUNCH_RESULT = "cache_punch_result";
     private static final String CACHE_KEY_NOTIFICATION_COUNT = "cache_notification_count";
     @Override
     public void cacheForumList(List<ForumModel> forumModels) throws Exception {
-        String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {}.getType());
-        mCacheObjectDao.putCache(CACHE_KEY_FORUM_LIST, json, null);
+        String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {
+        }.getType());
+        CacheObjectContentValues values = new CacheObjectContentValues();
+        values.putCacheKey(CACHE_KEY_FORUM_LIST).putCacheValue(json);
+        values.insert(mContentResolver);
     }
 
     @Override
     public List<ForumModel> getCachedForumList() throws Exception {
-        String json = mCacheObjectDao.getCache(CACHE_KEY_FORUM_LIST);
-        return mGson.fromJson(json, new TypeToken<List<ForumModel>>() {}.getType());
+        String json = getCachedValue(CACHE_KEY_FORUM_LIST);
+        if(!TextUtils.isEmpty(json)) {
+            return mGson.fromJson(json, new TypeToken<List<ForumModel>>() {}.getType());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void removeCachedForumList() throws Exception {
-        mCacheObjectDao.delete(CACHE_KEY_FORUM_LIST);
+        CacheObjectSelection cacheSelection = new CacheObjectSelection();
+        cacheSelection.cacheKey(CACHE_KEY_FORUM_LIST).delete(mContentResolver);
     }
 
     @Override
     public boolean isCachedForumList() throws Exception {
-        return mCacheObjectDao.exist(CACHE_KEY_FORUM_LIST);
+        CacheObjectSelection cacheSelection = new CacheObjectSelection();
+        CacheObjectCursor cursor = cacheSelection.cacheKey(CACHE_KEY_FORUM_LIST).query(mContentResolver);
+        boolean exist = cursor.getCount() > 0;
+        cursor.close();
+        return exist;
     }
 
     @Override
-    public void pinForum(PinnedForumEntity pinnedForumEntity) throws Exception {
-        mPinnedForumDao.insertOrReplace(pinnedForumEntity);
+    public void followForum(FollowedForumModel model) throws Exception {
+        FollowedForumContentValues values = new FollowedForumContentValues();
+        values.putUserId(model.getUserId())
+                .putForumId(model.getForumId())
+                .putForumName(model.getForumName())
+                .putForumIcon(model.getForumIcon())
+                .putForumSortValue(model.getForumSortValue());
+        values.insert(mContentResolver);
     }
 
     @Override
     public void removePinnedForum(long uid, long fid) throws Exception {
-        mPinnedForumDao.unpinForum(uid, fid);
+        FollowedForumSelection followedForumSelection = new FollowedForumSelection();
+        followedForumSelection.userId(uid).and().forumId(fid).delete(mContentResolver);
     }
 
     @Override
     public void removePinnedForums(long uid) throws Exception {
-        mPinnedForumDao.unpinForums(uid);
+        FollowedForumSelection followedForumSelection = new FollowedForumSelection();
+        followedForumSelection.userId(uid).delete(mContentResolver);
     }
 
     @Override
     public boolean isForumPinned(long uid, long fid) throws Exception {
-        return mPinnedForumDao.isPinned(uid, fid);
+        FollowedForumSelection forumSelection = new FollowedForumSelection();
+        FollowedForumCursor cursor = forumSelection.userId(uid).and().forumId(fid).query(mContentResolver);
+        boolean exist = cursor.getCount() > 0;
+        cursor.close();
+        return exist;
     }
 
     @Override
-    public List<PinnedForumEntity> loadAllForUser(long uid) throws Exception {
-        return mPinnedForumDao.loadAllForUser(uid);
-    }
-
-    @Override
-    public List<PinnedForumEntity> loadAllPinnedForums() throws Exception {
-        return mPinnedForumDao.loadAll();
+    public List<FollowedForum> loadAllForUser(long uid) throws Exception {
+        FollowedForumSelection forumSelection = new FollowedForumSelection();
+        forumSelection.userId(uid);
+        FollowedForumCursor cursor = forumSelection.query(mContentResolver);
+        List<FollowedForum> result = new ArrayList<>(cursor.getCount());
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            result.add(new FollowedForum(cursor));
+        }
+        cursor.close();
+        return result;
     }
 
     @Override
     public void cachePunchResult(PunchResult punchResult) {
         String json = mGson.toJson(punchResult, PunchResult.class);
-        mCacheObjectDao.putCache(generatePunchResultKey(punchResult.getUserId()), json, null);
+        CacheObjectContentValues values = new CacheObjectContentValues();
+        values.putCacheKey(generatePunchResultKey(punchResult.getUserId()))
+                .putCacheValue(json);
+        values.insert(mContentResolver);
     }
 
     @Override
     public void removePunchResult(long uid) {
-        mCacheObjectDao.delete(generatePunchResultKey(uid));
+        CacheObjectSelection cacheSelection = new CacheObjectSelection();
+        cacheSelection.cacheKey(generatePunchResultKey(uid)).delete(mContentResolver);
     }
 
     @Override
     public PunchResult getCachePunchResult(long uid) {
-        String json = mCacheObjectDao.getCache(generatePunchResultKey(uid));
-        if(TextUtils.isEmpty(json))
+        String json = getCachedValue(generatePunchResultKey(uid));
+        if(!TextUtils.isEmpty(json)) {
+            return mGson.fromJson(json, PunchResult.class);
+        } else {
             return null;
-        return mGson.fromJson(json, PunchResult.class);
+        }
     }
 
     @Override
     public void cacheNoticeCount(long uid, NoticeCountModel noticeCountModel) {
         String json = mGson.toJson(noticeCountModel, NoticeCountModel.class);
-        mCacheObjectDao.putCache(generateNoticeCountKey(uid), json, null);
+        CacheObjectContentValues values = new CacheObjectContentValues();
+        values.putCacheKey(generateNoticeCountKey(uid))
+                .putCacheValue(json);
+        values.insert(mContentResolver);
     }
 
     @Override
     public void removeNoticeCount(long uid) {
-        mCacheObjectDao.delete(generateNoticeCountKey(uid));
+        CacheObjectSelection cacheSelection = new CacheObjectSelection();
+        cacheSelection.cacheKey(generateNoticeCountKey(uid)).delete(mContentResolver);
     }
 
     @Override
     public NoticeCountModel loadNoticeCount(long uid) {
-        String json = mCacheObjectDao.getCache(generateNoticeCountKey(uid));
-        if(TextUtils.isEmpty(json))
+        String json = getCachedValue(generateNoticeCountKey(uid));
+        if(!TextUtils.isEmpty(json)) {
+            return mGson.fromJson(json, NoticeCountModel.class);
+        } else {
             return null;
-        return mGson.fromJson(json, NoticeCountModel.class);
+        }
     }
 
     private String generatePunchResultKey(long uid) {
@@ -143,5 +190,19 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     private String generateNoticeCountKey(long uid) {
         return CACHE_KEY_NOTIFICATION_COUNT + "|||" + uid;
+    }
+
+    private String getCachedValue(String key) {
+        CacheObjectSelection cacheSelection = new CacheObjectSelection();
+        cacheSelection.cacheKey(key);
+        CacheObjectCursor cursor = cacheSelection.query(mContentResolver);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String json = cursor.getCacheValue();
+            cursor.close();
+            return json;
+        } else {
+            return null;
+        }
     }
 }

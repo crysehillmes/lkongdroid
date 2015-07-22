@@ -78,6 +78,10 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/account_authenticator" />
         </service>
+        <provider
+            android:name="org.cryse.lkong.data.provider.LKongContentProvider"
+            android:authorities="org.cryse.lkong.data.provider"
+            android:exported="false" />
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" >
