@@ -15,15 +15,13 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.tika.Tika;
+import org.cryse.lkong.logic.LKongWebConstants;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
 import org.cryse.lkong.logic.restservice.model.LKDataItemLocation;
-import org.cryse.lkong.logic.restservice.model.LKForumInfo;
-import org.cryse.lkong.logic.restservice.model.LKForumListItem;
-import org.cryse.lkong.logic.restservice.model.LKForumNameList;
 import org.cryse.lkong.logic.restservice.model.LKForumThreadList;
 import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
 import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
@@ -33,10 +31,8 @@ import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
 import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
-import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.EditPostResult;
-import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.NoticeCountModel;
@@ -48,7 +44,6 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
-import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -88,128 +83,6 @@ public class LKongRestService {
         this.okHttpClient.setCookieHandler(cookieManager);
 
         this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-    }
-
-    public UserInfoModel getUserInfo(LKAuthObject authObject, long uid) throws Exception {
-        checkSignInStatus(authObject, false);
-        applyAuthCookies(authObject);
-        String url = LKONG_DOMAIN_URL + String.format("/user/index.php?mod=ajax&action=userconfig_%06d", uid);
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        Gson customGson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-        LKUserInfo lkUserInfo = customGson.fromJson(responseString, LKUserInfo.class);
-        UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
-        clearCookies();
-        return userInfoModel;
-    }
-
-    public List<ForumModel> getForumList() throws Exception {
-        // checkSignInStatus();
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=ajax&action=forumlist")
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful())
-            throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        LKForumNameList lkForumNameList = gson.fromJson(responseString, LKForumNameList.class);
-
-        List<ForumModel> forumModels = new ArrayList<ForumModel>(lkForumNameList.getForumlist().size());
-        for(LKForumListItem item : lkForumNameList.getForumlist()) {
-            Response itemInfoResponse = null;
-            ForumModel forumModel = new ForumModel();
-            forumModel.setFid(item.getFid());
-            forumModel.setName(item.getName());
-            forumModel.setIcon(ModelConverter.fidToForumIconUrl(item.getFid()));
-
-            try {
-                Request itemInfoRequest = new Request.Builder()
-                        .addHeader("Accept-Encoding", "gzip")
-                        .url(LKONG_INDEX_URL + "?mod=ajax&action=forumconfig_" + Long.toString(item.getFid()))
-                        .build();
-
-                itemInfoResponse = okHttpClient.newCall(itemInfoRequest).execute();
-                if (!response.isSuccessful())
-                    throw new IOException("Get forum detail info failed, reason: " + response);
-                String itemInfoResponseString = getStringFromGzipResponse(itemInfoResponse);
-                LKForumInfo forumInfo = gson.fromJson(itemInfoResponseString, LKForumInfo.class);
-                forumModel.setDescription(forumInfo.getDescription());
-                forumModel.setBlackboard(forumInfo.getBlackboard());
-                forumModel.setFansNum(forumInfo.getFansnum());
-                forumModel.setStatus(forumInfo.getStatus());
-                forumModel.setSortByDateline(forumInfo.getSortbydateline());
-                forumModel.setThreads(Integer.parseInt(forumInfo.getThreads()));
-                forumModel.setTodayPosts(Integer.parseInt(forumInfo.getTodayposts()));
-            } catch (Exception ex) {
-                Timber.e(ex, "Get forum detail info exception.", LOG_TAG);
-            } finally {
-                forumModels.add(forumModel);
-            }
-        }
-        return forumModels;
-    }
-    
-    public List<ThreadModel> getForumThreadList(long fid, long start, int listType) throws Exception {
-        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=forum/%d%s", fid, ThreadListType.typeToRequestParam(listType));
-        url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        LKForumThreadList lKThreadList = gson.fromJson(responseString, LKForumThreadList.class);
-        List<ThreadModel> threadList = ModelConverter.toForumThreadModel(lKThreadList, false);
-        if(listType == ThreadListType.TYPE_SORT_BY_POST)
-            Collections.reverse(threadList);
-        return threadList;
-    }
-
-    public ThreadInfoModel getThreadInfo(LKAuthObject authObject, long tid) throws Exception {checkSignInStatus(authObject, true);
-        applyAuthCookies(authObject);
-        String url = String.format(LKONG_INDEX_URL + "?mod=ajax&action=threadconfig_%d", tid);
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        LKThreadInfo lkThreadInfo = gson.fromJson(responseString, LKThreadInfo.class);
-        ThreadInfoModel threadInfoModel = ModelConverter.toThreadInfoModel(lkThreadInfo);
-        clearCookies();
-        return threadInfoModel;
-    }
-
-    public List<PostModel> getThreadPostList(LKAuthObject authObject, long tid, int page) throws Exception {
-        if(authObject != null) {
-            checkSignInStatus(authObject, true);
-            applyAuthCookies(authObject);
-        }
-        String url = String.format(LKONG_INDEX_URL + "?mod=data&sars=thread/%d/%s", tid, page);
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        LKPostList lkPostList = gson.fromJson(responseString, LKPostList.class);
-        List<PostModel> postList = ModelConverter.toPostModelList(lkPostList);
-        clearCookies();
-        return postList;
     }
 
     public String uploadImageToLKong(LKAuthObject authObject, String imagePath) throws Exception {
@@ -373,26 +246,12 @@ public class LKongRestService {
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
         String responseString = getStringFromGzipResponse(response);
         LKTimelineData lkTimelineData = gson.fromJson(responseString, LKTimelineData.class);
-        if(lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
+        if (lkTimelineData.getData() == null || lkTimelineData.getData().size() == 0)
             return new ArrayList<TimelineModel>();
         List<TimelineModel> timelineList = ModelConverter.toTimelineModel(lkTimelineData);
         Collections.reverse(timelineList);
         clearCookies();
         return timelineList;
-    }
-
-    public String forumPunch(LKAuthObject authObject) throws Exception {
-        checkSignInStatus(authObject, true);
-        applyAuthCookies(authObject);
-        String url = LKONG_INDEX_URL + "?mod=ajax&action=punch";
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        return getStringFromGzipResponse(response);
     }
 
     public NoticeCountModel checkNoticeCount(LKAuthObject authObject) throws Exception {
@@ -530,7 +389,7 @@ public class LKongRestService {
         EditPostResult editPostResult = new EditPostResult();
         editPostResult.setTid(jsonObject.getLong("tid"));
         editPostResult.setSuccess(jsonObject.getBoolean("success"));
-        if(jsonObject.has("errorMessage"))
+        if (jsonObject.has("errorMessage"))
             editPostResult.setErrorMessage(jsonObject.getString("errorMessage"));
         clearCookies();
 

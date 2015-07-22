@@ -2,7 +2,6 @@ package org.cryse.lkong.logic.request;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
@@ -16,7 +15,6 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.CookieUtils;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.GzipUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -59,7 +57,7 @@ public class SignInRequest extends AbstractHttpRequest<LKongAuthenticateResult> 
 
     @Override
     public LKongAuthenticateResult parseResponse(Response response) throws Exception {
-        String responseBody = GzipUtils.decompress(response.body().bytes());
+        String responseBody = gzipToString(response);
         JSONObject jsonObject = new JSONObject(responseBody);
         if(responseBody.contains("\"error\":")) {
             String errorMessage = jsonObject.getString("error");
@@ -86,7 +84,7 @@ public class SignInRequest extends AbstractHttpRequest<LKongAuthenticateResult> 
 
         Response response = getOkHttpClient().newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = GzipUtils.decompress(response.body().bytes());
+        String responseString = gzipToString(response);
         LKUserInfo lkUserInfo = gson.fromJson(responseString, LKUserInfo.class);
         return ModelConverter.toUserInfoModel(lkUserInfo);
     }

@@ -5,6 +5,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.logic.HttpDelegate;
+import org.cryse.lkong.utils.GzipUtils;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -54,5 +55,9 @@ public abstract class AbstractHttpRequest<ResponseType> {
 
     protected void onPostExecute() {
         clearCookies();
+    }
+
+    protected String gzipToString(Response response) throws Exception {
+        return GzipUtils.decompress(response.body().bytes());
     }
 }

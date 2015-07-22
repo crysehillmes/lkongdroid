@@ -8,6 +8,11 @@ import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.logic.request.ForumListRequest;
+import org.cryse.lkong.logic.request.GetThreadInfoRequest;
+import org.cryse.lkong.logic.request.GetThreadListRequest;
+import org.cryse.lkong.logic.request.GetThreadPostListRequest;
+import org.cryse.lkong.logic.request.GetUserInfoRequest;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.ForumModel;
@@ -59,7 +64,8 @@ public class LKongForumService {
     public Observable<UserInfoModel> getUserInfo(LKAuthObject authObject, long uid, boolean isSelf) {
         return Observable.create(subscriber -> {
             try {
-                UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject, uid);
+                GetUserInfoRequest request = new GetUserInfoRequest(authObject, uid);
+                UserInfoModel userInfoModel = request.execute();
                 subscriber.onNext(userInfoModel);
                 subscriber.onCompleted();
             } catch (Exception e) {
@@ -68,22 +74,6 @@ public class LKongForumService {
         });
     }
 
-    /*public Observable<UserAccountEntity> updateUserAccount(long uid, LKAuthObject authObject) {
-        return Observable.create(subscriber -> {
-            try {
-                UserInfoModel userInfoModel = mLKongRestService.getUserInfo(authObject);
-                UserAccountEntity userAccountEntity = mLKongDatabase.getUserAccount(uid);
-                userAccountEntity.setUserName(userInfoModel.getUserName());
-                userAccountEntity.setUserAvatar(userInfoModel.getUserIcon());
-                mLKongDatabase.updateUserAccount(userAccountEntity);
-                subscriber.onNext(userAccountEntity);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        });
-    }*/
-
     public Observable<List<ForumModel>> getForumList(boolean updateFromWeb) {
         return Observable.create(subscriber -> {
             try {
@@ -91,7 +81,8 @@ public class LKongForumService {
                     subscriber.onNext(mLKongDatabase.getCachedForumList());
                 }
                 if(updateFromWeb || !mLKongDatabase.isCachedForumList()) {
-                    List<ForumModel> forumModelList = mLKongRestService.getForumList();
+                    ForumListRequest request = new ForumListRequest();
+                    List<ForumModel> forumModelList = request.execute();
                     if (forumModelList != null)
                         mLKongDatabase.cacheForumList(forumModelList);
                     subscriber.onNext(forumModelList);
@@ -106,7 +97,8 @@ public class LKongForumService {
     public Observable<List<ThreadModel>> getForumThread(long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                List<ThreadModel> forumModelList = mLKongRestService.getForumThreadList(fid, start, listType);
+                GetThreadListRequest request = new GetThreadListRequest(fid, start, listType);
+                List<ThreadModel> forumModelList = request.execute();
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
@@ -118,7 +110,8 @@ public class LKongForumService {
     public Observable<ThreadInfoModel> getThreadInfo(LKAuthObject authObject, long tid) {
         return Observable.create(subscriber -> {
             try {
-                ThreadInfoModel threadModel = mLKongRestService.getThreadInfo(authObject, tid);
+                GetThreadInfoRequest request = new GetThreadInfoRequest(authObject, tid);
+                ThreadInfoModel threadModel = request.execute();
                 subscriber.onNext(threadModel);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -130,7 +123,8 @@ public class LKongForumService {
     public Observable<List<PostModel>> getPostList(LKAuthObject authObject, long tid, int page) {
         return Observable.create(subscriber -> {
            try {
-               List<PostModel> postList = mLKongRestService.getThreadPostList(authObject, tid, page);
+               GetThreadPostListRequest request = new GetThreadPostListRequest(authObject, tid, page);
+               List<PostModel> postList = request.execute();
                subscriber.onNext(postList);
                subscriber.onCompleted();
            } catch (Exception ex) {
