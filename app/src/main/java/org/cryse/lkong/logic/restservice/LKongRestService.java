@@ -17,8 +17,6 @@ import com.squareup.okhttp.Response;
 import org.apache.tika.Tika;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.TimelineListType;
-import org.cryse.lkong.logic.restservice.exception.IdentityExpiredException;
-import org.cryse.lkong.logic.restservice.exception.NeedIdentityException;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
@@ -47,33 +45,26 @@ import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
-import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.CookieUtils;
 import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
-import org.cryse.utils.MiniIOUtils;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.HttpCookie;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 
@@ -97,58 +88,6 @@ public class LKongRestService {
         this.okHttpClient.setCookieHandler(cookieManager);
 
         this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-    }
-
-    public SignInResult signIn(String email, String password) throws Exception {
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("action", "login")
-                .add("email", email)
-                .add("password", password)
-                .add("rememberme", "on")
-                .build();
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=login")
-                .post(formBody)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseBody = getStringFromGzipResponse(response);
-        SignInResult signInResult = new SignInResult();
-        JSONObject jsonObject = new JSONObject(responseBody);
-        if(responseBody.contains("\"error\":")) {
-            String errorMessage = jsonObject.getString("error");
-            signInResult.setSuccess(false);
-            signInResult.setErrorMessage(TextUtils.isEmpty(errorMessage) ? "" : errorMessage);
-            Timber.i("SIGNIN_FAILED" + errorMessage, LOG_TAG, responseBody);
-            return signInResult;
-        }
-        boolean success = jsonObject.getBoolean("success");
-        UserInfoModel me = getUserConfigInfo();
-
-        Timber.i("SIGNIN_SUCCESS", LOG_TAG, responseBody);
-        signInResult.setSuccess(success);
-        signInResult.setMe(me);
-        readCookies(signInResult);
-        clearCookies();
-
-        return signInResult;
-    }
-
-    private UserInfoModel getUserConfigInfo() throws Exception {
-        // when call this method, the cookie manager should at least contain auth and dzsbhey cookie
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(LKONG_INDEX_URL + "?mod=ajax&action=userconfig")
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        LKUserInfo lkUserInfo = gson.fromJson(responseString, LKUserInfo.class);
-        UserInfoModel userInfoModel = ModelConverter.toUserInfoModel(lkUserInfo);
-        return userInfoModel;
     }
 
     public UserInfoModel getUserInfo(LKAuthObject authObject, long uid) throws Exception {
@@ -700,8 +639,6 @@ public class LKongRestService {
         outStream.close();
     }
 
-
-
     private static String getStringFromGzipResponse(Response response) throws Exception {
         return GzipUtils.decompress(response.body().bytes());
     }
@@ -722,49 +659,6 @@ public class LKongRestService {
                 throw new NeedIdentityException();
             }
         }*/
-    }
-
-    private void readCookies(SignInResult signInResult) {
-        URI authURI = null, dzsbheyURI = null, identityURI = null;
-        HttpCookie authHttpCookie = null, dzsbheyHttpCookie = null, identityHttpCookie = null;
-
-        List<URI> uris = cookieManager.getCookieStore().getURIs();
-        for(URI uri : uris) {
-            List<HttpCookie> httpCookies = cookieManager.getCookieStore().get(uri);
-            for(HttpCookie cookie : httpCookies) {
-                if(cookie.getName().compareToIgnoreCase("auth") == 0) {
-                    // auth cookie pair
-                    if(cookie.hasExpired())
-                        continue;
-                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
-                    authURI = uri;
-                    authHttpCookie = cookie;
-                } else if (cookie.getName().compareToIgnoreCase("dzsbhey") == 0) {
-                    // dzsbhey cookie pair
-                    if(cookie.hasExpired())
-                        continue;
-                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
-                    dzsbheyURI = uri;
-                    dzsbheyHttpCookie = cookie;
-                } else if (cookie.getName().compareToIgnoreCase("identity") == 0) {
-                    // identity cookie pair
-                    if(cookie.hasExpired())
-                        continue;
-                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
-                    identityURI = uri;
-                    identityHttpCookie = cookie;
-                }
-            }
-        }
-        if(authURI != null && authHttpCookie != null &&
-                dzsbheyURI != null && dzsbheyHttpCookie != null &&
-                identityURI != null && identityHttpCookie != null) {
-            signInResult.setAuthCookie(CookieUtils.serializeHttpCookie(authURI, authHttpCookie));
-            signInResult.setDzsbheyCookie(CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie));
-            signInResult.setIdentityCookie(CookieUtils.serializeHttpCookie(identityURI, identityHttpCookie));
-        } else {
-            throw new NeedSignInException("Cookie expired.");
-        }
     }
 
     private void applyAuthCookies(LKAuthObject authObject) {

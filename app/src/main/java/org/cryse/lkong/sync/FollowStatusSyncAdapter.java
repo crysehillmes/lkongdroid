@@ -4,9 +4,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -15,8 +17,13 @@ import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
+import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
+import org.cryse.lkong.data.provider.followedthread.FollowedThreadContentValues;
+import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
+import org.cryse.lkong.data.provider.followeduser.FollowedUserContentValues;
 import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.jsoup.Jsoup;
@@ -87,20 +94,39 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncFollowedForumStatus(List<Long> fids, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    private void syncFollowedForumStatus(long currentUserId, List<Long> fids, ContentProviderClient provider) throws RemoteException {
         List<FollowedForumModel> followedForumModels = new ArrayList<>(fids.size());
-        for (long fid : fids) {
-            FollowedForumContentValues values = new FollowedForumContentValues();
-
+        ContentValues[] values = new ContentValues[fids.size()];
+        for (int i = 0; i < fids.size(); i++) {
+            long fid = fids.get(i);
+            FollowedForumContentValues forumValues = new FollowedForumContentValues();
+            values[i] = forumValues.values();
         }
+        provider.bulkInsert(FollowedForumColumns.CONTENT_URI, values);
     }
 
-    private void syncFollowedThreadStatus(List<Long> tids, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    private void syncFollowedThreadStatus(long currentUserId, List<Long> tids, ContentProviderClient provider) throws RemoteException {
+        List<FollowedForumModel> followedForumModels = new ArrayList<>(tids.size());
+        ContentValues[] values = new ContentValues[tids.size()];
+        for (int i = 0; i < tids.size(); i++) {
+            long fid = tids.get(i);
+            FollowedThreadContentValues threadContentValues = new FollowedThreadContentValues();
 
+            values[i] = threadContentValues.values();
+        }
+        provider.bulkInsert(FollowedThreadColumns.CONTENT_URI, values);
     }
 
-    private void syncFollowedUserStatus(List<Long> uids, String authority, ContentProviderClient provider, SyncResult syncResult) {
-
+    private void syncFollowedUserStatus(long currentUserId, List<Long> uids, ContentProviderClient provider) throws RemoteException {
+        ContentValues[] values = new ContentValues[uids.size()];
+        for (int i = 0; i < uids.size(); i++) {
+            long uid = uids.get(i);
+            FollowedUserContentValues contentValues = new FollowedUserContentValues();
+            contentValues.putUserId(currentUserId);
+            contentValues.putTargetUserId(uid);
+            values[i] = contentValues.values();
+        }
+        provider.bulkInsert(FollowedUserColumns.CONTENT_URI, values);
     }
 
 
