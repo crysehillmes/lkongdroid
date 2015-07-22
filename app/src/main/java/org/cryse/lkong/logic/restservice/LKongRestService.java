@@ -92,8 +92,7 @@ public class LKongRestService {
         this.okHttpClient = new OkHttpClient();
         this.okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
         this.okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
-        this.cookieManager = new CookieManager(
-        );
+        this.cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         this.okHttpClient.setCookieHandler(cookieManager);
 

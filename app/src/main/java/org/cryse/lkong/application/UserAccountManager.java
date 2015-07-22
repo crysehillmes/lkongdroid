@@ -98,23 +98,8 @@ public class UserAccountManager {
             mUserAccounts.clear();
             Account[] accounts = mAccountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
             for(Account account : accounts) {
-                String idString = mAccountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_ID);
-                long userId = Long.valueOf(TextUtils.isEmpty(idString) ? "0" : idString);
-                String userEmail = account.name;
-                String userName = mAccountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_NAME);
-                String userAuth = mAccountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AUTH);
-                String userDzsbhey = mAccountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_DZSBHEY);
-                String userAvatar = mAccountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AVATAR);
-                UserAccount userAccount = new UserAccount(
-                        account,
-                        userId,
-                        userName,
-                        userEmail,
-                        userAvatar,
-                        userAuth,
-                        userDzsbhey
-                );
-                mUserAccounts.put(userId, userAccount);
+                UserAccount userAccount = getUserAccountFromAccountManager(account, mAccountManager);
+                mUserAccounts.put(userAccount.getUserId(), userAccount);
                 // Log.d(LOG_TAG, String.format("USER[ \"name\": \"%s\", \"id\": \"%d\"]", userName, userId));
                 // Log.d(LOG_TAG, String.format("Auth: %s, Dzsbhey: %s", userAuth, userDZSBHEY));
             }
@@ -196,7 +181,7 @@ public class UserAccountManager {
         }
     }
 
-    private static LKAuthObject getAuthObject(UserAccount userAccount) {
+    public static LKAuthObject getAuthObject(UserAccount userAccount) {
         return new LKAuthObject(
                 userAccount.getUserId(),
                 userAccount.getAuthURI(),
@@ -213,5 +198,24 @@ public class UserAccountManager {
         } else {
             return  null;
         }
+    }
+
+    public static UserAccount getUserAccountFromAccountManager(Account account, AccountManager accountManager) {
+        String idString = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_ID);
+        long userId = Long.valueOf(TextUtils.isEmpty(idString) ? "0" : idString);
+        String userEmail = account.name;
+        String userName = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_NAME);
+        String userAvatar = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AVATAR);
+        String userAuth = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AUTH);
+        String userDzsbhey = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_DZSBHEY);
+        return new UserAccount(
+                account,
+                userId,
+                userName,
+                userEmail,
+                userAvatar,
+                userAuth,
+                userDzsbhey
+        );
     }
 }
