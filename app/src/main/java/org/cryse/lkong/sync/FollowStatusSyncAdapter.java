@@ -24,8 +24,12 @@ import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadContentValues;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserContentValues;
+import org.cryse.lkong.logic.request.GetForumInfoRequest;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -71,7 +75,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
             clearCookies();
             applyAuthCookies(authObject);
 
-            String url ="http://lkong.cn";
+            String url = "http://lkong.cn";
             Request request = new Request.Builder()
                     .addHeader("Accept-Encoding", "gzip")
                     .url(url)
@@ -86,7 +90,14 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                 Element element = elements.get(0);
                 String followedJson = element.html();
                 Log.d("SYNC_ADAPTER", followedJson);
-
+                JSONObject rootObject = new JSONObject(followedJson);
+                JSONArray forumsArray = rootObject.getJSONArray("fid");
+                int fidsCount = forumsArray.length();
+                List<Long> fids = new ArrayList<>(fidsCount);
+                for(int i = 0; i <= fidsCount - 1; i++) {
+                    fids.add(Long.valueOf(forumsArray.getString(i)));
+                }
+                syncFollowedForumStatus(authObject, fids, provider);
             }
             clearCookies();
         } catch (Exception exception) {
@@ -94,12 +105,18 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncFollowedForumStatus(long currentUserId, List<Long> fids, ContentProviderClient provider) throws RemoteException {
-        List<FollowedForumModel> followedForumModels = new ArrayList<>(fids.size());
+    private void syncFollowedForumStatus(LKAuthObject authObject, List<Long> fids, ContentProviderClient provider) throws Exception {
         ContentValues[] values = new ContentValues[fids.size()];
         for (int i = 0; i < fids.size(); i++) {
             long fid = fids.get(i);
+            GetForumInfoRequest request = new GetForumInfoRequest(authObject, fid);
+            ForumModel forumModel = request.execute();
             FollowedForumContentValues forumValues = new FollowedForumContentValues();
+            forumValues.putUserId(authObject.getUserId());
+            forumValues.putForumId(forumModel.getFid());
+            forumValues.putForumName(forumModel.getName());
+            forumValues.putForumIcon(forumModel.getIcon());
+            forumValues.putForumSortValue(i);
             values[i] = forumValues.values();
         }
         provider.bulkInsert(FollowedForumColumns.CONTENT_URI, values);
