@@ -1,6 +1,7 @@
 package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
+import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.ForumView;
 
@@ -49,9 +50,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 );
     }
 
-    public void unpinForum(long uid, long fid) {
+    public void unpinForum(LKAuthObject authObject, long fid) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.unpinForum(uid, fid)
+        mCheckPinnedSubscription = mLKongForumService.unpinForum(authObject, fid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -68,9 +69,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 );
     }
 
-    public void pinForum(long uid, long fid, String forumName, String forumIcon) {
+    public void pinForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.pinForum(uid, fid, forumName, forumIcon)
+        mCheckPinnedSubscription = mLKongForumService.pinForum(authObject, fid, forumName, forumIcon)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

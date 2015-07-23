@@ -425,11 +425,17 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     }
 
     private void pinForum() {
-        getPresenter().pinForum(mUserAccountManager.getCurrentUserId(), mForumId, mForumName, ModelConverter.fidToForumIconUrl(mForumId));
+        getPresenter().pinForum(
+                mUserAccountManager.getAuthObject(),
+                mForumId,
+                mForumName,
+                ModelConverter.fidToForumIconUrl(mForumId)
+        );
     }
 
     private void unpinForum() {
-        getPresenter().unpinForum(mUserAccountManager.getCurrentUserId(), mForumId);
+        getPresenter().unpinForum(
+                mUserAccountManager.getAuthObject(), mForumId);
     }
 
     private CompoundButton.OnCheckedChangeListener mOnPinForumCheckedChangeListener = (buttonView, isChecked) -> {

@@ -119,6 +119,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
             forumValues.putForumSortValue(i);
             values[i] = forumValues.values();
         }
+        provider.delete(FollowedForumColumns.CONTENT_URI, null, null);
         provider.bulkInsert(FollowedForumColumns.CONTENT_URI, values);
     }
 

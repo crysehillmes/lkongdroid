@@ -8,6 +8,7 @@ import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
 import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
@@ -15,6 +16,7 @@ import org.cryse.lkong.logic.request.GetThreadPostListRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
@@ -130,67 +132,6 @@ public class LKongForumService {
            } catch (Exception ex) {
                subscriber.onError(ex);
            }
-        });
-    }
-
-
-    public Observable<NewPostResult> newPostReply(LKAuthObject authObject, long tid, Long pid, String content) {
-        return Observable.create(subscriber -> {
-            try {
-                String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
-                ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
-                contentProcessor.setUploadImageCallback(path -> {
-                    String uploadUrl = "";
-                    try {
-                        Timber.d("setUploadImageCallback start", LOG_TAG);
-                        uploadUrl = mLKongRestService.uploadImageToLKong(authObject, path);
-                        Timber.d(String.format("uploadImageToLKong result %s", uploadUrl), LOG_TAG);
-                    } catch(Exception ex) {
-                        Timber.e(ex, "uploadImageToLKong failed", LOG_TAG);
-                    } finally {
-                        return uploadUrl;
-                    }
-                });
-                contentProcessor.run();
-                String replaceResult = contentProcessor.getResultContent();
-
-                Timber.d(replaceResult, LOG_TAG);
-                NewPostResult result = mLKongRestService.newPostReply(authObject, tid, pid, replaceResult);
-                subscriber.onNext(result);
-                subscriber.onCompleted();
-            } catch (Exception ex) {
-                subscriber.onError(ex);
-            }
-        });
-    }
-
-    public Observable<NewThreadResult> newPostThread(LKAuthObject authObject, String title, long fid, String content, boolean follow) {
-        return Observable.create(subscriber -> {
-            try {
-                String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
-                ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
-                contentProcessor.setUploadImageCallback(path -> {
-                    String uploadUrl = "";
-                    try {
-                        Timber.d("setUploadImageCallback start", LOG_TAG);
-                        uploadUrl = mLKongRestService.uploadImageToLKong(authObject, path);
-                        Timber.d(String.format("uploadImageToLKong result %s", uploadUrl), LOG_TAG);
-                    } catch(Exception ex) {
-                        Timber.e(ex, "uploadImageToLKong failed", LOG_TAG);
-                    } finally {
-                        return uploadUrl;
-                    }
-                });
-                contentProcessor.run();
-                String replaceResult = contentProcessor.getResultContent();
-
-                Timber.d(replaceResult, LOG_TAG);
-                NewThreadResult result = mLKongRestService.newPostThread(authObject, title, fid, replaceResult, follow);
-                subscriber.onNext(result);
-                subscriber.onCompleted();
-            } catch (Exception ex) {
-                subscriber.onError(ex);
-            }
         });
     }
 
@@ -359,17 +300,19 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> pinForum(long uid, long fid, String forumName, String forumIcon) {
+    public Observable<Boolean> pinForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
         return Observable.create(subscriber -> {
             try {
                 mLKongDatabase.followForum(new FollowedForum(
-                        uid,
+                        authObject.getUserId(),
                         fid,
                         forumName,
                         forumIcon,
                         new Date().getTime()
                 ));
-                subscriber.onNext(mLKongDatabase.isForumPinned(uid, fid));
+                FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_FOLLOW, FollowResult.TYPE_FORUM, fid);
+                FollowResult result = request.execute();
+                subscriber.onNext(result != null);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);
@@ -377,10 +320,12 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Void> unpinForum(long uid, long fid) {
+    public Observable<Void> unpinForum(LKAuthObject authObject, long fid) {
         return Observable.create(subscriber -> {
             try {
-                mLKongDatabase.removePinnedForum(uid, fid);
+                mLKongDatabase.removePinnedForum(authObject.getUserId(), fid);
+                FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_FORUM, fid);
+                FollowResult result = request.execute();
                 subscriber.onNext(null);
                 subscriber.onCompleted();
             } catch (Exception ex) {
