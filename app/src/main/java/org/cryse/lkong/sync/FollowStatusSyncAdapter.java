@@ -6,7 +6,9 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -16,10 +18,14 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.account.UserAccount;
+import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumCursor;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
+import org.cryse.lkong.data.provider.followedforum.FollowedForumSelection;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadContentValues;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
@@ -93,9 +99,9 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                 JSONObject rootObject = new JSONObject(followedJson);
                 JSONArray forumsArray = rootObject.getJSONArray("fid");
                 int fidsCount = forumsArray.length();
-                List<Long> fids = new ArrayList<>(fidsCount);
+                long[] fids = new long[fidsCount];
                 for(int i = 0; i <= fidsCount - 1; i++) {
-                    fids.add(Long.valueOf(forumsArray.getString(i)));
+                    fids[i] = Long.valueOf(forumsArray.getString(i));
                 }
                 syncFollowedForumStatus(authObject, fids, provider);
             }
@@ -105,22 +111,42 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncFollowedForumStatus(LKAuthObject authObject, List<Long> fids, ContentProviderClient provider) throws Exception {
-        ContentValues[] values = new ContentValues[fids.size()];
-        for (int i = 0; i < fids.size(); i++) {
-            long fid = fids.get(i);
-            GetForumInfoRequest request = new GetForumInfoRequest(authObject, fid);
-            ForumModel forumModel = request.execute();
+    private void syncFollowedForumStatus(LKAuthObject authObject, long[] fids, ContentProviderClient provider) throws Exception {
+        int fidCount = fids.length;
+        for (int i = 0; i < fidCount; i++) {
+            long fid = fids[i];
+            // 查找数据库表中是否已经有这一项，如果有的话则只调整 sortorder。
+            FollowedForumSelection selection = new FollowedForumSelection();
+            selection.userId(authObject.getUserId()).and().forumId(fid);
+            // 判断列表中是不是有这一项，如果有的话移除
+            Cursor cursor = provider.query(selection.uri(), null, selection.sel(), selection.args(), selection.order());
             FollowedForumContentValues forumValues = new FollowedForumContentValues();
-            forumValues.putUserId(authObject.getUserId());
-            forumValues.putForumId(forumModel.getFid());
-            forumValues.putForumName(forumModel.getName());
-            forumValues.putForumIcon(forumModel.getIcon());
-            forumValues.putForumSortValue(i);
-            values[i] = forumValues.values();
+            if(cursor.getCount() == 1) {
+                cursor.moveToFirst();
+                FollowedForumCursor forumCursor = new FollowedForumCursor(cursor);
+                forumValues.putUserId(authObject.getUserId());
+                forumValues.putForumId(forumCursor.getForumId());
+                forumValues.putForumName(forumCursor.getForumName());
+                forumValues.putForumIcon(forumCursor.getForumIcon());
+                forumValues.putForumSortValue(i);
+            } else {
+                // 数据库中没有相关的记录，完全从网络获取
+                GetForumInfoRequest request = new GetForumInfoRequest(authObject, fid);
+                ForumModel forumModel = request.execute();
+
+                forumValues.putUserId(authObject.getUserId());
+                forumValues.putForumId(forumModel.getFid());
+                forumValues.putForumName(forumModel.getName());
+                forumValues.putForumIcon(forumModel.getIcon());
+                forumValues.putForumSortValue(i);
+            }
+            cursor.close();
+            provider.insert(FollowedForumColumns.CONTENT_URI, forumValues.values());
         }
-        provider.delete(FollowedForumColumns.CONTENT_URI, null, null);
-        provider.bulkInsert(FollowedForumColumns.CONTENT_URI, values);
+        FollowedForumSelection deleteSelection = new FollowedForumSelection();
+        deleteSelection.forumIdNot(fids).and().userId(authObject.getUserId());
+        provider.delete(FollowedForumColumns.CONTENT_URI, deleteSelection.sel(), deleteSelection.args());
+        getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
     }
 
     private void syncFollowedThreadStatus(long currentUserId, List<Long> tids, ContentProviderClient provider) throws RemoteException {

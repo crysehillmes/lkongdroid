@@ -1,5 +1,9 @@
 package org.cryse.lkong.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -8,6 +12,7 @@ import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -58,6 +63,14 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     public void onResume() {
         super.onResume();
         loadData(null, 0, false);
+        getActivity().registerReceiver(mSyncFollowedForumsDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mSyncFollowedForumsDoneBroadcastReceiver);
+        super.onPause();
+
     }
 
     @Override
@@ -128,4 +141,11 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return null;
     }
+
+    private BroadcastReceiver mSyncFollowedForumsDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            loadData(null, 0, false);
+        }
+    };
 }
