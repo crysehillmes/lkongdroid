@@ -19,6 +19,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.DisplayMetrics;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -106,6 +107,8 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @InjectView(R.id.activity_profile_header_stats)
     View mHeaderStatsView;
 
+    MenuItem mFollowUserMenuItem;
+
     private UserDataFragmentPagerAdapter mViewPagerAdapter;
 
     private boolean mLockedAnimations = false;
@@ -116,6 +119,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
     private ArrayList<Object> mItemList;
+    private Boolean mIsUserFollowed = null;
 
     public static void startUserProfileFromLocation(Context startingContext, int[] startingLocation, long uid) {
         Intent intent = new Intent(startingContext, UserProfileActivity.class);
@@ -153,7 +157,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         super.onPostCreate(savedInstanceState);/*
         mProfileCollectionView.measure(0, 0);*/
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
-
+        checkFollowStatus();
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
         mPicasso.load(mUserAvatarUrl)
                 .placeholder(R.drawable.ic_placeholder_avatar)
@@ -237,13 +241,50 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_user_profile, menu);
+        mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(mFollowUserMenuItem != null) {
+            if(mIsUserFollowed != null) {
+                mFollowUserMenuItem.setVisible(true);
+                if(mIsUserFollowed) {
+                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_unfollow);
+                }
+                else {
+                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_follow);
+                }
+            } else {
+                mFollowUserMenuItem.setVisible(false);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 closeActivityWithTransition();
                 return true;
+            case R.id.action_user_profile_follow:
+                if(mIsUserFollowed)
+                    getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
+                else
+                    getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkFollowStatus();
     }
 
     @Override
@@ -324,8 +365,9 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     @Override
-    public void onLoadUserProfileError(Throwable throwable, Object... extraInfo) {
-
+    public void onCheckFollowStatusComplete(boolean isFollowed) {
+        mIsUserFollowed = isFollowed;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -433,6 +475,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         @Override
         public CharSequence getPageTitle(int position) {
             return mTabTitles.get(position);
+        }
+    }
+
+    private void checkFollowStatus() {
+        if(mUserAccountManager.getCurrentUserId() != mUid) {
+            getPresenter().isUserFollowed(mUserAccountManager.getCurrentUserId(), mUid);
         }
     }
 }

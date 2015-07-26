@@ -369,4 +369,48 @@ public class LKongForumService {
             }
         });
     }
+
+
+    public Observable<Boolean> followUser(LKAuthObject authObject, long targetUserId) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.followUser(
+                        authObject.getUserId(),
+                        targetUserId
+                );
+                FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_FOLLOW, FollowResult.TYPE_USER, targetUserId);
+                FollowResult result = request.execute();
+                subscriber.onNext(result != null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> unfollowUser(LKAuthObject authObject, long targetUserId) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.unfollowUser(authObject.getUserId(), targetUserId);
+                FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_USER, targetUserId);
+                FollowResult result = request.execute();
+                subscriber.onNext(false);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> isUserFollowed(long uid, long targetUserId) {
+        return Observable.create(subscriber -> {
+            try {
+                boolean isFollowed = mLKongDatabase.isUserFollowed(uid, targetUserId);
+                subscriber.onNext(isFollowed);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
 }

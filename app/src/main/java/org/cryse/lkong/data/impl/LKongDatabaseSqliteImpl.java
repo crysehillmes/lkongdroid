@@ -2,6 +2,7 @@ package org.cryse.lkong.data.impl;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -18,6 +19,8 @@ import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumCursor;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumSelection;
+import org.cryse.lkong.data.provider.followeduser.FollowedUserContentValues;
+import org.cryse.lkong.data.provider.followeduser.FollowedUserSelection;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -182,6 +185,42 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void followUser(long uid, long targetUid) {
+        FollowedUserContentValues contentValues = new FollowedUserContentValues();
+        contentValues.putUserId(uid).putTargetUserId(targetUid);
+        contentValues.insert(mContentResolver);
+    }
+
+    @Override
+    public void unfollowUser(long uid, long targetUid) {
+        FollowedUserSelection selection = new FollowedUserSelection();
+        selection.userId(uid).and().targetUserId(targetUid);
+        selection.delete(mContentResolver);
+    }
+
+    @Override
+    public boolean isUserFollowed(long uid, long targetUid) {
+        FollowedUserSelection selection = new FollowedUserSelection();
+        selection.userId(uid).and().targetUserId(targetUid);
+        Cursor cursor = selection.query(mContentResolver);
+        boolean returnValue;
+        if(cursor.getCount() > 0) {
+            returnValue = true;
+        } else {
+            returnValue = false;
+        }
+        cursor.close();
+        return returnValue;
+    }
+
+    @Override
+    public void removeAllFollowedUser(long uid) {
+        FollowedUserSelection selection = new FollowedUserSelection();
+        selection.userId(uid);
+        selection.delete(mContentResolver);
     }
 
     private String generatePunchResultKey(long uid) {
