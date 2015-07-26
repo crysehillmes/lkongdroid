@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.PinnedForumsPresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -117,6 +119,9 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
             getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
         }
     }
 
