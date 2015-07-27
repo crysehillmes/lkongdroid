@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -98,8 +99,19 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
-            mTabLayout.setupWithViewPager(mViewPager);
+            //mTabLayout.setupWithViewPager(mViewPager);
             mTabLayout.setBackgroundColor(getPrimaryColor());
+        }
+        if (ViewCompat.isLaidOut(mTabLayout)) {
+            mTabLayout.setupWithViewPager(mViewPager);
+        } else {
+            mTabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mTabLayout.setupWithViewPager(mViewPager);
+                    mTabLayout.removeOnLayoutChangeListener(this);
+                }
+            });
         }
         return contentView;
     }
