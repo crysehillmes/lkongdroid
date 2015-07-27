@@ -1,6 +1,8 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -114,6 +117,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onResume();
         checkNewNoticeCount();
         mPresenter.punch(mUserAccountManager.getAuthObject());
+        Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+        // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
+        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
     }
 
     @Override

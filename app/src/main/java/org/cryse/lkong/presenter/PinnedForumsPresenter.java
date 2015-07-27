@@ -1,6 +1,6 @@
 package org.cryse.lkong.presenter;
 
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -12,7 +12,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PinnedForumsPresenter extends SimpleCollectionPresenter<PinnedForumEntity, SimpleCollectionView<PinnedForumEntity>> {
+public class PinnedForumsPresenter extends SimpleCollectionPresenter<FollowedForum, SimpleCollectionView<FollowedForum>> {
     private static final String LOG_TAG = PinnedForumsPresenter.class.getName();
 
     @Inject

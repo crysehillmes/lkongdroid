@@ -1,5 +1,10 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -8,11 +13,13 @@ import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.data.model.PinnedForumEntity;
+import org.cryse.lkong.broadcast.BroadcastConstants;
+import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.PinnedForumsPresenter;
-import org.cryse.lkong.ui.adapter.PinnedForumsAdapter;
+import org.cryse.lkong.sync.SyncUtils;
+import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
@@ -24,8 +31,8 @@ import javax.inject.Inject;
 
 
 public class PinnedForumsFragment extends SimpleCollectionFragment<
-        PinnedForumEntity,
-        PinnedForumsAdapter,
+        FollowedForum,
+        FollowedForumsAdapter,
         PinnedForumsPresenter> {
     private static final String LOG_TAG = PinnedForumsFragment.class.getName();
 
@@ -58,6 +65,14 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     public void onResume() {
         super.onResume();
         loadData(null, 0, false);
+        getActivity().registerReceiver(mSyncFollowedForumsDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mSyncFollowedForumsDoneBroadcastReceiver);
+        super.onPause();
+
     }
 
     @Override
@@ -81,8 +96,8 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected PinnedForumsAdapter createAdapter(List<PinnedForumEntity> itemList) {
-        return new PinnedForumsAdapter(getActivity(), getPicasso(), mItemList);
+    protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
+        return new FollowedForumsAdapter(getActivity(), getPicasso(), mItemList);
     }
 
     @Override
@@ -94,7 +109,7 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            PinnedForumEntity item = mCollectionAdapter.getItem(position);
+            FollowedForum item = mCollectionAdapter.getItem(position);
             mNavigation.openActivityForForumByForumId(getActivity(), item.getForumId(), item.getForumName(), "");
         }
     }
@@ -104,6 +119,9 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
             getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
         }
     }
 
@@ -128,4 +146,11 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return null;
     }
+
+    private BroadcastReceiver mSyncFollowedForumsDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            loadData(null, 0, false);
+        }
+    };
 }
