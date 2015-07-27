@@ -100,5 +100,6 @@
         android:text="@string/button_sign_up"
         android:background="?selectableItemBackgroundBorderless"
         android:textSize="@dimen/text_size_title"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF"
+        android:visibility="invisible"/>
 </android.support.design.widget.CoordinatorLayout>
