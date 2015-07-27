@@ -19,10 +19,10 @@ public interface LKongDatabase {
     boolean isCachedForumList() throws Exception;
 
     void followForum(FollowedForumModel model) throws Exception;
-    void removePinnedForum(long uid, long fid) throws Exception;
-    void removePinnedForums(long uid) throws Exception;
-    boolean isForumPinned(long uid, long fid) throws Exception;
-    List<FollowedForum> loadAllForUser(long uid) throws Exception;
+    void unfollowForum(long uid, long fid) throws Exception;
+    void unfollowForums(long uid) throws Exception;
+    boolean isForumFollowed(long uid, long fid) throws Exception;
+    List<FollowedForum> loadAllFollowedForumsForUser(long uid) throws Exception;
 
     void cachePunchResult(PunchResult punchResult);
     void removePunchResult(long uid);

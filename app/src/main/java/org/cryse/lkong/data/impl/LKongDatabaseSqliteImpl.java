@@ -3,7 +3,6 @@ package org.cryse.lkong.data.impl;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -103,19 +102,19 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     @Override
-    public void removePinnedForum(long uid, long fid) throws Exception {
+    public void unfollowForum(long uid, long fid) throws Exception {
         FollowedForumSelection followedForumSelection = new FollowedForumSelection();
         followedForumSelection.userId(uid).and().forumId(fid).delete(mContentResolver);
     }
 
     @Override
-    public void removePinnedForums(long uid) throws Exception {
+    public void unfollowForums(long uid) throws Exception {
         FollowedForumSelection followedForumSelection = new FollowedForumSelection();
         followedForumSelection.userId(uid).delete(mContentResolver);
     }
 
     @Override
-    public boolean isForumPinned(long uid, long fid) throws Exception {
+    public boolean isForumFollowed(long uid, long fid) throws Exception {
         FollowedForumSelection forumSelection = new FollowedForumSelection();
         FollowedForumCursor cursor = forumSelection.userId(uid).and().forumId(fid).query(mContentResolver);
         boolean exist = cursor.getCount() > 0;
@@ -124,7 +123,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     @Override
-    public List<FollowedForum> loadAllForUser(long uid) throws Exception {
+    public List<FollowedForum> loadAllFollowedForumsForUser(long uid) throws Exception {
         FollowedForumSelection forumSelection = new FollowedForumSelection();
         forumSelection.userId(uid);
         FollowedForumCursor cursor = forumSelection.query(mContentResolver);

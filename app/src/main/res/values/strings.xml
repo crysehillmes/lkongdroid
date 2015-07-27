@@ -21,10 +21,10 @@
     <string name="action_open_notification">Notifications</string>
     <string name="action_open_search">Search</string>
     <string name="action_punch">Punch</string>
-    <string name="action_pin_to_home">Pin to home</string>
-    <string name="action_unpin_from_home">Unpin from home</string>
-    <string name="action_pinned_forum">Pinned</string>
-    <string name="action_not_pinned_forum">Unpinned</string>
+    <string name="action_follow_forum">Follow</string>
+    <string name="action_unfollow_forum">Unfollow</string>
+    <string name="action_forum_followed">Followed</string>
+    <string name="action_forum_not_followed">Not followed</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
     <string name="action_sign_out">Sign Out</string>
@@ -35,7 +35,7 @@
     <string name="drawer_item_forum_list">Forums</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_timeline">Timeline</string>
-    <string name="drawer_item_pinned_forums">Pinned Forums</string>
+    <string name="drawer_item_followed_forums">Followed Forums</string>
     <string name="drawer_item_homepage">Home Page</string>
     <string name="drawer_item_mentions">Mentions</string>
     <string name="drawer_item_notice">Notice</string>

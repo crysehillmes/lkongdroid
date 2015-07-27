@@ -2,7 +2,6 @@ package org.cryse.lkong.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -154,7 +153,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
         adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
-        adapter.addFragment(PinnedForumsFragment.newInstance(null), getString(R.string.drawer_item_pinned_forums));
+        adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
         viewPager.setAdapter(adapter);
     }
 

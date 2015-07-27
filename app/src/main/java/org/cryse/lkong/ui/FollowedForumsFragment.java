@@ -17,7 +17,7 @@ import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
-import org.cryse.lkong.presenter.PinnedForumsPresenter;
+import org.cryse.lkong.presenter.FollowedForumsPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -30,20 +30,20 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class PinnedForumsFragment extends SimpleCollectionFragment<
+public class FollowedForumsFragment extends SimpleCollectionFragment<
         FollowedForum,
         FollowedForumsAdapter,
-        PinnedForumsPresenter> {
-    private static final String LOG_TAG = PinnedForumsFragment.class.getName();
+        FollowedForumsPresenter> {
+    private static final String LOG_TAG = FollowedForumsFragment.class.getName();
 
     @Inject
-    PinnedForumsPresenter mPresenter;
+    FollowedForumsPresenter mPresenter;
 
     @Inject
     AndroidNavigation mNavigation;
 
-    public static PinnedForumsFragment newInstance(Bundle args) {
-        PinnedForumsFragment fragment = new PinnedForumsFragment();
+    public static FollowedForumsFragment newInstance(Bundle args) {
+        FollowedForumsFragment fragment = new FollowedForumsFragment();
         if(args != null)
             fragment.setArguments(args);
         return fragment;
@@ -91,7 +91,7 @@ public class PinnedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected PinnedForumsPresenter getPresenter() {
+    protected FollowedForumsPresenter getPresenter() {
         return mPresenter;
     }
 

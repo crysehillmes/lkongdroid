@@ -52,7 +52,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
 
     public void unpinForum(LKAuthObject authObject, long fid) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.unpinForum(authObject, fid)
+        mCheckPinnedSubscription = mLKongForumService.unfollowForum(authObject, fid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -71,7 +71,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
 
     public void pinForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.pinForum(authObject, fid, forumName, forumIcon)
+        mCheckPinnedSubscription = mLKongForumService.followForum(authObject, fid, forumName, forumIcon)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -90,7 +90,7 @@ public class ForumPresenter implements BasePresenter<ForumView> {
 
     public void isForumPinned(long uid, long fid) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.isForumPinned(uid, fid)
+        mCheckPinnedSubscription = mLKongForumService.isForumFollowed(uid, fid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

@@ -300,7 +300,7 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> pinForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
+    public Observable<Boolean> followForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
         return Observable.create(subscriber -> {
             try {
                 mLKongDatabase.followForum(new FollowedForum(
@@ -320,10 +320,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Void> unpinForum(LKAuthObject authObject, long fid) {
+    public Observable<Void> unfollowForum(LKAuthObject authObject, long fid) {
         return Observable.create(subscriber -> {
             try {
-                mLKongDatabase.removePinnedForum(authObject.getUserId(), fid);
+                mLKongDatabase.unfollowForum(authObject.getUserId(), fid);
                 FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_FORUM, fid);
                 FollowResult result = request.execute();
                 subscriber.onNext(null);
@@ -334,10 +334,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> isForumPinned(long uid, long fid) {
+    public Observable<Boolean> isForumFollowed(long uid, long fid) {
         return Observable.create(subscriber -> {
             try {
-                boolean isForumPinned = mLKongDatabase.isForumPinned(uid, fid);
+                boolean isForumPinned = mLKongDatabase.isForumFollowed(uid, fid);
                 subscriber.onNext(isForumPinned);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -346,10 +346,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<FollowedForum>> loadUserPinnedForums(long uid) {
+    public Observable<List<FollowedForum>> loadUserFollowedForums(long uid) {
         return Observable.create(subscriber -> {
             try {
-                List<FollowedForum> result = mLKongDatabase.loadAllForUser(uid);
+                List<FollowedForum> result = mLKongDatabase.loadAllFollowedForumsForUser(uid);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
