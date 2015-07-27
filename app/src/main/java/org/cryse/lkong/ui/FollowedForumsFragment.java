@@ -118,7 +118,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
-            getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+            getPresenter().loadPinnedForums(mUserAccountManager.getAuthObject().getUserId());
             Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
             if(account != null)
                 SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);

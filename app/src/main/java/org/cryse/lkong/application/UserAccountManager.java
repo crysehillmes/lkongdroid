@@ -157,7 +157,7 @@ public class UserAccountManager {
     }
 
     public long getCurrentUserId() {
-        return this.mDefaultAccountUid.get();
+        return this.getAuthObject().getUserId();
     }
 
     public void setCurrentUserAccount(long userId) {
