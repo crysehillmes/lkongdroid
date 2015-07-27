@@ -34,9 +34,9 @@ public class LKongSQLiteOpenHelperCallbacks {
         if (BuildConfig.DEBUG) Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
         // Insert your upgrading code here.
         if(oldVersion < 4) {
-            db.execSQL("DROP TABLE IF EXISTS " + "PINNED_FORUM_MODEL");
-            db.execSQL("DROP TABLE IF EXISTS " + "CACHE_OBJECT");
-            db.execSQL("DROP TABLE IF EXISTS " + "USER_ACCOUNT_MODEL");
+            db.execSQL("DROP TABLE IF EXISTS " + "PINNED_FORUM_MODEL;");
+            db.execSQL("DROP TABLE IF EXISTS " + "CACHE_OBJECT;");
+            db.execSQL("DROP TABLE IF EXISTS " + "USER_ACCOUNT_MODEL;");
             db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_TABLE_CACHE_OBJECT);
             db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_INDEX_CACHE_OBJECT_CACHE_KEY);
             db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_TABLE_FOLLOWED_FORUM);
