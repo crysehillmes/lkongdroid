@@ -101,6 +101,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     Toolbar mToolbar;
     @InjectView(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
+    @InjectView(R.id.activity_new_thread_view_div)
+    View mDivideView;
     @InjectView(R.id.activity_new_thread_edittext_content)
     EditText mContentEditText;
 
@@ -141,6 +143,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
+        mDivideView.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
 
         readDataFromIntent(getIntent());
         setTitle(getTitleString());

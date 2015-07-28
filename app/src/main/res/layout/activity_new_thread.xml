@@ -16,42 +16,34 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/activity_new_thread_textlayout_title"
+        <EditText
+            android:id="@+id/activity_new_thread_edittext_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:background="@android:color/transparent"
+            android:gravity="top|start"
+            android:hint="@string/hint_title"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            android:textSize="@dimen/text_size_edit" />
 
-            <EditText
-                android:id="@+id/activity_new_thread_edittext_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:gravity="top|start"
-                android:hint="@string/hint_title"
-                android:inputType="textMultiLine"
-                android:scrollbars="vertical"
-                android:textSize="@dimen/text_size_edit" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/activity_new_thread_textlayout_content"
+        <View
+            android:id="@+id/activity_new_thread_view_div"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
-
-            <EditText
-                android:id="@+id/activity_new_thread_edittext_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:gravity="top|start"
-                android:hint="@string/hint_content"
-                android:inputType="textMultiLine|textNoSuggestions"
-                android:scrollbars="vertical"
-                android:textSize="@dimen/text_size_edit" />
-        </android.support.design.widget.TextInputLayout>
+            android:layout_height="1dp"
+            android:background="?theme_text_color_secondary"/>
+        <EditText
+            android:id="@+id/activity_new_thread_edittext_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:gravity="top|start"
+            android:hint="@string/hint_content"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            android:textSize="@dimen/text_size_edit" />
     </LinearLayout>
 
     <LinearLayout
