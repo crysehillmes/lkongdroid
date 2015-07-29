@@ -145,7 +145,7 @@ public class UserExtraDetailFragment extends AbstractFragment {
 
         // Display Registration Time
         mRegistrationTimeCardView.setVisibility(View.VISIBLE);
-        String regTime = getString(R.string.format_registration_time, TimeFormatUtils.formatDate(getActivity(), mUserInfo.getLastPunchTime(), true));
+        String regTime = getString(R.string.format_registration_time, TimeFormatUtils.formatDate(getActivity(), mUserInfo.getRegDate(), true));
         mRegistrationTextView.setText(regTime);
     }
 }
