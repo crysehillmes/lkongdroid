@@ -15,16 +15,16 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_navigation">
         <CheckBoxPreference
-            android:key="prefs_use_in_app_browser"
-            android:title="@string/settings_item_use_in_app_browser_title"
-            android:summary="@string/settings_item_use_in_app_browser_summary"
-            android:defaultValue="true"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-        <CheckBoxPreference
             android:key="prefs_use_forums_first"
             android:title="@string/settings_item_use_forums_first_title"
             android:summary="@string/settings_item_use_forums_first_summary"
             android:defaultValue="false"
+            android:widgetLayout="@layout/layout_switch_preference_compat"/>
+        <CheckBoxPreference
+            android:key="prefs_use_in_app_browser"
+            android:title="@string/settings_item_use_in_app_browser_title"
+            android:summary="@string/settings_item_use_in_app_browser_summary"
+            android:defaultValue="true"
             android:widgetLayout="@layout/layout_switch_preference_compat"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
