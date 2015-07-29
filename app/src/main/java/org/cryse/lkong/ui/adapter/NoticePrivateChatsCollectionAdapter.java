@@ -74,11 +74,11 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     public static class ViewHolder extends RecyclerViewHolder {
         @InjectView(R.id.recyclerview_item_private_chat_imageview_icon)
         public ImageView mAvatarImageView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_title)
+        @InjectView(R.id.recyclerview_item_private_chat_textview_message)
         public TextView mChatMessageTextView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_secondary)
+        @InjectView(R.id.recyclerview_item_private_chat_textview_username)
         public TextView mUserNameTextView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_notice2)
+        @InjectView(R.id.recyclerview_item_private_chat_textview_dateline)
         public TextView mDatelineTextView;
 
         public ViewHolder(View v) {

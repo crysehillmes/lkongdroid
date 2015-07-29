@@ -19,36 +19,36 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp">
-        <TextView
-            android:id="@+id/recyclerview_item_private_chat_textview_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="placeholder"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:textColor="?theme_text_color_primary"
-            android:textSize="@dimen/text_size_subhead"/>
+
 
         <TextView
-            android:id="@+id/recyclerview_item_private_chat_textview_secondary"
+            android:id="@+id/recyclerview_item_private_chat_textview_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/recyclerview_item_private_chat_textview_title"
-            android:layout_toLeftOf="@+id/recyclerview_item_private_chat_textview_notice2"
+            android:layout_toLeftOf="@+id/recyclerview_item_private_chat_textview_dateline"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="placeholder"
-            android:textColor="?theme_text_color_secondary"
-            android:textSize="@dimen/text_size_body1" />
+            android:textColor="?theme_text_color_primary"
+            android:textSize="@dimen/text_size_subhead" />
         <TextView
-            android:id="@+id/recyclerview_item_private_chat_textview_notice2"
+            android:id="@+id/recyclerview_item_private_chat_textview_dateline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_alignBaseline="@+id/recyclerview_item_private_chat_textview_secondary"
             android:text="placeholder"
             android:gravity="end"
             android:textColor="?theme_text_color_secondary"
             android:textSize="@dimen/text_size_caption"/>
+        <TextView
+            android:id="@+id/recyclerview_item_private_chat_textview_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_private_chat_textview_username"
+            android:text="placeholder"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="?theme_text_color_secondary"
+            android:textSize="@dimen/text_size_body1"/>
         </RelativeLayout>
 </RelativeLayout>
