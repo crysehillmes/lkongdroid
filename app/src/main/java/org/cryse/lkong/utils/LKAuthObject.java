@@ -5,6 +5,7 @@ import java.net.URI;
 
 public class LKAuthObject {
     long mUserId;
+    String mUserName;
     URI mAuthURI;
     URI mDzsbheyURI;
     URI mIdentityURI;
@@ -24,6 +25,7 @@ public class LKAuthObject {
 
     public LKAuthObject(
             long userId,
+            String userName,
             URI authURI,
             HttpCookie authCookie,
             URI dzsbheyURI,
@@ -31,6 +33,7 @@ public class LKAuthObject {
 
     ) {
         mUserId = userId;
+        mUserName = userName;
         mAuthURI = authURI;
         mAuthHttpCookie = authCookie;
         mDzsbheyURI = dzsbheyURI;
@@ -43,6 +46,14 @@ public class LKAuthObject {
 
     public void setUserId(long userId) {
         this.mUserId = userId;
+    }
+
+    public String getUserName() {
+        return mUserName;
+    }
+
+    public void setUserName(String mUserName) {
+        this.mUserName = mUserName;
     }
 
     public URI getAuthURI() {
