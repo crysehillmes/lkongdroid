@@ -13,4 +13,5 @@ public class LKongWebConstants {
     public static final String THREAD_POST_LIST_URL = LKONG_INDEX_URL + "?mod=data&sars=thread/%d/%s";
 
     public static final String FOLLOW_URL = LKONG_DOMAIN_URL + "/forum/index.php?mod=follow";
+    public static final String PRIVATE_CHAT_LIST_URL = LKONG_INDEX_URL + "?mod=data&sars=my/pm";
 }

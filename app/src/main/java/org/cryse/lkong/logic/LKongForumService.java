@@ -10,6 +10,7 @@ import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
+import org.cryse.lkong.logic.request.GetPrivateChatListRequest;
 import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
@@ -24,6 +25,7 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
@@ -188,6 +190,19 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 List<NoticeRateModel> result = mLKongRestService.getNoticeRateLog(authObject, start);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<PrivateChatModel>> getNoticePrivateChats(LKAuthObject authObject, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                GetPrivateChatListRequest request = new GetPrivateChatListRequest(authObject, start);
+                List<PrivateChatModel> result = request.execute();
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
