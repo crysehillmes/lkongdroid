@@ -5,8 +5,8 @@ import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.LKongWebConstants;
+import org.cryse.lkong.model.PrivateChatConfigModel;
 import org.cryse.lkong.model.PrivateChatModel;
-import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.json.JSONArray;
@@ -54,7 +54,8 @@ public class GetPrivateChatListRequest extends AbstractAuthedHttpRequest<List<Pr
         for(int i = 0; i < dataSetLength; i++ ) {
             PrivateChatModel model = new PrivateChatModel();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            model.setMyUserId(getAuthObject().getUserId());
+            model.setUserId(getAuthObject().getUserId());
+            model.setUserName(getAuthObject().getUserName());
             if(jsonObject.has("uid"))
                 model.setTargetUserId(jsonObject.getLong("uid"));
             if(jsonObject.has("username"))
@@ -73,9 +74,9 @@ public class GetPrivateChatListRequest extends AbstractAuthedHttpRequest<List<Pr
 
             if(getAuthObject().getUserName().equals(model.getUserName())) {
                 // 错误的目标用户名，需要手动读取
-                GetUserInfoRequest request = new GetUserInfoRequest(getAuthObject(), model.getTargetUserId());
-                UserInfoModel userInfo = request.execute();
-                model.setUserName(userInfo.getUserName());
+                GetPrivateMessageConfigRequest request = new GetPrivateMessageConfigRequest(getAuthObject(), model.getTargetUserId());
+                PrivateChatConfigModel configModel = request.execute();
+                model.setTargetUserName(configModel.getTargetUserName());
             }
 
             results.add(model);

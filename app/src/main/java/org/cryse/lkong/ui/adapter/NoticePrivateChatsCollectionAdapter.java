@@ -57,7 +57,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
                 PrivateChatModel model = (PrivateChatModel)item;
 
                 viewHolder.mChatMessageTextView.setText(model.getMessage());
-                viewHolder.mUserNameTextView.setText(model.getUserName());
+                viewHolder.mUserNameTextView.setText(model.getTargetUserName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(model.getDateline(), mTodayPrefix));
                 mPicasso
                         .load(model.getTargetUserAvatar())

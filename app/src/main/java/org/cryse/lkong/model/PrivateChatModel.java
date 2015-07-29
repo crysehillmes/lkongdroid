@@ -6,22 +6,31 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class PrivateChatModel implements Serializable, SimpleCollectionItem {
-    long myUserId;
+    long userId;
+    String userName;
     long targetUserId;
+    String targetUserName;
     long typeId;
     long sortKey;
     Date dateline;
-    String userName;
     String message;
     String id;
     String targetUserAvatar;
 
-    public long getMyUserId() {
-        return myUserId;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setMyUserId(long myUserId) {
-        this.myUserId = myUserId;
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public long getTargetUserId() {
@@ -30,6 +39,14 @@ public class PrivateChatModel implements Serializable, SimpleCollectionItem {
 
     public void setTargetUserId(long targetUserId) {
         this.targetUserId = targetUserId;
+    }
+
+    public String getTargetUserName() {
+        return targetUserName;
+    }
+
+    public void setTargetUserName(String targetUserName) {
+        this.targetUserName = targetUserName;
     }
 
     public long getTypeId() {
@@ -55,14 +72,6 @@ public class PrivateChatModel implements Serializable, SimpleCollectionItem {
 
     public void setDateline(Date dateline) {
         this.dateline = dateline;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getMessage() {
@@ -99,25 +108,27 @@ public class PrivateChatModel implements Serializable, SimpleCollectionItem {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.myUserId);
+        dest.writeLong(this.userId);
+        dest.writeString(this.userName);
         dest.writeLong(this.targetUserId);
+        dest.writeString(this.targetUserName);
         dest.writeLong(this.typeId);
         dest.writeLong(this.sortKey);
         dest.writeLong(dateline != null ? dateline.getTime() : -1);
-        dest.writeString(this.userName);
         dest.writeString(this.message);
         dest.writeString(this.id);
         dest.writeString(this.targetUserAvatar);
     }
 
     protected PrivateChatModel(Parcel in) {
-        this.myUserId = in.readLong();
+        this.userId = in.readLong();
+        this.userName = in.readString();
         this.targetUserId = in.readLong();
+        this.targetUserName = in.readString();
         this.typeId = in.readLong();
         this.sortKey = in.readLong();
         long tmpDateline = in.readLong();
         this.dateline = tmpDateline == -1 ? null : new Date(tmpDateline);
-        this.userName = in.readString();
         this.message = in.readString();
         this.id = in.readString();
         this.targetUserAvatar = in.readString();
