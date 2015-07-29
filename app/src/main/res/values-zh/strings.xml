@@ -181,6 +181,7 @@
     <string name="profile_header_threads">主题</string>
 
     <string-array name="string_array_user_profile_tabs">
+        <item>简介</item>
         <item>全部</item>
         <item>主题</item>
         <item>精华</item>
@@ -200,4 +201,19 @@
     <string name="title_null_or_empty">标题不能为空</string>
     <string name="text_new_version_changes">新版改动</string>
     <string name="action_refresh">刷新</string>
+    <string name="text_dragon_money">龙币</string>
+    <string name="text_dragon_crystal">龙晶</string>
+    <string name="text_active_points">活跃</string>
+    <string name="format_active_points">活跃：%1$d</string>
+    <string name="format_dragon_money">龙币：%1$d</string>
+    <string name="format_dragon_crystal">龙晶：%1$d</string>
+    <string name="format_current_continuous_punch_days">连续签到: %1$d 天</string>
+    <string name="format_total_punch_days">总签到天数: %1$d 天</string>
+    <string name="format_longest_continuous_punch_days">最长连续签到: %1$d 天</string>
+    <string name="format_last_punch_time">最后签到: %1$s </string>
+    <string name="format_registration_time">注册时间: %1$s</string>
+    <string name="text_user_introduction_title">个人简介</string>
+    <string name="text_user_wealth_title">财富</string>
+    <string name="text_user_punch_info_title">签到情况</string>
+    <string name="text_user_registration_time_title">注册时间</string>
 </resources>

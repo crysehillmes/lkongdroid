@@ -76,6 +76,16 @@
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
+    <string name="format_active_points">Active Points: %1$d</string>
+    <string name="format_dragon_money">Dragon Money: %1$d</string>
+    <string name="format_dragon_crystal">Dragon Crystal: %1$d</string>
+    <string name="format_current_continuous_punch_days">Current Continuous Punch Days: %1$d</string>
+    <string name="format_total_punch_days">Total Punch Days: %1$d</string>
+    <string name="format_longest_continuous_punch_days">Longest Continuous Punch Days: %1$d</string>
+    <string name="format_last_punch_time">Last Punch Time: %1$s</string>
+    <string name="format_registration_time">Registration Time: %1$s</string>
+
+
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
@@ -205,8 +215,13 @@
     <string name="text_load_next_page">Load next page</string>
     <string name="text_new_version_changes">New Version Changes</string>
 
-    <string name="text_extcredits_lb">龙币</string>
-    <string name="text_extcredits_lj">龙晶</string>
+    <string name="text_dragon_money">Dragon Money</string>
+    <string name="text_dragon_crystal">Dragon Crystal</string>
+    <string name="text_active_points">Active Points</string>
+    <string name="text_user_introduction_title">Introduction</string>
+    <string name="text_user_wealth_title">Wealth</string>
+    <string name="text_user_punch_info_title">Punch</string>
+    <string name="text_user_registration_time_title">Registration</string>
 
     <string-array name="readview_font_size_entries">
         <item>10</item>
@@ -226,6 +241,7 @@
     <string name="profile_header_posts">Posts</string>
     <string name="profile_header_count_zero">0</string>
     <string-array name="string_array_user_profile_tabs">
+        <item>About</item>
         <item>All</item>
         <item>Threads</item>
         <item>Digests</item>

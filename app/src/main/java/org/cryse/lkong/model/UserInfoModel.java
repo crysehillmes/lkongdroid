@@ -21,7 +21,13 @@ public class UserInfoModel implements Serializable {
     private int threads;
     private String sigHtml;
     private String smartMessage;
-    private PunchResult punchResult;
+    private int activePoints;
+    private int dragonMoney;
+    private int dragonCrystal;
+    private int totalPunchCount;
+    private int longestContinuousPunch;
+    private int currentContinuousPunch;
+    private Date lastPunchTime;
 
     public int getEmail() {
         return email;
@@ -159,11 +165,59 @@ public class UserInfoModel implements Serializable {
         this.smartMessage = smartMessage;
     }
 
-    public PunchResult getPunchResult() {
-        return punchResult;
+    public int getActivePoints() {
+        return activePoints;
     }
 
-    public void setPunchResult(PunchResult punchResult) {
-        this.punchResult = punchResult;
+    public void setActivePoints(int activePoints) {
+        this.activePoints = activePoints;
+    }
+
+    public int getDragonMoney() {
+        return dragonMoney;
+    }
+
+    public void setDragonMoney(int dragonMoney) {
+        this.dragonMoney = dragonMoney;
+    }
+
+    public int getDragonCrystal() {
+        return dragonCrystal;
+    }
+
+    public void setDragonCrystal(int dragonCrystal) {
+        this.dragonCrystal = dragonCrystal;
+    }
+
+    public int getTotalPunchCount() {
+        return totalPunchCount;
+    }
+
+    public void setTotalPunchCount(int totalPunchCount) {
+        this.totalPunchCount = totalPunchCount;
+    }
+
+    public int getLongestContinuousPunch() {
+        return longestContinuousPunch;
+    }
+
+    public void setLongestContinuousPunch(int longestContinuousPunch) {
+        this.longestContinuousPunch = longestContinuousPunch;
+    }
+
+    public int getCurrentContinuousPunch() {
+        return currentContinuousPunch;
+    }
+
+    public void setCurrentContinuousPunch(int currentContinuousPunch) {
+        this.currentContinuousPunch = currentContinuousPunch;
+    }
+
+    public Date getLastPunchTime() {
+        return lastPunchTime;
+    }
+
+    public void setLastPunchTime(Date lastPunchTime) {
+        this.lastPunchTime = lastPunchTime;
     }
 }

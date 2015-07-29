@@ -68,6 +68,13 @@ public class ModelConverter {
             HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
             userInfoModel.setSigHtml(htmlToPlainText.getPlainText(document));
         }
+        userInfoModel.setActivePoints(lkUserInfo.getExtcredits1());
+        userInfoModel.setDragonMoney(lkUserInfo.getExtcredits2());
+        userInfoModel.setDragonCrystal(lkUserInfo.getExtcredits3());
+        userInfoModel.setTotalPunchCount(lkUserInfo.getPunchallday());
+        userInfoModel.setLongestContinuousPunch(lkUserInfo.getPunchhighestday());
+        userInfoModel.setCurrentContinuousPunch(lkUserInfo.getPunchday());
+        userInfoModel.setLastPunchTime(new Date(lkUserInfo.getPunchtime() * 1000));
         return userInfoModel;
     }
 

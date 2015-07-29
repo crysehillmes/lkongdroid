@@ -21,8 +21,8 @@ public class PostRateAdapter extends BaseAdapter {
     public PostRateAdapter(Context context, List<PostModel.PostRate> items) {
         this.mContext = context;
         this.mItems = items;
-        this.mLBLabel = context.getString(R.string.text_extcredits_lb);
-        this.mLJLabel = context.getString(R.string.text_extcredits_lj);
+        this.mLBLabel = context.getString(R.string.text_dragon_money);
+        this.mLJLabel = context.getString(R.string.text_dragon_crystal);
     }
 
     @Override

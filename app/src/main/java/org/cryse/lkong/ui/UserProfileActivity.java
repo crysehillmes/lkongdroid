@@ -335,12 +335,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         } else {
             mUserExtra0TextView.setVisibility(View.GONE);
         }
-        if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
+        /*if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
             mUserExtra1TextView.setVisibility(View.VISIBLE);
             mUserExtra1TextView.setText(mUserModelInfo.getSigHtml());
         } else {
             mUserExtra1TextView.setVisibility(View.GONE);
-        }
+        }*/
         int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
         mUserFollowerCountTextView.setText(
                 getUserStatsText(mUserModelInfo.getFansCount(),
@@ -362,6 +362,10 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
                         getString(R.string.profile_header_posts),
                         statsTextSize)
         );
+        Fragment fragment = mViewPagerAdapter.getItem(0);
+        if(fragment instanceof UserExtraDetailFragment) {
+            ((UserExtraDetailFragment) fragment).setUserInfo(mUserModelInfo);
+        }
     }
 
     @Override
@@ -442,34 +446,27 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     static class UserDataFragmentPagerAdapter extends FragmentStatePagerAdapter {
-        private List<String> mTabTitles = new ArrayList<String>();
+        private List<String> mTabTitles = new ArrayList<>();
+        private List<Fragment> mFragments = new ArrayList<>();
         private long mUserId;
         UserDataFragmentPagerAdapter(Context context, FragmentManager fm, long uid) {
             super(fm);
             Collections.addAll(mTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
             mUserId = uid;
+            mFragments.add(UserExtraDetailFragment.newInstance());
+            mFragments.add(UserProfileTimelineFragment.newInstance(mUserId));
+            mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, false));
+            mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, true));
         }
 
         @Override
         public Fragment getItem(int i) {
-            Fragment fragment = null;
-            switch (i) {
-                case 0:
-                    fragment = UserProfileTimelineFragment.newInstance(mUserId);
-                    break;
-                case 1:
-                    fragment = UserProfileThreadsFragment.newInstance(mUserId, false);
-                    break;
-                case 2:
-                    fragment = UserProfileThreadsFragment.newInstance(mUserId, true);
-                    break;
-            }
-            return fragment;
+            return mFragments.get(i);
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
