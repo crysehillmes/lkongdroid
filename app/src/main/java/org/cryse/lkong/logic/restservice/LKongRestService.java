@@ -268,6 +268,7 @@ public class LKongRestService {
         String responseString = getStringFromGzipResponse(response);
         if(responseString.contains("\"error\":")) {
             NoticeCountModel errorModel = new NoticeCountModel();
+            errorModel.setUserId(authObject.getUserId());
             JSONObject jsonObject = new JSONObject(responseString);
             String errorMessage = jsonObject.getString("error");
             errorModel.setSuccess(false);
@@ -277,6 +278,7 @@ public class LKongRestService {
 
         LKCheckNoticeCountResult lkCheckNoticeCountResult = gson.fromJson(responseString, LKCheckNoticeCountResult.class);
         NoticeCountModel noticeCountModel = ModelConverter.toNoticeCountModel(lkCheckNoticeCountResult);
+        noticeCountModel.setUserId(authObject.getUserId());
         clearCookies();
         return noticeCountModel;
     }

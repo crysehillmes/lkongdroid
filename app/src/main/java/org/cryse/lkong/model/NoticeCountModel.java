@@ -3,6 +3,7 @@ package org.cryse.lkong.model;
 import java.util.Date;
 
 public class NoticeCountModel {
+    private long userId;
     private Date updateTime;
     private int notice;
     private int mentionNotice;
@@ -12,6 +13,14 @@ public class NoticeCountModel {
 
     private boolean success;
     private String errorMessage;
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public Date getUpdateTime() {
         return updateTime;

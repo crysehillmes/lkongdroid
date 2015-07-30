@@ -272,6 +272,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             mCurrentUserPunchResult = null;
             getThemedActivity().invalidateOptionsMenu();
             mPresenter.punch(mUserAccountManager.getAuthObject());
+            checkNewNoticeCount();
         }
     }
 
@@ -300,7 +301,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @Override
     public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
         if(noticeCountModel != null) {
-            mHasNotification = noticeCountModel.hasNotification();
+            mHasNotification = noticeCountModel.hasNotification() && noticeCountModel.getUserId() == mUserAccountManager.getCurrentUserId();
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
         }

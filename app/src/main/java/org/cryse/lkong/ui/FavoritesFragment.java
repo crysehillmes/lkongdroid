@@ -210,6 +210,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         } else if (event instanceof CurrentAccountChangedEvent) {
             loadData(mUserAccountManager.getAuthObject(), 0, false);
+            checkNewNoticeCount();
         }
     }
 
@@ -237,7 +238,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     @Override
     public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
         if(noticeCountModel != null) {
-            mHasNotification = noticeCountModel.hasNotification();
+            mHasNotification = noticeCountModel.hasNotification() && noticeCountModel.getUserId() == mUserAccountManager.getCurrentUserId();
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
         }

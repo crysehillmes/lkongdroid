@@ -186,6 +186,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
             mNeedRefresh = true;
         else if(event instanceof NoticeCountEvent) {
             mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+            checkNewNoticeCount();
         }
     }
 
@@ -223,7 +224,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Override
     public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
         if(noticeCountModel != null) {
-            mHasNotification = noticeCountModel.hasNotification();
+            mHasNotification = noticeCountModel.hasNotification() && noticeCountModel.getUserId() == mUserAccountManager.getCurrentUserId();
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
         }
