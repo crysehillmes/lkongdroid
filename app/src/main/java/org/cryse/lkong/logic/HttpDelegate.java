@@ -29,8 +29,8 @@ public class HttpDelegate {
     protected HttpDelegate(OkHttpClient okHttpClient, CookieManager cookieManager) {
         this.mOkHttpClient = okHttpClient;
         this.mCookieManager = cookieManager;
-        this.mOkHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
-        this.mOkHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
+        this.mOkHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
+        this.mOkHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         this.mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         this.mOkHttpClient.setCookieHandler(mCookieManager);
     }
