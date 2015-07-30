@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,11 +143,21 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, 0, RequestPointerType.TYPE_NEXT, false);
 
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_private_chat, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 getActivity().finish();
+                return true;
+            case R.id.action_user_profile:
+                mNavigation.openActivityForUserProfile(getActivity(), null, mTargetUserId);
                 return true;
         }
         return super.onOptionsItemSelected(item);

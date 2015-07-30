@@ -28,6 +28,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_open_in_browser">Open In Browser</string>
     <string name="action_sign_out">Sign Out</string>
+    <string name="action_user_profile">View Profile</string>
     <string name="action_user_profile_follow">Follow</string>
     <string name="action_user_profile_unfollow">Unfollow</string>
     <string name="action_user_profile_pm">PM</string>

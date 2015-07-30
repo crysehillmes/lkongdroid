@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -107,7 +109,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @InjectView(R.id.activity_profile_header_stats)
     View mHeaderStatsView;
 
-    MenuItem mFollowUserMenuItem;
+    @InjectView(R.id.activity_profile_header_container_follow)
+    FrameLayout mFollowContainer;
+    @InjectView(R.id.activity_profile_header_button_follow)
+    Button mFollowButton;
+
+    /*MenuItem mFollowUserMenuItem;*/
 
     private UserDataFragmentPagerAdapter mViewPagerAdapter;
 
@@ -166,6 +173,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
                 .transform(new CircleTransform())
                 .noFade()
                 .into(mAvatarImageView);
+        mFollowButton.setOnClickListener(view -> {
+            if (mIsUserFollowed)
+                getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
+            else
+                getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+        });
     }
 
     @Override
@@ -243,23 +256,23 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_user_profile, menu);
-        mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        // mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(mFollowUserMenuItem != null) {
+        if(mFollowContainer != null) {
             if(mIsUserFollowed != null) {
-                mFollowUserMenuItem.setVisible(true);
+                mFollowContainer.setVisibility(View.VISIBLE);
                 if(mIsUserFollowed) {
-                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_unfollow);
+                    mFollowButton.setText(R.string.action_user_profile_unfollow);
                 }
                 else {
-                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_follow);
+                    mFollowButton.setText(R.string.action_user_profile_follow);
                 }
             } else {
-                mFollowUserMenuItem.setVisible(false);
+                mFollowContainer.setVisibility(View.GONE);
             }
         }
         return super.onPrepareOptionsMenu(menu);
@@ -271,12 +284,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
             case android.R.id.home:
                 closeActivityWithTransition();
                 return true;
-            case R.id.action_user_profile_follow:
+            /*case R.id.action_user_profile_follow:
                 if(mIsUserFollowed)
                     getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
                 else
                     getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
-                return true;
+                return true;*/
             case R.id.action_user_profile_pm:
                 startPrivateChat();
                 return true;
