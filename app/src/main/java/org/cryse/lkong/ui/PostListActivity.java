@@ -121,7 +121,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     StringPreference mReadFontSizePref;
     @Inject
     @PrefsUseInAppBrowser
-    BooleanPreference mUserInAppBrowser;
+    BooleanPreference mUseInAppBrowser;
     @Inject
     @PrefsFlipPageByVolumeKey
     BooleanPreference mFlipPageByVolumeKey;
@@ -1163,16 +1163,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void openUrlIntent(String url) {
-        if(mUserInAppBrowser.get()) {
-            Intent intent = new Intent(this, InAppBrowserActivity.class);
-            intent.putExtra("url", url);
-            startActivity(intent);
-        } else {
-            Uri uri = Uri.parse(url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
-            startActivity(intent);
-        }
+        mAndroidNavigation.openUrl(this, url, mUseInAppBrowser.get());
     }
 
     @Override

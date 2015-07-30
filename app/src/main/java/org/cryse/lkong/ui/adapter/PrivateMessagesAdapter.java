@@ -1,6 +1,8 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,7 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         if (position >= headerCount && position < headerCount + mObjectList.getItemCount()) {
             PrivateMessageViewHolder viewHolder = (PrivateMessageViewHolder) holder;
             PrivateMessageModel model = getItem(position - getHeaderViewCount());
-            viewHolder.mMessageTextView.setText(model.getMessage());
+            viewHolder.mMessageTextView.setText(Html.fromHtml(model.getMessage()));
             if(viewHolder.mAvatarImageView != null) {
                 mPicasso.load(model.getAvatarUrl())
                         .placeholder(R.drawable.ic_placeholder_avatar)
@@ -97,6 +99,9 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         public PrivateMessageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this, itemView);
+            mMessageTextView.setMovementMethod(
+                    LinkMovementMethod.getInstance()
+            );
         }
     }
 }

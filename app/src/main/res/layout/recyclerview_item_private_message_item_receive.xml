@@ -25,6 +25,7 @@
             android:layout_margin="8dp"
             android:textSize="@dimen/text_size_body1"
             android:textColor="@color/text_color_primary"
+            android:textIsSelectable="true"
             android:text="This is a new message."/>
     </RelativeLayout>
 </RelativeLayout>

@@ -69,12 +69,14 @@ public class GetPrivateMessagesRequest extends AbstractAuthedHttpRequest<List<Pr
                 model.setUserId(jsonObject.getLong("uid"));
             if (jsonObject.has("msgfromid"))
                 model.setMessageFromId(jsonObject.getInt("msgfromid"));
-            if(jsonObject.has("message"))
-                model.setMessage(jsonObject.getString("message"));
             if (jsonObject.has("dateline"))
                 model.setDateline(dateFormat.parse(jsonObject.getString("dateline")));
             if(jsonObject.has("sortkey"))
                 model.setSortKey(jsonObject.getLong("sortkey"));
+            if(jsonObject.has("message")) {
+                String rawMessage = jsonObject.getString("message");
+                model.setMessage(rawMessage);
+            }
             model.setAvatarUrl(ModelConverter.uidToAvatarUrl(model.getUserId()));
             results.add(model);
         }

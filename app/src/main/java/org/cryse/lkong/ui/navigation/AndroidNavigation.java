@@ -8,7 +8,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,6 +23,7 @@ import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.HomePageFragment;
+import org.cryse.lkong.ui.InAppBrowserActivity;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
@@ -213,6 +216,19 @@ public class AndroidNavigation {
         intent.putExtra(DataContract.BUNDLE_TARGET_USER_ID, targetUserId);
         intent.putExtra(DataContract.BUNDLE_TARGET_USER_NAME, targetUserName);
         context.startActivity(intent);
+    }
+
+    public void openUrl(Activity context, String url, boolean inAppBrowser) {
+        if(inAppBrowser) {
+            Intent intent = new Intent(context, InAppBrowserActivity.class);
+            intent.putExtra("url", url);
+            context.startActivity(intent);
+        } else {
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+            context.startActivity(intent);
+        }
     }
 
     private void addNewAccount(Activity activity, String accountType, String authTokenType) {
