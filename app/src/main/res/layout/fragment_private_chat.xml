@@ -26,14 +26,13 @@
             android:id="@+id/fragment_private_chat_edittext_message"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/fragment_private_chat_button_send"
-            android:hint="Input message and send"/>
+            android:layout_toLeftOf="@+id/fragment_private_chat_button_send"/>
         <ImageButton
             android:id="@+id/fragment_private_chat_button_send"
             android:layout_width="?actionBarSize"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_action_send_black"
+            android:src="?theme_send_pm_drawable"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_send_post"
             />

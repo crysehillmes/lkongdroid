@@ -47,8 +47,8 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
             viewHolder.mMessageTextView.setText(model.getMessage());
             if(viewHolder.mAvatarImageView != null) {
                 mPicasso.load(model.getAvatarUrl())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
+                        .placeholder(R.drawable.ic_placeholder_avatar)
+                        .error(R.drawable.ic_placeholder_avatar)
                         .fit()
                         .centerCrop()
                         .transform(mCircleTransform)

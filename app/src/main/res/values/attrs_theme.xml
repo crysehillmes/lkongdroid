@@ -24,4 +24,5 @@
 
     <attr name="theme_arrow_backward_drawable" format="reference"/>
     <attr name="theme_arrow_forward_drawable" format="reference"/>
+    <attr name="theme_send_pm_drawable" format="reference"/>
 </resources>
