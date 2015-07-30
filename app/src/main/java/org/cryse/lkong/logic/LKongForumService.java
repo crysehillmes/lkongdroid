@@ -11,6 +11,7 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
 import org.cryse.lkong.logic.request.GetPrivateChatListRequest;
+import org.cryse.lkong.logic.request.GetPrivateMessagesRequest;
 import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
@@ -26,6 +27,7 @@ import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PrivateChatModel;
+import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SignInResult;
@@ -422,6 +424,19 @@ public class LKongForumService {
             try {
                 boolean isFollowed = mLKongDatabase.isUserFollowed(uid, targetUserId);
                 subscriber.onNext(isFollowed);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<PrivateMessageModel>> loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey) {
+        return Observable.create(subscriber -> {
+            try {
+                GetPrivateMessagesRequest request = new GetPrivateMessagesRequest(authObject, targetUserId, startSortKey);
+                List<PrivateMessageModel> result = request.execute();
+                subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

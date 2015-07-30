@@ -77,8 +77,12 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            PrivateChatModel privateChatModel = mCollectionAdapter.getItem(itemIndex);
-            // TODO: Goto thread by post.
+            PrivateChatModel model = mCollectionAdapter.getItem(itemIndex);
+            mAndroidNavigation.openActivityForPrivateMessage(
+                    getActivity(),
+                    model.getTargetUserId(),
+                    model.getTargetUserName()
+                    );
         }
     }
 

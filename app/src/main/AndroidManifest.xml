@@ -52,6 +52,9 @@
             android:name=".ui.NotificationActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity
+            android:name=".ui.PrivateChatActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
             android:name=".ui.PhotoViewPagerActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity

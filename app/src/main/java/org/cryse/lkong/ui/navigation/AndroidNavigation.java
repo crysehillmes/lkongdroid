@@ -26,6 +26,7 @@ import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.PostListActivity;
+import org.cryse.lkong.ui.PrivateChatActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.TimelineFragment;
@@ -205,6 +206,13 @@ public class AndroidNavigation {
 
     public void openActivityForUserProfile(Activity context, int[] startingLocation, long uid) {
         UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
+    }
+
+    public void openActivityForPrivateMessage(Activity context, long targetUserId, String targetUserName) {
+        Intent intent = new Intent(context, PrivateChatActivity.class);
+        intent.putExtra(DataContract.BUNDLE_TARGET_USER_ID, targetUserId);
+        intent.putExtra(DataContract.BUNDLE_TARGET_USER_NAME, targetUserName);
+        context.startActivity(intent);
     }
 
     private void addNewAccount(Activity activity, String accountType, String authTokenType) {

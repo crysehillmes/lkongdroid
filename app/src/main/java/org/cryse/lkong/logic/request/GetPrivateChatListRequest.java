@@ -55,7 +55,6 @@ public class GetPrivateChatListRequest extends AbstractAuthedHttpRequest<List<Pr
             PrivateChatModel model = new PrivateChatModel();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             model.setUserId(getAuthObject().getUserId());
-            model.setUserName(getAuthObject().getUserName());
             if(jsonObject.has("uid"))
                 model.setTargetUserId(jsonObject.getLong("uid"));
             if(jsonObject.has("username"))
@@ -77,8 +76,11 @@ public class GetPrivateChatListRequest extends AbstractAuthedHttpRequest<List<Pr
                 GetPrivateMessageConfigRequest request = new GetPrivateMessageConfigRequest(getAuthObject(), model.getTargetUserId());
                 PrivateChatConfigModel configModel = request.execute();
                 model.setTargetUserName(configModel.getTargetUserName());
+                model.setUserName(getAuthObject().getUserName());
+            } else {
+                model.setTargetUserName(model.getUserName());
+                model.setUserName(getAuthObject().getUserName());
             }
-
             results.add(model);
         }
         return results;
