@@ -171,10 +171,10 @@ public class NotificationFragment extends InActivityFragment {
                     fragment = NoticeFragment.newInstance(args);
                     break;
                 case 2:
-                    fragment = NoticeRateFragment.newInstance(args);
+                    fragment = NoticePrivateChatsFragment.newInstance(args);
                     break;
                 case 3:
-                    fragment = NoticePrivateChatsFragment.newInstance(args);
+                    fragment = NoticeRateFragment.newInstance(args);
                     break;
             }
             return fragment;
@@ -196,10 +196,10 @@ public class NotificationFragment extends InActivityFragment {
                     title = getString(R.string.drawer_item_notice);
                     break;
                 case 2:
-                    title = getString(R.string.drawer_item_notice_rate);
+                    title = getString(R.string.drawer_item_private_messages);
                     break;
                 case 3:
-                    title = getString(R.string.drawer_item_private_messages);
+                    title = getString(R.string.drawer_item_notice_rate);
                     break;
             }
             return title;
