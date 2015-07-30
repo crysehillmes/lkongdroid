@@ -76,8 +76,8 @@ public class LKongRestService {
     @Inject
     public LKongRestService(Context context) {
         this.okHttpClient = new OkHttpClient();
-        this.okHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
-        this.okHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
+        this.okHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
+        this.okHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         this.cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         this.okHttpClient.setCookieHandler(cookieManager);
