@@ -251,4 +251,14 @@
         <item>Threads</item>
         <item>Digests</item>
     </string-array>
+    <string name="day_title_today">Today</string>
+    <string name="day_title_tomorrow">Tomorrow</string>
+    <string name="day_title_yesterday">Yesterday</string>
+    <string name="format_time_just_now">just now</string>
+    <string name="format_time_a_minute_ago">a minute ago</string>
+    <string name="format_time_n_minutes_ago">&#160;minutes ago</string>
+    <string name="format_time_an_hour_ago">an hour ago</string>
+    <string name="format_time_n_hours_ago">&#160;hours ago</string>
+    <string name="format_time_yesterday">yesterday</string>
+    <string name="format_time_n_days_ago">&#160;days ago</string>
 </resources>

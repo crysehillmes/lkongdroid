@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -47,6 +48,7 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
             PrivateMessageViewHolder viewHolder = (PrivateMessageViewHolder) holder;
             PrivateMessageModel model = getItem(position - getHeaderViewCount());
             viewHolder.mMessageTextView.setText(Html.fromHtml(model.getMessage()));
+            viewHolder.mDatelineTextView.setText(TimeFormatUtils.getTimeAgo(getContext(), model.getDateline().getTime()));
             if(viewHolder.mAvatarImageView != null) {
                 mPicasso.load(model.getAvatarUrl())
                         .placeholder(R.drawable.ic_placeholder_avatar)
@@ -95,6 +97,8 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         RelativeLayout mMessageContainer;
         @InjectView(R.id.recyclerview_item_private_message_textview_message)
         TextView mMessageTextView;
+        @InjectView(R.id.recyclerview_item_private_message_textview_dateline)
+        TextView mDatelineTextView;
 
         public PrivateMessageViewHolder(View itemView) {
             super(itemView);

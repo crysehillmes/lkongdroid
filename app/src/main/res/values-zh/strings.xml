@@ -221,4 +221,14 @@
     <string name="text_user_registration_time_title">注册时间</string>
     <string name="dialog_title_sending_private_message">正在发送消息…</string>
     <string name="dialog_content_please_wait">请稍等片刻</string>
+    <string name="day_title_today">今天</string>
+    <string name="day_title_tomorrow">明天</string>
+    <string name="day_title_yesterday">昨天</string>
+    <string name="format_time_just_now">刚刚</string>
+    <string name="format_time_a_minute_ago">1 分钟前</string>
+    <string name="format_time_n_minutes_ago">&#160;分钟前</string>
+    <string name="format_time_an_hour_ago">1 小时前</string>
+    <string name="format_time_n_hours_ago">&#160;小时前</string>
+    <string name="format_time_yesterday">昨天</string>
+    <string name="format_time_n_days_ago">&#160;天前</string>
 </resources>
