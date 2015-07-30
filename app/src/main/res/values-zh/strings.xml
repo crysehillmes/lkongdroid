@@ -231,4 +231,6 @@
     <string name="format_time_n_hours_ago">&#160;小时前</string>
     <string name="format_time_yesterday">昨天</string>
     <string name="format_time_n_days_ago">&#160;天前</string>
+    <string name="format_time_date">yyyy年M月d日</string>
+    <string name="format_time_time">HH:mm</string>
 </resources>

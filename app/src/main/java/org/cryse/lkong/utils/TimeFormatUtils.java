@@ -160,7 +160,7 @@ public class TimeFormatUtils {
     public static String formatDate(Context context, Date date, boolean withTime)
     {
         String result = "";
-        DateFormat dateFormat;
+        /*DateFormat dateFormat;
 
         if (date != null) {
             String format = Settings.System.getString(context.getContentResolver(), Settings.System.DATE_FORMAT);
@@ -175,8 +175,13 @@ public class TimeFormatUtils {
                 dateFormat = android.text.format.DateFormat.getTimeFormat(context);
                 result += " " + dateFormat.format(date);
             }
+        }*/
+        DateFormat dateFormat = new SimpleDateFormat(context.getString(R.string.format_time_date));
+        result = dateFormat.format(date);
+        if (withTime) {
+            DateFormat timeFormat = new SimpleDateFormat(context.getString(R.string.format_time_time));
+            result += " " + timeFormat.format(date);
         }
-
         return result;
     }
 }
