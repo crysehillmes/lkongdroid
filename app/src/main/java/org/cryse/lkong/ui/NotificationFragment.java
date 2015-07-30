@@ -78,6 +78,7 @@ public class NotificationFragment extends InActivityFragment {
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            getActivity().setTitle(R.string.drawer_item_notification);
         }
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
