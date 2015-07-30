@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年7月30日"
+        versionCode="900"
+        versionName="0.9.0">
+        <changelogtext><![CDATA[<b><font color=red>新功能：</font></b>私信]]></changelogtext>
+        <changelogtext><![CDATA[<b><font color=red>新功能：</font></b>关注用户]]></changelogtext>
+        <changelogtext>改进：收藏版块改进为关注板块</changelogtext>
+        <changelogtext>改进：显示更详细的用户信息</changelogtext>
+        <changelogtext>改进：新的图标</changelogtext>
+        <changelogtext>改进：可以把板块列表设为第一屏了</changelogtext>
+        <changelogtext>改进：改进的账户系统，采用 Android 原生的账户管理</changelogtext>
+        <changelogtext>改进：部分界面改进</changelogtext>
+        <changelogbug>修复：一些其他错误</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年7月11日"
         versionCode="808"
         versionName="0.8.8">
