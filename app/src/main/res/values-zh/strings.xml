@@ -136,6 +136,7 @@
     <string name="umeng_common_icon">找不到这一楼啊</string>
     <string name="action_user_profile_follow">关注</string>
     <string name="action_user_profile_unfollow">取消关注</string>
+    <string name="action_user_profile_pm">私信</string>
 
     <string name="text_load_prev_page">加载上一页</string>
     <string name="text_load_next_page">加载下一页</string>

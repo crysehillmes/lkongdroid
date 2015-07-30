@@ -30,6 +30,7 @@
     <string name="action_sign_out">Sign Out</string>
     <string name="action_user_profile_follow">Follow</string>
     <string name="action_user_profile_unfollow">Unfollow</string>
+    <string name="action_user_profile_pm">PM</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>

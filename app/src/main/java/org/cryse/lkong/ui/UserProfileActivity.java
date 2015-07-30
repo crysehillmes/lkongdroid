@@ -277,6 +277,9 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
                 else
                     getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
                 return true;
+            case R.id.action_user_profile_pm:
+                startPrivateChat();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -473,6 +476,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         public CharSequence getPageTitle(int position) {
             return mTabTitles.get(position);
         }
+    }
+
+    private void startPrivateChat() {
+        if(mUserModelInfo != null)
+            mNavigation.openActivityForPrivateMessage(this, mUid, mUserModelInfo.getUserName());
     }
 
     private void checkFollowStatus() {
