@@ -122,6 +122,8 @@
     <string name="dialog_exit_cancel">Cancel</string>
     <string name="dialog_exit_discard">Discard</string>
     <string name="dialog_title_copy_content">Copy Content</string>
+    <string name="dialog_title_sending_private_message">Sending messages…</string>
+    <string name="dialog_content_please_wait">Please wait a moment</string>
 
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>

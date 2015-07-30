@@ -217,4 +217,6 @@
     <string name="text_user_wealth_title">财富</string>
     <string name="text_user_punch_info_title">签到情况</string>
     <string name="text_user_registration_time_title">注册时间</string>
+    <string name="dialog_title_sending_private_message">正在发送消息…</string>
+    <string name="dialog_content_please_wait">请稍等片刻</string>
 </resources>

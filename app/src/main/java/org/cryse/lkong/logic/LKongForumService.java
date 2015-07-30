@@ -16,6 +16,7 @@ import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
+import org.cryse.lkong.logic.request.SendNewPrivateMessageRequest;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
@@ -30,6 +31,7 @@ import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
+import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
@@ -431,11 +433,24 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<PrivateMessageModel>> loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey) {
+    public Observable<List<PrivateMessageModel>> loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey, int pointerType) {
         return Observable.create(subscriber -> {
             try {
-                GetPrivateMessagesRequest request = new GetPrivateMessagesRequest(authObject, targetUserId, startSortKey);
+                GetPrivateMessagesRequest request = new GetPrivateMessagesRequest(authObject, targetUserId, startSortKey, pointerType);
                 List<PrivateMessageModel> result = request.execute();
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<SendNewPrivateMessageResult> sendPrivateMessage(LKAuthObject authObject, long targetUserId, String targetUserName, String message) {
+        return Observable.create(subscriber -> {
+            try {
+                SendNewPrivateMessageRequest request = new SendNewPrivateMessageRequest(authObject, targetUserId, targetUserName, message);
+                SendNewPrivateMessageResult result = request.execute();
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

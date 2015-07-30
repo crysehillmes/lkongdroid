@@ -17,6 +17,7 @@ public class PrivateMessagePresenter implements BasePresenter<PrivateChatView> {
     LKongForumService mLKongForumService;
     PrivateChatView mView;
     Subscription mLoadMessagesSubscription;
+    Subscription mSendMessageSubscription;
 
     @Inject
     public PrivateMessagePresenter(LKongForumService forumService) {
@@ -24,23 +25,42 @@ public class PrivateMessagePresenter implements BasePresenter<PrivateChatView> {
         this.mView = null;
     }
 
-    public void loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey, boolean isLoadingMore) {
+    public void loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey, int pointerType, boolean isLoadingMore) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadMessagesSubscription);
         setLoadingStatus(isLoadingMore, true);
-        mLoadMessagesSubscription = mLKongForumService.loadPrivateMessages(authObject, targetUserId, startSortKey)
+        mLoadMessagesSubscription = mLKongForumService.loadPrivateMessages(authObject, targetUserId, startSortKey, pointerType)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             if (mView != null) {
-                                mView.onLoadMessagesComplete(result, isLoadingMore);
+                                mView.onLoadMessagesComplete(result, pointerType, isLoadingMore);
                             }
                         },
                         error -> {
-                            Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
+                            Timber.e(error, "PrivateMessagePresenter::loadPrivateMessages() onError().", LOG_TAG);
                         },
                         () -> {
                             setLoadingStatus(isLoadingMore, false);
+                        }
+                );
+    }
+
+    public void sendPrivateMessages(LKAuthObject authObject, long targetUserId, String targetUserName, String message) {
+        SubscriptionUtils.checkAndUnsubscribe(mSendMessageSubscription);
+        mSendMessageSubscription = mLKongForumService.sendPrivateMessage(authObject, targetUserId, targetUserName, message)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if (mView != null) {
+                                mView.onSendNewMessageComplete(result);
+                            }
+                        },
+                        error -> {
+                            Timber.e(error, "PrivateMessagePresenter::sendPrivateMessages() onError().", LOG_TAG);
+                        },
+                        () -> {
                         }
                 );
     }

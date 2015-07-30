@@ -5,6 +5,7 @@ import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.LKongWebConstants;
+import org.cryse.lkong.logic.RequestPointerType;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -19,22 +20,28 @@ import java.util.List;
 public class GetPrivateMessagesRequest extends AbstractAuthedHttpRequest<List<PrivateMessageModel>> {
     private long mStartSortKey;
     private long mTargetUserId;
-    public GetPrivateMessagesRequest(LKAuthObject authObject, long targetUserId, long startSortKey) {
+    private int mPointerType;
+    public GetPrivateMessagesRequest(LKAuthObject authObject, long targetUserId, long startSortKey, int pointerType) {
         super(authObject);
         this.mStartSortKey = startSortKey;
         this.mTargetUserId = targetUserId;
+        this.mPointerType = pointerType;
     }
 
-    public GetPrivateMessagesRequest(HttpDelegate httpDelegate, LKAuthObject authObject, long targetUserId, long startSortKey) {
+    public GetPrivateMessagesRequest(HttpDelegate httpDelegate, LKAuthObject authObject, long targetUserId, long startSortKey, int pointerType) {
         super(httpDelegate, authObject);
         this.mStartSortKey = startSortKey;
         this.mTargetUserId = targetUserId;
+        this.mPointerType = pointerType;
     }
 
     @Override
     protected Request buildRequest() {
         String url = String.format(LKongWebConstants.PRIVATE_MESSAGES_URL, mTargetUserId);
-        url = url + (mStartSortKey >= 0 ? "&nexttime=" + Long.toString(mStartSortKey) : "");
+        if(mPointerType == RequestPointerType.TYPE_NEXT)
+            url = url + (mStartSortKey >= 0 ? "&nexttime=" + Long.toString(mStartSortKey) : "");
+        else if(mPointerType == RequestPointerType.TYPE_CURRENT)
+            url = url + (mStartSortKey >= 0 ? "&curtime=" + Long.toString(mStartSortKey) : "");
         return new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(url)

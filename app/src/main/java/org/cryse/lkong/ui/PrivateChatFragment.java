@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +24,9 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.logic.RequestPointerType;
 import org.cryse.lkong.model.PrivateMessageModel;
+import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.presenter.PrivateMessagePresenter;
 import org.cryse.lkong.ui.adapter.PrivateMessagesAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
@@ -67,8 +71,9 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
-    private long mLastItemSortKey = -1;
-    private long mFirstItemSortKey = -1;
+    private long mCurrentTimeSortKey = -1;
+    private long mNextTimeSortKey = -1;
+    private MaterialDialog mProgressDialog;
 
     public static PrivateChatFragment newInstance(Bundle args) {
         PrivateChatFragment fragment = new PrivateChatFragment();
@@ -101,24 +106,30 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
             getThemedActivity().setTitle(mTargetUserName);
         }
         mToolbar.setBackgroundColor(getPrimaryColor());
+        mSendButton.setOnClickListener(view -> {
+            sendNewPrivateMessage();
+        });
         return contentView;
     }
 
     private void setUpRecyclerView() {
         mCollectionAdapter = new PrivateMessagesAdapter(getActivity(), mPicasso, mItemList);
         mRecyclerView.setMode(PullToRefreshBase.Mode.BOTH);
-        mRecyclerView.getRefreshableView().setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setStackFromEnd(true);
+        mRecyclerView.getRefreshableView().setLayoutManager(linearLayoutManager);
         mRecyclerView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.getRefreshableView().setAdapter(mCollectionAdapter);
         mRecyclerView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<RecyclerView> recyclerViewPullToRefreshBase) {
-                mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, mFirstItemSortKey, true);
+                mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, mNextTimeSortKey, RequestPointerType.TYPE_NEXT, true);
                 recyclerViewPullToRefreshBase.onRefreshComplete();
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<RecyclerView> recyclerViewPullToRefreshBase) {
+                mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, mCurrentTimeSortKey, RequestPointerType.TYPE_CURRENT, true);
                 recyclerViewPullToRefreshBase.onRefreshComplete();
             }
         });
@@ -127,7 +138,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, 0, false);
+        mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, 0, RequestPointerType.TYPE_NEXT, false);
 
     }
     @Override
@@ -151,6 +162,8 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     public void onStop() {
         super.onStop();
         mPresenter.unbindView();
+        if(mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 
     @Override
@@ -180,54 +193,86 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         super.onEvent(event);
         if(event instanceof ThemeColorChangedEvent) {
             int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
-            mToolbar.setBackgroundColor(getPrimaryColor());
+            mToolbar.setBackgroundColor(newPrimaryColor);
         }
     }
 
     @Override
-    public void onLoadMessagesComplete(List<PrivateMessageModel> items, boolean isLoadingMore) {
+    public void onLoadMessagesComplete(List<PrivateMessageModel> items, int pointerType, boolean isLoadingMore) {
         if(isLoadingMore) {
             if (items.size() == 0) isNoMore = true;
-            mCollectionAdapter.addAll(0, items);
+            if(pointerType == RequestPointerType.TYPE_NEXT)
+                mCollectionAdapter.addAll(0, items);
+            else if(pointerType == RequestPointerType.TYPE_CURRENT) {
+                mCollectionAdapter.addAll(items);
+                mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
+            }
         } else {
             isNoMore = false;
             mCollectionAdapter.replaceWith(items);
+            mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
             PrivateMessageModel lastItem = mCollectionAdapter.getItemList().get(mCollectionAdapter.getItemCount() - 1);
-            mLastItemSortKey = lastItem.getSortKey();
-            mLastItemSortKey = mLastItemSortKey < 0 ? -mLastItemSortKey : mLastItemSortKey;
+            mCurrentTimeSortKey = lastItem.getSortKey();
+            mCurrentTimeSortKey = mCurrentTimeSortKey < 0 ? -mCurrentTimeSortKey : mCurrentTimeSortKey;
             PrivateMessageModel firstItem = mCollectionAdapter.getItemList().get(0);
-            mFirstItemSortKey = firstItem.getSortKey();
-            mFirstItemSortKey = mFirstItemSortKey < 0 ? -mFirstItemSortKey : mFirstItemSortKey;
+            mNextTimeSortKey = firstItem.getSortKey();
+            mNextTimeSortKey = mNextTimeSortKey < 0 ? -mNextTimeSortKey : mNextTimeSortKey;
         } else {
-            mLastItemSortKey = -1;
-            mFirstItemSortKey = -1;
+            mCurrentTimeSortKey = -1;
+            mNextTimeSortKey = -1;
         }
     }
 
     @Override
-    public void onSendNewMessageComplete(PrivateMessageModel message) {
-
+    public void onSendNewMessageComplete(SendNewPrivateMessageResult result) {
+        if(mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
+        if(result != null) {
+            if(result.isSuccess()) {
+                mPresenter.loadPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, mCurrentTimeSortKey, RequestPointerType.TYPE_CURRENT, true);
+            } else {
+                // Show error here
+            }
+        }
     }
 
     @Override
     public boolean isLoadingMore() {
-        return false;
+        return isLoadingMore;
     }
 
     @Override
     public void setLoadingMore(boolean value) {
-
+        isLoadingMore = value;
+        if(!value) {
+            mRecyclerView.onRefreshComplete();
+        }
     }
 
     @Override
     public void setLoading(Boolean value) {
-
+        isLoading = value;
     }
 
     @Override
     public Boolean isLoading() {
-        return null;
+        return isLoading;
+    }
+
+    public void sendNewPrivateMessage() {
+        String message = mMessageEditText.getText().toString();
+        if (!TextUtils.isEmpty(message)) {
+            mPresenter.sendPrivateMessages(mUserAccountManager.getAuthObject(), mTargetUserId, mTargetUserName, message);
+            mMessageEditText.getText().clear();
+            mProgressDialog = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.dialog_title_sending_private_message)
+                    .content(R.string.dialog_content_please_wait)
+                    .progress(true, 0)
+                    .progressIndeterminateStyle(true)
+                    .show();
+
+        }
     }
 }

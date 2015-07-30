@@ -16,4 +16,5 @@ public class LKongWebConstants {
     public static final String PRIVATE_CHAT_LIST_URL = LKONG_INDEX_URL + "?mod=data&sars=my/pm";
     public static final String PRIVATE_CHAT_CONFIG_URL = LKONG_INDEX_URL + "?mod=ajax&action=pmconfig_%d";
     public static final String PRIVATE_MESSAGES_URL = LKONG_INDEX_URL + "?mod=data&sars=pm/%d";
+    public static final String SUBMIT_BOX_URL = LKONG_INDEX_URL + "?mod=ajax&action=submitbox";
 }
