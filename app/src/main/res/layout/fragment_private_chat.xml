@@ -17,7 +17,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="48dp"
         android:layout_gravity="bottom|end"
         android:background="?theme_card_bg_color"
         android:elevation="@dimen/toolbar_elevation"
@@ -25,12 +25,15 @@
         <EditText
             android:id="@+id/fragment_private_chat_edittext_message"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:background="@android:color/transparent"
             android:layout_toLeftOf="@+id/fragment_private_chat_button_send"/>
         <ImageButton
             android:id="@+id/fragment_private_chat_button_send"
-            android:layout_width="?actionBarSize"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentRight="true"
             android:src="?theme_send_pm_drawable"
             android:background="?selectableItemBackgroundBorderless"
