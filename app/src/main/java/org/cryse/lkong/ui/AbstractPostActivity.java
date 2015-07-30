@@ -51,6 +51,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.NewThreadDoneEvent;
+import org.cryse.lkong.event.PostErrorEvent;
 import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.service.SendPostService;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
@@ -170,6 +171,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             onSendDataDone(event);
         } else if(event instanceof EditPostDoneEvent) {
             onEditDone((EditPostDoneEvent) event);
+        } else if(event instanceof PostErrorEvent) {
+            onSendDataError((PostErrorEvent) event);
         }
     }
 
@@ -553,15 +556,36 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                     showSnackbar(
                             TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(),
                             SimpleSnackbarType.ERROR,
-                            SimpleSnackbarType.LENGTH_SHORT
+                            SimpleSnackbarType.LENGTH_LONG
                     );
                 } else {
                     showSnackbar(
                             getString(R.string.toast_failure_new_post),
                             SimpleSnackbarType.ERROR,
-                            SimpleSnackbarType.LENGTH_SHORT
+                            SimpleSnackbarType.LENGTH_LONG
                     );
                 }
+            }
+        }
+    }
+
+    protected void onSendDataError(PostErrorEvent event) {
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
+        String errorMessage = event.getErrorMessage();
+        if(!TextUtils.isEmpty(errorMessage)) {
+            if(errorMessage.equals("[NETWORK_ERROR]")) {
+                showSnackbar(
+                        getString(R.string.toast_failure_new_post),
+                        SimpleSnackbarType.ERROR,
+                        SimpleSnackbarType.LENGTH_LONG
+                );
+            } else {
+                showSnackbar(
+                        errorMessage,
+                        SimpleSnackbarType.ERROR,
+                        SimpleSnackbarType.LENGTH_LONG
+                );
             }
         }
     }

@@ -44,6 +44,7 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
+import org.cryse.lkong.model.UploadImageResult;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GzipUtils;
 import org.cryse.lkong.utils.LKAuthObject;
@@ -85,7 +86,7 @@ public class LKongRestService {
         this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     }
 
-    public String uploadImageToLKong(LKAuthObject authObject, String imagePath) throws Exception {
+    public UploadImageResult uploadImageToLKong(LKAuthObject authObject, String imagePath) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
         File fileToUpload = new File(imagePath);
@@ -108,9 +109,16 @@ public class LKongRestService {
         String responseString = response.body().string();
         Timber.d(responseString, LOG_TAG);
         JSONObject jsonObject = new JSONObject(responseString);
-        String newUrl = jsonObject.getString("filelink");
+        UploadImageResult result = new UploadImageResult();
+        if(!jsonObject.has("error") && jsonObject.has("filelink")) {
+            result.setSuccess(true);
+            result.setImageUrl(jsonObject.getString("filelink"));
+        } else {
+            result.setSuccess(false);
+            result.setErrorMessage(jsonObject.getString("error"));
+        }
         clearCookies();
-        return newUrl;
+        return result;
     }
 
     public NewPostResult newPostReply(LKAuthObject authObject, long tid, Long pid, String content) throws Exception {

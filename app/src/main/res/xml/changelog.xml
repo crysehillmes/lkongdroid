@@ -11,6 +11,7 @@
         <changelogtext>改进：新的图标</changelogtext>
         <changelogtext>改进：可以把板块列表设为第一屏了</changelogtext>
         <changelogtext>改进：改进的账户系统，采用 Android 原生的账户管理</changelogtext>
+        <changelogtext>改进：发送失败时的处理</changelogtext>
         <changelogtext>改进：部分界面改进</changelogtext>
         <changelogbug>修复：一些其他错误</changelogbug>
     </changelogversion>
