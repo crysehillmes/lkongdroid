@@ -184,6 +184,7 @@ public class UserAccountManager {
     public static LKAuthObject getAuthObject(UserAccount userAccount) {
         return new LKAuthObject(
                 userAccount.getUserId(),
+                userAccount.getUserName(),
                 userAccount.getAuthURI(),
                 userAccount.getAuthCookie(),
                 userAccount.getDzsbheyURI(),

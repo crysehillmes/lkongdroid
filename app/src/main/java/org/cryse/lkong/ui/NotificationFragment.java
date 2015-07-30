@@ -173,13 +173,16 @@ public class NotificationFragment extends InActivityFragment {
                 case 2:
                     fragment = NoticeRateFragment.newInstance(args);
                     break;
+                case 3:
+                    fragment = NoticePrivateChatsFragment.newInstance(args);
+                    break;
             }
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -194,6 +197,9 @@ public class NotificationFragment extends InActivityFragment {
                     break;
                 case 2:
                     title = getString(R.string.drawer_item_notice_rate);
+                    break;
+                case 3:
+                    title = getString(R.string.drawer_item_private_messages);
                     break;
             }
             return title;

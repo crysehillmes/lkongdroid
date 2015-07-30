@@ -32,6 +32,7 @@
     <string name="drawer_item_timeline">信息流</string>
     <string name="drawer_item_followed_forums">关注的板块</string>
     <string name="drawer_item_homepage">个人主页</string>
+    <string name="drawer_item_private_messages">私信</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
     <string name="toast_failure_new_post">回复失败，请重试。</string>
     <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
@@ -216,4 +217,6 @@
     <string name="text_user_wealth_title">财富</string>
     <string name="text_user_punch_info_title">签到情况</string>
     <string name="text_user_registration_time_title">注册时间</string>
+    <string name="dialog_title_sending_private_message">正在发送消息…</string>
+    <string name="dialog_content_please_wait">请稍等片刻</string>
 </resources>

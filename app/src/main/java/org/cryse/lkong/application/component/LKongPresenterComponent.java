@@ -14,10 +14,13 @@ import org.cryse.lkong.ui.MentionsFragment;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NoticeFragment;
+import org.cryse.lkong.ui.NoticePrivateChatsFragment;
 import org.cryse.lkong.ui.NoticeRateFragment;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.NotificationFragment;
 import org.cryse.lkong.ui.PostListActivity;
+import org.cryse.lkong.ui.PrivateChatActivity;
+import org.cryse.lkong.ui.PrivateChatFragment;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserExtraDetailFragment;
@@ -53,4 +56,7 @@ public interface LKongPresenterComponent {
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
     void inject(UserExtraDetailFragment fragment);
+    void inject(NoticePrivateChatsFragment fragment);
+    void inject(PrivateChatFragment fragment);
+    void inject(PrivateChatActivity activity);
 }
