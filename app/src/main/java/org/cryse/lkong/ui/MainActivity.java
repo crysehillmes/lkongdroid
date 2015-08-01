@@ -68,9 +68,6 @@ public class MainActivity extends AbstractThemeableActivity{
     @Inject
     @PrefsVersionCode
     IntegerPreference mVersionCodePref;
-    @Inject
-    @PrefsForumsFirst
-    BooleanPreference mForumsFirst;
 
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
@@ -170,20 +167,11 @@ public class MainActivity extends AbstractThemeableActivity{
             return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem timelineDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
-        IDrawerItem forumsDrawerItem = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
-        IDrawerItem[] drawerItems = new IDrawerItem[5];
-        if(mForumsFirst.get()) {
-            drawerItems[0] = forumsDrawerItem;
-            drawerItems[1] = timelineDrawerItem;
-        } else {
-            drawerItems[0] = timelineDrawerItem;
-            drawerItems[1] = forumsDrawerItem;
-        }
-
-        drawerItems[2] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
-        drawerItems[3] = new DividerDrawerItem();
-        drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
+        IDrawerItem[] drawerItems = new IDrawerItem[4];
+        drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
+        drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
+        drawerItems[2] = new DividerDrawerItem();
+        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -223,13 +211,8 @@ public class MainActivity extends AbstractThemeableActivity{
                 .build();
         addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
-            if(mForumsFirst.get()) {
-                mNaviagtionDrawer.setSelectionByIdentifier(1002, false);
-                mNavigation.navigateToForumListFragment(null);
-            } else {
-                mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-                mNavigation.navigateToHomePageFragment();
-            }
+            mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
+            mNavigation.navigateToHomePageFragment();
             // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);

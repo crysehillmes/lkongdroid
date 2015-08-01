@@ -16,8 +16,6 @@ import timber.log.Timber;
 public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel, ForumsView<ForumModel>> {
     private static final String LOG_TAG = ForumsPresenter.class.getName();
 
-    Subscription mCheckNoticeCountSubscription;
-
     @Inject
     public ForumsPresenter(LKongForumService forumService) {
         super(forumService);
@@ -52,28 +50,9 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel, Forum
                 );
     }
 
-    public void checkNoticeCountFromDatabase(long uid) {
-        SubscriptionUtils.checkAndUnsubscribe(mCheckNoticeCountSubscription);
-        mCheckNoticeCountSubscription = mLKongForumService.checkNoticeCountFromDatabase(uid)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            if(mView != null)
-                                mView.onCheckNoticeCountComplete(result);
-                        },
-                        error -> {
-                            Timber.e(error, "ForumsPresenter::checkNoticeCountFromDatabase() onError().", LOG_TAG);
-                        },
-                        () -> {
-                        }
-                );
-    }
-
     @Override
     public void destroy() {
         super.destroy();
-        SubscriptionUtils.checkAndUnsubscribe(mCheckNoticeCountSubscription);
     }
 }
 
