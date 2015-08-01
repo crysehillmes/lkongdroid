@@ -9,5 +9,6 @@
     <item
         android:id="@+id/action_change_theme"
         android:title="@string/action_dark_theme"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false"/>
 </menu>

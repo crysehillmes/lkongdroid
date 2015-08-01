@@ -19,11 +19,14 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.DisplayMetrics;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -106,6 +109,13 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @InjectView(R.id.activity_profile_header_stats)
     View mHeaderStatsView;
 
+    @InjectView(R.id.activity_profile_header_container_follow)
+    FrameLayout mFollowContainer;
+    @InjectView(R.id.activity_profile_header_button_follow)
+    Button mFollowButton;
+
+    /*MenuItem mFollowUserMenuItem;*/
+
     private UserDataFragmentPagerAdapter mViewPagerAdapter;
 
     private boolean mLockedAnimations = false;
@@ -116,6 +126,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     private String mUserAvatarUrl;
     private UserInfoModel mUserModelInfo;
     private ArrayList<Object> mItemList;
+    private Boolean mIsUserFollowed = null;
 
     public static void startUserProfileFromLocation(Context startingContext, int[] startingLocation, long uid) {
         Intent intent = new Intent(startingContext, UserProfileActivity.class);
@@ -153,7 +164,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         super.onPostCreate(savedInstanceState);/*
         mProfileCollectionView.measure(0, 0);*/
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
-
+        checkFollowStatus();
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
         mPicasso.load(mUserAvatarUrl)
                 .placeholder(R.drawable.ic_placeholder_avatar)
@@ -162,6 +173,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
                 .transform(new CircleTransform())
                 .noFade()
                 .into(mAvatarImageView);
+        mFollowButton.setOnClickListener(view -> {
+            if (mIsUserFollowed)
+                getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
+            else
+                getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+        });
     }
 
     @Override
@@ -237,13 +254,53 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_user_profile, menu);
+        // mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(mFollowContainer != null) {
+            if(mIsUserFollowed != null) {
+                mFollowContainer.setVisibility(View.VISIBLE);
+                if(mIsUserFollowed) {
+                    mFollowButton.setText(R.string.action_user_profile_unfollow);
+                }
+                else {
+                    mFollowButton.setText(R.string.action_user_profile_follow);
+                }
+            } else {
+                mFollowContainer.setVisibility(View.GONE);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 closeActivityWithTransition();
                 return true;
+            /*case R.id.action_user_profile_follow:
+                if(mIsUserFollowed)
+                    getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
+                else
+                    getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+                return true;*/
+            case R.id.action_user_profile_pm:
+                startPrivateChat();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkFollowStatus();
     }
 
     @Override
@@ -294,12 +351,12 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         } else {
             mUserExtra0TextView.setVisibility(View.GONE);
         }
-        if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
+        /*if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
             mUserExtra1TextView.setVisibility(View.VISIBLE);
             mUserExtra1TextView.setText(mUserModelInfo.getSigHtml());
         } else {
             mUserExtra1TextView.setVisibility(View.GONE);
-        }
+        }*/
         int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
         mUserFollowerCountTextView.setText(
                 getUserStatsText(mUserModelInfo.getFansCount(),
@@ -321,11 +378,16 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
                         getString(R.string.profile_header_posts),
                         statsTextSize)
         );
+        Fragment fragment = mViewPagerAdapter.getItem(0);
+        if(fragment instanceof UserExtraDetailFragment) {
+            ((UserExtraDetailFragment) fragment).setUserInfo(mUserModelInfo);
+        }
     }
 
     @Override
-    public void onLoadUserProfileError(Throwable throwable, Object... extraInfo) {
-
+    public void onCheckFollowStatusComplete(boolean isFollowed) {
+        mIsUserFollowed = isFollowed;
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -400,39 +462,43 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     static class UserDataFragmentPagerAdapter extends FragmentStatePagerAdapter {
-        private List<String> mTabTitles = new ArrayList<String>();
+        private List<String> mTabTitles = new ArrayList<>();
+        private List<Fragment> mFragments = new ArrayList<>();
         private long mUserId;
         UserDataFragmentPagerAdapter(Context context, FragmentManager fm, long uid) {
             super(fm);
             Collections.addAll(mTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
             mUserId = uid;
+            mFragments.add(UserExtraDetailFragment.newInstance());
+            mFragments.add(UserProfileTimelineFragment.newInstance(mUserId));
+            mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, false));
+            mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, true));
         }
 
         @Override
         public Fragment getItem(int i) {
-            Fragment fragment = null;
-            switch (i) {
-                case 0:
-                    fragment = UserProfileTimelineFragment.newInstance(mUserId);
-                    break;
-                case 1:
-                    fragment = UserProfileThreadsFragment.newInstance(mUserId, false);
-                    break;
-                case 2:
-                    fragment = UserProfileThreadsFragment.newInstance(mUserId, true);
-                    break;
-            }
-            return fragment;
+            return mFragments.get(i);
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             return mTabTitles.get(position);
+        }
+    }
+
+    private void startPrivateChat() {
+        if(mUserModelInfo != null)
+            mNavigation.openActivityForPrivateMessage(this, mUid, mUserModelInfo.getUserName());
+    }
+
+    private void checkFollowStatus() {
+        if(mUserAccountManager.getCurrentUserId() != mUid) {
+            getPresenter().isUserFollowed(mUserAccountManager.getCurrentUserId(), mUid);
         }
     }
 }

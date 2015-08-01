@@ -121,7 +121,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     StringPreference mReadFontSizePref;
     @Inject
     @PrefsUseInAppBrowser
-    BooleanPreference mUserInAppBrowser;
+    BooleanPreference mUseInAppBrowser;
     @Inject
     @PrefsFlipPageByVolumeKey
     BooleanPreference mFlipPageByVolumeKey;
@@ -310,7 +310,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     } else {
                         content = postItem.getMessage();
                     }
-                    mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                    if(postItem.getOrdinal() == 1) {
+                        String title = mThreadSubject;
+                        mAndroidNavigation.openActivityForEditThread(PostListActivity.this, mThreadId, postItem.getPid(), title, content);
+                    } else {
+                        mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                    }
                 } else {
                     mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
@@ -491,7 +496,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             } else if(event instanceof ThemeColorChangedEvent) {
                 setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
             } else if(event instanceof EditPostDoneEvent) {
-                refreshCurrentPage();
+                // refreshCurrentPage();
+                getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);
             }
         } catch (Exception ex) {
             Timber.e(ex, ex.getMessage(), LOG_TAG);
@@ -1157,16 +1163,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void openUrlIntent(String url) {
-        if(mUserInAppBrowser.get()) {
-            Intent intent = new Intent(this, InAppBrowserActivity.class);
-            intent.putExtra("url", url);
-            startActivity(intent);
-        } else {
-            Uri uri = Uri.parse(url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, PostListActivity.this.getPackageName());
-            startActivity(intent);
-        }
+        mAndroidNavigation.openUrl(this, url, mUseInAppBrowser.get());
     }
 
     @Override

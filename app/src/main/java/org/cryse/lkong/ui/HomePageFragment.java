@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -21,10 +22,13 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
@@ -33,6 +37,7 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
+import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +47,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class HomePageFragment extends AbstractFragment implements HomePageView {
     public static final String LOG_TAG = HomePageFragment.class.getName();
@@ -53,6 +59,11 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     HomePagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsForumsFirst
+    BooleanPreference mForumsFirst;
+
+
     @InjectView(R.id.tablayout)
     TabLayout mTabLayout;
     @InjectView(R.id.fragment_homepage_viewpager)
@@ -93,8 +104,19 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
-            mTabLayout.setupWithViewPager(mViewPager);
+            //mTabLayout.setupWithViewPager(mViewPager);
             mTabLayout.setBackgroundColor(getPrimaryColor());
+        }
+        if (ViewCompat.isLaidOut(mTabLayout)) {
+            mTabLayout.setupWithViewPager(mViewPager);
+        } else {
+            mTabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mTabLayout.setupWithViewPager(mViewPager);
+                    mTabLayout.removeOnLayoutChangeListener(this);
+                }
+            });
         }
         return contentView;
     }
@@ -144,8 +166,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
-        adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
-        adapter.addFragment(PinnedForumsFragment.newInstance(null), getString(R.string.drawer_item_pinned_forums));
+        if(mForumsFirst.get()) {
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+        } else {
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
+        }
         viewPager.setAdapter(adapter);
     }
 
@@ -223,6 +252,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                     );
                 }
                 return true;
+            case R.id.action_sign_out:
+                signOut();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -249,6 +281,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             mCurrentUserPunchResult = null;
             getThemedActivity().invalidateOptionsMenu();
             mPresenter.punch(mUserAccountManager.getAuthObject());
+            checkNewNoticeCount();
         }
     }
 
@@ -277,9 +310,24 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @Override
     public void onCheckNoticeCountComplete(NoticeCountModel noticeCountModel) {
         if(noticeCountModel != null) {
-            mHasNotification = noticeCountModel.hasNotification();
+            mHasNotification = noticeCountModel.hasNotification() && noticeCountModel.getUserId() == mUserAccountManager.getCurrentUserId();
             if(getActivity() != null)
                 getActivity().invalidateOptionsMenu();
+        }
+    }
+
+    private void signOut() {
+        long currentUid = mUserAccountManager.getCurrentUserId();
+        try {
+            mUserAccountManager.signOut(currentUid);
+            getEventBus().sendEvent(new AccountRemovedEvent());
+        } catch (NeedSignInException ex) {
+            mNavigation.navigateToSignInActivity(getActivity(), true);
+            Activity parentActivity = getActivity();
+            if(parentActivity instanceof MainActivity)
+                ((MainActivity)parentActivity).closeActivityWithTransition();
+        } catch (Exception e) {
+            Timber.e(e, e.getMessage(), LOG_TAG);
         }
     }
 

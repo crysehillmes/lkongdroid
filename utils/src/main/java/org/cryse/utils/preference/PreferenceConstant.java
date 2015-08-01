@@ -24,4 +24,6 @@ public class PreferenceConstant {
     public static final int SHARED_PREFERENCE_VERSION_CODE_VALUE = 0;
     public static final String SHARED_PREFERENCE_FLIP_PAGE_BY_VOLUME_KEY = "prefs_flip_page_by_volume_key";
     public static final Boolean SHARED_PREFERENCE_FLIP_PAGE_BY_VOLUME_KEY_VALUE = false;
+    public static final String SHARED_PREFERENCE_FORUMS_FIRST = "prefs_use_forums_first";
+    public static final boolean SHARED_PREFERENCE_FORUMS_FIRST_VALUE = false;
 }

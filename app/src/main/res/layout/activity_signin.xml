@@ -33,7 +33,7 @@
                 android:layout_centerHorizontal="true"
                 android:textSize="@dimen/text_size_headline"
                 android:text="@string/card_title_sign_in"/>
-            <org.cryse.lkong.widget.TempFixTextInputLayout
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/edit_email_textlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -49,9 +49,9 @@
                     android:nextFocusDown="@+id/edit_password"
                     android:singleLine="true" />
 
-            </org.cryse.lkong.widget.TempFixTextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-            <org.cryse.lkong.widget.TempFixTextInputLayout
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/edit_password_textlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                     android:inputType="textPassword"
                     android:singleLine="true" />
 
-            </org.cryse.lkong.widget.TempFixTextInputLayout>
+            </android.support.design.widget.TextInputLayout>
             <TextView
                 android:id="@+id/sign_in_result_textview"
                 android:layout_width="match_parent"
@@ -100,5 +100,6 @@
         android:text="@string/button_sign_up"
         android:background="?selectableItemBackgroundBorderless"
         android:textSize="@dimen/text_size_title"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF"
+        android:visibility="invisible"/>
 </android.support.design.widget.CoordinatorLayout>

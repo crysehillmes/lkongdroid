@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,20 +31,24 @@ import com.squareup.picasso.Picasso;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
-import org.cryse.lkong.data.model.UserAccountEntity;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.preference.IntegerPreference;
+import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -70,14 +75,14 @@ public class MainActivity extends AbstractThemeableActivity{
     Drawer mNaviagtionDrawer;
 
     Picasso mPicasso;
-    UserAccountEntity mCurrentAccount = null;
+    UserAccount mCurrentAccount = null;
 
     ServiceConnection mBackgroundServiceConnection;
     private CheckNoticeService.CheckNoticeCountServiceBinder mCheckNoticeServiceBinder;
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
-    List<UserAccountEntity> mUserAccountList;
+    List<UserAccount> mUserAccountList;
     /**
      * Used to post delay navigation action to improve UX
      */
@@ -92,6 +97,11 @@ public class MainActivity extends AbstractThemeableActivity{
         //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
         mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
+        if(!mUserAccountManager.isSignedIn()) {
+            mNavigation.navigateToSignInActivity(this, true);
+            closeActivityWithTransition();
+            return;
+        }
         mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
         getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
@@ -159,12 +169,11 @@ public class MainActivity extends AbstractThemeableActivity{
             return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem[] drawerItems = new IDrawerItem[5];
+        IDrawerItem[] drawerItems = new IDrawerItem[4];
         drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
-        drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_forum_list).withIcon(R.drawable.ic_drawer_forum_list).withIdentifier(1002);
-        drawerItems[2] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
-        drawerItems[3] = new DividerDrawerItem();
-        drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
+        drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
+        drawerItems[2] = new DividerDrawerItem();
+        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -206,6 +215,7 @@ public class MainActivity extends AbstractThemeableActivity{
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
             mNavigation.navigateToHomePageFragment();
+            // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
         }
@@ -216,6 +226,14 @@ public class MainActivity extends AbstractThemeableActivity{
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         checkVersionCode();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+        // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
+        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
@@ -287,6 +305,13 @@ public class MainActivity extends AbstractThemeableActivity{
             // setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
         } else if(event instanceof NewAccountEvent) {
             addAccountProfile();
+        } else if(event instanceof AccountRemovedEvent) {
+            if(!mUserAccountManager.isSignedIn()) {
+                mNavigation.navigateToSignInActivity(this, true);
+                closeActivityWithTransition();
+            } else {
+                addAccountProfile();
+            }
         }
     }
 
@@ -300,12 +325,12 @@ public class MainActivity extends AbstractThemeableActivity{
         try {
             mCurrentAccount = mUserAccountManager.getCurrentUserAccount();
             mUserAccountList = mUserAccountManager.getUserAccounts();
-            for (UserAccountEntity entity : mUserAccountList) {
+            for (UserAccount entity : mUserAccountList) {
 
                 ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
                         .withIcon(entity.getUserAvatar())
                         .withName(entity.getUserName())
-                        .withEmail(entity.getEmail())
+                        .withEmail(entity.getUserEmail())
                         .withIdentifier((int) entity.getUserId());
                 mAccountHeader.addProfiles(profileDrawerItem);
             }

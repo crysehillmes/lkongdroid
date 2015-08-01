@@ -13,10 +13,11 @@
     <string name="action_settings">设置</string>
     <string name="action_thread_add_favorite">收藏</string>
     <string name="action_thread_remove_favorite">移除收藏</string>
-    <string name="action_pin_to_home">收藏版块</string>
-    <string name="action_unpin_from_home">取消收藏</string>
-    <string name="action_pinned_forum">已收藏</string>
-    <string name="action_not_pinned_forum">未收藏</string>
+    <string name="action_follow_forum">关注</string>
+    <string name="action_unfollow_forum">取消关注</string>
+    <string name="action_forum_followed">已关注</string>
+    <string name="action_forum_not_followed">未关注</string>
+    <string name="action_sign_out">退出账号</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
@@ -29,10 +30,11 @@
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
     <string name="drawer_item_timeline">信息流</string>
-    <string name="drawer_item_pinned_forums">收藏的板块</string>
+    <string name="drawer_item_followed_forums">关注板块</string>
     <string name="drawer_item_homepage">个人主页</string>
+    <string name="drawer_item_private_messages">私信</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
-    <string name="toast_failure_new_post">回复失败，请重试。</string>
+    <string name="toast_failure_new_post">发送失败，请重试。</string>
     <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
     <string name="toast_failure_get_user_info">获取用户信息失败。</string>
     <string name="toast_failure_get_forum_list">刷新板块列表失败。</string>
@@ -132,6 +134,10 @@
     <string name="action_open_notification">消息与通知</string>
     <string name="action_thread_goto_floor">跳转楼层</string>
     <string name="umeng_common_icon">找不到这一楼啊</string>
+    <string name="action_user_profile">查看个人资料</string>
+    <string name="action_user_profile_follow">关注</string>
+    <string name="action_user_profile_unfollow">取消关注</string>
+    <string name="action_user_profile_pm">私信</string>
 
     <string name="text_load_prev_page">加载上一页</string>
     <string name="text_load_next_page">加载下一页</string>
@@ -167,6 +173,8 @@
     <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; 回复</string>
     <string name="hint_search_label">搜索</string>
     <string name="hint_search_hint">搜索位面，主题或用户</string>
+    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
+    <string name="settings_item_use_forums_first_title">首页显示板块列表</string>
     <string name="settings_category_navigation">导航</string>
     <string name="settings_item_flip_page_by_volume_key_title">音量控制键翻页</string>
     <string name="settings_item_flip_page_by_volume_key_summary">通过音量键翻页</string>
@@ -176,6 +184,7 @@
     <string name="profile_header_threads">主题</string>
 
     <string-array name="string_array_user_profile_tabs">
+        <item>简介</item>
         <item>全部</item>
         <item>主题</item>
         <item>精华</item>
@@ -195,4 +204,33 @@
     <string name="title_null_or_empty">标题不能为空</string>
     <string name="text_new_version_changes">新版改动</string>
     <string name="action_refresh">刷新</string>
+    <string name="text_dragon_money">龙币</string>
+    <string name="text_dragon_crystal">龙晶</string>
+    <string name="text_active_points">活跃</string>
+    <string name="format_active_points">活跃：%1$d</string>
+    <string name="format_dragon_money">龙币：%1$d</string>
+    <string name="format_dragon_crystal">龙晶：%1$d</string>
+    <string name="format_current_continuous_punch_days">连续签到: %1$d 天</string>
+    <string name="format_total_punch_days">总签到天数: %1$d 天</string>
+    <string name="format_longest_continuous_punch_days">最长连续签到: %1$d 天</string>
+    <string name="format_last_punch_time">最后签到: %1$s </string>
+    <string name="format_registration_time">注册时间: %1$s</string>
+    <string name="text_user_introduction_title">个人简介</string>
+    <string name="text_user_wealth_title">财富</string>
+    <string name="text_user_punch_info_title">签到情况</string>
+    <string name="text_user_registration_time_title">注册时间</string>
+    <string name="dialog_title_sending_private_message">正在发送消息…</string>
+    <string name="dialog_content_please_wait">请稍等片刻</string>
+    <string name="day_title_today">今天</string>
+    <string name="day_title_tomorrow">明天</string>
+    <string name="day_title_yesterday">昨天</string>
+    <string name="format_time_just_now">刚刚</string>
+    <string name="format_time_a_minute_ago">1 分钟前</string>
+    <string name="format_time_n_minutes_ago">&#160;分钟前</string>
+    <string name="format_time_an_hour_ago">1 小时前</string>
+    <string name="format_time_n_hours_ago">&#160;小时前</string>
+    <string name="format_time_yesterday">昨天</string>
+    <string name="format_time_n_days_ago">&#160;天前</string>
+    <string name="format_time_date">yyyy年M月d日</string>
+    <string name="format_time_time">HH:mm</string>
 </resources>

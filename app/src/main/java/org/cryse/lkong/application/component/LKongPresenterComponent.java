@@ -4,6 +4,7 @@ import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.FavoritesFragment;
+import org.cryse.lkong.ui.FollowedForumsFragment;
 import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.HomePageFragment;
@@ -13,14 +14,16 @@ import org.cryse.lkong.ui.MentionsFragment;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NoticeFragment;
+import org.cryse.lkong.ui.NoticePrivateChatsFragment;
 import org.cryse.lkong.ui.NoticeRateFragment;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.NotificationFragment;
-import org.cryse.lkong.ui.PinnedForumsFragment;
 import org.cryse.lkong.ui.PostListActivity;
+import org.cryse.lkong.ui.PrivateChatActivity;
+import org.cryse.lkong.ui.PrivateChatFragment;
 import org.cryse.lkong.ui.SearchActivity;
-import org.cryse.lkong.ui.SignInActivity;
 import org.cryse.lkong.ui.TimelineFragment;
+import org.cryse.lkong.ui.UserExtraDetailFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.ui.UserProfileThreadsFragment;
 import org.cryse.lkong.ui.UserProfileTimelineFragment;
@@ -32,8 +35,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = {ContextModule.class, LKongModule.class, PreferenceModule.class})
 public interface LKongPresenterComponent {
-    void inject(MainActivity mainActivity);
-    void inject(SignInActivity activity);
+    void inject(MainActivity activity);
     void inject(ForumsFragment fragment);
     void inject(ForumActivity activity);
     void inject(PostListActivity activity);
@@ -41,7 +43,7 @@ public interface LKongPresenterComponent {
     void inject(NewThreadActivity activity);
     void inject(HomePageFragment activity);
     void inject(FavoritesFragment fragment);
-    void inject(PinnedForumsFragment fragment);
+    void inject(FollowedForumsFragment fragment);
     void inject(TimelineFragment fragment);
     void inject(MentionsFragment fragment);
     void inject(NotificationFragment fragment);
@@ -50,7 +52,11 @@ public interface LKongPresenterComponent {
     void inject(NotificationActivity activity);
     void inject(SearchActivity activity);
     void inject(UserProfileActivity activity);
-    void inject(InAppBrowserActivity inAppBrowserActivity);
+    void inject(InAppBrowserActivity activity);
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
+    void inject(UserExtraDetailFragment fragment);
+    void inject(NoticePrivateChatsFragment fragment);
+    void inject(PrivateChatFragment fragment);
+    void inject(PrivateChatActivity activity);
 }

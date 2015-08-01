@@ -13,6 +13,7 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        requestWindowFeatures();
         setContentView(R.layout.activity_simple_container);
         setUpFragment();
     }
@@ -35,6 +36,10 @@ public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
                 .beginTransaction();
         fragmentTransaction.replace(R.id.container, newFragment());
         fragmentTransaction.commit();
+    }
+
+    protected void requestWindowFeatures() {
+
     }
 
     protected abstract String getLogTag();

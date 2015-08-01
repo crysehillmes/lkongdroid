@@ -26,6 +26,9 @@ import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.ColorUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -75,6 +78,7 @@ public class NotificationFragment extends InActivityFragment {
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            getActivity().setTitle(R.string.drawer_item_notification);
         }
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
@@ -87,6 +91,23 @@ public class NotificationFragment extends InActivityFragment {
     private void initViewPager() {
         mHomePagerAdapter = new NotificationFragmentPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mHomePagerAdapter);
+        mHomePagerAdapter.addFragment(
+                getString(R.string.drawer_item_mentions),
+                MentionsFragment.newInstance(Bundle.EMPTY)
+        );
+        mHomePagerAdapter.addFragment(
+                getString(R.string.drawer_item_notice),
+                NoticeFragment.newInstance(Bundle.EMPTY)
+        );
+        mHomePagerAdapter.addFragment(
+                getString(R.string.drawer_item_private_messages),
+                NoticePrivateChatsFragment.newInstance(Bundle.EMPTY)
+        );
+        mHomePagerAdapter.addFragment(
+                getString(R.string.drawer_item_notice_rate),
+                NoticeRateFragment.newInstance(Bundle.EMPTY)
+        );
+        mHomePagerAdapter.notifyDataSetChanged();
         getThemedActivity().setSupportActionBar(mToolbar);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -153,50 +174,31 @@ public class NotificationFragment extends InActivityFragment {
         AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
-    class NotificationFragmentPagerAdapter extends FragmentStatePagerAdapter {
-
+    static class NotificationFragmentPagerAdapter extends FragmentStatePagerAdapter {
+        List<Fragment> mFragments = new ArrayList<>();
+        List<String> mFragmentTitles = new ArrayList<>();
         NotificationFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        public void addFragment(String title, Fragment fragment) {
+            mFragmentTitles.add(title);
+            mFragments.add(fragment);
+        }
+
         @Override
-        public Fragment getItem(int i) {
-            Fragment fragment = null;
-            Bundle args = new Bundle();
-            switch (i) {
-                case 0:
-                    fragment = MentionsFragment.newInstance(args);
-                    break;
-                case 1:
-                    fragment = NoticeFragment.newInstance(args);
-                    break;
-                case 2:
-                    fragment = NoticeRateFragment.newInstance(args);
-                    break;
-            }
-            return fragment;
+        public Fragment getItem(int position) {
+            return mFragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return mFragments.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            String title = null;
-            switch (position) {
-                case 0:
-                    title = getString(R.string.drawer_item_mentions);
-                    break;
-                case 1:
-                    title = getString(R.string.drawer_item_notice);
-                    break;
-                case 2:
-                    title = getString(R.string.drawer_item_notice_rate);
-                    break;
-            }
-            return title;
+            return mFragmentTitles.get(position);
         }
 
     }

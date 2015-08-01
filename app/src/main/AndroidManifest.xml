@@ -7,6 +7,16 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
@@ -24,9 +34,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SignInActivity"
-            android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
-        <activity
             android:name=".ui.ForumActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity
@@ -43,6 +50,9 @@
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity
             android:name=".ui.NotificationActivity"
+            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+        <activity
+            android:name=".ui.PrivateChatActivity"
             android:theme="@style/LKongDroidTheme.Light.Translucent"/>
         <activity
             android:name=".ui.PhotoViewPagerActivity"
@@ -66,10 +76,32 @@
             android:name=".ui.InAppBrowserActivity"
             android:label=""
             android:theme="@style/LKongDroidTheme.Light.Translucent" />
-
+        <activity
+            android:name=".account.LKongAuthenticatorActivity"
+            android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".service.CheckNoticeService"/>
-
+        <service android:name=".account.LKongAuthenticateService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/account_authenticator" />
+        </service>
+        <service
+            android:name=".service.FollowStatusSyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter_follow_status" />
+        </service>
+        <provider
+            android:name="org.cryse.lkong.data.provider.LKongContentProvider"
+            android:authorities="org.cryse.lkong.data.provider"
+            android:exported="false" />
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" >

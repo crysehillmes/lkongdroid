@@ -75,6 +75,22 @@
                         android:textColor="#ffffff"
                         android:textSize="12sp"
                         android:visibility="gone" />
+                    <FrameLayout
+                        android:id="@+id/activity_profile_header_container_follow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/corner_border_bg"
+                        android:layout_margin="8dp"
+                        android:clipChildren="false">
+                        <Button
+                            android:id="@+id/activity_profile_header_button_follow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:textSize="@dimen/text_size_body1"
+                            android:text="@string/action_user_profile_follow"/>
+                    </FrameLayout>
                 </LinearLayout>
 
                 <LinearLayout

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/recyclerview_item_private_message_relativelayout_message_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/chat_bubble_sent"
+        >
+        <TextView
+            android:id="@+id/recyclerview_item_private_message_textview_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="@dimen/text_size_body1"
+            android:textColor="@color/text_color_primary"
+            android:textIsSelectable="true"
+            android:text="This is a new message."/>
+        <TextView
+            android:id="@+id/recyclerview_item_private_message_textview_dateline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_private_message_textview_message"
+            android:layout_alignRight="@+id/recyclerview_item_private_message_textview_message"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:textSize="@dimen/text_size_tiny"
+            android:textColor="@color/text_color_tint"
+            android:textIsSelectable="true"
+            android:text="3 seconds ago"/>
+    </RelativeLayout>
+</RelativeLayout>

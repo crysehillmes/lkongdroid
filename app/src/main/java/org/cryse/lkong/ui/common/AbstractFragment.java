@@ -161,4 +161,8 @@ public abstract class AbstractFragment extends Fragment implements SnackbarSuppo
                 Snackbar.LENGTH_SHORT
         ).show();
     }
+
+    public RxEventBus getEventBus() {
+        return mEventBus;
+    }
 }

@@ -16,11 +16,14 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.NewThreadDoneEvent;
+import org.cryse.lkong.event.PostErrorEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.logic.restservice.exception.UploadImageException;
 import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.model.NewThreadResult;
+import org.cryse.lkong.model.UploadImageResult;
 import org.cryse.lkong.service.task.EditPostTask;
 import org.cryse.lkong.service.task.SendPostTask;
 import org.cryse.lkong.service.task.SendTask;
@@ -120,18 +123,34 @@ public class SendPostService extends Service {
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         NewPostResult postResult = null;
-        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
+        String replaceResult;
         try {
+            replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
             postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
+            if(postResult != null && postResult.isSuccess()) {
+                mEventBus.sendEvent(new NewPostDoneEvent(postResult));
+            } else {
+                PostErrorEvent errorEvent = new PostErrorEvent();
+                if(postResult == null) {
+                    errorEvent.setErrorMessage("[NETWORK_ERROR]");
+                } else {
+                    errorEvent.setErrorMessage(postResult.getErrorMessage());
+                }
+                mEventBus.sendEvent(errorEvent);
+            }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "sendPost error", e);
+            PostErrorEvent errorEvent = new PostErrorEvent();
+            if(e instanceof UploadImageException) {
+                errorEvent.setErrorMessage(e.getMessage());
+            } else {
+                errorEvent.setErrorMessage("[NETWORK_ERROR]");
+            }
+            mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
             // showSendPostTaskResultNotification(postResult);
-            if(postResult != null && postResult.isSuccess()) {
-                mEventBus.sendEvent(new NewPostDoneEvent(postResult));
-            }
+
         }
     }
 
@@ -148,18 +167,33 @@ public class SendPostService extends Service {
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         NewThreadResult threadResult = null;
-        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
+        String replaceResult = null;
         try {
+            replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
             threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
+            if(threadResult != null && threadResult.isSuccess()) {
+                mEventBus.sendEvent(new NewThreadDoneEvent(threadResult));
+            } else {
+                PostErrorEvent errorEvent = new PostErrorEvent();
+                if(threadResult == null) {
+                    errorEvent.setErrorMessage("[NETWORK_ERROR]");
+                } else {
+                    errorEvent.setErrorMessage(threadResult.getErrorMessage());
+                }
+                mEventBus.sendEvent(errorEvent);
+            }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "sendThread error", e);
+            PostErrorEvent errorEvent = new PostErrorEvent();
+            if(e instanceof UploadImageException) {
+                errorEvent.setErrorMessage(e.getMessage());
+            } else {
+                errorEvent.setErrorMessage("[NETWORK_ERROR]");
+            }
+            mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
             // showSendThreadTaskResultNotification(threadResult);
-            if(threadResult != null && threadResult.isSuccess()) {
-                mEventBus.sendEvent(new NewThreadDoneEvent(threadResult));
-            }
         }
     }
 
@@ -176,31 +210,43 @@ public class SendPostService extends Service {
         startForeground(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         mNotifyManager.notify(SENDING_NOTIFICATION_ID, progressNotificationBuilder.build());
         EditPostResult editPostResult = null;
-        String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
         try {
+            String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
             editPostResult = mLKRestService.editPost(task.getAuthObject(), task.getTid(), task.getPid(), task.getAction(), task.getTitle(), replaceResult);
+            if(editPostResult != null && editPostResult.isSuccess()) {
+                mEventBus.sendEvent(new EditPostDoneEvent(editPostResult));
+            } else{
+                PostErrorEvent errorEvent = new PostErrorEvent();
+                if(editPostResult == null) {
+                    errorEvent.setErrorMessage("[NETWORK_ERROR]");
+                } else {
+                    errorEvent.setErrorMessage(editPostResult.getErrorMessage());
+                }
+                mEventBus.sendEvent(errorEvent);
+            }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "editPost error", e);
+            PostErrorEvent errorEvent = new PostErrorEvent();
+            if(e instanceof UploadImageException) {
+                errorEvent.setErrorMessage(e.getMessage());
+            } else {
+                errorEvent.setErrorMessage("[NETWORK_ERROR]");
+            }
+            mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
             stopForeground(true);
-            if(editPostResult != null && editPostResult.isSuccess()) {
-                mEventBus.sendEvent(new EditPostDoneEvent(editPostResult));
-            }
         }
     }
 
-    private String preprocessContent(LKAuthObject authObject, String content) {
+    private String preprocessContent(LKAuthObject authObject, String content) throws Exception{
         String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
         ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
         contentProcessor.setUploadImageCallback(path -> {
-            String uploadUrl = "";
-            try {
-                uploadUrl = mLKRestService.uploadImageToLKong(authObject, path);
-            } catch (Exception ex) {
-                Log.e(LOG_TAG, "uploadImageToLKong failed", ex);
-            } finally {
-                return uploadUrl;
+            UploadImageResult result = mLKRestService.uploadImageToLKong(authObject, path);
+            if(result.isSuccess()) {
+                return result.getImageUrl();
+            } else {
+                throw new UploadImageException(result.getErrorMessage());
             }
         });
         contentProcessor.run();

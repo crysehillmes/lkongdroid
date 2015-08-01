@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsFlipPageByVolumeKey;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
@@ -87,5 +88,11 @@ public class PreferenceModule {
     @PrefsFlipPageByVolumeKey
     BooleanPreference provideFlipPageByVolumeKey(SharedPreferences preferences) {
         return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_FLIP_PAGE_BY_VOLUME_KEY, PreferenceConstant.SHARED_PREFERENCE_FLIP_PAGE_BY_VOLUME_KEY_VALUE);
+    }
+
+    @Provides
+    @PrefsForumsFirst
+    BooleanPreference provideForumsFirst(SharedPreferences preferences) {
+        return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST, PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST_VALUE);
     }
 }

@@ -284,12 +284,12 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
             if(mIsForumPinned) {
                 /*mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
                 mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);*/
-                mPinForumSwitch.setText(R.string.action_pinned_forum);
+                mPinForumSwitch.setText(R.string.action_forum_followed);
             }
             else {
                 /*mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
                 mPinForumMenuItem.setTitle(R.string.action_pin_to_home);*/
-                mPinForumSwitch.setText(R.string.action_not_pinned_forum);
+                mPinForumSwitch.setText(R.string.action_forum_not_followed);
             }
             mPinForumSwitch.setOnCheckedChangeListener(null);
             mPinForumSwitch.setChecked(mIsForumPinned);
@@ -425,11 +425,17 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     }
 
     private void pinForum() {
-        getPresenter().pinForum(mUserAccountManager.getCurrentUserId(), mForumId, mForumName, ModelConverter.fidToForumIconUrl(mForumId));
+        getPresenter().pinForum(
+                mUserAccountManager.getAuthObject(),
+                mForumId,
+                mForumName,
+                ModelConverter.fidToForumIconUrl(mForumId)
+        );
     }
 
     private void unpinForum() {
-        getPresenter().unpinForum(mUserAccountManager.getCurrentUserId(), mForumId);
+        getPresenter().unpinForum(
+                mUserAccountManager.getAuthObject(), mForumId);
     }
 
     private CompoundButton.OnCheckedChangeListener mOnPinForumCheckedChangeListener = (buttonView, isChecked) -> {

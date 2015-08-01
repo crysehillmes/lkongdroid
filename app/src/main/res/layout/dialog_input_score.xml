@@ -6,7 +6,7 @@
     android:paddingRight="16dp"
     android:orientation="vertical">
 
-    <org.cryse.lkong.widget.TempFixTextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -21,9 +21,9 @@
             android:maxLength="20"
             android:singleLine="true" />
 
-    </org.cryse.lkong.widget.TempFixTextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <org.cryse.lkong.widget.TempFixTextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -37,5 +37,5 @@
             android:inputType="number"
             android:singleLine="true" />
 
-    </org.cryse.lkong.widget.TempFixTextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 </LinearLayout>
