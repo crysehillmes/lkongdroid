@@ -17,12 +17,12 @@ public class ContentProcessor {
 
     private static final Pattern mImagePattern = Pattern.compile("\\(\\[\\(\\[\\[(\\d)\\]\\[([^\\]]+)\\]\\]\\)\\]\\)");
     private static final Pattern mBookNamePattern = Pattern.compile("《([^》]+)》");
-    public void run() {
+    public void run() throws Exception {
         mResultContent = processImage(mOriginalContent);
         /*mResultContent = processBookName(mResultContent);*/
     }
 
-    private String processImage(String content) {
+    private String processImage(String content) throws Exception {
         Matcher matcher = mImagePattern.matcher(content);
         StringBuffer replaceBuffer = new StringBuffer();
         while (matcher.find()) {
@@ -34,7 +34,7 @@ public class ContentProcessor {
                     matcher.appendReplacement(replaceBuffer, "http://img.lkong.cn/bq/" + matcher.group(2) + ".gif\"" + " em=\"" + matcher.group(2).substring(2));
                     break;
                 case IMG_TYPE_LOCAL:
-                        String uploadUrl = mUploadImageCallback.uploadImage(matcher.group(2));
+                    String uploadUrl = mUploadImageCallback.uploadImage(matcher.group(2));
                     matcher.appendReplacement(replaceBuffer, uploadUrl);
                     break;
             }
@@ -69,6 +69,6 @@ public class ContentProcessor {
     }
 
     public interface UploadImageCallback {
-        String uploadImage(String path);
+        String uploadImage(String path) throws Exception;
     }
 }

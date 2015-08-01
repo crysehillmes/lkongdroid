@@ -19,10 +19,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.account.UserAccount;
-import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
 import org.cryse.lkong.broadcast.BroadcastConstants;
-import org.cryse.lkong.data.model.FollowedUser;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumCursor;
@@ -32,7 +30,6 @@ import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadContentValues;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserContentValues;
-import org.cryse.lkong.data.provider.followeduser.FollowedUserCursor;
 import org.cryse.lkong.data.provider.followeduser.FollowedUserSelection;
 import org.cryse.lkong.logic.request.GetForumInfoRequest;
 import org.cryse.lkong.model.ForumModel;
@@ -53,6 +50,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
+    public static final int SYNC_INTERVAL_SECONDS = 60 * 60;
+
     private AccountManager mAccountManager;
     private OkHttpClient mOkHttpClient;
     private CookieManager mCookieManager;
@@ -69,8 +68,8 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
     private void init(Context context) {
         this.mAccountManager = AccountManager.get(context);
         this.mOkHttpClient = new OkHttpClient();
-        this.mOkHttpClient.setConnectTimeout(1, TimeUnit.MINUTES);
-        this.mOkHttpClient.setReadTimeout(1, TimeUnit.MINUTES);
+        this.mOkHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
+        this.mOkHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         this.mCookieManager = new CookieManager();
         this.mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         this.mOkHttpClient.setCookieHandler(mCookieManager);
@@ -78,6 +77,9 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        // Used to indicate to the SyncManager that future sync requests that match the request's
+        // Account and authority should be delayed at least this many seconds.
+        syncResult.delayUntil = SYNC_INTERVAL_SECONDS;
         try {
             UserAccount userAccount = UserAccountManager.getUserAccountFromAccountManager(account, mAccountManager);
             LKAuthObject authObject = UserAccountManager.getAuthObject(userAccount);

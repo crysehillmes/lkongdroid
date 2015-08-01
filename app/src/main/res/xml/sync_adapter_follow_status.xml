@@ -4,5 +4,5 @@
     android:accountType="org.cryse.lkong"
     android:userVisible="true"
     android:allowParallelSyncs="true"
-    android:isAlwaysSyncable="true"
+    android:isAlwaysSyncable="false"
     android:supportsUploading="true"/>

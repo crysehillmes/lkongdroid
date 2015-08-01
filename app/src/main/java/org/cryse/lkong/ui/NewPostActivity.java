@@ -111,13 +111,13 @@ public class NewPostActivity extends AbstractPostActivity {
                     showSnackbar(
                             TextUtils.isEmpty(result.getErrorMessage()) ? getString(R.string.toast_failure_new_post) : result.getErrorMessage(),
                             SimpleSnackbarType.ERROR,
-                            SimpleSnackbarType.LENGTH_SHORT
+                            SimpleSnackbarType.LENGTH_LONG
                     );
                 } else {
                     showSnackbar(
                             getString(R.string.toast_failure_new_post),
                             SimpleSnackbarType.ERROR,
-                            SimpleSnackbarType.LENGTH_SHORT
+                            SimpleSnackbarType.LENGTH_LONG
                     );
                 }
             }

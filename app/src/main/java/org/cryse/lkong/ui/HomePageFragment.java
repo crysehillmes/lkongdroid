@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -23,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -32,12 +32,12 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
-import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
+import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +59,11 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     HomePagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsForumsFirst
+    BooleanPreference mForumsFirst;
+
+
     @InjectView(R.id.tablayout)
     TabLayout mTabLayout;
     @InjectView(R.id.fragment_homepage_viewpager)
@@ -128,9 +133,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onResume();
         checkNewNoticeCount();
         mPresenter.punch(mUserAccountManager.getAuthObject());
-        Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
-        // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
-        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
     }
 
     @Override
@@ -164,8 +166,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
-        adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
-        adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
+        if(mForumsFirst.get()) {
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+        } else {
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
+        }
         viewPager.setAdapter(adapter);
     }
 

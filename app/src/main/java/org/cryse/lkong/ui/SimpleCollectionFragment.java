@@ -107,11 +107,16 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (mItemList.size() == 0) {
+            if (savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(DataContract.BUNDLE_CONTENT_LIST_STORE)) {
-            ArrayList<ItemType> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
-            mCollectionAdapter.addAll(list);
-            mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
+                ArrayList<ItemType> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
+                mCollectionAdapter.addAll(list);
+                mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
+
+            } else {
+                loadInitialData();
+            }
         }
     }
 
@@ -128,7 +133,6 @@ public abstract class SimpleCollectionFragment<
     public void onStart() {
         super.onStart();
         getPresenter().bindView(this);
-        loadInitialData();
     }
 
     @Override

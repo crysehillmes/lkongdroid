@@ -94,7 +94,7 @@
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
     <string name="toast_failure_rate_post">Failed to rate post.</string>
 
-    <string name="toast_failure_new_post">Failed to post, please try again.</string>
+    <string name="toast_failure_new_post">Failed to send data, please try again.</string>
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>
     <string name="toast_error_title_empty">Title should not be empty.</string>
     <string name="toast_error_content_empty">Content should not be empty.</string>
@@ -193,7 +193,7 @@
     <string name="settings_category_navigation">Navigation</string>
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
     <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
-    <string name="settings_item_use_forums_first_title">ForumsPage first</string>
+    <string name="settings_item_use_forums_first_title">Forums page first</string>
     <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app).</string>
 
     <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
