@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.service.CheckNoticeService;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -224,6 +226,14 @@ public class MainActivity extends AbstractThemeableActivity{
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         checkVersionCode();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+        // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
+        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
