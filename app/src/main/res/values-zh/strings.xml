@@ -30,7 +30,7 @@
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
     <string name="drawer_item_timeline">信息流</string>
-    <string name="drawer_item_followed_forums">关注的板块</string>
+    <string name="drawer_item_followed_forums">关注板块</string>
     <string name="drawer_item_homepage">个人主页</string>
     <string name="drawer_item_private_messages">私信</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
@@ -173,8 +173,8 @@
     <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; 回复</string>
     <string name="hint_search_label">搜索</string>
     <string name="hint_search_hint">搜索位面，主题或用户</string>
-    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是个人主页(重启应用生效)</string>
-    <string name="settings_item_use_forums_first_title">首页板块列表</string>
+    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
+    <string name="settings_item_use_forums_first_title">首页显示板块列表</string>
     <string name="settings_category_navigation">导航</string>
     <string name="settings_item_flip_page_by_volume_key_title">音量控制键翻页</string>
     <string name="settings_item_flip_page_by_volume_key_summary">通过音量键翻页</string>
