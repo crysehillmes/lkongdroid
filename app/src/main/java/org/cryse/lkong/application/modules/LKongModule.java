@@ -4,7 +4,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;

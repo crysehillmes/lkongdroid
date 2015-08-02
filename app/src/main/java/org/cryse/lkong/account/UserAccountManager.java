@@ -1,4 +1,4 @@
-package org.cryse.lkong.application;
+package org.cryse.lkong.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -8,11 +8,8 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.cryse.lkong.account.AccountConst;
-import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
-import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
@@ -40,9 +37,6 @@ public class UserAccountManager {
     @Inject
     @ApplicationContext
     Context mContext;
-
-    @Inject
-    LKongDatabase mLKongDatabase;
 
     @Inject
     @PrefsDefaultAccountUid

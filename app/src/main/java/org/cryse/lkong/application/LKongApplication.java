@@ -1,6 +1,5 @@
 package org.cryse.lkong.application;
 
-import android.accounts.Account;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
@@ -10,6 +9,7 @@ import com.umeng.update.UmengUpdateAgent;
 
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.component.DaggerLKongPresenterComponent;
 import org.cryse.lkong.application.component.DaggerSendServiceComponet;
 import org.cryse.lkong.application.component.DaggerSimpleActivityComponent;
@@ -22,7 +22,6 @@ import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
