@@ -140,11 +140,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
@@ -184,11 +180,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
@@ -226,11 +218,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
