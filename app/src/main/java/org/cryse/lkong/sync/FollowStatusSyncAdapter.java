@@ -79,7 +79,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         // Used to indicate to the SyncManager that future sync requests that match the request's
         // Account and authority should be delayed at least this many seconds.
-        syncResult.delayUntil = (System.currentTimeMillis() / 1000) + SYNC_INTERVAL_SECONDS;
+        // syncResult.delayUntil = (System.currentTimeMillis() / 1000) + SYNC_INTERVAL_SECONDS;
         try {
             UserAccount userAccount = UserAccountManager.getUserAccountFromAccountManager(account, mAccountManager);
             LKAuthObject authObject = UserAccountManager.getAuthObject(userAccount);

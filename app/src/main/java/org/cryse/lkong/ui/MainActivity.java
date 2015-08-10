@@ -232,6 +232,12 @@ public class MainActivity extends AbstractThemeableActivity{
         Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
         // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
         SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
+        SyncUtils.setPeriodicSync(
+                account,
+                SyncUtils.SYNC_AUTHORITY,
+                false,
+                SyncUtils.SYNC_FREQUENCE_HALF_HOUR
+        );
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
