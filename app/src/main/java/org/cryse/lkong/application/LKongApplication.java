@@ -28,6 +28,7 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 
 import javax.inject.Singleton;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 @Singleton
@@ -47,7 +48,7 @@ public class LKongApplication extends Application {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
         AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
-        Crashlytics.start(this);
+        Fabric.with(this, new Crashlytics());
         if(BuildConfig.InAppUpdate) {
             UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
             UmengUpdateAgent.update(this);

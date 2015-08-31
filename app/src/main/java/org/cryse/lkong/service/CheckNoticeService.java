@@ -47,6 +47,7 @@ public class CheckNoticeService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
+
     public void checkNew(LKAuthObject authObject) {
         new Thread(() -> {
             try {
@@ -62,7 +63,6 @@ public class CheckNoticeService extends Service {
     }
 
     public class CheckNoticeCountServiceBinder extends Binder {
-
         public void checkNoticeCount(LKAuthObject authObject) {
             checkNew(authObject);
         }

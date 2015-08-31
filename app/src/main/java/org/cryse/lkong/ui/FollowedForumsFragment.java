@@ -121,7 +121,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
             getPresenter().loadPinnedForums(mUserAccountManager.getAuthObject().getUserId());
             Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
             if(account != null)
-                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
         }
     }
 

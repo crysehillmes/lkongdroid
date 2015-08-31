@@ -8,7 +8,8 @@ import android.os.Bundle;
 import java.util.List;
 
 public class SyncUtils {
-    public static final String SYNC_AUTHORITY = "org.cryse.lkong.data.provider";
+    public static final String SYNC_AUTHORITY_FOLLOW_STATUS = "org.cryse.lkong.data.provider.followstatus";
+    public static final String SYNC_AUTHORITY_CHECK_NOTICE = "org.cryse.lkong.data.provider.checknotice";
     public static final int SYNC_FREQUENCE_ONE_HOUR = 3600;
     public static final int SYNC_FREQUENCE_HALF_HOUR = 1800;
 

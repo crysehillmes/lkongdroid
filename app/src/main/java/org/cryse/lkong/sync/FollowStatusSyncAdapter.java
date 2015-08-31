@@ -115,7 +115,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                     else
                         fids[i] = -1;
                 }
-                syncFollowedForumStatus(authObject, fids, provider);
+                syncFollowedForumStatus(authObject, authority, fids, provider);
 
                 // Get followed users
                 JSONArray usersArray = rootObject.getJSONArray("uid");
@@ -128,7 +128,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                     else
                         uids[i] = -1;
                 }
-                syncFollowedUserStatus(authObject, uids, provider);
+                syncFollowedUserStatus(authObject, authority, uids, provider);
             }
             clearCookies();
         } catch (Exception exception) {
@@ -136,7 +136,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncFollowedForumStatus(LKAuthObject authObject, long[] fids, ContentProviderClient provider) throws Exception {
+    private void syncFollowedForumStatus(LKAuthObject authObject, String authority, long[] fids, ContentProviderClient provider) throws Exception {
         int fidCount = fids.length;
         for (int i = 0; i < fidCount; i++) {
             long fid = fids[i];
@@ -145,7 +145,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
             FollowedForumSelection selection = new FollowedForumSelection();
             selection.userId(authObject.getUserId()).and().forumId(fid);
             // 判断列表中是不是有这一项，如果有的话移除
-            Cursor cursor = provider.query(selection.uri(), null, selection.sel(), selection.args(), selection.order());
+            Cursor cursor = provider.query(FollowedForumColumns.contentUri(authority), null, selection.sel(), selection.args(), selection.order());
             FollowedForumContentValues forumValues = new FollowedForumContentValues();
             if(cursor.getCount() == 1) {
                 cursor.moveToFirst();
@@ -167,15 +167,15 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                 forumValues.putForumSortValue(i);
             }
             cursor.close();
-            provider.insert(FollowedForumColumns.CONTENT_URI, forumValues.values());
+            provider.insert(FollowedForumColumns.contentUri(authority), forumValues.values());
         }
         FollowedForumSelection deleteSelection = new FollowedForumSelection();
         deleteSelection.forumIdNot(fids).and().userId(authObject.getUserId());
-        provider.delete(FollowedForumColumns.CONTENT_URI, deleteSelection.sel(), deleteSelection.args());
+        provider.delete(FollowedForumColumns.contentUri(authority), deleteSelection.sel(), deleteSelection.args());
         getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
     }
 
-    private void syncFollowedThreadStatus(LKAuthObject authObject, List<Long> tids, ContentProviderClient provider) throws RemoteException {
+    private void syncFollowedThreadStatus(LKAuthObject authObject, String authority, List<Long> tids, ContentProviderClient provider) throws RemoteException {
         List<FollowedForumModel> followedForumModels = new ArrayList<>(tids.size());
         ContentValues[] values = new ContentValues[tids.size()];
         for (int i = 0; i < tids.size(); i++) {
@@ -184,17 +184,17 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
 
             values[i] = threadContentValues.values();
         }
-        provider.bulkInsert(FollowedThreadColumns.CONTENT_URI, values);
+        provider.bulkInsert(FollowedThreadColumns.contentUri(authority), values);
     }
 
-    private void syncFollowedUserStatus(LKAuthObject authObject, long[] uids, ContentProviderClient provider) throws RemoteException {
+    private void syncFollowedUserStatus(LKAuthObject authObject, String authority, long[] uids, ContentProviderClient provider) throws RemoteException {
         int uidCount = uids.length;
         for (int i = 0; i < uidCount; i++) {
             long targetUserId = uids[i];
             if(targetUserId == -1) continue;
             FollowedUserSelection selection = new FollowedUserSelection();
             selection.userId(authObject.getUserId()).and().targetUserId(targetUserId);
-            Cursor cursor = provider.query(selection.uri(), null, selection.sel(), selection.args(), selection.order());
+            Cursor cursor = provider.query(FollowedUserColumns.contentUri(authority), null, selection.sel(), selection.args(), selection.order());
             if(cursor.getCount() == 1) {
                 // Exist row, do nothing
                 cursor.moveToFirst();
@@ -203,13 +203,13 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
                 FollowedUserContentValues userValues = new FollowedUserContentValues();
                 userValues.putUserId(authObject.getUserId());
                 userValues.putTargetUserId(targetUserId);
-                provider.insert(FollowedUserColumns.CONTENT_URI, userValues.values());
+                provider.insert(FollowedUserColumns.contentUri(authority), userValues.values());
             }
             cursor.close();
         }
         FollowedUserSelection deleteSelection = new FollowedUserSelection();
         deleteSelection.userId(authObject.getUserId()).and().targetUserIdNot(uids);
-        provider.delete(FollowedUserColumns.CONTENT_URI, deleteSelection.sel(), deleteSelection.args());
+        provider.delete(FollowedUserColumns.contentUri(authority), deleteSelection.sel(), deleteSelection.args());
         getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_USERS_DONE));
     }
 
