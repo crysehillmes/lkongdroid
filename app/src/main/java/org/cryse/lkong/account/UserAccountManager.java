@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -191,7 +192,11 @@ public class UserAccountManager {
         try {
             UserAccount userAccount = mUserAccounts.get(uid);
             Account account = userAccount.getAccount();
-            mAccountManager.removeAccountExplicitly(account);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                mAccountManager.removeAccountExplicitly(account);
+            } else {
+                mAccountManager.removeAccount(account,null,null);
+            }
         } catch (Exception ex) {
             Timber.d(ex, ex.getMessage(), LOG_TAG);
         }
