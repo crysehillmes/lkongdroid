@@ -146,6 +146,9 @@ public class UserAccountManager {
     public LKAuthObject getAuthObject() {
         if(mAuthObject == null && mCurrentUserAccount != null) {
             mAuthObject = getAuthObject(mCurrentUserAccount);
+        } else if(mAuthObject == null) {
+            setCurrentUserAccount(getFirst().getUserId());
+            mAuthObject = getAuthObject(mCurrentUserAccount);
         }
         return mAuthObject;
     }

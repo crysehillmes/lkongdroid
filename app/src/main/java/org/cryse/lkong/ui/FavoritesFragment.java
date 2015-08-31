@@ -1,6 +1,11 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -12,6 +17,7 @@ import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
@@ -19,6 +25,7 @@ import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
@@ -133,6 +140,13 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             mNeedRefresh = false;
             getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
         }
+        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mCheckNoticeCountDoneBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -229,9 +243,10 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     protected void checkNewNoticeCount() {
         if (isAdded()) {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).checkNewNoticeCount();
-            }
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         }
     }
 
@@ -243,4 +258,12 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                 getActivity().invalidateOptionsMenu();
         }
     }
+
+    private BroadcastReceiver mCheckNoticeCountDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            // loadData(null, 0, false);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+        }
+    };
 }

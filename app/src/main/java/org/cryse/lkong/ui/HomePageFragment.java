@@ -1,6 +1,11 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -23,6 +28,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -32,6 +38,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -133,6 +140,13 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onResume();
         checkNewNoticeCount();
         mPresenter.punch(mUserAccountManager.getAuthObject());
+        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mCheckNoticeCountDoneBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -287,9 +301,10 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     protected void checkNewNoticeCount() {
         if (isAdded()) {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).checkNewNoticeCount();
-            }
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         }
     }
 
@@ -359,4 +374,12 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             return mFragmentTitles.get(position);
         }
     }
+
+    private BroadcastReceiver mCheckNoticeCountDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            // loadData(null, 0, false);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+        }
+    };
 }

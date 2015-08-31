@@ -80,7 +80,6 @@
             android:name=".account.LKongAuthenticatorActivity"
             android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
         <service android:name=".service.SendPostService"/>
-        <service android:name=".service.CheckNoticeService"/>
         <service android:name=".account.LKongAuthenticateService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

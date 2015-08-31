@@ -1,16 +1,13 @@
 package org.cryse.lkong.ui;
 
 import android.accounts.Account;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,7 +38,6 @@ import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
-import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
@@ -74,9 +70,6 @@ public class MainActivity extends AbstractThemeableActivity{
 
     Picasso mPicasso;
     UserAccount mCurrentAccount = null;
-
-    ServiceConnection mBackgroundServiceConnection;
-    private CheckNoticeService.CheckNoticeCountServiceBinder mCheckNoticeServiceBinder;
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
@@ -112,17 +105,6 @@ public class MainActivity extends AbstractThemeableActivity{
             mIsRestorePosition = false;
         }
         initDrawer();
-        mBackgroundServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mCheckNoticeServiceBinder = (CheckNoticeService.CheckNoticeCountServiceBinder) service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mCheckNoticeServiceBinder = null;
-            }
-        };
     }
 
     private void initDrawer() {
@@ -302,11 +284,6 @@ public class MainActivity extends AbstractThemeableActivity{
         setTitle(title);
     }
 
-    public void checkNewNoticeCount() {
-        if (mCheckNoticeServiceBinder != null && mCheckNoticeServiceBinder.isBinderAlive())
-            mCheckNoticeServiceBinder.checkNoticeCount(mUserAccountManager.getAuthObject());
-    }
-
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
@@ -374,14 +351,11 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void onStop() {
         super.onStop();
-        this.unbindService(mBackgroundServiceConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Intent service = new Intent(this.getApplicationContext(), CheckNoticeService.class);
-        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override

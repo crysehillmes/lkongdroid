@@ -72,7 +72,6 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     public void onPause() {
         getActivity().unregisterReceiver(mSyncFollowedForumsDoneBroadcastReceiver);
         super.onPause();
-
     }
 
     @Override
