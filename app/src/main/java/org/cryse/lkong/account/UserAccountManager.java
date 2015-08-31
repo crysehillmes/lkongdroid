@@ -20,6 +20,7 @@ import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.utils.preference.LongPreference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -100,6 +101,8 @@ public class UserAccountManager {
             UserAccount currentAccount = mUserAccounts.get(uid);
             if(currentAccount == null && getFirst() != null) {
                 setCurrentUserAccount(getFirst().getUserId());
+            } else if(currentAccount != null) {
+                setCurrentUserAccount(currentAccount);
             } else {
                 mDefaultAccountUid.set(0l);
             }
@@ -122,10 +125,16 @@ public class UserAccountManager {
 
     public UserAccount getCurrentUserAccount() {
         if(mCurrentUserAccount == null && mUserAccounts.size() > 0) {
-            mCurrentUserAccount = getFirst();
+            mCurrentUserAccount = mUserAccounts.get(mDefaultAccountUid.get());
             if(mCurrentUserAccount != null) {
-                mDefaultAccountUid.set(mCurrentUserAccount.getUserId());
-                mAuthObject = getAuthObject(mCurrentUserAccount);
+                    mDefaultAccountUid.set(mCurrentUserAccount.getUserId());
+                    mAuthObject = getAuthObject(mCurrentUserAccount);
+            } else {
+                mCurrentUserAccount = getFirst();
+                if(mCurrentUserAccount != null) {
+                    mDefaultAccountUid.set(mCurrentUserAccount.getUserId());
+                    mAuthObject = getAuthObject(mCurrentUserAccount);
+                }
             }
             return mCurrentUserAccount;
         }
@@ -147,7 +156,14 @@ public class UserAccountManager {
     }
 
     public List<UserAccount> getUserAccounts() {
-        return new ArrayList<UserAccount>(mUserAccounts.values());
+        ArrayList<UserAccount> userAccounts = new ArrayList<UserAccount>(mUserAccounts.values());
+        for(int i = 0; i < userAccounts.size(); i++) {
+            if(userAccounts.get(i).getUserId() == mCurrentUserAccount.getUserId()) {
+                Collections.swap(userAccounts, 0, i);
+                break;
+            }
+        }
+        return userAccounts;
     }
 
     public long getCurrentUserId() {
@@ -158,6 +174,12 @@ public class UserAccountManager {
         this.mCurrentUserAccount = mUserAccounts.get(userId);
         this.mAuthObject = getAuthObject(mCurrentUserAccount);
         this.mDefaultAccountUid.set(userId);
+    }
+
+    private void setCurrentUserAccount(UserAccount userAccount) {
+        this.mCurrentUserAccount = userAccount;
+        this.mAuthObject = getAuthObject(mCurrentUserAccount);
+        this.mDefaultAccountUid.set(userAccount.getUserId());
     }
 
     public UserAccount getUserAccount(long uid) {
