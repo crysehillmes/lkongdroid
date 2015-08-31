@@ -75,9 +75,10 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
             actionBar.setDisplayHomeAsUpEnabled(true);
             if(mIsOverrideToolbarColor)
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getToolbarColor()));
+        }
+        if(mIsOverrideStatusBarColor) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if(mIsOverrideStatusBarColor)
-                    setStatusBarColor(getStatusBarColor());
+                setStatusBarColor(getStatusBarColor());
             }
         }
     }
