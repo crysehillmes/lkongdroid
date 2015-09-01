@@ -140,7 +140,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onResume();
         checkNewNoticeCount();
         mPresenter.punch(mUserAccountManager.getAuthObject());
-        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+        IntentFilter checkNoticeIntentFilter = new IntentFilter(BroadcastConstants.BROADCAST_SYNC_CHECK_NOTICE_COUNT_DONE);
+        checkNoticeIntentFilter.setPriority(10);
+        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, checkNoticeIntentFilter);
     }
 
     @Override
@@ -380,6 +382,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             // update your views
             // loadData(null, 0, false);
             mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+            abortBroadcast();
         }
     };
 }

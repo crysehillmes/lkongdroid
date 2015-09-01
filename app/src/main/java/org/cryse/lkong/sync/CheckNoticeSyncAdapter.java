@@ -65,66 +65,12 @@ public class CheckNoticeSyncAdapter extends AbstractThreadedSyncAdapter {
             values.putCacheKey(CacheConstants.generateNoticeCountKey(authObject.getUserId()))
                     .putCacheValue(json);
             provider.insert(CacheObjectColumns.contentUri(authority), values.values());
-            getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_CHECK_NOTICE_COUNT_DONE));
-            if(noticeCountModel.hasNotification()) {
-                showNewNoticeNotification(authObject.getUserId(), noticeCountModel);
-            }
+            Intent broadcastIntent = new Intent(BroadcastConstants.BROADCAST_SYNC_CHECK_NOTICE_COUNT_DONE);
+            broadcastIntent.putExtra(DataContract.BUNDLE_USER_ID, authObject.getUserId());
+            broadcastIntent.putExtra(DataContract.BUNDLE_NOTICE_COUNT_MODEL, noticeCountModel);
+            getContext().sendOrderedBroadcast(broadcastIntent, null);
         } catch (Exception exception) {
             Log.e("SYNC_ADAPTER", exception.getMessage(), exception);
         }
-    }
-
-    public void showNewNoticeNotification(long userId, NoticeCountModel noticeCount) {
-        StringBuilder stringBuilder = new StringBuilder(60);
-        if(noticeCount.getMentionNotice() > 0) {
-            stringBuilder.append(
-                    getContext().getString(
-                            R.string.format_notice_mentions,
-                            noticeCount.getMentionNotice())
-            );
-        }
-        if(noticeCount.getNotice() > 0) {
-            stringBuilder
-                    .append(stringBuilder.length() > 0 ? "," : "")
-                    .append(
-                            getContext().getString(
-                                    R.string.format_notice_notice,
-                                    noticeCount.getNotice())
-                    );
-        }
-        if(noticeCount.getPrivateMessageNotice() > 0) {
-            stringBuilder
-                    .append(stringBuilder.length() > 0 ? "," : "")
-                    .append(
-                            getContext().getString(
-                                    R.string.format_notice_private_message,
-                                    noticeCount.getPrivateMessageNotice())
-                    );
-        }
-        if(noticeCount.getRateNotice() > 0) {
-            stringBuilder
-                    .append(stringBuilder.length() > 0 ? "," : "")
-                    .append(
-                            getContext().getString(
-                                    R.string.format_notice_rate,
-                                    noticeCount.getRateNotice())
-                    );
-        }
-
-        NotificationManager notificationManager =
-                (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(getContext());
-        Intent openNotificationActivityIntent = new Intent(getContext(), NotificationActivity.class);
-        PendingIntent chaptersListIntent =
-                PendingIntent.getActivity(getContext(), 0, openNotificationActivityIntent, PendingIntent.FLAG_ONE_SHOT);
-
-        Bundle extras = Bundle.EMPTY;
-        mResultBuilder.setContentTitle(getContext().getString(R.string.format_notice_all_count, noticeCount.getAllNoticeCount()))
-                .setContentText(stringBuilder.toString())
-                .setSmallIcon(R.drawable.ic_notification_new_notification)
-                .setExtras(extras)
-                .setContentIntent(chaptersListIntent)
-                .setAutoCancel(true);
-        notificationManager.notify(NOTIFICATION_START_ID + (int)userId, mResultBuilder.build());
     }
 }

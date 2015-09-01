@@ -121,6 +121,11 @@
             android:authorities="org.cryse.lkong.data.provider.checknotice"
             android:label="@string/provider_checknotice_label"
             android:exported="false" />
+        <receiver android:name=".broadcast.CheckNewBroadcastReceiver" >
+            <intent-filter android:priority="1">
+                <action android:name="org.cryse.lkong.broadcast.SYNC_CHECK_NOTICE_COUNT_DONE" />
+            </intent-filter>
+        </receiver>
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" >
