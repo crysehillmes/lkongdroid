@@ -263,6 +263,11 @@
     <string name="format_time_n_days_ago">&#160;days ago</string>
     <string name="format_time_date">MMM dd, yyyy</string>
     <string name="format_time_time">HH:mm</string>
+    <string name="format_notice_mentions">%1$d Mentions</string>
+    <string name="format_notice_notice">%1$d Notices</string>
+    <string name="format_notice_private_message">%1$d PM</string>
+    <string name="format_notice_rate">%1$d Rates</string>
+    <string name="format_notice_all_count">You Have %1$d New Notices</string>
 
     <string name="provider_checknotice_label">Auto Check New Notice</string>
     <string name="provider_follow_status_label">Auto Sync Follow Status</string>

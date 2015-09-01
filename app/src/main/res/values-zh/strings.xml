@@ -235,4 +235,10 @@
     <string name="format_time_time">HH:mm</string>
     <string name="provider_checknotice_label">自动检查新消息</string>
     <string name="provider_follow_status_label">自动同步关注状态</string>
+
+    <string name="format_notice_mentions">%1$d 个新提及</string>
+    <string name="format_notice_notice">%1$d 条新通知</string>
+    <string name="format_notice_private_message">%1$d 条新私信</string>
+    <string name="format_notice_rate">%1$d 个新评分</string>
+    <string name="format_notice_all_count">你有 %1$d 条新消息</string>
 </resources>

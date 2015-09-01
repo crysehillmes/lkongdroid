@@ -89,4 +89,8 @@ public class NoticeCountModel {
     public boolean hasNotification() {
         return notice > 0 || mentionNotice > 0 || rateNotice > 0 || privateMessageNotice > 0/* || fansNotice > 0*/;
     }
+
+    public int getAllNoticeCount() {
+        return notice + mentionNotice + rateNotice + privateMessageNotice /* + fansNotice*/;
+    }
 }
