@@ -1,13 +1,13 @@
 package org.cryse.lkong.ui.adapter;
 
-import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.data.model.FollowedForum;
@@ -20,10 +20,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum>{
-    private Picasso mPicasso;
-    public FollowedForumsAdapter(Context context, Picasso picasso, List<FollowedForum> mItemList) {
-        super(context, mItemList);
-        mPicasso = picasso;
+    private Fragment mParentFragment;
+    public FollowedForumsAdapter(Fragment parentFragment, List<FollowedForum> mItemList) {
+        super(parentFragment.getContext(), mItemList);
+        this.mParentFragment = parentFragment;
     }
 
     @Override
@@ -44,11 +44,11 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
 
                 viewHolder.mForumTitleTextView.setText(forumModel.getForumName());
                 /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
-                mPicasso
+                Glide
+                        .with(mParentFragment)
                         .load(forumModel.getForumIcon())
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
-                        .noFade()
                         .into(viewHolder.mForumIconImageView);
             }
         }

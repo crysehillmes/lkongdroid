@@ -1,21 +1,22 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 
 import java.lang.ref.WeakReference;
 
-public class AsyncTargetDrawable extends Drawable implements Target{
+public class AsyncTargetDrawable extends Drawable implements Target<GlideDrawable> {
     private WeakReference<Context> mContext;
     private WeakReference<ImageSpanContainer> mContainer;
     private Drawable mInnerDrawable;
@@ -71,29 +72,6 @@ public class AsyncTargetDrawable extends Drawable implements Target{
 
     public void setContainer(ImageSpanContainer container) {
         this.mContainer = new WeakReference<ImageSpanContainer>(container);
-    }
-
-    @Override
-     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        if(mContext.get() == null) throw new IllegalStateException("Context is null, cannot create bitmap drawable.");
-        Drawable drawable = new BitmapDrawable(mContext.get().getResources(), bitmap);
-        setDrawable(drawable);
-        setBounds(0,0, mMaxWidth, mMaxHeight);
-        if(mContainer.get() != null) {
-            mContainer.get().notifyImageSpanLoaded(mIdentityTag);
-        }
-    }
-
-    @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-        setDrawable(errorDrawable);
-        setBounds(0,0, mMaxWidth, mMaxHeight);
-    }
-
-    @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
-        setDrawable(placeHolderDrawable);
-        setBounds(0,0, mMaxWidth, mMaxHeight);
     }
 
     protected void setDrawable(Drawable drawable) {
@@ -218,5 +196,62 @@ public class AsyncTargetDrawable extends Drawable implements Target{
     @Override
     public boolean getPadding(Rect padding) {
         return mInnerDrawable.getPadding(padding);
+    }
+
+    @Override
+    public void onLoadStarted(Drawable placeholder) {
+        setDrawable(placeholder);
+        setBounds(0,0, mMaxWidth, mMaxHeight);
+    }
+
+    @Override
+    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+        setDrawable(errorDrawable);
+        setBounds(0,0, mMaxWidth, mMaxHeight);
+    }
+
+    @Override
+    public void onResourceReady(GlideDrawable resource, GlideAnimation glideAnimation) {
+        if(mContext.get() == null) throw new IllegalStateException("Context is null, cannot create bitmap drawable.");
+        setDrawable(resource);
+        setBounds(0,0, mMaxWidth, mMaxHeight);
+        if(mContainer.get() != null) {
+            mContainer.get().notifyImageSpanLoaded(mIdentityTag);
+        }
+    }
+
+    @Override
+    public void onLoadCleared(Drawable placeholder) {
+
+    }
+
+    @Override
+    public void getSize(SizeReadyCallback cb) {
+
+    }
+
+    @Override
+    public void setRequest(Request request) {
+
+    }
+
+    @Override
+    public Request getRequest() {
+        return null;
+    }
+
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 }

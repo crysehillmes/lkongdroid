@@ -30,7 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -63,8 +63,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     private static final String LOAD_IMAGE_TASK_TAG = "user_profile_load_image_tag_";
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
-
-    Picasso mPicasso;
 
     @Inject
     AndroidNavigation mNavigation;
@@ -138,7 +136,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mItemList = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
@@ -166,12 +163,11 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
         checkFollowStatus();
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
-        mPicasso.load(mUserAvatarUrl)
+        Glide.with(this).load(mUserAvatarUrl)
                 .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
+                .override(avatarSize, avatarSize)
                 .centerCrop()
-                .transform(new CircleTransform())
-                .noFade()
+                .transform(new CircleTransform(this))
                 .into(mAvatarImageView);
         mFollowButton.setOnClickListener(view -> {
             if (mIsUserFollowed)
@@ -319,7 +315,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override

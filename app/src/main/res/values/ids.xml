@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="id" name="simple_collection_recyclerview" />
+    <item type="id" name="drawable_callback_tag" />
 </resources>

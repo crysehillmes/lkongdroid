@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
@@ -44,15 +44,14 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private final String mTodayPrefix;
     private final String mImageTaskTag;
     private final int mAvatarSize;
-    private CircleTransform mCircleTransform = new CircleTransform();
-    private Picasso mPicasso;
+    private CircleTransform mCircleTransform;
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-    public TimelineAdapter(Context context, List<TimelineModel> items, Picasso picasso, String imgTaskTag) {
+    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
-        mPicasso = picasso;
         mImageTaskTag = imgTaskTag;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        mCircleTransform = new CircleTransform(context);
     }
 
     @Override
@@ -72,7 +71,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 TimelineModel timelineModel = (TimelineModel)item;
                 bindTimelineItem(
                         getContext(),
-                        mPicasso,
                         mTodayPrefix,
                         mImageTaskTag,
                         mAvatarSize,
@@ -86,7 +84,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
     public static void bindTimelineItem(
             Context context,
-            Picasso picasso,
             String todayPrefix,
             String imageTaskTag,
             int avatarSize,
@@ -112,7 +109,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
             viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
             mainContent = timelineModel.getReplyQuote().getMessage();
-        } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
+        } else if(!timelineModel.isThread()) {
             // 回复某一主题
             viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
             SpannableStringBuilder spanText = new SpannableStringBuilder();
@@ -154,12 +151,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
         viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
         viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix));
-        picasso
+        Glide.with(context)
                 .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
-                .tag(imageTaskTag)
                 .error(R.drawable.ic_placeholder_avatar)
                 .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
+                .override(avatarSize, avatarSize)
                 .transform(circleTransform)
                 .into(viewHolder.mAuthorAvatarImageView);
     }

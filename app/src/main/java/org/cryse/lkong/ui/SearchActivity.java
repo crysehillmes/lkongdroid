@@ -10,8 +10,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.squareup.picasso.Picasso;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
@@ -41,7 +39,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     private static final String LOG_TAG = SearchActivity.class.getName();
     SearchView mSearchView = null;
     private String mQueryString = null;
-    Picasso mPicasso;
     @Inject
     SearchPresenter mPresenter;
     @Inject
@@ -67,7 +64,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         ButterKnife.inject(this);
         setUpToolbar(mToolbar);
         mToolbar.setContentInsetsAbsolute(UIUtils.calculateActionBarSize(this), 0);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         initSearchBox();
     }
 
@@ -75,7 +71,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mSearchResultRecyclerView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
         mSearchResultRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mSearchResultAdapter = new SearchResultAdapter(this, mPicasso);
         mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
         mSearchResultRecyclerView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!mIsNoMore.get() && !mIsLoadingMore.get() && mNextTime.get() > 0) {
@@ -197,7 +192,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override

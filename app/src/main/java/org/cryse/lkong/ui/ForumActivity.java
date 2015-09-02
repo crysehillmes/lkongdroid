@@ -17,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -55,7 +55,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
-    Picasso mPicasso;
     @Inject
     ForumPresenter mPresenter;
 
@@ -93,7 +92,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
         ButterKnife.inject(this);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
@@ -115,7 +113,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
         mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new ThreadListAdapter(this, mPicasso, mItemList);
+        mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
@@ -166,9 +164,9 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mPicasso.resumeTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    Glide.with(ForumActivity.this).resumeRequests();
                 } else {
-                    mPicasso.pauseTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    Glide.with(ForumActivity.this).pauseRequests();
                 }
             }
         });
@@ -359,7 +357,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override

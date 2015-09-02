@@ -6,7 +6,7 @@ import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.lang.ref.WeakReference;
 
@@ -17,7 +17,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
 
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
-    private WeakReference<Picasso> mPicasso;
     private String mSource;
     private String mLocalSource;
     private int mPlaceHolderRes;
@@ -30,7 +29,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
 
     public EmoticonImageSpan(
             Context context,
-            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -41,7 +39,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     ) {
         super(ALIGN_BASELINE);
         mContext = new WeakReference<Context>(context);
-        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -92,8 +89,8 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null && !mIsLoaded) {
-            mPicasso.get().load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).noFade().into(mDrawable);
+        if(!mIsLoaded) {
+            Glide.with(mContext.get()).load(mLocalSource).error(mErrorRes).placeholder(mPlaceHolderRes).override(mEmoticonSize, mEmoticonSize).into(mDrawable);
             mIsLoaded = true;
         }
     }

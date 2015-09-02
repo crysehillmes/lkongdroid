@@ -6,14 +6,13 @@ import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.lang.ref.WeakReference;
 
 public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
-    private WeakReference<Picasso> mPicasso;
     private String mSource;
     private String mSourceMiddle;
     private int mPlaceHolderRes;
@@ -31,7 +30,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
      */
     public ClickableImageSpan(
             Context context,
-            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -44,7 +42,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
-        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -63,7 +60,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
 
     public ClickableImageSpan(
             Context context,
-            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -77,7 +73,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
-        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -116,8 +111,8 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null && !mIsLoaded) {
-            mPicasso.get().load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).centerCrop().noFade().into(mDrawable);
+        if(!mIsLoaded) {
+            Glide.with(mContext.get()).load(mSourceMiddle).error(mErrorRes).placeholder(mPlaceHolderRes).override(mMaxWidth, mMaxHeight).centerCrop().into(mDrawable);
             mIsLoaded = true;
         }
     }

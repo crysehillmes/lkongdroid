@@ -5,6 +5,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.TimelineModel;
@@ -74,7 +76,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
@@ -126,10 +128,10 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    getPicasso().resumeTag(LOAD_IMAGE_TASK_TAG);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Glide.with(getActivity()).resumeRequests();
                 } else {
-                    getPicasso().pauseTag(LOAD_IMAGE_TASK_TAG);
+                    Glide.with(getActivity()).pauseRequests();
                 }
             }
 

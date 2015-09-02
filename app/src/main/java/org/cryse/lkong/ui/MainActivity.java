@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.accounts.Account;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.RequestManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -24,7 +28,6 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
-import com.squareup.picasso.Picasso;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
@@ -68,7 +71,6 @@ public class MainActivity extends AbstractThemeableActivity{
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
 
-    Picasso mPicasso;
     UserAccount mCurrentAccount = null;
 
     int mCurrentSelection = 0;
@@ -86,7 +88,6 @@ public class MainActivity extends AbstractThemeableActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this, true);
@@ -111,12 +112,12 @@ public class MainActivity extends AbstractThemeableActivity{
         DrawerImageLoader.init(new DrawerImageLoader.IDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder) {
-                mPicasso.load(uri).placeholder(placeholder).into(imageView);
+                Glide.with(MainActivity.this).load(uri).placeholder(placeholder).into(imageView);
             }
 
             @Override
             public void cancel(ImageView imageView) {
-                mPicasso.cancelRequest(imageView);
+                //Glide.clear(imageView);
             }
 
             @Override
@@ -257,7 +258,6 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPicasso.shutdown();
     }
 
     @Override

@@ -96,7 +96,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
-        return new FollowedForumsAdapter(getActivity(), getPicasso(), mItemList);
+        return new FollowedForumsAdapter(this, mItemList);
     }
 
     @Override

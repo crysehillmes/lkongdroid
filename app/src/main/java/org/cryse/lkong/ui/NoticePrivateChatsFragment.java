@@ -60,7 +60,7 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Override
     protected NoticePrivateChatsCollectionAdapter createAdapter(List<PrivateChatModel> itemList) {
-        return new NoticePrivateChatsCollectionAdapter(getActivity(), getPicasso(), mItemList);
+        return new NoticePrivateChatsCollectionAdapter(getActivity(), mItemList);
     }
 
     @Override
