@@ -134,9 +134,9 @@ public class UserExtraDetailFragment extends AbstractFragment {
         mPunchCardView.setVisibility(View.VISIBLE);
         String currentContinuousPunchDays = getString(R.string.format_current_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
         mCurrentContinuousPunchDaysTextView.setText(currentContinuousPunchDays);
-        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
+        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getLongestContinuousPunch());
         mLongestContinuousPunchDaysTextView.setText(longestContinuousPunchDays);
-        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getCurrentContinuousPunch());
+        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getTotalPunchCount());
         mTotalPunchDaysTextView.setText(totalPunchDays);
         String lastPunchTime = getString(
                 R.string.format_last_punch_time,
