@@ -60,6 +60,7 @@ import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
@@ -362,9 +363,10 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         this,
                         null,
                         getLogTag(),
+                        AsyncDrawableType.NORMAL,
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme()),
                         (int)(mContentTextSize * 4),
-                        (int)(mContentTextSize * 4),
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme())
+                        (int)(mContentTextSize * 4)
                 );
                 Glide.with(this).load(selectedImageUri).placeholder(R.drawable.image_placeholder).override((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
                 addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
@@ -590,7 +592,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         }
 
         @Override
-        public void notifyImageSpanLoaded(Object tag) {
+        public void notifyImageSpanLoaded(Object tag, Drawable drawable, AsyncDrawableType type) {
             if(mEditText != null && mEditText.get() != null) {
                 mEditText.get().invalidate();
             }

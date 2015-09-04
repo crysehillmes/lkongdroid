@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.bumptech.glide.Glide;
 
+import org.cryse.lkong.R;
+import org.cryse.lkong.utils.transformation.FitWidthTransformation;
+
 import java.lang.ref.WeakReference;
 
 public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
@@ -54,7 +57,14 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mErrorRes = errorRes;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
-        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight);
+        mDrawable = new AsyncTargetDrawable(
+                mContext.get(),
+                mContainer.get(),
+                mIdentityTag,
+                AsyncDrawableType.NORMAL,
+                mMaxWidth,
+                mMaxHeight
+        );
         // Picasso.with(context).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).into(mDrawable);
     }
 
@@ -85,7 +95,16 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mErrorRes = errorRes;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
-        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight, initDrawable);
+        initDrawable.setBounds(0,0, maxWidth, maxHeight);
+        mDrawable = new AsyncTargetDrawable(
+                mContext.get(),
+                mContainer.get(),
+                mIdentityTag,
+                AsyncDrawableType.NORMAL,
+                initDrawable,
+                mMaxWidth,
+                mMaxHeight
+        );
     }
 
     @Override
@@ -113,6 +132,27 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mDrawable.setContainer(container);
         if(!mIsLoaded) {
             Glide.with(mContext.get()).load(mSourceMiddle).error(mErrorRes).placeholder(mPlaceHolderRes).override(mMaxWidth, mMaxHeight).centerCrop().into(mDrawable);
+            mIsLoaded = true;
+        }
+    }
+
+    @Override
+    public void loadImage(ImageSpanContainer container, int newMaxWidth) {
+        if(newMaxWidth > 0)
+        mMaxWidth = newMaxWidth;
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mDrawable.setContainer(container);
+        if(!mIsLoaded) {
+            Glide
+                    .with(mContext.get())
+                    .load(mSourceMiddle)
+                    .error(R.drawable.lkong_logo)
+                    .placeholder(mPlaceHolderRes)
+                    .override(Integer.MAX_VALUE, Integer.MAX_VALUE)
+                    .transform(
+                            new FitWidthTransformation(mContext.get(), mMaxWidth)
+                    )
+                    .into(mDrawable);
             mIsLoaded = true;
         }
     }

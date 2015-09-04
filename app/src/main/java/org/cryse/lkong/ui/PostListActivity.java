@@ -4,16 +4,17 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.DynamicLayout;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -84,7 +85,6 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -274,7 +274,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
                             .title(R.string.dialog_title_copy_content)
                             .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                            .content(postItem.getPostDisplayCache().getSpannableString())
+                            .content(postItem.getPostDisplayCache().getSpannableStringBuilder())
                             .show();
                     materialDialog.getContentView().setTextIsSelectable(true);
                 }
@@ -947,11 +947,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private CharSequence replaceImageSpan(CharSequence sequence, PostModel postModel, Drawable initPlaceHolder) {
-        Spannable spannable;
-        if(sequence instanceof SpannableString)
-            spannable = (SpannableString)sequence;
+        SpannableStringBuilder spannable;
+        if(sequence instanceof SpannableStringBuilder)
+            spannable = (SpannableStringBuilder)sequence;
         else
-            spannable = new SpannableString(sequence);
+            spannable = new SpannableStringBuilder(sequence);
         ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
         URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
 
@@ -1003,14 +1003,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
             }
         }
-        postDisplayCache.setSpannableString((SpannableString)spannable);
+        postDisplayCache.setSpannableStringBuilder(spannable);
 
         // Generate content StaticLayout
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
         int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
-        StaticLayout layout = new StaticLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        DynamicLayout layout = new DynamicLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
         postDisplayCache.setTextLayout(layout);
 
         // Generate author StaticLayout

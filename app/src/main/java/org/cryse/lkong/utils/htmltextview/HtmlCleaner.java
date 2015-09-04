@@ -22,9 +22,9 @@ public class HtmlCleaner {
             if(pInLi.nextElementSibling() != null && pInLi.nextElementSibling().tagName().equalsIgnoreCase("br"))
                 pInLi.nextElementSibling().remove();
         }
-        for (Element pHasImg: fixedDoc.select("p:has(img)")) {
+        /*for (Element pHasImg: fixedDoc.select("p:has(img)")) {
             pHasImg.unwrap();
-        }
+        }*/
         /*for (Element img: fixedDoc.select("img")) {
             if(img.nextElementSibling() != null && !img.nextElementSibling().tagName().equalsIgnoreCase("br"))
                 img.after("<br>");

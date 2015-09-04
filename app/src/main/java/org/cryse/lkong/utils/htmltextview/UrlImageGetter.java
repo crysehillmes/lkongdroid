@@ -114,6 +114,10 @@ public class UrlImageGetter implements ImageGetter {
                 drawableHeight = (int)((double)newDrawableIntrinsicHeight / ratio);
             }
             newDrawable.setBounds(0, 0, drawableWidth, drawableHeight);
+            if (this.mDrawable != null) {
+                this.mDrawable.setCallback(null);
+            }
+            newDrawable.setCallback(this);
             this.mDrawable = newDrawable;
             this.setBounds(0, 0, drawableWidth, drawableHeight);
         }

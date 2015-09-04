@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.presenter.UserProfilePresenter;
 import org.cryse.lkong.presenter.UserProfileThreadsPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.utils.LKAuthObject;

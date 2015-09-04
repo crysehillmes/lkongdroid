@@ -1,17 +1,19 @@
 package org.cryse.lkong.model;
 
+import android.text.DynamicLayout;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 
 import java.util.ArrayList;
 
 public class PostDisplayCache {
-    private SpannableString spannableString = null;
+    private SpannableStringBuilder spannableStringBuilder = null;
     private ArrayList<Object> importantSpans;
     private ArrayList<Object> emoticonSpans;
     private ArrayList<String> imageUrls;
     private int urlSpanCount;
-    private StaticLayout textLayout = null;
+    private DynamicLayout textLayout = null;
     private StaticLayout authorLayout = null;
 
     public PostDisplayCache() {
@@ -26,12 +28,12 @@ public class PostDisplayCache {
         emoticonSpans = new ArrayList<>(emoticonCapacity);
     }
 
-    public SpannableString getSpannableString() {
-        return spannableString;
+    public SpannableStringBuilder getSpannableStringBuilder() {
+        return spannableStringBuilder;
     }
 
-    public void setSpannableString(SpannableString spannableString) {
-        this.spannableString = spannableString;
+    public void setSpannableStringBuilder(SpannableStringBuilder spannableString) {
+        this.spannableStringBuilder = spannableString;
     }
 
     public ArrayList<Object> getImportantSpans() {
@@ -66,11 +68,11 @@ public class PostDisplayCache {
         this.emoticonSpans = emoticonSpans;
     }
 
-    public StaticLayout getTextLayout() {
+    public DynamicLayout getTextLayout() {
         return textLayout;
     }
 
-    public void setTextLayout(StaticLayout textLayout) {
+    public void setTextLayout(DynamicLayout textLayout) {
         this.textLayout = textLayout;
     }
 
