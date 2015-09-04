@@ -123,3 +123,4 @@
 -keep class org.apache.** { *; }
 -keep class com.malinskiy.** { *; }
 -dontwarn com.malinskiy.**
+-keep public class * implements com.bumptech.glide.module.GlideModule

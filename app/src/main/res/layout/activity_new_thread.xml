@@ -32,6 +32,8 @@
             android:id="@+id/activity_new_thread_view_div"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:background="?theme_text_color_secondary"/>
         <EditText
             android:id="@+id/activity_new_thread_edittext_content"
@@ -50,24 +52,27 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_alignParentBottom="true"
-        android:background="#CCCCCC">
+        android:background="?theme_bottom_bar_color">
         <ImageButton
             android:id="@+id/action_insert_image"
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
             android:src="@drawable/ic_action_insert_image"
-            android:background="?selectableItemBackground"/>
+            android:background="?selectableItemBackground"
+            android:tint="?theme_text_color_secondary"/>
         <ImageButton
             android:id="@+id/action_insert_emoji"
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
             android:src="@drawable/ic_action_insert_emoticon"
-            android:background="?selectableItemBackground"/>
+            android:background="?selectableItemBackground"
+            android:tint="?theme_text_color_secondary"/>
         <ImageButton
             android:id="@+id/action_insert_link"
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
             android:src="@drawable/ic_action_insert_link"
-            android:background="?selectableItemBackground"/>
+            android:background="?selectableItemBackground"
+            android:tint="?theme_text_color_secondary"/>
     </LinearLayout>
 </RelativeLayout>

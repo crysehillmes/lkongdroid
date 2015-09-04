@@ -23,6 +23,7 @@
         <item name="theme_float_label_layout_selector">@color/float_label_selector_light</item>
         <item name="theme_card_bg_color">#FFFFFF</item>
         <item name="theme_card_divier_color">#DDDDDD</item>
+        <item name="theme_bottom_bar_color">#CCCCCC</item>
 
         <item name="theme_text_color_primary">@color/text_color_primary</item>
         <item name="theme_text_color_secondary">@color/text_color_secondary</item>
