@@ -17,7 +17,6 @@ import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.ui.MainActivity;
-import org.cryse.lkong.utils.LKAuthObject;
 import org.cryse.utils.preference.LongPreference;
 
 import java.util.ArrayList;

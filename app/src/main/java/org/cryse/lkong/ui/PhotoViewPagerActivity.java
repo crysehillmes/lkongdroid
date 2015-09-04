@@ -23,8 +23,6 @@ import android.widget.ProgressBar;
 import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
 
 import org.apache.tika.Tika;
 import org.cryse.lkong.R;
@@ -32,16 +30,13 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.OriginImageDownloader;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -51,7 +46,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PhotoViewPagerActivity extends AbstractThemeableActivity{
+public class PhotoViewPagerActivity extends AbstractThemeableActivity {
     private static final String LOG_TAG = PhotoViewPagerActivity.class.getName();
 
     private List<String> mPhotoUrls = new ArrayList<String>();
@@ -62,6 +57,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
     @InjectView(R.id.photo_viewpager)
     ViewPager mViewPager;
     PhotoPagerAdapter mPagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -70,10 +66,10 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         setIsOverrideToolbarColor(false);
         ButterKnife.inject(this);
         setUpToolbar(mToolbar);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
         Intent intent = getIntent();
-        if(intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL) && intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST)) {
+        if (intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL) && intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST)) {
             this.mPhotoUrls.addAll(intent.getStringArrayListExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST));
             this.mInitUrl = intent.getStringExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL);
         } else {
@@ -98,7 +94,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
             @Override
             public void onPageSelected(int position) {
                 setTitle(mPagerAdapter.getPageTitle(position));
-                if(mViewPager.getCurrentItem() == 0) {
+                if (mViewPager.getCurrentItem() == 0) {
                     DisplayMetrics displaymetrics = new DisplayMetrics();
                     PhotoViewPagerActivity.this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                     int width = displaymetrics.widthPixels;
@@ -193,7 +189,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Bundle args = getArguments();
-            if(args != null && args.containsKey(ARGS_IMAGE_URL)) {
+            if (args != null && args.containsKey(ARGS_IMAGE_URL)) {
                 mImageUrl = args.getString(ARGS_IMAGE_URL);
             } else {
                 throw new IllegalArgumentException("Wrong args pass to ImageFragment.");
@@ -232,11 +228,6 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
                 }
 
                 private void onOpenImageError() {
-                    OriginImageDownloader.removeCachedImage(
-                            getActivity().getCacheDir(),
-                            SUB_CACHE_DIR,
-                            OriginImageDownloader.urlToFileName(mImageUrl)
-                    );
                     SnackbarUtils.makeSimple(
                             getSnackbarRootView(),
                             getString(R.string.toast_error_open_origin_image),
@@ -250,7 +241,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity{
 
         @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
+            super.onActivityCreated(savedInstanceState);
+            SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
             Observable<File> getImageFileObservable = Observable.create(subscriber -> {
                 try {
                     File file = Glide

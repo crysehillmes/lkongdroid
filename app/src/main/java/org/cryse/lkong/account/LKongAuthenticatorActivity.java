@@ -22,7 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.utils.ToastErrorConstant;
+import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;

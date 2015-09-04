@@ -12,7 +12,7 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.UserProfileThreadsPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;

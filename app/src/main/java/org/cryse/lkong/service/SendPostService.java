@@ -29,7 +29,7 @@ import org.cryse.lkong.service.task.SendPostTask;
 import org.cryse.lkong.service.task.SendTask;
 import org.cryse.lkong.service.task.SendThreadTask;
 import org.cryse.lkong.utils.ContentProcessor;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

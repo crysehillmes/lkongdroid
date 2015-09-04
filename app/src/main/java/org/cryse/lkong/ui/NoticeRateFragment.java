@@ -9,7 +9,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.presenter.NoticeRatePresenter;
 import org.cryse.lkong.ui.adapter.NoticeRateCollectionAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;

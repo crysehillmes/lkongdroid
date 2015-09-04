@@ -17,7 +17,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;

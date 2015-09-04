@@ -10,7 +10,7 @@ import org.cryse.lkong.logic.restservice.model.LKCheckNoticeCountResult;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.json.JSONObject;
 
 public class CheckNoticeCountRequest extends AbstractAuthedHttpRequest<NoticeCountModel> {

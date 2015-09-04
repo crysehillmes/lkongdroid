@@ -8,7 +8,7 @@ import com.squareup.okhttp.Response;
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.LKongWebConstants;
 import org.cryse.lkong.model.FollowResult;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.json.JSONObject;
 
 public class FollowRequest extends AbstractAuthedHttpRequest<FollowResult> {
