@@ -2,7 +2,7 @@ package org.cryse.lkong.account;
 
 import android.accounts.Account;
 
-import org.cryse.lkong.utils.cookie.CookieUtils;
+import org.cryse.lkong.utils.CookieUtils;
 
 import java.io.Serializable;
 import java.net.HttpCookie;

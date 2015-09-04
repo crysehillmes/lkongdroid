@@ -143,7 +143,7 @@ public class UserAccountManager {
     }
 
     public LKAuthObject getAuthObject() {
-        if(mAuthObject == null && mCurrentUserAccount != null) {
+        if((mAuthObject == null && mCurrentUserAccount != null) || mAuthObject.getAuthHttpCookie() == null) {
             mAuthObject = getAuthObject(mCurrentUserAccount);
         } else if(mAuthObject == null) {
             setCurrentUserAccount(getFirst().getUserId());

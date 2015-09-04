@@ -142,6 +142,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
     TextView mThreadDetailCountTextView;
+    TextView mForumNameTextView;
     QuickReturnUtils mToolbarQuickReturn;
     MenuItem mFavoriteMenuItem;
     MenuItem mChangeThemeMenuItem;
@@ -215,6 +216,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadIntroHeaderView.setLayoutParams(threadIntroHeaderLP);
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
         mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
+        mForumNameTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_forum_name);
 
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
@@ -796,6 +798,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 threadInfoModel.getReplies()
         );
         mThreadDetailCountTextView.setText(detailCount);
+        mForumNameTextView.setText(TextUtils.isEmpty(threadInfoModel.getForumName()) ? "" : threadInfoModel.getForumName());
     }
 
     private void onClickGotoFloor() {

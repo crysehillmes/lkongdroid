@@ -135,5 +135,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <meta-data android:value="@string/track_channel_name" android:name="UMENG_CHANNEL"/>
+        <meta-data android:name="org.cryse.lkong.application.config.GlideConfiguration"
+            android:value="GlideModule"/>
     </application>
 </manifest>

@@ -13,7 +13,7 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.cookie.CookieUtils;
+import org.cryse.lkong.utils.CookieUtils;
 import org.cryse.lkong.utils.GsonUtils;
 import org.json.JSONObject;
 
