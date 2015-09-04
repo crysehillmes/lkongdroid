@@ -110,6 +110,8 @@
     <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
     <string name="text_loading">Loading…</string>
+    <string name="text_search_people">Search People:&#160;</string>
+    <string name="text_search_forum">Search Forum:&#160;</string>
 
     <string name="datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>

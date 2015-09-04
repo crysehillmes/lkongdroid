@@ -241,4 +241,6 @@
     <string name="format_notice_private_message">%1$d 条新私信</string>
     <string name="format_notice_rate">%1$d 个新评分</string>
     <string name="format_notice_all_count">你有 %1$d 条新消息</string>
+    <string name="text_search_people">搜索用户:&#160;</string>
+    <string name="text_search_forum">搜索板块:&#160;</string>
 </resources>

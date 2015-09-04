@@ -5,6 +5,7 @@
     <color name="theme_navigation_drawer_bg_dark">#222222</color>
 
     <color name="gray">#666666</color>
+    <color name="transparent_tint">#88000000</color>
 
 
     <color name="black_54_percent">#8A000000</color>

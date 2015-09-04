@@ -40,4 +40,6 @@ public class DataContract {
     public static final String BUNDLE_USER_ID = "bundle_user_id";
     public static final String BUNDLE_TARGET_USER_ID = "bundle_target_user_id";
     public static final String BUNDLE_TARGET_USER_NAME = "bundle_target_user_name";
+
+    public static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
 }
