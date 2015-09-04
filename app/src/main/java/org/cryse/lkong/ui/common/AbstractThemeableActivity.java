@@ -17,7 +17,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.utils.ThemeEngine;
-import org.cryse.lkong.utils.ToastErrorConstant;
+import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarSupport;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;

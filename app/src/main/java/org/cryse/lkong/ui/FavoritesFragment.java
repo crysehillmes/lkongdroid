@@ -27,7 +27,7 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.FavoritesView;
 
@@ -173,7 +173,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList);
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {

@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.AbstractSearchResult;
@@ -15,7 +15,7 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -27,7 +27,6 @@ import butterknife.InjectView;
 
 public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchResult> {
     private int mResultType = 0;
-    private Picasso mPicasso;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     public void setDataSet(SearchDataSet searchDataSet) {
@@ -44,10 +43,9 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         }
     }
 
-    public SearchResultAdapter(Context context, Picasso picasso) {
+    public SearchResultAdapter(Context context) {
         super(context, new ArrayList<AbstractSearchResult>());
-        this.mPicasso = picasso;
-        this.mCircleTransform = new CircleTransform();
+        this.mCircleTransform = new CircleTransform(context);
         mTodayPrefix = getString(R.string.datetime_today);
     }
 
@@ -98,10 +96,9 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {
         viewHolder.nameTextView.setText(item.getUserName());
         viewHolder.signTextView.setText(item.getSignHtml());
-        mPicasso.load(item.getAvatarUrl())
+        Glide.with(getContext()).load(item.getAvatarUrl())
                 .placeholder(R.drawable.ic_placeholder_avatar)
                 .error(R.drawable.ic_placeholder_avatar)
-                .fit()
                 .centerCrop()
                 .transform(mCircleTransform)
                 .into(viewHolder.avatarImageView);
@@ -110,10 +107,9 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private void bindGroupResult(SearchGroupViewHolder viewHolder, int position, SearchGroupItem item) {
         viewHolder.nameTextView.setText(item.getGroupName());
         viewHolder.descriptionTextView.setText(item.getGroupDescription());
-        mPicasso.load(item.getIconUrl())
+        Glide.with(getContext()).load(item.getIconUrl())
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
-                .fit()
                 .centerCrop()
                 .into(viewHolder.iconImageView);
     }

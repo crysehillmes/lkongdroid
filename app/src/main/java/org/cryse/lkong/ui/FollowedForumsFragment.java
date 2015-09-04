@@ -21,7 +21,7 @@ import org.cryse.lkong.presenter.FollowedForumsPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.widget.recyclerview.SuperRecyclerView;
 
@@ -96,7 +96,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
-        return new FollowedForumsAdapter(getActivity(), getPicasso(), mItemList);
+        return new FollowedForumsAdapter(this, mItemList);
     }
 
     @Override

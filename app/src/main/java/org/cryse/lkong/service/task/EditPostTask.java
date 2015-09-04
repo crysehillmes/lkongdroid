@@ -1,6 +1,6 @@
 package org.cryse.lkong.service.task;
 
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public class EditPostTask extends SendTask {
     LKAuthObject authObject;

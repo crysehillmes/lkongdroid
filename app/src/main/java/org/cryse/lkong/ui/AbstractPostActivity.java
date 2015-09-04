@@ -40,7 +40,7 @@ import android.widget.ImageButton;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
@@ -60,6 +60,7 @@ import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
@@ -117,7 +118,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     ProgressDialog mProgressDialog;
     ServiceConnection mBackgroundServiceConnection;
     private SendPostService.SendPostServiceBinder mSendServiceBinder;
-    protected Picasso mPicasso;
     protected abstract void readDataFromIntent(Intent intent);
     protected abstract void sendData(String title, String content);
     protected abstract boolean hasTitleField();
@@ -141,7 +141,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
         mDivideView.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
 
@@ -202,8 +201,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         super.onDestroy();
         if(mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
-        if(mPicasso != null)
-            mPicasso.shutdown();
     }
 
     @Override
@@ -366,11 +363,12 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         this,
                         null,
                         getLogTag(),
+                        AsyncDrawableType.NORMAL,
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme()),
                         (int)(mContentTextSize * 4),
-                        (int)(mContentTextSize * 4),
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme())
+                        (int)(mContentTextSize * 4)
                 );
-                mPicasso.load(selectedImageUri).placeholder(R.drawable.image_placeholder).resize((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
+                Glide.with(this).load(selectedImageUri).placeholder(R.drawable.image_placeholder).override((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
                 addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
             }
         }
@@ -504,7 +502,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 spannable.removeSpan(imageSpan);
                 ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(pid),
                         PICASSO_TAG,
@@ -523,7 +520,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 spannable.removeSpan(imageSpan);
                 EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(pid),
                         PICASSO_TAG,
@@ -596,7 +592,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         }
 
         @Override
-        public void notifyImageSpanLoaded(Object tag) {
+        public void notifyImageSpanLoaded(Object tag, Drawable drawable, AsyncDrawableType type) {
             if(mEditText != null && mEditText.get() != null) {
                 mEditText.get().invalidate();
             }

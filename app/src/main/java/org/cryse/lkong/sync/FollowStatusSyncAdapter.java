@@ -34,7 +34,7 @@ import org.cryse.lkong.data.provider.followeduser.FollowedUserSelection;
 import org.cryse.lkong.logic.request.GetForumInfoRequest;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.utils.GzipUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;

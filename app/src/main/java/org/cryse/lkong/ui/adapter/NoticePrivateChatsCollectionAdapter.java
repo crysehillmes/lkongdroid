@@ -7,11 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateChatModel;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
@@ -25,19 +25,18 @@ import butterknife.InjectView;
 
 public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter<PrivateChatModel> {
     public static final String PRIVATE_CHATS_PICASSO_TAG = "PRIVATE_CHATS_PICASSO_TAG";
-    private CircleTransform mCircleTransform = new CircleTransform();
+    private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private int mColorAccent;
     private final int mAvatarSize;
-    Picasso mPicasso;
     private String mPicassoTag;
-    public NoticePrivateChatsCollectionAdapter(Context context, Picasso picasso, List<PrivateChatModel> items) {
+    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items) {
         super(context, items);
-        this.mPicasso = picasso;
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mPicassoTag = PRIVATE_CHATS_PICASSO_TAG;
+        this.mCircleTransform = new CircleTransform(getContext());
     }
 
     @Override
@@ -59,12 +58,12 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
                 viewHolder.mChatMessageTextView.setText(model.getMessage());
                 viewHolder.mUserNameTextView.setText(model.getTargetUserName());
                 viewHolder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(model.getDateline(), mTodayPrefix));
-                mPicasso
+                Glide
+                        .with(getContext())
                         .load(model.getTargetUserAvatar())
-                        .tag(mPicassoTag)
                         .error(R.drawable.ic_placeholder_avatar)
                         .placeholder(R.drawable.ic_placeholder_avatar)
-                        .resize(mAvatarSize, mAvatarSize)
+                        .override(mAvatarSize, mAvatarSize)
                         .transform(mCircleTransform)
                         .into(viewHolder.mAvatarImageView);
             }

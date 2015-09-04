@@ -1,6 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
-import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -10,11 +10,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateMessageModel;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -30,14 +30,15 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
     private static final int TYPE_SEND = ITEM_TYPE_ITEM_START + 1;
     private static final int TYPE_RECEIVE = ITEM_TYPE_ITEM_START + 2;
 
-    private Picasso mPicasso;
-    private final CircleTransform mCircleTransform = new CircleTransform();
+    private Fragment mParentFragment;
+    private final CircleTransform mCircleTransform;
     private final String mTodayPrefix;
 
-    public PrivateMessagesAdapter(Context context, Picasso picasso, List<PrivateMessageModel> itemList) {
-        super(context, itemList);
-        this.mPicasso = picasso;
-        this.mTodayPrefix = context.getString(R.string.datetime_today);
+    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList) {
+        super(parentFragment.getContext(), itemList);
+        this.mParentFragment = parentFragment;
+        this.mTodayPrefix = getContext().getString(R.string.datetime_today);
+        this.mCircleTransform = new CircleTransform(getContext());
     }
 
     @Override
@@ -50,10 +51,10 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
             viewHolder.mMessageTextView.setText(Html.fromHtml(model.getMessage()));
             viewHolder.mDatelineTextView.setText(TimeFormatUtils.getTimeAgo(getContext(), model.getDateline().getTime()));
             if(viewHolder.mAvatarImageView != null) {
-                mPicasso.load(model.getAvatarUrl())
+                Glide.with(mParentFragment)
+                        .load(model.getAvatarUrl())
                         .placeholder(R.drawable.ic_placeholder_avatar)
                         .error(R.drawable.ic_placeholder_avatar)
-                        .fit()
                         .centerCrop()
                         .transform(mCircleTransform)
                         .into(viewHolder.mAvatarImageView);

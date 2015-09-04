@@ -2,20 +2,16 @@ package org.cryse.lkong.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.broadcast.BroadcastConstants;
@@ -24,10 +20,8 @@ import org.cryse.lkong.data.provider.cacheobject.CacheObjectColumns;
 import org.cryse.lkong.data.provider.cacheobject.CacheObjectContentValues;
 import org.cryse.lkong.logic.request.CheckNoticeCountRequest;
 import org.cryse.lkong.model.NoticeCountModel;
-import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public class CheckNoticeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int NOTIFICATION_START_ID = 150;

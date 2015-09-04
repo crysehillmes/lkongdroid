@@ -8,12 +8,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
@@ -33,16 +33,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mUserId;
     private int mMaxImageWidth;
-    private Picasso mPicasso;
     private int mImageDownloadPolicy;
-    private final CircleTransform mCircleTransform = new CircleTransform();
+    private final CircleTransform mCircleTransform;
     private final int mAvatarSize;
     private boolean mShouldShowImages;
     private int mAccentColor;
 
-    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
         super(context, mItemList);
-        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mUserId = userId;
@@ -50,6 +48,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
         mAccentColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
+        mCircleTransform = new CircleTransform(context);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -105,13 +104,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mEditButton.setVisibility(View.INVISIBLE);
             }
 
-            mPicasso.load(postModel.getAuthorAvatar())
-                    .tag(POST_PICASSO_TAG)
+            Glide.with(getContext()).load(postModel.getAuthorAvatar())
                     .error(R.drawable.ic_placeholder_avatar)
                     .placeholder(R.drawable.ic_placeholder_avatar)
-                    .resize(mAvatarSize, mAvatarSize)
+                    .override(mAvatarSize, mAvatarSize)
                     .transform(mCircleTransform)
-                    .noFade()
                     .into(viewHolder.mAvatarImageView);
         }
 
@@ -158,7 +155,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 }
             });
             mAvatarImageView.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
+                if (mOnItemButtonClickListener != null) {
                     mOnItemButtonClickListener.onProfileImageClick(view, getAdapterPosition());
                 }
             });

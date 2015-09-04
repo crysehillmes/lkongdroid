@@ -9,7 +9,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.presenter.NoticePrivateChatsPresenter;
 import org.cryse.lkong.ui.adapter.NoticePrivateChatsCollectionAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;
@@ -60,7 +60,7 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Override
     protected NoticePrivateChatsCollectionAdapter createAdapter(List<PrivateChatModel> itemList) {
-        return new NoticePrivateChatsCollectionAdapter(getActivity(), getPicasso(), mItemList);
+        return new NoticePrivateChatsCollectionAdapter(getActivity(), mItemList);
     }
 
     @Override

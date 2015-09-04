@@ -4,16 +4,17 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.DynamicLayout;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -38,8 +39,8 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.bumptech.glide.Glide;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -84,7 +85,6 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,7 +102,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
-    Picasso mPicasso;
+
     @Inject
     PostListPresenter mPresenter;
 
@@ -164,7 +164,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         ButterKnife.inject(this);
@@ -193,7 +192,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         // mPostCollectionView.getRefreshableView().setItemViewCacheSize(20);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mPicasso, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
+        mCollectionAdapter = new PostListAdapter(this, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
@@ -236,16 +235,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mToolbarQuickReturn.show();
                 }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
+                    if(!isActivityDestroyed())
+                        Glide.with(PostListActivity.this).resumeRequests();
                 } else {
-                    mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                    Glide.with(PostListActivity.this).pauseRequests();
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mPicasso.pauseTag(PostListAdapter.POST_PICASSO_TAG);
+                //Glide.with(PostListActivity.this).pauseRequests();
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = mToolbar.getHeight();
@@ -275,7 +275,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
                             .title(R.string.dialog_title_copy_content)
                             .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                            .content(postItem.getPostDisplayCache().getSpannableString())
+                            .content(postItem.getPostDisplayCache().getSpannableStringBuilder())
                             .show();
                     materialDialog.getContentView().setTextIsSelectable(true);
                 }
@@ -627,8 +627,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.cancelTag(PostListAdapter.POST_PICASSO_TAG);
-        mPicasso.shutdown();
     }
 
     @Override
@@ -640,7 +638,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         setLoading(false);
         // Resume tag when display new items.
-        mPicasso.resumeTag(PostListAdapter.POST_PICASSO_TAG);
+        if(!isActivityDestroyed())
+            Glide.with(PostListActivity.this).resumeRequests();
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
@@ -950,11 +949,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private CharSequence replaceImageSpan(CharSequence sequence, PostModel postModel, Drawable initPlaceHolder) {
-        Spannable spannable;
-        if(sequence instanceof SpannableString)
-            spannable = (SpannableString)sequence;
+        SpannableStringBuilder spannable;
+        if(sequence instanceof SpannableStringBuilder)
+            spannable = (SpannableStringBuilder)sequence;
         else
-            spannable = new SpannableString(sequence);
+            spannable = new SpannableStringBuilder(sequence);
         ImageSpan[] imageSpans = spannable.getSpans(0, sequence.length(), ImageSpan.class );
         URLSpan[] urlSpans = spannable.getSpans(0, sequence.length(), URLSpan.class );
 
@@ -971,7 +970,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 spannable.removeSpan(imageSpan);
                 ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
@@ -992,7 +990,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 spannable.removeSpan(imageSpan);
                 EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
@@ -1008,14 +1005,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 postDisplayCache.getEmoticonSpans().add(emoticonImageSpan);
             }
         }
-        postDisplayCache.setSpannableString((SpannableString)spannable);
+        postDisplayCache.setSpannableStringBuilder(spannable);
 
         // Generate content StaticLayout
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
         int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
-        StaticLayout layout = new StaticLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
+        DynamicLayout layout = new DynamicLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
         postDisplayCache.setTextLayout(layout);
 
         // Generate author StaticLayout

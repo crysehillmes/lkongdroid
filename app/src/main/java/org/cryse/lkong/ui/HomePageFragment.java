@@ -22,8 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
@@ -58,7 +56,6 @@ import timber.log.Timber;
 
 public class HomePageFragment extends AbstractFragment implements HomePageView {
     public static final String LOG_TAG = HomePageFragment.class.getName();
-    private Picasso mPicasso = null;
 
     @Inject
     AndroidNavigation mNavigation;
@@ -94,7 +91,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
         setHasOptionsMenu(true);
     }
 
@@ -171,7 +167,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPicasso.shutdown();
         mPresenter.destroy();
     }
 

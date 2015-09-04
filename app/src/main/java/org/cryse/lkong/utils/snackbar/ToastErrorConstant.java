@@ -1,4 +1,4 @@
-package org.cryse.lkong.utils;
+package org.cryse.lkong.utils.snackbar;
 
 import org.cryse.lkong.R;
 

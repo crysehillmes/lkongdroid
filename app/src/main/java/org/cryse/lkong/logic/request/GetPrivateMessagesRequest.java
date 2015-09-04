@@ -8,7 +8,7 @@ import org.cryse.lkong.logic.LKongWebConstants;
 import org.cryse.lkong.logic.RequestPointerType;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

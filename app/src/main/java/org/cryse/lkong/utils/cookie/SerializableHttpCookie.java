@@ -1,4 +1,4 @@
-package org.cryse.lkong.utils;
+package org.cryse.lkong.utils.cookie;
 
 /**
  * Based on the code from this stackoverflow answer http://stackoverflow.com/a/25462286/980387 by janoliver

@@ -1,4 +1,6 @@
-package org.cryse.lkong.utils;
+package org.cryse.lkong.account;
+
+import org.cryse.lkong.utils.cookie.CookieUtils;
 
 import java.net.HttpCookie;
 import java.net.URI;

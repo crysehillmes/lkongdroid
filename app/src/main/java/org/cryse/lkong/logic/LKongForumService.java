@@ -2,10 +2,8 @@ package org.cryse.lkong.logic;
 
 import android.text.format.DateUtils;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.FollowedForum;
-import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.request.FollowRequest;
@@ -21,8 +19,6 @@ import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
-import org.cryse.lkong.model.NewPostResult;
-import org.cryse.lkong.model.NewThreadResult;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
@@ -32,13 +28,11 @@ import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SendNewPrivateMessageResult;
-import org.cryse.lkong.model.SignInResult;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
-import org.cryse.lkong.utils.ContentProcessor;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 import java.util.Date;
 import java.util.List;
