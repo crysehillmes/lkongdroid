@@ -128,7 +128,8 @@ public class TimelineFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Glide.with(getActivity()).resumeRequests();
+                    if(!getThemedActivity().isActivityDestroyed())
+                        Glide.with(getActivity()).resumeRequests();
                 } else {
                     Glide.with(getActivity()).pauseRequests();
                 }

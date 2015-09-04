@@ -163,7 +163,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Glide.with(ForumActivity.this).resumeRequests();
+                    if(!isActivityDestroyed())
+                        Glide.with(ForumActivity.this).resumeRequests();
                 } else {
                     Glide.with(ForumActivity.this).pauseRequests();
                 }

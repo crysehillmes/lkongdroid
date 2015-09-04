@@ -235,7 +235,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     mToolbarQuickReturn.show();
                 }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Glide.with(PostListActivity.this).resumeRequests();
+                    if(!isActivityDestroyed())
+                        Glide.with(PostListActivity.this).resumeRequests();
                 } else {
                     Glide.with(PostListActivity.this).pauseRequests();
                 }
@@ -637,7 +638,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         setLoading(false);
         // Resume tag when display new items.
-        Glide.with(PostListActivity.this).resumeRequests();
+        if(!isActivityDestroyed())
+            Glide.with(PostListActivity.this).resumeRequests();
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();

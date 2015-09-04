@@ -29,6 +29,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
     private View mSnackbarRootView;
     private ActionMode mActionMode;
     private Subscription mEventBusSubscription;
+    private boolean mIsDestroyed;
     @Inject
     RxEventBus mEventBus;
 
@@ -64,6 +65,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         SubscriptionUtils.checkAndUnsubscribe(mEventBusSubscription);
+        mIsDestroyed = true;
     }
 
     /**
@@ -170,5 +172,13 @@ public abstract class AbstractActivity extends AppCompatActivity {
         if(mSnackbarRootView == null)
             mSnackbarRootView = findViewById(android.R.id.content);
         return mSnackbarRootView;
+    }
+
+    public boolean isActivityDestroyed() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return isDestroyed();
+        } else {
+            return mIsDestroyed;
+        }
     }
 }
