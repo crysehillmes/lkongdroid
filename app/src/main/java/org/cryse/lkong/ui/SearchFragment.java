@@ -150,10 +150,9 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
         AnalyticsUtils.trackFragmentExit(this, LOG_TAG);
     }
 
-
-
     private void search() {
-        mSearchResultAdapter.setDataSet(null);
+        mSearchResultAdapter.clear();
+        mNextTime.set(0);
         if (!TextUtils.isEmpty(mQueryString)) {
             mPresenter.search(mUserAccountManager.getAuthObject(), 0, mQueryString, false);
         }
@@ -207,7 +206,12 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     @Override
     public void setLoading(Boolean value) {
         mIsLoading.set(value);
-        mSearchResultRecyclerView.getSwipeToRefresh().setRefreshing(value);
+        if (mIsLoading.get()) {
+            mSearchResultRecyclerView.showProgress();
+        } else {
+            mSearchResultRecyclerView.hideProgress();
+            mSearchResultRecyclerView.showRecycler();
+        }
     }
 
     @Override
