@@ -18,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import com.bumptech.glide.Glide;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -36,7 +37,6 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         int actionBarSize = UIUtils.calculateActionBarSize(this);
         int statusBarSize = UIUtils.calculateStatusBarSize(this);
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
-        mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
+        mThreadCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);

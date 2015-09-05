@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.malinskiy.superrecyclerview.OnMoreListener;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
@@ -23,7 +25,7 @@ import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,14 +83,14 @@ public abstract class SimpleCollectionFragment<
         UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
         if(insetsValue != null)
             mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-        mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
+        mCollectionView.getRecyclerView().setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
         initHeaderView();
         mCollectionView.setRefreshListener(getRefreshListener());
         mCollectionView.setOnMoreListener(getOnMoreListener());
-        mCollectionView.setOnItemClickListener(this::onItemClick);
+        mCollectionAdapter.setOnItemClickListener(this::onItemClick);
         onCollectionViewInitComplete();
     }
 
@@ -234,7 +236,7 @@ public abstract class SimpleCollectionFragment<
                 loadData(mUserAccountManager.getAuthObject(), 0, false);
     }
 
-    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+    protected OnMoreListener getOnMoreListener() {
         return (numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
                 loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);

@@ -5,11 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
 
 import org.cryse.lkong.R;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 public class FloatingActionButtonEx extends FloatingActionButton {
     private int mScrollThreshold;

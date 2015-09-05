@@ -14,12 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,11 +55,11 @@ public class EmoticonDialog extends DialogFragment {
         mEmoticonCollectionView = (SuperRecyclerView) dialog.getCustomView().findViewById(R.id.dialog_emoticon_recyclerview);
         mEmoticonFileNames = listAssetFiles("emoji");
         Collections.sort(mEmoticonFileNames, new EmojiComparator());
-        mEmoticonCollectionView.setItemAnimator(new DefaultItemAnimator());
+        mEmoticonCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mEmoticonCollectionView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         mCollectionAdapter = new EmoticonAdapter(getActivity(), mEmoticonFileNames);
         mEmoticonCollectionView.setAdapter(mCollectionAdapter);
-        mEmoticonCollectionView.setOnItemClickListener(new RecyclerViewOnItemClickListener() {
+        mCollectionAdapter.setOnItemClickListener(new RecyclerViewOnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, long id) {
                 if(mCallback != null)

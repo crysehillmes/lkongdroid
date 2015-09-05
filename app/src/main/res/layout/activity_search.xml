@@ -5,12 +5,16 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <org.cryse.widget.recyclerview.SuperRecyclerView
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
         android:id="@+id/activity_search_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay"/>
+        app:layout_empty="@layout/layout_empty_view"
+        app:layout_moreProgress="@layout/layout_more_progressbar"
+        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+        app:recyclerClipToPadding="false"
+        app:scrollbarStyle="outsideOverlay" />
+
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"

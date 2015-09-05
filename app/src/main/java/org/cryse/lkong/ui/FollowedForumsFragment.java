@@ -23,7 +23,9 @@ import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
+
+import com.malinskiy.superrecyclerview.OnMoreListener;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.List;
 
@@ -125,7 +127,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+    protected OnMoreListener getOnMoreListener() {
         return null;
     }
 

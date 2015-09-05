@@ -8,12 +8,15 @@
     <include
         layout="@layout/layout_appbar"/>
 
-    <org.cryse.widget.recyclerview.SuperRecyclerView
+    <com.malinskiy.superrecyclerview.SuperRecyclerView
         android:id="@+id/simple_collection_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srv_empty="@layout/layout_empty_view"
-        app:srv_scrollbarStyle="outsideOverlay"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_empty="@layout/layout_empty_view"
+        app:layout_moreProgress="@layout/layout_more_progressbar"
+        app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+        app:recyclerClipToPadding="false"
+        app:scrollbarStyle="outsideOverlay" />
 
 </android.support.design.widget.CoordinatorLayout>

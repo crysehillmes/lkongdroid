@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
@@ -24,9 +26,7 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SearchForumView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -80,7 +80,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                 mSearchResultRecyclerView.hideMoreProgress();
             }
         });
-        mSearchResultRecyclerView.setOnItemClickListener((view, position, id) -> {
+        mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
             int headerCount = mSearchResultAdapter.getHeaderViewCount();
             switch (mSearchResultAdapter.getResultType()) {
                 case SearchDataSet.TYPE_POST:

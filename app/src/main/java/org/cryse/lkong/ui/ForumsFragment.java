@@ -8,6 +8,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.malinskiy.superrecyclerview.OnMoreListener;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
@@ -18,7 +20,6 @@ import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumsView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.List;
 
@@ -115,7 +116,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+    protected OnMoreListener getOnMoreListener() {
         return null;
     }
 
