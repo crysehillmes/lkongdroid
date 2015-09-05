@@ -64,6 +64,7 @@ public class CheckNewBroadcastReceiver extends BroadcastReceiver {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder mResultBuilder = new NotificationCompat.Builder(context);
         Intent openNotificationActivityIntent = new Intent(context, NotificationActivity.class);
+        openNotificationActivityIntent.putExtra(DataContract.BUNDLE_USER_ID, userId);
         PendingIntent chaptersListIntent =
                 PendingIntent.getActivity(context, 0, openNotificationActivityIntent, PendingIntent.FLAG_ONE_SHOT);
 
