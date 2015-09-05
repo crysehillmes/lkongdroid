@@ -164,6 +164,7 @@
 
     <string name="settings_category_other_title">Other</string>
     <string name="settings_category_forum_title">Forum</string>
+    <string name="settings_category_notification">Notification</string>
     <string name="settings_item_about_title">About</string>
 
 
@@ -196,10 +197,16 @@
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
     <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
     <string name="settings_item_use_forums_first_title">Forums page first</string>
-    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app).</string>
+    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app)</string>
 
     <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
-    <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons.</string>
+    <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons</string>
+    <string name="settings_item_enable_background_notification_title">Enable Notification</string>
+    <string name="settings_item_enable_background_notification_summary">Enable this if want to receive notifications</string>
+    <string name="settings_item_check_notification_duration_title">Check Duration</string>
+    <string name="settings_item_check_notification_duration_summary">Check new message periodically</string>
+    <string name="settings_item_account_settings_title">Accounts</string>
+    <string name="settings_item_account_settings_summany">Account settings</string>
 
 
     <string-array name="image_download_policy_arrays">
@@ -273,4 +280,28 @@
 
     <string name="provider_checknotice_label">Auto Check New Notice</string>
     <string name="provider_follow_status_label">Auto Sync Follow Status</string>
+
+    <string-array name="check_notice_duration_arrays">
+        <item>15 mins</item>
+        <item>30 mins</item>
+        <item>45 mins</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+    </string-array>
+
+    <string-array name="check_notice_duration_value_arrays">
+        <item>900</item>
+        <item>1800</item>
+        <item>2700</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>10800</item>
+        <item>21600</item>
+        <item>43200</item>
+        <item>86400</item>
+    </string-array>
 </resources>

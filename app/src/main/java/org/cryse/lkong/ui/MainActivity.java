@@ -34,6 +34,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsCheckNoticeDuration;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
@@ -46,6 +47,7 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.preference.IntegerPreference;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -64,6 +66,9 @@ public class MainActivity extends AbstractThemeableActivity{
     AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsCheckNoticeDuration
+    StringPreference mCheckNoticeDuration;
     @Inject
     @PrefsVersionCode
     IntegerPreference mVersionCodePref;
@@ -226,7 +231,7 @@ public class MainActivity extends AbstractThemeableActivity{
                 account,
                 SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE,
                 false,
-                SyncUtils.SYNC_FREQUENCE_HALF_HOUR
+                Integer.valueOf(mCheckNoticeDuration.get())
         );
     }
 

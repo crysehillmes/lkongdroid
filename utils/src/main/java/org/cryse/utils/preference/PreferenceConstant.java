@@ -26,4 +26,8 @@ public class PreferenceConstant {
     public static final Boolean SHARED_PREFERENCE_FLIP_PAGE_BY_VOLUME_KEY_VALUE = false;
     public static final String SHARED_PREFERENCE_FORUMS_FIRST = "prefs_use_forums_first";
     public static final boolean SHARED_PREFERENCE_FORUMS_FIRST_VALUE = false;
+    public static final String SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION = "prefs_enable_background_notification";
+    public static final boolean SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION_VALUE = true;
+    public static final String SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION = "prefs_check_notification_duration";
+    public static final String SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE = "1800";
 }

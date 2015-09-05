@@ -243,4 +243,23 @@
     <string name="format_notice_all_count">你有 %1$d 条新消息</string>
     <string name="text_search_people">搜索用户:&#160;</string>
     <string name="text_search_forum">搜索板块:&#160;</string>
+    <string name="settings_category_notification">消息通知</string>
+    <string name="settings_item_enable_background_notification_title">开启消息通知</string>
+    <string name="settings_item_enable_background_notification_summary">开启后可以在通知栏收到新消息提醒</string>
+    <string name="settings_item_check_notification_duration_title">检查周期</string>
+    <string name="settings_item_check_notification_duration_summary">设置检查新消息的周期</string>
+    <string name="settings_item_account_settings_title">账户设置</string>
+    <string name="settings_item_account_settings_summany">管理你的账户</string>
+    <string-array name="check_notice_duration_arrays">
+        <item>15 分钟</item>
+        <item>30 分钟</item>
+        <item>45 分钟</item>
+        <item>1 小时</item>
+        <item>2 小时</item>
+        <item>3 小时</item>
+        <item>6 小时</item>
+        <item>12 小时</item>
+        <item>24 小时</item>
+    </string-array>
+
 </resources>
