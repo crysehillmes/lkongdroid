@@ -14,6 +14,7 @@ import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
+import org.cryse.lkong.logic.request.SearchRequest;
 import org.cryse.lkong.logic.request.SendNewPrivateMessageRequest;
 import org.cryse.lkong.logic.restservice.LKongRestService;
 import org.cryse.lkong.model.DataItemLocationModel;
@@ -236,7 +237,8 @@ public class LKongForumService {
     public Observable<SearchDataSet> search(LKAuthObject authObject, long start, String queryString) {
         return Observable.create(subscriber -> {
             try {
-                SearchDataSet dataSet = mLKongRestService.searchLKong(authObject, start, queryString);
+                SearchRequest request = new SearchRequest(authObject, start, queryString);
+                SearchDataSet dataSet = request.execute();
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -283,29 +285,6 @@ public class LKongForumService {
                             mLKongDatabase.cachePunchResult(result);
                     }
                     subscriber.onNext(result);
-                subscriber.onCompleted();
-            } catch (Exception ex) {
-                subscriber.onError(ex);
-            }
-        });
-    }
-
-    public Observable<PunchResult> punch(List<LKAuthObject> authObjectList) {
-        return Observable.create(subscriber -> {
-            try {
-                for(LKAuthObject authObject: authObjectList) {
-                    PunchResult result = null;
-                    result = mLKongDatabase.getCachePunchResult(authObject.getUserId());
-                    if(result != null && result.getPunchTime() != null && DateUtils.isToday(result.getPunchTime().getTime())) {
-                        subscriber.onNext(result);
-                        return;
-                    } else {
-                        result = mLKongRestService.punch(authObject);
-                        if(result != null)
-                            mLKongDatabase.cachePunchResult(result);
-                    }
-                    subscriber.onNext(result);
-                }
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

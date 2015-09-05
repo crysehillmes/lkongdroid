@@ -36,7 +36,6 @@ import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PunchResult;
-import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UploadImageResult;
@@ -399,27 +398,6 @@ public class LKongRestService {
         clearCookies();
 
         return editPostResult;
-    }
-
-    public SearchDataSet searchLKong(LKAuthObject authObject, long start, String queryString) throws Exception {
-        checkSignInStatus(authObject, true);
-        applyAuthCookies(authObject);
-        String url = LKONG_INDEX_URL + String.format("?mod=data&sars=search/%s", URLEncoder.encode(queryString, "UTF-8"));
-        if(start > 0) {
-            url = url + "&nexttime=" + Long.toString(start);
-        }
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        SearchDataSet dataSet = new SearchDataSet();
-        dataSet.parseData(responseString);
-        clearCookies();
-        return dataSet;
     }
 
     public List<TimelineModel> getUserAll(LKAuthObject authObject, long uid, long start) throws Exception {
