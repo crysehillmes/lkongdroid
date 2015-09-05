@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="id" name="ptr_recyclerview" />
+    <item name="ptr_recyclerview" type="id"/>
+    <item name="recyclerview_swipe" type="id"/>
 </resources>

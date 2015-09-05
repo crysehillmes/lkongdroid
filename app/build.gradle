@@ -96,7 +96,6 @@ dependencies {
     compile('com.mikepenz:materialdrawer:3.1.2') {
         transitive = true
     }
-    compile 'com.malinskiy:superrecyclerview:1.1.1'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }

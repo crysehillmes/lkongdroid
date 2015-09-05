@@ -88,7 +88,8 @@ public abstract class SimpleCollectionFragment<
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
         initHeaderView();
-        mCollectionView.setRefreshListener(getRefreshListener());
+        if(getRefreshListener() != null)
+            mCollectionView.setRefreshListener(getRefreshListener());
         mCollectionView.setOnMoreListener(getOnMoreListener());
         mCollectionAdapter.setOnItemClickListener(this::onItemClick);
         onCollectionViewInitComplete();
