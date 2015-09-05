@@ -70,7 +70,7 @@ public class CheckNewBroadcastReceiver extends BroadcastReceiver {
         Bundle extras = Bundle.EMPTY;
         mResultBuilder.setContentTitle(context.getString(R.string.format_notice_all_count, noticeCount.getAllNoticeCount()))
                 .setContentText(stringBuilder.toString())
-                .setSmallIcon(R.drawable.ic_notification_new_notification)
+                .setSmallIcon(R.drawable.ic_notification_lkong_logo)
                 .setExtras(extras)
                 .setContentIntent(chaptersListIntent)
                 .setAutoCancel(true);
