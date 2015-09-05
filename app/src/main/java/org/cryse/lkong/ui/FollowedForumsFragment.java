@@ -25,7 +25,6 @@ import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
 import com.malinskiy.superrecyclerview.OnMoreListener;
-import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     @Override
     public void onResume() {
         super.onResume();
-        loadData(null, 0, false);
+        //loadData(null, 0, false);
         getActivity().registerReceiver(mSyncFollowedForumsDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
     }
 

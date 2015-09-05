@@ -189,9 +189,17 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void setLoading(Boolean value) {
         isLoading = value;
-        if(mCollectionView.getSwipeToRefresh().getMeasuredHeight() == 0)
-            mCollectionView.getSwipeToRefresh().measure(0, 0);
-        mCollectionView.getSwipeToRefresh().setRefreshing(value);
+        if (isLoading) {
+            if(!mCollectionView.getSwipeToRefresh().isRefreshing()) {
+                mCollectionView.hideRecycler();
+                mCollectionView.showProgress();
+            }
+        } else {
+            if(mCollectionView.getSwipeToRefresh().isRefreshing())
+                mCollectionView.getSwipeToRefresh().setRefreshing(isLoading);
+            mCollectionView.hideProgress();
+            mCollectionView.showRecycler();
+        }
     }
 
     @Override
