@@ -29,6 +29,7 @@ public class ShareContentBuilder {
                 .append(plainMessage)
                 .append(" ")
                 .append(LKongUrlBuilder.buildPostUrl(threadInfo.getTid(), page, postModel.getPid()))
+                .append('\n')
                 .append(context.getString(R.string.text_share_from));
         return stringBuilder.toString();
     }
@@ -40,7 +41,7 @@ public class ShareContentBuilder {
                 .append(threadTitle)
                 .append(" ")
                 .append(LKongUrlBuilder.buildThreadUrl(threadInfo.getTid()))
-                .append(" ")
+                .append('\n')
                 .append(context.getString(R.string.text_share_from));
         return stringBuilder.toString();
     }

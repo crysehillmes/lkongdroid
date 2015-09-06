@@ -24,6 +24,7 @@ import org.cryse.lkong.ui.PrivateChatFragment;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SearchFragment;
 import org.cryse.lkong.ui.TimelineFragment;
+import org.cryse.lkong.ui.UrlSchemaDispatcherActivity;
 import org.cryse.lkong.ui.UserExtraDetailFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.ui.UserProfileThreadsFragment;
@@ -37,6 +38,7 @@ import dagger.Component;
 @Component(modules = {ContextModule.class, LKongModule.class, PreferenceModule.class})
 public interface LKongPresenterComponent {
     void inject(MainActivity activity);
+    void inject(UrlSchemaDispatcherActivity activity);
     void inject(ForumsFragment fragment);
     void inject(ForumActivity activity);
     void inject(PostListActivity activity);
