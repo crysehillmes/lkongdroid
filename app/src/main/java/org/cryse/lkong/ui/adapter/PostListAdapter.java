@@ -130,6 +130,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         ImageView mAvatarImageView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
         ImageButton mRateButton;
+        @InjectView(R.id.recyclerview_item_post_button_share)
+        ImageButton mShareButton;
         @InjectView(R.id.recyclerview_item_post_textview_rate)
         TextView mRateTextView;
         @InjectView(R.id.recyclerview_item_post_button_edit)
@@ -138,30 +140,41 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         ImageButton mReplyButton;
 
         OnItemButtonClickListener mOnItemButtonClickListener;
-        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
-            super(v);
-            ButterKnife.inject(this, v);
+        public ViewHolder(View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
+            super(itemView);
+            ButterKnife.inject(this, itemView);
             mOnItemButtonClickListener = onItemReplyClickListener;
-            mReplyButton.setOnClickListener(view -> {
+            View.OnClickListener clickListener = view -> {
+                int adapterPosition = getAdapterPosition();
                 if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onReplyClick(view, getAdapterPosition());
+                    switch (view.getId()) {
+                        case R.id.recyclerview_item_post_button_replay:
+                            mOnItemButtonClickListener.onReplyClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_rate:
+                            mOnItemButtonClickListener.onRateClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_textview_rate:
+                            mOnItemButtonClickListener.onRateTextClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_edit:
+                            mOnItemButtonClickListener.onEditClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_share:
+                            mOnItemButtonClickListener.onShareClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_imageview_avatar:
+                            mOnItemButtonClickListener.onProfileImageClick(view, adapterPosition);
+                            break;
+                    }
                 }
-            });
-            mRateButton.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onRateClick(view, getAdapterPosition());
-                }
-            });
-            mEditButton.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onEditClick(view, getAdapterPosition());
-                }
-            });
-            mAvatarImageView.setOnClickListener(view -> {
-                if (mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onProfileImageClick(view, getAdapterPosition());
-                }
-            });
+            };
+            mReplyButton.setOnClickListener(clickListener);
+            mRateButton.setOnClickListener(clickListener);
+            mEditButton.setOnClickListener(clickListener);
+            mAvatarImageView.setOnClickListener(clickListener);
+            mRateTextView.setOnClickListener(clickListener);
+            mShareButton.setOnClickListener(clickListener);
             if(mOnSpanClickListener != null)
                 mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
             mPostItemView.setLongClickable(true);
@@ -176,6 +189,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public interface OnItemButtonClickListener {
         void onPostTextLongClick(View view, int position);
         void onRateClick(View view, int position);
+        void onRateTextClick(View view, int position);
+        void onShareClick(View view, int position);
         void onReplyClick(View view, int position);
         void onEditClick(View view, int position);
         void onProfileImageClick(View view, int position);

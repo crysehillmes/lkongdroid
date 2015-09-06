@@ -18,6 +18,7 @@
     <string name="action_forum_followed">已关注</string>
     <string name="action_forum_not_followed">未关注</string>
     <string name="action_sign_out">退出账号</string>
+    <string name="action_share">分享</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
@@ -251,6 +252,10 @@
     <string name="settings_item_check_notification_duration_summary">设置检查新消息的周期</string>
     <string name="settings_item_account_settings_title">账户设置</string>
     <string name="settings_item_account_settings_summany">管理你的账户</string>
+    <string name="format_share_title">【%1$s】</string>
+    <string name="text_share_from">（分享自龙的天空 Android）</string>
+    <string name="text_share_post_title">分享回复</string>
+    <string name="text_share_thread_title">分享回复主题</string>
     <string-array name="check_notice_duration_arrays">
         <item>15 分钟</item>
         <item>30 分钟</item>

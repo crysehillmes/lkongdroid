@@ -12,6 +12,11 @@
         android:title="@string/action_thread_add_favorite"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_share_thread"
+        android:icon="@drawable/ic_action_share"
+        android:title="@string/action_share"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_change_theme"
         android:title="@string/action_dark_theme"
         app:showAsAction="never" />

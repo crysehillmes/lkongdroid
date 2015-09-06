@@ -71,6 +71,7 @@ import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
+import org.cryse.lkong.utils.share.ShareContentBuilder;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
@@ -286,8 +287,28 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             @Override
             public void onRateClick(View view, int position) {
                 int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
-                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount())
-                    view.post(() -> openRateDialog(itemPosition));
+                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
+                    PostModel postModel = mCollectionAdapter.getItem(itemPosition);
+                    view.post(() -> openRateDialog(postModel));
+                }
+            }
+
+            @Override
+            public void onRateTextClick(View view, int position) {
+                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
+                    PostModel postModel = mCollectionAdapter.getItem(itemPosition);
+                    view.post(() -> openRateLogDialog(postModel));
+                }
+            }
+
+            @Override
+            public void onShareClick(View view, int position) {
+                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
+                    PostModel postModel = mCollectionAdapter.getItem(itemPosition);
+                    view.post(() -> sendSharePostIntent(postModel));
+                }
             }
 
             @Override
@@ -573,6 +594,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 return true;
             case R.id.action_thread_goto_floor:
                 onClickGotoFloor();
+                return true;
+            case R.id.action_share_thread:
+                sendShareThreadIntent();
                 return true;
             case R.id.action_change_theme:
                 setNightMode(!isNightMode());
@@ -862,52 +886,66 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 
-    private void openRateDialog(int itemPosition) {
-        PostModel postModel = mCollectionAdapter.getItem(itemPosition);
+    private void openRateLogDialog(PostModel postModel) {
             MaterialDialog rateListDialog = new MaterialDialog.Builder(this)
                     .title(R.string.dialog_title_rate)
-                    .adapter(new PostRateAdapter(this, postModel.getRateLog()), new MaterialDialog.ListCallback() {
-                        @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                    .adapter(new PostRateAdapter(this, postModel.getRateLog()), (materialDialog, view, i, charSequence) -> {
 
-                        }
                     })
                     .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .positiveText(android.R.string.ok)
-                    .neutralText(R.string.button_rate).callback(new MaterialDialog.ButtonCallback() {
+                    .build();
+        rateListDialog.show();
+    }
+
+    private void sendSharePostIntent(PostModel postModel) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
+        String shareContent = ShareContentBuilder.buildSharePostContent(
+                this,
+                mThreadModel,
+                mCurrentPage,
+                postModel
+        );
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+    }
+
+    private void sendShareThreadIntent() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
+        String shareContent = ShareContentBuilder.buildShareThreadContent(
+                this,
+                mThreadModel
+        );
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+    }
+
+    private void openRateDialog(PostModel postModel) {
+        if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
+            MaterialDialog ratePostDialog = new MaterialDialog.Builder(PostListActivity.this)
+                    .title(R.string.dialog_title_rate)
+                    .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
+                    .customView(R.layout.dialog_input_score, false)
+                    .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onNeutral(MaterialDialog rateListDialogRef) {
-                            super.onNeutral(rateListDialogRef);
-                            if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
-                                MaterialDialog ratePostDialog = new MaterialDialog.Builder(PostListActivity.this)
-                                        .title(R.string.dialog_title_rate)
-                                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
-                                        .customView(R.layout.dialog_input_score, false)
-                                        .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
-                                            @Override
-                                            public void onPositive(MaterialDialog ratePostDialogRef) {
-                                                super.onPositive(ratePostDialogRef);
-                                                EditText reasonEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_reason);
-                                                EditText scoreEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_score);
-                                                String reason = reasonEditText.getText().toString();
-                                                String scoreText = scoreEditText.getText().toString();
-                                                if(!TextUtils.isEmpty(scoreText) && TextUtils.isDigitsOnly(scoreText)) {
-                                                    int score = Integer.valueOf(scoreText);
-                                                    getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
-                                                } else {
-                                                    showSnackbar(
-                                                            getString(R.string.toast_error_rate_score_empty),
-                                                            SimpleSnackbarType.ERROR,
-                                                            SimpleSnackbarType.LENGTH_SHORT
-                                                    );
-                                                }
-                                            }
-                                        })
-                                        .build();
-                                ratePostDialog.show();
+                        public void onPositive(MaterialDialog ratePostDialogRef) {
+                            super.onPositive(ratePostDialogRef);
+                            EditText reasonEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_reason);
+                            EditText scoreEditText = (EditText) ratePostDialogRef.getCustomView().findViewById(R.id.edit_score);
+                            String reason = reasonEditText.getText().toString();
+                            String scoreText = scoreEditText.getText().toString();
+                            if(!TextUtils.isEmpty(scoreText) && TextUtils.isDigitsOnly(scoreText)) {
+                                int score = Integer.valueOf(scoreText);
+                                getPresenter().ratePost(mUserAccountManager.getAuthObject(), postModel.getPid(), score, reason);
                             } else {
                                 showSnackbar(
-                                        getString(R.string.toast_error_rate_self),
+                                        getString(R.string.toast_error_rate_score_empty),
                                         SimpleSnackbarType.ERROR,
                                         SimpleSnackbarType.LENGTH_SHORT
                                 );
@@ -915,9 +953,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         }
                     })
                     .build();
-        rateListDialog.show();
+            ratePostDialog.show();
+        } else {
+            showSnackbar(
+                    getString(R.string.toast_error_rate_self),
+                    SimpleSnackbarType.ERROR,
+                    SimpleSnackbarType.LENGTH_SHORT
+            );
+        }
     }
-
 
     public void createSpan(int page, final List<PostModel> posts, boolean refreshPosition, int showMode) {
         int mMaxImageWidth = 256;

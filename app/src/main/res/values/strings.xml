@@ -32,6 +32,7 @@
     <string name="action_user_profile_follow">Follow</string>
     <string name="action_user_profile_unfollow">Unfollow</string>
     <string name="action_user_profile_pm">PM</string>
+    <string name="action_share">Share</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
@@ -281,6 +282,10 @@
 
     <string name="provider_checknotice_label">Auto Check New Notice</string>
     <string name="provider_follow_status_label">Auto Sync Follow Status</string>
+    <string name="format_share_title">[ %1$s ]</string>
+    <string name="text_share_from">(Share from LKongDroid)</string>
+    <string name="text_share_post_title">Share Post</string>
+    <string name="text_share_thread_title">Share Thread</string>
 
     <string-array name="check_notice_duration_arrays">
         <item>15 mins</item>
