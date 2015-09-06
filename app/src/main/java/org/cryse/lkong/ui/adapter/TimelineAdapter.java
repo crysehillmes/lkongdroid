@@ -150,7 +150,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         viewHolder.mMessageTextView.setText(mainSpannable);
 
         viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
-        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix));
+        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
         Glide.with(context)
                 .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
                 .error(R.drawable.ic_placeholder_avatar)

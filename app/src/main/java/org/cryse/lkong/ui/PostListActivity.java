@@ -1030,7 +1030,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         autherNameSpannable.append('\n');
-        String datelineString = DateFormatUtils.formatFullDateDividByToday(postModel.getDateline(), mTodayPrefix);
+        String datelineString = DateFormatUtils.formatFullDateDividByToday(
+                postModel.getDateline(),
+                mTodayPrefix,
+                getResources().getConfiguration().locale
+        );
         int start = autherNameSpannable.length();
         int end = autherNameSpannable.length() + datelineString.length();
         autherNameSpannable.append(datelineString);

@@ -89,7 +89,11 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
+        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(
+                item.getDateline(),
+                mTodayPrefix,
+                getContext().getResources().getConfiguration().locale
+        ));
         viewHolder.replyCountTextView.setText(Integer.toString(item.getReplyCount()));
     }
 

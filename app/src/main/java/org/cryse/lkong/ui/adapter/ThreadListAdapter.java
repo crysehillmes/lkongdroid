@@ -97,7 +97,10 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         viewHolder.mThreadTitleTextView.setText(spannableTitle);
         viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
         viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
-        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), todayPrefix));
+        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(
+                threadModel.getDateline(),
+                todayPrefix,
+                context.getResources().getConfiguration().locale));
         Glide.with(context)
                 .load(threadModel.getUserIcon())
                 .error(R.drawable.ic_placeholder_avatar)

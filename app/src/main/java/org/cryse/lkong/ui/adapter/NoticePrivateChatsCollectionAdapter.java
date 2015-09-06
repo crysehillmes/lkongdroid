@@ -57,7 +57,10 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
 
                 viewHolder.mChatMessageTextView.setText(model.getMessage());
                 viewHolder.mUserNameTextView.setText(model.getTargetUserName());
-                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(model.getDateline(), mTodayPrefix));
+                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(
+                        model.getDateline(),
+                        mTodayPrefix,
+                        getContext().getResources().getConfiguration().locale));
                 Glide
                         .with(getContext())
                         .load(model.getTargetUserAvatar())
