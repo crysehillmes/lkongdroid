@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -87,9 +88,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
             if (postModel.getRateScore() != 0) {
-                viewHolder.mRateButton.setText("+ " + postModel.getRateScore());
+                viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
             } else {
-                viewHolder.mRateButton.setText("");
+                viewHolder.mRateTextView.setText("");
             }
 
             if (postModel.getAuthorId() == mUserId) {
@@ -128,7 +129,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         @InjectView(R.id.recyclerview_item_post_imageview_avatar)
         ImageView mAvatarImageView;
         @InjectView(R.id.recyclerview_item_post_button_rate)
-        Button mRateButton;
+        ImageButton mRateButton;
+        @InjectView(R.id.recyclerview_item_post_textview_rate)
+        TextView mRateTextView;
         @InjectView(R.id.recyclerview_item_post_button_edit)
         ImageButton mEditButton;
         @InjectView(R.id.recyclerview_item_post_button_replay)

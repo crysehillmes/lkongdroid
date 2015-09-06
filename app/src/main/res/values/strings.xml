@@ -132,6 +132,7 @@
     <string name="button_sign_up">Sign Up</string>
     <string name="button_sign_in">Sign In</string>
     <string name="button_reply">Reply</string>
+    <string name="button_share">Share</string>
     <string name="button_rate">Rate</string>
     <string name="button_edit">Edit</string>
 

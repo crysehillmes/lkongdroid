@@ -21,6 +21,7 @@
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
+    <string name="button_share">分享</string>
     <string name="datetime_today">今天</string>
     <string name="dialog_choose_emoticon_title">选择表情：</string>
     <string name="dialog_new_post_sending">正在发送…</string>

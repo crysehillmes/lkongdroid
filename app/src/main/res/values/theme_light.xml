@@ -24,6 +24,8 @@
         <item name="theme_card_bg_color">#FFFFFF</item>
         <item name="theme_card_divier_color">#DDDDDD</item>
         <item name="theme_bottom_bar_color">#CCCCCC</item>
+        <item name="theme_button_tint_color">@color/text_color_primary</item>
+        <item name="theme_button_circle_background">@drawable/bg_button_circle</item>
 
         <item name="theme_text_color_primary">@color/text_color_primary</item>
         <item name="theme_text_color_secondary">@color/text_color_secondary</item>
