@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,13 +15,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
@@ -31,12 +35,15 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.file.FileCopier;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
+import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -51,6 +58,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
 
     private List<String> mPhotoUrls = new ArrayList<String>();
     private String mInitUrl;
+    private String mImageFolderName;
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
@@ -68,6 +76,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         setUpToolbar(mToolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
+        mImageFolderName = getString(R.string.app_name);
         Intent intent = getIntent();
         if (intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_INIT_URL) && intent.hasExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST)) {
             this.mPhotoUrls.addAll(intent.getStringArrayListExtra(DataContract.BUNDLE_POST_IMAGE_URL_LIST));
@@ -121,13 +130,51 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pictures_view, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 closeActivityWithTransition();
                 return true;
+            case R.id.action_save_image_as:
+                savePictureAs(mPhotoUrls.get(mViewPager.getCurrentItem()));
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void savePictureAs(String url) {
+        Future<File> fileFuture = Glide.with(this)
+                .load(url)
+                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+        Observable.from(fileFuture).subscribeOn(Schedulers.io()).subscribe(cachedFile -> {
+            String fileName = URLUtil.guessFileName(url, null, null);
+            File sdPicturesFolder = new File(Environment.getExternalStorageDirectory(), "Pictures");
+            if(!sdPicturesFolder.exists())
+                sdPicturesFolder.mkdirs();
+            File appPicturesFolder = new File(sdPicturesFolder, mImageFolderName);
+            if(!appPicturesFolder.exists())
+                appPicturesFolder.mkdirs();
+            File targetFile = new File(appPicturesFolder, fileName);
+
+            FileCopier.copyTo(cachedFile, targetFile, new FileCopier.CopyCallback() {
+                @Override
+                public void onError(Exception exception) {
+                    runOnUiThread(() -> showSnackbar(ToastErrorConstant.TOAST_FAILURE_SAVE_IMAGE_AS, SimpleSnackbarType.ERROR));
+                }
+
+                @Override
+                public void onComplete() {
+                    runOnUiThread(() -> showSnackbar(getString(R.string.toast_success_save_image_as, mImageFolderName, fileName), SimpleSnackbarType.INFO));
+                }
+            });
+        });
+
     }
 
     @Override

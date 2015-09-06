@@ -33,6 +33,7 @@
     <string name="action_user_profile_unfollow">Unfollow</string>
     <string name="action_user_profile_pm">PM</string>
     <string name="action_share">Share</string>
+    <string name="action_save_image">Save Image</string>
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
@@ -90,10 +91,12 @@
     <string name="format_registration_time">Registration Time: %1$s</string>
 
 
+    <string name="toast_success_save_image_as">Image saved to: /sdcard/Pictures/%1$s/%2$s</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
     <string name="toast_failure_get_user_info">Failed to get user info.</string>
     <string name="toast_failure_get_forum_list">Failed to refresh forum list.</string>
     <string name="toast_failure_rate_post">Failed to rate post.</string>
+    <string name="toast_failure_save_image_as">Failed to save image.</string>
 
     <string name="toast_failure_new_post">Failed to send data, please try again.</string>
     <string name="toast_double_tap_to_exit">Tap BACK again to exit.</string>

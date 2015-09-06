@@ -131,7 +131,14 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
         if(!mIsLoaded) {
-            Glide.with(mContext.get()).load(mSourceMiddle).error(mErrorRes).placeholder(mPlaceHolderRes).override(mMaxWidth, mMaxHeight).centerCrop().into(mDrawable);
+            Glide
+                    .with(mContext.get())
+                    .load(mSourceMiddle)
+                    .error(mErrorRes)
+                    .placeholder(mPlaceHolderRes)
+                    .override(mMaxWidth, mMaxHeight)
+                    .centerCrop()
+                    .into(mDrawable);
             mIsLoaded = true;
         }
     }
@@ -146,7 +153,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
             Glide
                     .with(mContext.get())
                     .load(mSourceMiddle)
-                    .error(R.drawable.lkong_logo)
+                    .error(mErrorRes)
                     .placeholder(mPlaceHolderRes)
                     .override(Integer.MAX_VALUE, Integer.MAX_VALUE)
                     .transform(

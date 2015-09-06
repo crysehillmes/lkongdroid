@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -281,8 +282,11 @@ public class HtmlToSpannedConverter implements ContentHandler {
         }
 
         if (d == null) {
-            d = Resources.getSystem().
-                    getDrawable(R.drawable.image_placeholder);
+            d = ResourcesCompat.getDrawable(
+                    Resources.getSystem(),
+                    R.drawable.placeholder_loading,
+                    null
+            );
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
         }
 

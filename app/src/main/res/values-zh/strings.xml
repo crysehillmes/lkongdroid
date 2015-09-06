@@ -19,6 +19,7 @@
     <string name="action_forum_not_followed">未关注</string>
     <string name="action_sign_out">退出账号</string>
     <string name="action_share">分享</string>
+    <string name="action_save_image">保存图片</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
@@ -157,8 +158,10 @@
     <string name="dialog_title_rate">评分</string>
     <string name="dialog_title_insert_url">插入链接</string>
     <string name="drawer_close"></string>
+    <string name="toast_success_save_image_as">图片已保存至: /sdcard/Pictures/%1$s/%2$s</string>
     <string name="toast_error_rate_self">你不能为自己评分</string>
     <string name="toast_failure_rate_post">评分失败</string>
+    <string name="toast_failure_save_image_as">图片保存失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
     <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>

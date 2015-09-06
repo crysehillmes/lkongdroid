@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -971,7 +972,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         int mMaxImageWidth = 256;
         Html.ImageGetter imageGetter = new EmptyImageGetter();
         Observable<List<PostModel>> createSpanObservable = Observable.create(subscriber -> {
-            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
+            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_loading, null);
             for (PostModel postModel : posts) {
                 Spanned spannedText = HtmlTextUtils.htmlToSpanned(postModel.getMessage(), imageGetter, new HtmlTagHandler());
                 replaceImageSpan(new SpannableString(spannedText), postModel, drawable);
@@ -1025,8 +1026,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         256,
                         256,
                         DynamicDrawableSpan.ALIGN_BOTTOM,
@@ -1045,8 +1046,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         Long.toString(postModel.getPid()),
                         PostListAdapter.POST_PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         (int)mContentTextPaint.getTextSize() * 2
                 );
                 spannable.setSpan(emoticonImageSpan,

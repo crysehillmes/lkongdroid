@@ -364,12 +364,24 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         null,
                         getLogTag(),
                         AsyncDrawableType.NORMAL,
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme()),
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_loading, getTheme()),
                         (int)(mContentTextSize * 4),
                         (int)(mContentTextSize * 4)
                 );
-                Glide.with(this).load(selectedImageUri).placeholder(R.drawable.image_placeholder).override((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
-                addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
+                Glide
+                        .with(this)
+                        .load(selectedImageUri)
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
+                        .override((int) (mContentTextSize * 4), (int) (mContentTextSize * 4))
+                        .centerCrop()
+                        .into(drawable);
+                addImageBetweenText(drawable,
+                        ContentProcessor.IMG_TYPE_LOCAL,
+                        ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri),
+                        256,
+                        256
+                );
             }
         }
     }
@@ -506,8 +518,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         Long.toString(pid),
                         PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         256,
                         256,
                         DynamicDrawableSpan.ALIGN_BOTTOM,
@@ -524,8 +536,8 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         Long.toString(pid),
                         PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         (int)mContentTextSize * 2
                 );
                 spannable.setSpan(emoticonImageSpan,

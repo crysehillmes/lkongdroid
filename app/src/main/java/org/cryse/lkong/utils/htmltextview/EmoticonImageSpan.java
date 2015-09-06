@@ -96,7 +96,13 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
         if(!mIsLoaded) {
-            Glide.with(mContext.get()).load(mLocalSource).error(mErrorRes).placeholder(mPlaceHolderRes).override(mEmoticonSize, mEmoticonSize).into(mDrawable);
+            Glide
+                    .with(mContext.get())
+                    .load(mLocalSource)
+                    .error(mErrorRes)
+                    .placeholder(mPlaceHolderRes)
+                    .override(mEmoticonSize, mEmoticonSize)
+                    .into(mDrawable);
             mIsLoaded = true;
         }
     }
@@ -106,7 +112,13 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
         if(!mIsLoaded) {
-            Glide.with(mContext.get()).load(mLocalSource).error(mErrorRes).placeholder(mPlaceHolderRes).override(mEmoticonSize, mEmoticonSize).into(mDrawable);
+            Glide
+                    .with(mContext.get())
+                    .load(mLocalSource)
+                    .error(mErrorRes)
+                    .placeholder(mPlaceHolderRes)
+                    .override(mEmoticonSize, mEmoticonSize)
+                    .into(mDrawable);
             mIsLoaded = true;
         }
     }

@@ -18,6 +18,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 
+import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ public class UrlImageGetter implements ImageGetter {
         this.mContext = context;
         this.mResources = context.getResources();
         this.mImageDownloadPolicy = downloadPolicy;
+        this.mErrorResource = R.drawable.placeholder_error;
+        this.mPlaceHolderResource = R.drawable.placeholder_loading;
         // this.mEmoticonSize = UIUtils.sp2px(context, context.getResources().getDimension(R.dimen.text_size_body1));
     }
 
@@ -82,9 +85,19 @@ public class UrlImageGetter implements ImageGetter {
 
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mMaxImageWidth);
         if(LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy)) {
-            Glide.with(mContext).load(source).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+            Glide
+                    .with(mContext)
+                    .load(source)
+                    .placeholder(mPlaceHolderResource)
+                    .error(mErrorResource)
+                    .into(urlDrawable);
         } else {
-            Glide.with(mContext).load(mPlaceHolderResource).placeholder(mPlaceHolderResource).error(mErrorResource).into(urlDrawable);
+            Glide
+                    .with(mContext)
+                    .load(mPlaceHolderResource)
+                    .placeholder(mPlaceHolderResource)
+                    .error(mErrorResource)
+                    .into(urlDrawable);
         }
         return urlDrawable;
     }

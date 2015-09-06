@@ -47,8 +47,8 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
                 Glide
                         .with(mParentFragment)
                         .load(forumModel.getForumIcon())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
                         .into(viewHolder.mForumIconImageView);
             }
         }

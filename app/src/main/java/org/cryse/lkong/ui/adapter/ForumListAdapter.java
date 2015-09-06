@@ -82,8 +82,8 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
                 RequestManager glide = mParentFragment == null ? Glide.with(getContext()) : Glide.with(mParentFragment);
                 glide
                         .load(forumModel.getIcon())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
                         .into(viewHolder.mForumIconImageView);
             }
         }

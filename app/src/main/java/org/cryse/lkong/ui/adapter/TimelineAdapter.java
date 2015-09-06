@@ -142,8 +142,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
         SimpleImageGetter imageGetter = new SimpleImageGetter(context, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                 .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(context, R.dimen.text_size_body1))
-                .setPlaceHolder(R.drawable.image_placeholder)
-                .setError(R.drawable.image_placeholder);
+                .setPlaceHolder(R.drawable.placeholder_loading)
+                .setError(R.drawable.placeholder_error);
         Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
         SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
         mainSpannable.append(mainPrefixSpannable).append(spannedText);

@@ -130,7 +130,7 @@ public class EmoticonDialog extends DialogFragment {
                         viewHolder.mEmoticonImageView.setImageDrawable(d);
                     } catch (IOException e) {
                         e.printStackTrace();
-                        viewHolder.mEmoticonImageView.setImageResource(R.drawable.image_placeholder);
+                        viewHolder.mEmoticonImageView.setImageResource(R.drawable.placeholder_error);
                     }
                 }
             }

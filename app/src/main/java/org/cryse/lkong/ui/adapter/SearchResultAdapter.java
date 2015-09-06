@@ -112,8 +112,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         viewHolder.nameTextView.setText(item.getGroupName());
         viewHolder.descriptionTextView.setText(item.getGroupDescription());
         Glide.with(getContext()).load(item.getIconUrl())
-                .placeholder(R.drawable.image_placeholder)
-                .error(R.drawable.image_placeholder)
+                .placeholder(R.drawable.placeholder_loading)
+                .error(R.drawable.placeholder_error)
                 .centerCrop()
                 .into(viewHolder.iconImageView);
     }
