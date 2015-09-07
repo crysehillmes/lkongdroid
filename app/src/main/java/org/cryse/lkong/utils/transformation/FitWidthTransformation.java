@@ -20,8 +20,8 @@ public class FitWidthTransformation extends BitmapTransformation {
 
     @Override
     protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-        if(mMaxWidth > 0 && mMaxWidth != Integer.MAX_VALUE) {
-            return TransformationUtils.fitWidthScale(pool, toTransform, outWidth);
+        if(mMaxWidth > 0 && mMaxWidth != Integer.MAX_VALUE && mMaxWidth < toTransform.getWidth()) {
+            return TransformationUtils.fitWidthScale(pool, toTransform, mMaxWidth);
         } else {
             return toTransform;
         }

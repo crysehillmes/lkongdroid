@@ -196,10 +196,13 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
             pendingImageSpan.loadImage(this);
         }
         if(mShowImages) {
-            for(int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
-                PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
-                pendingImageSpan.loadImage(this, 500);
-            }
+            post(() -> {
+                int viewImageMaxWidth = getMeasuredWidth() - px_margin_16 * 2;
+                for(int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
+                    PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
+                    pendingImageSpan.loadImage(this, viewImageMaxWidth);
+                }
+            });
         }
     }
 

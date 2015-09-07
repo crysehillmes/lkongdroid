@@ -7,6 +7,7 @@ import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.utils.transformation.FitWidthTransformation;
@@ -156,6 +157,8 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
                     .error(mErrorRes)
                     .placeholder(mPlaceHolderRes)
                     .override(Integer.MAX_VALUE, Integer.MAX_VALUE)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .skipMemoryCache(true)
                     .transform(
                             new FitWidthTransformation(mContext.get(), mMaxWidth)
                     )
