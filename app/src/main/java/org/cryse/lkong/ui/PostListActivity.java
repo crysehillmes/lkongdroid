@@ -62,7 +62,7 @@ import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.adapter.PostRateAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
@@ -102,15 +102,13 @@ import timber.log.Timber;
 
 public class PostListActivity extends AbstractThemeableActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
     private int mCurrentPage = -1;
     private int mPageCount = 0;
     private ThreadInfoModel mThreadModel;
 
     @Inject
     PostListPresenter mPresenter;
-
-    @Inject
-    AndroidNavigation mAndroidNavigation;
 
     @Inject
     UserAccountManager mUserAccountManager;
@@ -320,9 +318,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             public void onReplyClick(View view, int position) {
                 if (mUserAccountManager.isSignedIn()) {
                     PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
-                    mAndroidNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
+                    mNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
                 } else {
-                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
+                    mNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
             }
 
@@ -339,12 +337,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     }
                     if(postItem.getOrdinal() == 1) {
                         String title = mThreadSubject;
-                        mAndroidNavigation.openActivityForEditThread(PostListActivity.this, mThreadId, postItem.getPid(), title, content);
+                        mNavigation.openActivityForEditThread(PostListActivity.this, mThreadId, postItem.getPid(), title, content);
                     } else {
-                        mAndroidNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
+                        mNavigation.openActivityForEditPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid(), content);
                     }
                 } else {
-                    mAndroidNavigation.navigateToSignInActivity(PostListActivity.this, false);
+                    mNavigation.navigateToSignInActivity(PostListActivity.this, false);
                 }
             }
 
@@ -354,7 +352,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 int[] startingLocation = new int[2];
                 view.getLocationOnScreen(startingLocation);
                 startingLocation[0] += view.getWidth() / 2;
-                mAndroidNavigation.openActivityForUserProfile(PostListActivity.this, startingLocation, postItem.getAuthorId());
+                mNavigation.openActivityForUserProfile(PostListActivity.this, startingLocation, postItem.getAuthorId());
             }
         });
         mCollectionAdapter.setOnSpanClickListener(new PostItemView.OnSpanClickListener() {
@@ -388,12 +386,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         });
         mFab.setOnClickListener(view -> {
             if (mUserAccountManager.isSignedIn()) {
-                mAndroidNavigation.openActivityForReplyToThread(this, mThreadId, mThreadSubject);
+                mNavigation.openActivityForReplyToThread(this, mThreadId, mThreadSubject);
             } else {
-                mAndroidNavigation.navigateToSignInActivity(this, false);
+                mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
+        setColorToViews(getThemeEngine().getPrimaryColor(), getThemeEngine().getPrimaryDarkColor());
     }
 
     private void setupPageControlListener() {
@@ -1108,7 +1106,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mTargetPostId = postId;
                 getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
             } else {
-                mAndroidNavigation.openActivityForPostListByPostId(PostListActivity.this, postId);
+                mNavigation.openActivityForPostListByPostId(PostListActivity.this, postId);
             }
         }
 
@@ -1121,7 +1119,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                         SimpleSnackbarType.LENGTH_SHORT
                 );
             } else {
-                mAndroidNavigation.openActivityForPostListByThreadId(PostListActivity.this, threadId);
+                mNavigation.openActivityForPostListByThreadId(PostListActivity.this, threadId);
             }
         }
 
@@ -1135,13 +1133,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 );
                 goToPage(page);
             } else {
-                mAndroidNavigation.openActivityForPostListByThreadId(PostListActivity.this, threadId, page);
+                mNavigation.openActivityForPostListByThreadId(PostListActivity.this, threadId, page);
             }
         }
 
         @Override
         public void onFailed(String url) {
-            mAndroidNavigation.openUrl(PostListActivity.this, url, mUseInAppBrowser.get());
+            mNavigation.openUrl(PostListActivity.this, url, mUseInAppBrowser.get());
         }
     };
 

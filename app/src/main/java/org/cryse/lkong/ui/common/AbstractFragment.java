@@ -22,8 +22,6 @@ import org.cryse.utils.ColorUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -31,8 +29,7 @@ import rx.schedulers.Schedulers;
 public abstract class AbstractFragment extends Fragment implements SnackbarSupport {
     private List<Runnable> mDeferredUiOperations = new ArrayList<Runnable>();
 
-    @Inject
-    RxEventBus mEventBus;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     private Subscription mEventBusSubscription;
     @Override
@@ -124,7 +121,7 @@ public abstract class AbstractFragment extends Fragment implements SnackbarSuppo
 
     protected int getPrimaryColor() {
         if(getThemedActivity() != null) {
-            return getThemedActivity().getThemeEngine().getPrimaryColor(getActivity());
+            return getThemedActivity().getThemeEngine().getPrimaryColor();
         } else {
             return ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimary);
         }
@@ -132,7 +129,7 @@ public abstract class AbstractFragment extends Fragment implements SnackbarSuppo
 
     protected int getPrimaryDarkColor() {
         if(getThemedActivity() != null) {
-            return getThemedActivity().getThemeEngine().getPrimaryDarkColor(getActivity());
+            return getThemedActivity().getThemeEngine().getPrimaryDarkColor();
         } else {
             return ColorUtils.getColorFromAttr(getActivity(), R.attr.colorPrimaryDark);
         }

@@ -62,7 +62,7 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+        mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor());
         mBrowserView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         url = getIntent().getStringExtra("url");

@@ -48,14 +48,13 @@ public class LKongForumService {
     public static final String LOG_TAG = LKongForumService.class.getName();
     LKongRestService mLKongRestService;
     LKongDatabase mLKongDatabase;
-    RxEventBus mEventBus;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Inject
     @Singleton
-    public LKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase, RxEventBus rxEventBus) {
+    public LKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
         this.mLKongRestService = lKongRestService;
         this.mLKongDatabase = lKongDatabase;
-        this.mEventBus = rxEventBus;
         try {
             this.mLKongDatabase.initialize();
         } catch (Exception ex) {

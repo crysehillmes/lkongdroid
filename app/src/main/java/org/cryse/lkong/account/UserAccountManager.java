@@ -34,6 +34,7 @@ public class UserAccountManager {
     private LinkedHashMap<Long, UserAccount> mUserAccounts = new LinkedHashMap<Long, UserAccount>();
     private UserAccount mCurrentUserAccount;
     private LKAuthObject mAuthObject;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Inject
     @ApplicationContext
@@ -45,9 +46,6 @@ public class UserAccountManager {
 
     @Inject
     AccountManager mAccountManager;
-
-    @Inject
-    RxEventBus mEventBus;
 
     private static final String mLKongAccountType = "org.cryse.lkong";
 

@@ -79,7 +79,7 @@ public class NotificationFragment extends InActivityFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
         ButterKnife.inject(this, contentView);
-        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor(getActivity()));
+        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor());
         return contentView;
     }
 

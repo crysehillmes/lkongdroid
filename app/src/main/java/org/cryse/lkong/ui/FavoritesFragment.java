@@ -105,10 +105,10 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_open_search:
-                mAndroidNavigation.navigateToSearchActivity(getActivity());
+                mNavigation.navigateToSearchActivity(getActivity());
                 return true;
             case R.id.action_open_notification:
-                mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                mNavigation.navigateToNotificationActivity(getActivity());
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
@@ -183,7 +183,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
                 }
             }
 
@@ -194,7 +194,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+                    mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
                 }
             }
         });
@@ -213,7 +213,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             ThreadModel item = mCollectionAdapter.getItem(position);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
-            mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+            mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
         }
     }
 

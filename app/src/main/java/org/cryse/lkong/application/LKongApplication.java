@@ -21,9 +21,6 @@ import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.application.modules.PreferenceModule;
-import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.sync.SyncUtils;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
 import javax.inject.Singleton;
@@ -38,10 +35,8 @@ public class LKongApplication extends Application {
     private LKongPresenterComponent mLKongPresenterComponent;
     private UserAccountComponent mUserAccountComponent;
     private SendServiceComponet mSendServiceComponet;
-    private AndroidNavigation mNavigation;
     private UserAccountManager mUserAccountManager;
     private NetworkPolicyManager mNetworkPolicyManager;
-    private RxEventBus mEventBus;
 
     @Override
     public void onCreate() {
@@ -53,9 +48,7 @@ public class LKongApplication extends Application {
             UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
             UmengUpdateAgent.update(this);
         }
-        mNavigation = new AndroidNavigation(this);
         mUserAccountManager = new UserAccountManager();
-        mEventBus = new RxEventBus();
         mNetworkPolicyManager = new NetworkPolicyManager(this);
         initComponents();
         userAccountComponent().inject(mUserAccountManager);
@@ -65,24 +58,24 @@ public class LKongApplication extends Application {
     private void initComponents() {
         simpleActivityComponent = DaggerSimpleActivityComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation, mEventBus))
+                .contextModule(new ContextModule(this))
                 .preferenceModule(new PreferenceModule(this))
                 .build();
         mLKongPresenterComponent = DaggerLKongPresenterComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation, mEventBus))
+                .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
                 .build();
         mUserAccountComponent = DaggerUserAccountComponent
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation, mEventBus))
+                .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
                 .preferenceModule(new PreferenceModule(this))
                 .build();
         mSendServiceComponet = DaggerSendServiceComponet
                 .builder()
-                .contextModule(new ContextModule(this, mNavigation, mEventBus))
+                .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
                 .build();
     }

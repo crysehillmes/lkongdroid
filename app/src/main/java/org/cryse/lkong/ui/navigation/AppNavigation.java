@@ -11,20 +11,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.AccountConst;
-import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.TimelineModel;
-import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.ForumActivity;
-import org.cryse.lkong.ui.ForumsFragment;
-import org.cryse.lkong.ui.HomePageFragment;
 import org.cryse.lkong.ui.InAppBrowserActivity;
-import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NotificationActivity;
@@ -32,88 +24,16 @@ import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.PrivateChatActivity;
 import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
-import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
 
-public class AndroidNavigation {
-    private LKongApplication mApplication;
-    private MainActivity mMainActivity;
-    private FragmentManager mMainActivityFragmentManager;
-    public AndroidNavigation(Application context) {
-        this.mApplication = (LKongApplication)context;
-    }
-
-    public void attachMainActivity(MainActivity mainActivity) {
-        this.mMainActivity = mainActivity;
-        this.mMainActivityFragmentManager = mainActivity.getSupportFragmentManager();
-    }
-
-    public void detachMainActivity() {
-        this.mMainActivity = null;
-        this.mMainActivityFragmentManager = null;
-    }
-
-    public boolean isAttachToMainActivity() {
-        return (mMainActivity != null) && (mMainActivityFragmentManager != null);
-    }
-
-    public boolean popEntireFragmentBackStack() {
-        final int backStackCount = mMainActivityFragmentManager.getBackStackEntryCount();
-        // Clear Back Stack
-        for (int i = 0; i < backStackCount; i++) {
-            mMainActivityFragmentManager.popBackStack();
-        }
-        return backStackCount > 0;
-    }
-
-    public void switchContentFragment(Fragment targetFragment, String backStackTag) {
-        if(!isAttachToMainActivity())
-            throw new IllegalStateException("Should attach to MainActivity before call any method.");
-        popEntireFragmentBackStack();
-        FragmentTransaction fragmentTransaction = mMainActivityFragmentManager
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                android.R.anim.fade_out);
-        if(backStackTag != null)
-            fragmentTransaction.addToBackStack(backStackTag);
-        fragmentTransaction.replace(R.id.container, targetFragment);
-        fragmentTransaction.commit();
+public class AppNavigation {
+    public AppNavigation() {
     }
 
     public void navigateToNotificationActivity(Context context) {
         Intent intent = new Intent(context, NotificationActivity.class);
         context.startActivity(intent);
-    }
-
-    public void navigateToForumListFragment(Bundle args) {
-        if(isAttachToMainActivity()) {
-            Fragment fragment = ForumsFragment.newInstance(args);
-            switchContentFragment(fragment, null);
-        }
-    }
-
-    public void navigateToFavoritesFragment(Bundle args) {
-        if(isAttachToMainActivity()) {
-            Fragment fragment = FavoritesFragment.newInstance(args);
-            switchContentFragment(fragment, null);
-        }
-    }
-
-    public void navigateToHomePageFragment() {
-        if(isAttachToMainActivity()) {
-            Bundle args = new Bundle();
-            Fragment fragment = HomePageFragment.newInstance(args);
-            switchContentFragment(fragment, null);
-        }
-    }
-
-    public void navigateToTimelineFragment() {
-        if(isAttachToMainActivity()) {
-            Bundle args = new Bundle();
-            Fragment fragment = TimelineFragment.newInstance(args);
-            switchContentFragment(fragment, null);
-        }
     }
 
     public void navigateToSettingsActivity(Context context) {

@@ -18,7 +18,7 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.SimpleCollectionItem;
 import org.cryse.lkong.presenter.BasePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.account.LKAuthObject;
@@ -47,8 +47,7 @@ public abstract class SimpleCollectionFragment<
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
 
-    @Inject
-    AndroidNavigation mAndroidNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     UserAccountManager mUserAccountManager;

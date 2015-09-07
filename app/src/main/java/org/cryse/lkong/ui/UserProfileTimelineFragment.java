@@ -86,7 +86,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
                 }
             }
 
@@ -95,7 +95,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
                 int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
                 if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                     TimelineModel model = mCollectionAdapter.getItem(itemIndex);
-                    mAndroidNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
+                    mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
         });

@@ -31,7 +31,7 @@ import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.presenter.PrivateMessagePresenter;
 import org.cryse.lkong.ui.adapter.PrivateMessagesAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.PrivateChatView;
@@ -39,7 +39,6 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -48,8 +47,7 @@ import butterknife.InjectView;
 
 public class PrivateChatFragment extends AbstractFragment implements PrivateChatView {
     public static final String LOG_TAG = PrivateChatFragment.class.getSimpleName();
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
     @Inject
     PrivateMessagePresenter mPresenter;
     @Inject

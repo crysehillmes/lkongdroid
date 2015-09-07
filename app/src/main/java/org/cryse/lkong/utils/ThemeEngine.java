@@ -1,20 +1,22 @@
 package org.cryse.lkong.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.qualifier.PrefsNightMode;
-import org.cryse.lkong.application.qualifier.PrefsThemeColor;
 import org.cryse.utils.preference.BooleanPreference;
 import org.cryse.utils.preference.IntegerPreference;
-
-import javax.inject.Inject;
+import org.cryse.utils.preference.PreferenceConstant;
 
 public class ThemeEngine {
+    Context mContext;
     IntegerPreference mPrefColorIndex;
     BooleanPreference mPrefNightMode;
 
-    int[] mPrimaryColors = new int[]{
+    static final int[] mPrimaryColors = new int[]{
             R.color.md_red_500,
             R.color.md_pink_500,
             R.color.md_purple_500,
@@ -37,7 +39,7 @@ public class ThemeEngine {
             android.R.color.background_dark
     };
 
-    int[] mPrimaryDarkColors = new int[]{
+    static final int[] mPrimaryDarkColors = new int[]{
             R.color.md_red_700,
             R.color.md_pink_700,
             R.color.md_purple_700,
@@ -60,18 +62,33 @@ public class ThemeEngine {
             android.R.color.background_dark
     };
 
-    @Inject
-    public ThemeEngine(@PrefsNightMode BooleanPreference nightModePrefs, @PrefsThemeColor IntegerPreference themeColorPrefs) {
-        mPrefNightMode = nightModePrefs;
-        mPrefColorIndex = themeColorPrefs;
+    public static ThemeEngine bind(Activity activity) {
+        return new ThemeEngine(activity);
     }
 
-    public int getPrimaryColor(Context context) {
-        return context.getResources().getColor(mPrimaryColors[mPrefColorIndex.get()]);
+    private ThemeEngine(Context context) {
+        mContext = context;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mPrefNightMode = new BooleanPreference(sharedPreferences, PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE, PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE);
+        mPrefColorIndex = new IntegerPreference(sharedPreferences, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
     }
 
-    public int getPrimaryDarkColor(Context context) {
-        return context.getResources().getColor(mPrimaryDarkColors[mPrefColorIndex.get()]);
+    public int getPrimaryColor() {
+        int colorResId = mPrimaryColors[mPrefColorIndex.get()];
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return mContext.getResources().getColor(colorResId, null);
+        } else {
+            return mContext.getResources().getColor(colorResId);
+        }
+    }
+
+    public int getPrimaryDarkColor() {
+        int colorResId = mPrimaryDarkColors[mPrefColorIndex.get()];
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return mContext.getResources().getColor(colorResId, null);
+        } else {
+            return mContext.getResources().getColor(colorResId);
+        }
     }
 
     public boolean isNightMode() {

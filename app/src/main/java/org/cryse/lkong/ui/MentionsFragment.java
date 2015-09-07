@@ -13,6 +13,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
                 }
             }
 
@@ -83,7 +84,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
                 int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
                 if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                     TimelineModel model = mCollectionAdapter.getItem(itemIndex);
-                    mAndroidNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
+                    mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
         });

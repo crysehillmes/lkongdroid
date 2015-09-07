@@ -6,15 +6,14 @@ import android.os.Bundle;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.LKongUrlDispatcher;
 import org.cryse.utils.preference.BooleanPreference;
 
 import javax.inject.Inject;
 
 public class UrlSchemaDispatcherActivity extends Activity {
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     @PrefsUseInAppBrowser

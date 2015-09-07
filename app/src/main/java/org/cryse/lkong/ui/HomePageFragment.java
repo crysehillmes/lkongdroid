@@ -45,7 +45,7 @@ import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
@@ -58,7 +58,6 @@ import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -71,8 +70,8 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public static final String LOG_TAG = HomePageFragment.class.getName();
     private static final String SEARCH_FRAGMENT_TAG = "search_fragment_tag";
 
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
+
     @Inject
     HomePagePresenter mPresenter;
     @Inject

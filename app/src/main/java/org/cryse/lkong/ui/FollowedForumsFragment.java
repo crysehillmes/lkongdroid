@@ -20,8 +20,8 @@ import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.FollowedForumsPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 
 import com.malinskiy.superrecyclerview.OnMoreListener;
@@ -40,8 +40,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     @Inject
     FollowedForumsPresenter mPresenter;
 
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     public static FollowedForumsFragment newInstance(Bundle args) {
         FollowedForumsFragment fragment = new FollowedForumsFragment();

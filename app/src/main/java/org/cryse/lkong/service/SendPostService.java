@@ -41,8 +41,7 @@ public class SendPostService extends Service {
     @Inject
     LKongRestService mLKRestService;
 
-    @Inject
-    RxEventBus mEventBus;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     BlockingQueue<SendTask> mTaskQueue = new LinkedBlockingQueue<SendTask>();
     SendTask mCurrentTask = null;

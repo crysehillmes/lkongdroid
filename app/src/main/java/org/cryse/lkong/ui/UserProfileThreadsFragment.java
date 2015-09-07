@@ -90,7 +90,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
                     ThreadModel model = mCollectionAdapter.getItem(itemIndex);
                     String idString = model.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+                    mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
                 }
             }
 
@@ -102,7 +102,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
                 }
             }
         });

@@ -17,8 +17,6 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.utils.LUtils;
 
-import javax.inject.Inject;
-
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -30,8 +28,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
     private ActionMode mActionMode;
     private Subscription mEventBusSubscription;
     private boolean mIsDestroyed;
-    @Inject
-    RxEventBus mEventBus;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

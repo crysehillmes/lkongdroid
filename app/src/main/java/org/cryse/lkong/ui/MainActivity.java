@@ -1,14 +1,14 @@
 package org.cryse.lkong.ui;
 
 import android.accounts.Account;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.RequestManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
@@ -44,13 +42,12 @@ import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.StringPreference;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -62,8 +59,7 @@ import timber.log.Timber;
 
 public class MainActivity extends AbstractThemeableActivity{
     private static final String LOG_TAG = MainActivity.class.getName();
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
     @Inject
@@ -99,7 +95,6 @@ public class MainActivity extends AbstractThemeableActivity{
             closeActivityWithTransition();
             return;
         }
-        mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
         getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
         getSwipeBackLayout().setEnableGesture(false);*/
@@ -164,7 +159,7 @@ public class MainActivity extends AbstractThemeableActivity{
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
-                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
+                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor())
                 .addDrawerItems(
                         drawerItems
                 )
@@ -200,7 +195,7 @@ public class MainActivity extends AbstractThemeableActivity{
         addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-            mNavigation.navigateToHomePageFragment();
+            navigateToHomePageFragment();
             // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
@@ -238,13 +233,10 @@ public class MainActivity extends AbstractThemeableActivity{
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case 1001:
-                mNavigation.navigateToHomePageFragment();
-                break;
-            case 1002:
-                mNavigation.navigateToForumListFragment(null);
+                navigateToHomePageFragment();
                 break;
             case 1003:
-                mNavigation.navigateToFavoritesFragment(null);
+                navigateToFavoritesFragment(null);
                 break;
             case 1101:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
@@ -391,7 +383,7 @@ public class MainActivity extends AbstractThemeableActivity{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         versionCode -> {
-                            if(versionCode > 0) {
+                            if (versionCode > 0) {
                                 ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
 
                                 new MaterialDialog.Builder(this)
@@ -406,5 +398,37 @@ public class MainActivity extends AbstractThemeableActivity{
                         },
                         () -> {
                         });
+    }
+
+    public boolean popEntireFragmentBackStack() {
+        final int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        // Clear Back Stack
+        for (int i = 0; i < backStackCount; i++) {
+            getSupportFragmentManager().popBackStack();
+        }
+        return backStackCount > 0;
+    }
+
+    public void switchContentFragment(Fragment targetFragment, String backStackTag) {
+        popEntireFragmentBackStack();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                android.R.anim.fade_out);
+        if (backStackTag != null)
+            fragmentTransaction.addToBackStack(backStackTag);
+        fragmentTransaction.replace(R.id.container, targetFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void navigateToFavoritesFragment(Bundle args) {
+        Fragment fragment = FavoritesFragment.newInstance(args);
+        switchContentFragment(fragment, null);
+    }
+
+    public void navigateToHomePageFragment() {
+        Bundle args = new Bundle();
+        Fragment fragment = HomePageFragment.newInstance(args);
+        switchContentFragment(fragment, null);
     }
 }

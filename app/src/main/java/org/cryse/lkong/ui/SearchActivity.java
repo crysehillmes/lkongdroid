@@ -22,7 +22,7 @@ import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SearchForumView;
@@ -37,14 +37,13 @@ import butterknife.InjectView;
 
 public class SearchActivity extends AbstractThemeableActivity implements SearchForumView {
     private static final String LOG_TAG = SearchActivity.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
     SearchView mSearchView = null;
     private String mQueryString = null;
     @Inject
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    AndroidNavigation mNavigation;
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
     @InjectView(R.id.activity_search_recyclerview)

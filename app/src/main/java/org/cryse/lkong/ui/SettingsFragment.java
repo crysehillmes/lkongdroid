@@ -23,7 +23,7 @@ import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.ColorChooserDialog;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
@@ -35,11 +35,9 @@ import timber.log.Timber;
 public class SettingsFragment extends PreferenceFragment {
     private static final String LOG_TAG = SettingsFragment.class.getName();
     private OnConcisePreferenceChangedListener mOnConcisePreferenceChangedListener = null;
+    AppNavigation mNavigation = new AppNavigation();
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
-    @Inject
-    RxEventBus mEventBus;
-    @Inject
-    AndroidNavigation mNavigation;
     @Inject
     UserAccountManager mUserAccountManager;
 
@@ -198,8 +196,8 @@ public class SettingsFragment extends PreferenceFragment {
                 themeColorPrefsValue.set(index);
                 ThemeEngine themeEngine = ((AbstractThemeableActivity) getActivity()).getThemeEngine();
                 mEventBus.sendEvent(new ThemeColorChangedEvent(
-                        themeEngine.getPrimaryColor(getActivity()),
-                        themeEngine.getPrimaryDarkColor(getActivity()),
+                        themeEngine.getPrimaryColor(),
+                        themeEngine.getPrimaryDarkColor(),
                         themeEngine.getPrimaryColorResId(),
                         themeEngine.getPrimaryDarkColorResId()));
             });

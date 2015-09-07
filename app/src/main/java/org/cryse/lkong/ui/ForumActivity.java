@@ -31,7 +31,7 @@ import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
@@ -50,15 +50,15 @@ import butterknife.InjectView;
 public class ForumActivity extends AbstractThemeableActivity implements ForumView {
     public static final String LOG_TAG = ForumActivity.class.getName();
     private static final String FORUM_PINNED_KEY = "forum_pinned";
+
+    AppNavigation mNavigation = new AppNavigation();
+
     private AtomicBoolean isNoMore = new AtomicBoolean(false);
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
     @Inject
     ForumPresenter mPresenter;
-
-    @Inject
-    AndroidNavigation mAndroidNavigation;
 
     @Inject
     UserAccountManager mUserAccountManager;
@@ -133,7 +133,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
+                    mNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
                 }
             }
 
@@ -144,19 +144,19 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
+                    mNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
                 }
             }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);
         mFab.setOnClickListener(view -> {
             if (mUserAccountManager.isSignedIn()) {
-                mAndroidNavigation.openActivityForNewThread(this, mForumId, mForumName);
+                mNavigation.openActivityForNewThread(this, mForumId, mForumName);
             } else {
-                mAndroidNavigation.navigateToSignInActivity(this, false);
+                mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
+        setColorToViews(getThemeEngine().getPrimaryColor(), getThemeEngine().getPrimaryDarkColor());
 
         mThreadCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

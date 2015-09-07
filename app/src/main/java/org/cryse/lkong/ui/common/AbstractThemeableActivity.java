@@ -22,8 +22,6 @@ import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarSupport;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
-import javax.inject.Inject;
-
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.Utils;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
@@ -31,7 +29,6 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
 
 public abstract class AbstractThemeableActivity extends AbstractActivity implements SwipeBackActivityBase, SnackbarSupport {
     private SwipeBackActivityHelper mHelper;
-    @Inject
     ThemeEngine mThemeEngine;
     protected Handler mMainThreadHandler;
     private static final int DarkTheme = R.style.LKongDroidTheme_Dark;
@@ -44,6 +41,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mThemeEngine = ThemeEngine.bind(this);
         mTheme = getAppTheme();
         setTheme(mTheme);
         super.onCreate(savedInstanceState);
@@ -85,7 +83,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
 
     public void setStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor(this));
+            getWindow().setStatusBarColor(mThemeEngine.getPrimaryDarkColor());
         }
     }
 
@@ -245,7 +243,7 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
                 new ActivityManager.TaskDescription(
                         getTitle().toString(),
                         iconBitmap,
-                        mThemeEngine.getPrimaryColor(this)
+                        mThemeEngine.getPrimaryColor()
                 )
         );
         iconBitmap.recycle();
@@ -272,10 +270,10 @@ public abstract class AbstractThemeableActivity extends AbstractActivity impleme
     }
 
     public int getStatusBarColor() {
-        return mThemeEngine.getPrimaryDarkColor(this);
+        return mThemeEngine.getPrimaryDarkColor();
     }
 
     public int getToolbarColor() {
-        return mThemeEngine.getPrimaryColor(this);
+        return mThemeEngine.getPrimaryColor();
     }
 }

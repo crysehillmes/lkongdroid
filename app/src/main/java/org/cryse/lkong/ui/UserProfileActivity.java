@@ -41,7 +41,7 @@ import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.DataContract;
@@ -63,8 +63,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
     private static final int USER_OPTIONS_ANIMATION_DELAY = 300;
 
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserProfilePresenter mPresenter;
     @Inject
@@ -182,7 +181,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     }
 
     private void setupBackground() {
-        int primaryColor = getThemeEngine().getPrimaryColor(this);
+        int primaryColor = getThemeEngine().getPrimaryColor();
         mCollapsingToolbarLayout.setContentScrimColor(primaryColor);
         mAppBarLayout.setBackgroundColor(primaryColor);
         mTabLayout.setBackgroundColor(primaryColor);

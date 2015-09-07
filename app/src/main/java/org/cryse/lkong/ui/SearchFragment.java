@@ -1,16 +1,10 @@
 package org.cryse.lkong.ui;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,11 +20,9 @@ import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SearchForumView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,14 +35,13 @@ import butterknife.InjectView;
 
 public class SearchFragment extends AbstractFragment implements SearchForumView {
     private static final String LOG_TAG = SearchFragment.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
 
     private String mQueryString = null;
     @Inject
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    AndroidNavigation mNavigation;
     @InjectView(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
     SearchResultAdapter mSearchResultAdapter;

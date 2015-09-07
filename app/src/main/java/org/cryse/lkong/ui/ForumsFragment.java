@@ -16,8 +16,8 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumsPresenter;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumsView;
 
@@ -31,11 +31,10 @@ public class ForumsFragment extends SimpleCollectionFragment<
         ForumListAdapter,
         ForumsPresenter> implements ForumsView<ForumModel> {
     private static final String LOG_TAG = ForumsFragment.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     ForumsPresenter mPresenter;
-    @Inject
-    AndroidNavigation mNavigation;
 
     public static ForumsFragment newInstance(Bundle args) {
         ForumsFragment fragment = new ForumsFragment();
