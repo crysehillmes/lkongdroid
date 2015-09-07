@@ -39,20 +39,22 @@ public class TransformationUtils {
         return result;
     }
 
-    public static Bitmap fitWidthScale(BitmapPool pool, Bitmap toFit, int width) {
-        if (toFit.getWidth() <= width) {
+    public static Bitmap fitSizeScale(BitmapPool pool, Bitmap toFit, int width, int height) {
+        /*if (toFit.getWidth() <= width) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "requested target size matches input, returning input");
             }
             return toFit;
-        }
+        }*/
         final float widthPercentage = width / (float) toFit.getWidth();
+        final float heightPercentage = height / (float) toFit.getHeight();
+        final float minPercentage = Math.min(widthPercentage, heightPercentage);
 
         // take the floor of the target width/height, not round. If the matrix
         // passed into drawBitmap rounds differently, we want to slightly
         // overdraw, not underdraw, to avoid artifacts from bitmap reuse.
-        final int targetWidth = (int) (widthPercentage * toFit.getWidth());
-        final int targetHeight = (int) (widthPercentage * toFit.getHeight());
+        final int targetWidth = (int) (minPercentage * toFit.getWidth());
+        final int targetHeight = (int) (minPercentage * toFit.getHeight());
 
         if (toFit.getWidth() == targetWidth && toFit.getHeight() == targetHeight) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -73,12 +75,12 @@ public class TransformationUtils {
             Log.v(TAG, "request: " + width);
             Log.v(TAG, "toFit:   " + toFit.getWidth() + "x" + toFit.getHeight());
             Log.v(TAG, "toReuse: " + toReuse.getWidth() + "x" + toReuse.getHeight());
-            Log.v(TAG, "minPct:   " + widthPercentage);
+            Log.v(TAG, "minPct:   " + minPercentage);
         }
 
         Canvas canvas = new Canvas(toReuse);
         Matrix matrix = new Matrix();
-        matrix.setScale(widthPercentage, widthPercentage);
+        matrix.setScale(minPercentage, minPercentage);
         Paint paint = new Paint(PAINT_FLAGS);
         canvas.drawBitmap(toFit, matrix, paint);
 

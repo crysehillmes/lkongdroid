@@ -9,12 +9,12 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import org.cryse.lkong.R;
-import org.cryse.lkong.utils.transformation.FitWidthTransformation;
+import org.cryse.lkong.utils.transformation.FitSizeTransformation;
 
 import java.lang.ref.WeakReference;
 
 public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
+    private static final int MAX_HEIGHT = 1280;
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
     private String mSource;
@@ -160,7 +160,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .skipMemoryCache(true)
                     .transform(
-                            new FitWidthTransformation(mContext.get(), mMaxWidth)
+                            new FitSizeTransformation(mContext.get(), mMaxWidth, MAX_HEIGHT)
                     )
                     .into(mDrawable);
             mIsLoaded = true;
