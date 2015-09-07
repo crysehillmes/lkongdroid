@@ -34,18 +34,18 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.tablayout)
+    @Bind(R.id.tablayout)
     TabLayout mTabLayout;
-    @InjectView(R.id.fragment_notification_viewpager)
+    @Bind(R.id.fragment_notification_viewpager)
     ViewPager mViewPager;
     NotificationFragmentPagerAdapter mHomePagerAdapter;
 
@@ -78,7 +78,7 @@ public class NotificationFragment extends InActivityFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor());
         return contentView;
     }

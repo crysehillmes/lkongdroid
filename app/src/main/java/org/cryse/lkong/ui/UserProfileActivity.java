@@ -54,7 +54,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class UserProfileActivity extends AbstractThemeableActivity implements /*RevealBackgroundView.OnStateChangeListener, */UserProfileView {
     private static final String LOG_TAG = UserProfileActivity.class.getName();
@@ -69,45 +69,45 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.appbarlayout)
+    @Bind(R.id.appbarlayout)
     AppBarLayout mAppBarLayout;
-    @InjectView(R.id.collapseing_toolbar)
+    @Bind(R.id.collapseing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbarLayout;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.tablayout)
+    @Bind(R.id.tablayout)
     TabLayout mTabLayout;
-    @InjectView(R.id.activity_profile_viewpager)
+    @Bind(R.id.activity_profile_viewpager)
     ViewPager mViewPager;
 
-    @InjectView(R.id.activity_profile_imageview_avatar)
+    @Bind(R.id.activity_profile_imageview_avatar)
     ImageView mAvatarImageView;
-    @InjectView(R.id.activity_profile_textview_user_name)
+    @Bind(R.id.activity_profile_textview_user_name)
     TextView mUserNameTextView;
-    @InjectView(R.id.activity_profile_textview_user_extra0)
+    @Bind(R.id.activity_profile_textview_user_extra0)
     TextView mUserExtra0TextView;
-    @InjectView(R.id.activity_profile_textview_user_extra1)
+    @Bind(R.id.activity_profile_textview_user_extra1)
     TextView mUserExtra1TextView;
 
-    @InjectView(R.id.activity_profile_textview_follower_count)
+    @Bind(R.id.activity_profile_textview_follower_count)
     TextView mUserFollowerCountTextView;
-    @InjectView(R.id.activity_profile_textview_following_count)
+    @Bind(R.id.activity_profile_textview_following_count)
     TextView mUserFollowingCountTextView;
-    @InjectView(R.id.activity_profile_textview_thread_count)
+    @Bind(R.id.activity_profile_textview_thread_count)
     TextView mUserThreadCountTextView;
-    @InjectView(R.id.activity_profile_textview_post_count)
+    @Bind(R.id.activity_profile_textview_post_count)
     TextView mUserPostCountTextView;
 
-    @InjectView(R.id.activity_profile_header_root)
+    @Bind(R.id.activity_profile_header_root)
     View mHeaderRootView;
-    @InjectView(R.id.activity_profile_header_detail)
+    @Bind(R.id.activity_profile_header_detail)
     View mHeaderDetailView;
-    @InjectView(R.id.activity_profile_header_stats)
+    @Bind(R.id.activity_profile_header_stats)
     View mHeaderStatsView;
 
-    @InjectView(R.id.activity_profile_header_container_follow)
+    @Bind(R.id.activity_profile_header_container_follow)
     FrameLayout mFollowContainer;
-    @InjectView(R.id.activity_profile_header_button_follow)
+    @Bind(R.id.activity_profile_header_button_follow)
     Button mFollowButton;
 
     /*MenuItem mFollowUserMenuItem;*/
@@ -137,7 +137,7 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         mItemList = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         //ViewCompat.setElevation(mToolbar, 0f);
         setUpToolbar(mToolbar);
         mAppBarLayout.setTargetElevation(0f);

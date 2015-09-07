@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SearchActivity extends AbstractThemeableActivity implements SearchForumView {
     private static final String LOG_TAG = SearchActivity.class.getName();
@@ -44,9 +44,9 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_search_recyclerview)
+    @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
     SearchResultAdapter mSearchResultAdapter;
 
@@ -60,7 +60,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         mToolbar.setContentInsetsAbsolute(UIUtils.calculateActionBarSize(this), 0);
         initSearchBox();

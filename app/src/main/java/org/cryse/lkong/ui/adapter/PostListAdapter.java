@@ -24,7 +24,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private static final String LOG_TAG = PostListAdapter.class.getName();
@@ -124,25 +124,25 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_post_view_item)
+        @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
-        @InjectView(R.id.recyclerview_item_post_imageview_avatar)
+        @Bind(R.id.recyclerview_item_post_imageview_avatar)
         ImageView mAvatarImageView;
-        @InjectView(R.id.recyclerview_item_post_button_rate)
+        @Bind(R.id.recyclerview_item_post_button_rate)
         ImageButton mRateButton;
-        @InjectView(R.id.recyclerview_item_post_button_share)
+        @Bind(R.id.recyclerview_item_post_button_share)
         ImageButton mShareButton;
-        @InjectView(R.id.recyclerview_item_post_textview_rate)
+        @Bind(R.id.recyclerview_item_post_textview_rate)
         TextView mRateTextView;
-        @InjectView(R.id.recyclerview_item_post_button_edit)
+        @Bind(R.id.recyclerview_item_post_button_edit)
         ImageButton mEditButton;
-        @InjectView(R.id.recyclerview_item_post_button_replay)
+        @Bind(R.id.recyclerview_item_post_button_replay)
         ImageButton mReplyButton;
 
         OnItemButtonClickListener mOnItemButtonClickListener;
         public ViewHolder(View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
             mOnItemButtonClickListener = onItemReplyClickListener;
             View.OnClickListener clickListener = view -> {
                 int adapterPosition = getAdapterPosition();

@@ -94,7 +94,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -127,15 +127,15 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     BooleanPreference mFlipPageByVolumeKey;
 
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_post_list_recyclerview)
+    @Bind(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButtonEx mFab;
-    @InjectView(R.id.activity_post_list_page_control)
+    @Bind(R.id.activity_post_list_page_control)
     PagerControl mFooterPagerControl;
-    @InjectView(R.id.loading_progressbar)
+    @Bind(R.id.loading_progressbar)
     ProgressBar mProgressBar;
 
     View mTopPaddingHeaderView;
@@ -170,7 +170,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);

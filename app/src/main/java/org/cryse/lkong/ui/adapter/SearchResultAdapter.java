@@ -23,7 +23,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchResult> {
     private int mResultType = 0;
@@ -128,41 +128,41 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     }
 
     protected static class SearchPostViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_post_title)
+        @Bind(R.id.recyclerview_item_search_post_title)
         TextView titleTextView;
-        @InjectView(R.id.recyclerview_item_search_post_secondary)
+        @Bind(R.id.recyclerview_item_search_post_secondary)
         TextView secondaryTextView;
-        @InjectView(R.id.recyclerview_item_search_post_reply_count)
+        @Bind(R.id.recyclerview_item_search_post_reply_count)
         TextView replyCountTextView;
         public SearchPostViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     protected static class SearchUserViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_user_icon)
+        @Bind(R.id.recyclerview_item_search_user_icon)
         ImageView avatarImageView;
-        @InjectView(R.id.recyclerview_item_search_user_name)
+        @Bind(R.id.recyclerview_item_search_user_name)
         TextView nameTextView;
-        @InjectView(R.id.recyclerview_item_search_user_sign)
+        @Bind(R.id.recyclerview_item_search_user_sign)
         TextView signTextView;
         public SearchUserViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     protected static class SearchGroupViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_group_icon)
+        @Bind(R.id.recyclerview_item_search_group_icon)
         ImageView iconImageView;
-        @InjectView(R.id.recyclerview_item_search_group_name)
+        @Bind(R.id.recyclerview_item_search_group_name)
         TextView nameTextView;
-        @InjectView(R.id.recyclerview_item_search_group_description)
+        @Bind(R.id.recyclerview_item_search_group_description)
         TextView descriptionTextView;
         public SearchGroupViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

@@ -37,7 +37,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private static final String LOG_TAG = TimelineAdapter.class.getName();
@@ -162,30 +162,30 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_timeline_cardview_root_container)
+        @Bind(R.id.recyclerview_item_timeline_cardview_root_container)
         CardView mRootCardView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_author_name)
+        @Bind(R.id.recyclerview_item_timeline_textview_author_name)
         TextView mAuthorTextView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_dateline)
+        @Bind(R.id.recyclerview_item_timeline_textview_dateline)
         TextView mDatelineTextView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_message)
+        @Bind(R.id.recyclerview_item_timeline_textview_message)
         TextView mMessageTextView;
-        @InjectView(R.id.recyclerview_item_timeline_imageview_author_avatar)
+        @Bind(R.id.recyclerview_item_timeline_imageview_author_avatar)
         ImageView mAuthorAvatarImageView;
 
 
-        @InjectView(R.id.secondary_message_container)
+        @Bind(R.id.secondary_message_container)
         RelativeLayout mSecondaryContainer;
-        @InjectView(R.id.recyclerview_item_timeline_secondary_message)
+        @Bind(R.id.recyclerview_item_timeline_secondary_message)
         TextView mSecondaryMessageTextView;
-        @InjectView(R.id.recyclerview_item_timeline_third_message)
+        @Bind(R.id.recyclerview_item_timeline_third_message)
         TextView mThirdMessageTextView;
 
 
         OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
         public ViewHolder(View v, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
             mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
             mAuthorAvatarImageView.setOnClickListener(view -> {
                 if(mOnTimelineModelItemClickListener != null) {

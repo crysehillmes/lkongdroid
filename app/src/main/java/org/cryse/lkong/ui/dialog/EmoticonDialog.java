@@ -28,7 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class EmoticonDialog extends DialogFragment {
 
@@ -139,12 +139,12 @@ public class EmoticonDialog extends DialogFragment {
         public static class ViewHolder extends RecyclerViewHolder {
             // each data item is just a string in this case
 
-            @InjectView(R.id.recyclerview_item_emoticon_imageview)
+            @Bind(R.id.recyclerview_item_emoticon_imageview)
             public ImageView mEmoticonImageView;
 
             public ViewHolder(View v) {
                 super(v);
-                ButterKnife.inject(this, v);
+                ButterKnife.bind(this, v);
             }
         }
     }

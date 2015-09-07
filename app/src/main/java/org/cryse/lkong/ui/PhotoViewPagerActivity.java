@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -61,9 +61,9 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
     private String mInitUrl;
     private String mImageFolderName;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.photo_viewpager)
+    @Bind(R.id.photo_viewpager)
     ViewPager mViewPager;
     PhotoPagerAdapter mPagerAdapter;
 
@@ -73,7 +73,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
         setIsOverrideToolbarColor(false);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setStatusBarColor(Color.BLACK);
@@ -218,11 +218,11 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         static Tika tika = new Tika();
         private Subscription mLoadImageSubscription;
         private String mImageUrl;
-        @InjectView(R.id.viewpager_item_progressbar)
+        @Bind(R.id.viewpager_item_progressbar)
         ProgressBar mProgressBar;
-        @InjectView(R.id.viewpager_item_imageview_secondary)
+        @Bind(R.id.viewpager_item_imageview_secondary)
         ImageView mSecondaryPhotoView;
-        @InjectView(R.id.viewpager_item_imageview_primary)
+        @Bind(R.id.viewpager_item_imageview_primary)
         SubsamplingScaleImageView mPhotoView;
 
         public static ImageFragment newInstance(String url) {
@@ -247,7 +247,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View contentView = inflater.inflate(R.layout.viewpager_item_photo, container, false);
-            ButterKnife.inject(this, contentView);
+            ButterKnife.bind(this, contentView);
             mPhotoView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
 
                 @Override

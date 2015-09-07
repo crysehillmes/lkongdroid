@@ -43,7 +43,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PrivateChatFragment extends AbstractFragment implements PrivateChatView {
     public static final String LOG_TAG = PrivateChatFragment.class.getSimpleName();
@@ -52,13 +52,13 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     PrivateMessagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.fragment_private_chat_ptrrecyclerview_messages)
+    @Bind(R.id.fragment_private_chat_ptrrecyclerview_messages)
     PtrRecyclerView mRecyclerView;
-    @InjectView(R.id.fragment_private_chat_edittext_message)
+    @Bind(R.id.fragment_private_chat_edittext_message)
     EditText mMessageEditText;
-    @InjectView(R.id.fragment_private_chat_button_send)
+    @Bind(R.id.fragment_private_chat_button_send)
     ImageButton mSendButton;
 
     PrivateMessagesAdapter mCollectionAdapter;
@@ -94,7 +94,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_private_chat, container, false);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         setUpRecyclerView();
         getThemedActivity().setSupportActionBar(mToolbar);
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();

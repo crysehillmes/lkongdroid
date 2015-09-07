@@ -83,7 +83,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import timber.log.Timber;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
@@ -98,20 +98,20 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_new_thread_edittext_title)
+    @Bind(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
-    @InjectView(R.id.activity_new_thread_view_div)
+    @Bind(R.id.activity_new_thread_view_div)
     View mDivideView;
-    @InjectView(R.id.activity_new_thread_edittext_content)
+    @Bind(R.id.activity_new_thread_edittext_content)
     EditText mContentEditText;
 
-    @InjectView(R.id.action_insert_emoji)
+    @Bind(R.id.action_insert_emoji)
     ImageButton mInsertEmoticonButton;
-    @InjectView(R.id.action_insert_image)
+    @Bind(R.id.action_insert_image)
     ImageButton mInsertImageButton;
-    @InjectView(R.id.action_insert_link)
+    @Bind(R.id.action_insert_link)
     ImageButton mInsertUrlButton;
 
     ImageEditTextHandler mContentEditTextHandler;
@@ -135,7 +135,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSwipeBackEnable(false);
         setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());

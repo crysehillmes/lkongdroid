@@ -20,7 +20,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
     Fragment mParentFragment;
@@ -92,16 +92,16 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
-        @InjectView(R.id.recyclerview_item_forum_imageview_icon)
+        @Bind(R.id.recyclerview_item_forum_imageview_icon)
         public ImageView mForumIconImageView;
-        @InjectView(R.id.recyclerview_item_forum_textview_title)
+        @Bind(R.id.recyclerview_item_forum_textview_title)
         public TextView mForumTitleTextView;
-        @InjectView(R.id.recyclerview_item_forum_textview_secondary)
+        @Bind(R.id.recyclerview_item_forum_textview_secondary)
         public TextView mForumSecondaryTextView;
 
         public ViewHolder(View v) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
         }
     }
 }

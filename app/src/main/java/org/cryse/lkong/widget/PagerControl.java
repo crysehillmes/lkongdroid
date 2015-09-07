@@ -13,16 +13,16 @@ import android.widget.ImageButton;
 import org.cryse.lkong.R;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PagerControl extends FrameLayout {
     private static final int TRANSLATE_DURATION_MILLIS = 200;
 
-    @InjectView(R.id.widget_pager_control_button_page_indicator)
+    @Bind(R.id.widget_pager_control_button_page_indicator)
     Button mPageIndicatorButton;
-    @InjectView(R.id.widget_pager_control_button_backward)
+    @Bind(R.id.widget_pager_control_button_backward)
     ImageButton mPrevPageButton;
-    @InjectView(R.id.widget_pager_control_button_forward)
+    @Bind(R.id.widget_pager_control_button_forward)
     ImageButton mNextPageButton;
 
     private boolean mVisible = true;
@@ -44,7 +44,7 @@ public class PagerControl extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         mPageIndicatorButton.setOnClickListener(view -> {
             if(mOnPagerControlListener != null) {
                 mOnPagerControlListener.onPageIndicatorClick();

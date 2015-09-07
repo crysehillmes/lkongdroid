@@ -21,7 +21,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter<PrivateChatModel> {
     public static final String PRIVATE_CHATS_PICASSO_TAG = "PRIVATE_CHATS_PICASSO_TAG";
@@ -74,18 +74,18 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_private_chat_imageview_icon)
+        @Bind(R.id.recyclerview_item_private_chat_imageview_icon)
         public ImageView mAvatarImageView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_message)
+        @Bind(R.id.recyclerview_item_private_chat_textview_message)
         public TextView mChatMessageTextView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_username)
+        @Bind(R.id.recyclerview_item_private_chat_textview_username)
         public TextView mUserNameTextView;
-        @InjectView(R.id.recyclerview_item_private_chat_textview_dateline)
+        @Bind(R.id.recyclerview_item_private_chat_textview_dateline)
         public TextView mDatelineTextView;
 
         public ViewHolder(View v) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
         }
     }
 }

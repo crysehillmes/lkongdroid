@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SearchFragment extends AbstractFragment implements SearchForumView {
     private static final String LOG_TAG = SearchFragment.class.getName();
@@ -42,7 +42,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.activity_search_recyclerview)
+    @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
     SearchResultAdapter mSearchResultAdapter;
     private OnSearchResultListener mOnSearchResultListener;
@@ -83,7 +83,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_search, null);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         initRecyclerView();
         return contentView;
     }

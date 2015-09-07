@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,8 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
+import butterknife.Bind;
 
 public abstract class SimpleCollectionFragment<
         ItemType extends SimpleCollectionItem,
@@ -52,10 +52,10 @@ public abstract class SimpleCollectionFragment<
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Optional
-    @InjectView(R.id.toolbar)
+    @Nullable
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.simple_collection_recyclerview)
+    @Bind(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
     AdapterType mCollectionAdapter;
@@ -73,7 +73,7 @@ public abstract class SimpleCollectionFragment<
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(getLayoutId(), null);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         initRecyclerView();
         return contentView;
     }

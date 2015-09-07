@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui.adapter;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -22,8 +23,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
+import butterknife.Bind;
 
 public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessageModel> {
     private static final String LOG_TAG = PrivateMessagesAdapter.class.getSimpleName();
@@ -91,19 +91,19 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
     }
 
     public static class PrivateMessageViewHolder extends RecyclerViewHolder {
-        @Optional
-        @InjectView(R.id.recyclerview_item_private_message_imageview_avatar)
+        @Nullable
+        @Bind(R.id.recyclerview_item_private_message_imageview_avatar)
         ImageView mAvatarImageView;
-        @InjectView(R.id.recyclerview_item_private_message_relativelayout_message_container)
+        @Bind(R.id.recyclerview_item_private_message_relativelayout_message_container)
         RelativeLayout mMessageContainer;
-        @InjectView(R.id.recyclerview_item_private_message_textview_message)
+        @Bind(R.id.recyclerview_item_private_message_textview_message)
         TextView mMessageTextView;
-        @InjectView(R.id.recyclerview_item_private_message_textview_dateline)
+        @Bind(R.id.recyclerview_item_private_message_textview_dateline)
         TextView mDatelineTextView;
 
         public PrivateMessageViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
             mMessageTextView.setMovementMethod(
                     LinkMovementMethod.getInstance()
             );

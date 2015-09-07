@@ -16,10 +16,10 @@ import android.widget.ImageView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -154,7 +154,7 @@ public class MainActivity extends AbstractThemeableActivity{
         drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
         drawerItems[2] = new DividerDrawerItem();
-        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
+        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withSelectable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -184,21 +184,23 @@ public class MainActivity extends AbstractThemeableActivity{
 
                     }
                 })
-                .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
-                    // do something with the clicked item :D
-                    if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
-                        mCurrentSelection = drawerItem.getIdentifier();
-                    mPendingRunnable = () ->  onNavigationSelected(drawerItem);
-                    return false;
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
+                        if (iDrawerItem instanceof PrimaryDrawerItem)
+                            mCurrentSelection = iDrawerItem.getIdentifier();
+                        mPendingRunnable = () ->  onNavigationSelected(iDrawerItem);
+                        return false;
+                    }
                 })
                 .build();
         addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
-            mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
+            mNaviagtionDrawer.setSelection(1001, false);
             navigateToHomePageFragment();
             // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
-            mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
+            mNaviagtionDrawer.setSelection(mCurrentSelection, false);
         }
 
     }
@@ -324,7 +326,7 @@ public class MainActivity extends AbstractThemeableActivity{
                             .withName(getString(R.string.drawer_item_account_add))
                             .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.drawer_account_add, getTheme()))
                             .withIdentifier(-3001)
-                            .setSelectable(false)
+                            .withSelectable(false)
             );
         } catch (NeedSignInException ex) {
             mNavigation.navigateToSignInActivity(this, true);

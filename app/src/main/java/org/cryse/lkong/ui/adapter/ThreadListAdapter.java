@@ -27,7 +27,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static final String THREAD_PICASSO_TAG = "picasso_thread_list_adapter";
@@ -117,23 +117,23 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
-        @InjectView(R.id.recyclerview_item_thread_relative_layout_root)
+        @Bind(R.id.recyclerview_item_thread_relative_layout_root)
         RelativeLayout mRootView;
-        @InjectView(R.id.recyclerview_item_thread_imageview_icon)
+        @Bind(R.id.recyclerview_item_thread_imageview_icon)
         public ImageView mThreadIconImageView;
-        @InjectView(R.id.recyclerview_item_thread_textview_title)
+        @Bind(R.id.recyclerview_item_thread_textview_title)
         public TextView mThreadTitleTextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_secondary)
+        @Bind(R.id.recyclerview_item_thread_textview_secondary)
         public TextView mThreadSecondaryTextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_notice1)
+        @Bind(R.id.recyclerview_item_thread_textview_notice1)
         public TextView mNotice1TextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_notice2)
+        @Bind(R.id.recyclerview_item_thread_textview_notice2)
         public TextView mNotice2TextView;
 
         OnThreadItemClickListener mOnThreadItemClickListener;
         public ViewHolder(View v, OnThreadItemClickListener listener) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
             mOnThreadItemClickListener = listener;
             mThreadIconImageView.setOnClickListener(view -> {
                 if(mOnThreadItemClickListener != null) {

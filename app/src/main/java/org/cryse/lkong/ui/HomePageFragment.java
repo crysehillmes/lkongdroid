@@ -62,7 +62,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import timber.log.Timber;
 
 public class HomePageFragment extends AbstractFragment implements HomePageView {
@@ -80,17 +80,17 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @PrefsForumsFirst
     BooleanPreference mForumsFirst;
 
-    @InjectView(R.id.searchview)
+    @Bind(R.id.searchview)
     PersistentSearchView mSearchView;
-    @InjectView(R.id.view_search_tint)
+    @Bind(R.id.view_search_tint)
     View mSearchTintView;
-    @InjectView(R.id.search_fragment_container)
+    @Bind(R.id.search_fragment_container)
     FrameLayout mSearchContainer;
-    @InjectView(R.id.tablayout)
+    @Bind(R.id.tablayout)
     TabLayout mTabLayout;
-    @InjectView(R.id.fragment_homepage_viewpager)
+    @Bind(R.id.fragment_homepage_viewpager)
     ViewPager mViewPager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     protected MenuItem mChangeThemeMenuItem;
@@ -116,7 +116,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_homepage, container, false);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         getThemedActivity().setSupportActionBar(mToolbar);
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();
         if(actionBar != null) {

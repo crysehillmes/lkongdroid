@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ForumActivity extends AbstractThemeableActivity implements ForumView {
     public static final String LOG_TAG = ForumActivity.class.getName();
@@ -63,11 +63,11 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_forum_thread_list_recyclerview)
+    @Bind(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
@@ -90,7 +90,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
