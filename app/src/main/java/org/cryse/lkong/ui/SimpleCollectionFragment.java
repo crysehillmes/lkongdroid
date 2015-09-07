@@ -112,7 +112,10 @@ public abstract class SimpleCollectionFragment<
                 mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
 
             } else {
-                loadInitialData();
+                if(getView() != null)
+                    getView().post(() -> loadInitialData());
+                else
+                    loadInitialData();
             }
         }
     }
