@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年9月7日"
+        versionCode="901"
+        versionName="0.9.1">
+        <changelogtext><![CDATA[<b><font color=red>新功能：</font></b>新消息通知]]></changelogtext>
+        <changelogtext><![CDATA[<b><font color=red>新功能：</font></b>分享内容到其他应用]]></changelogtext>
+        <changelogtext>改进：头像和查看大图支持 gif</changelogtext>
+        <changelogtext>改进：图片另存为</changelogtext>
+        <changelogtext>改进：全新搜索功能，更加便捷地搜索用户和位面</changelogtext>
+        <changelogtext>改进：部分应用外链接的响应</changelogtext>
+        <changelogtext>改进：帖子中的图片缩略图不再强制为正方形</changelogtext>
+        <changelogtext>改进：部分界面细节改进</changelogtext>
+        <changelogbug>修复：账户切换和注销的错误</changelogbug>
+        <changelogbug>修复：用户信息中签到信息显示错误的问题</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年7月30日"
         versionCode="900"
         versionName="0.9.0">
