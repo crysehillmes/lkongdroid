@@ -32,6 +32,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
+            debuggable true
             minifyEnabled true
             shrinkResources true
             signingConfig signingConfigs.release
@@ -72,7 +73,7 @@ dependencies {
     compile project(':changelog')
     // compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.umeng.analytics:analytics:5.5.3'
-    compile files('libs/umeng-update-v2.5.0.jar')
+    compile files('libs/umeng-update-v2.6.0.1.jar')
     retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:$retroLambdaVersion"
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
