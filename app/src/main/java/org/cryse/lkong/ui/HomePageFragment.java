@@ -130,17 +130,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             //mTabLayout.setupWithViewPager(mViewPager);
             mTabLayout.setBackgroundColor(getPrimaryColor());
         }
-        if (ViewCompat.isLaidOut(mTabLayout)) {
-            mTabLayout.setupWithViewPager(mViewPager);
-        } else {
-            mTabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mTabLayout.setupWithViewPager(mViewPager);
-                    mTabLayout.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
+        mTabLayout.setupWithViewPager(mViewPager);
         setUpSearchView();
         return contentView;
     }
