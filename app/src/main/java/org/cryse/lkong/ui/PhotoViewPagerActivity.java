@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -310,7 +311,11 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
                                     if (mimeTypeString.toLowerCase().contains("gif")) {
                                         mPhotoView.setVisibility(View.GONE);
                                         mSecondaryPhotoView.setVisibility(View.VISIBLE);
-                                        Glide.with(this).load(mImageUrl).fitCenter().into(mSecondaryPhotoView);
+                                        Glide
+                                                .with(this)
+                                                .load(mImageUrl)
+                                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                                .into(mSecondaryPhotoView);
                                     } else {
                                         mPhotoView.setImage(ImageSource.uri(Uri.fromFile(result)));
                                     }
@@ -332,6 +337,12 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         public void onDestroy() {
             super.onDestroy();
             SubscriptionUtils.checkAndUnsubscribe(mLoadImageSubscription);
+        }
+
+        @Override
+        public void onDestroyView() {
+            Glide.clear(mSecondaryPhotoView);
+            super.onDestroyView();
         }
 
         protected View getSnackbarRootView() {
