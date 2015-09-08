@@ -121,6 +121,9 @@ public class AsyncTargetDrawable extends Drawable implements Target<GlideDrawabl
         Rect bound = getRecommendBound(errorDrawable, mMaxWidth, mMaxHeight, true);
         errorDrawable.setBounds(bound);
         setBounds(bound);
+        if (mContainer.get() != null) {
+            mContainer.get().notifyImageSpanLoaded(mIdentityTag, errorDrawable, mDrawableType);
+        }
     }
 
     @Override
