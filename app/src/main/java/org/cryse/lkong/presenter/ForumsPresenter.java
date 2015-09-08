@@ -2,13 +2,12 @@ package org.cryse.lkong.presenter;
 
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.model.ForumModel;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.ForumsView;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;

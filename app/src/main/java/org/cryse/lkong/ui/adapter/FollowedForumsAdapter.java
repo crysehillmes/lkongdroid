@@ -1,13 +1,13 @@
 package org.cryse.lkong.ui.adapter;
 
-import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.data.model.FollowedForum;
@@ -17,13 +17,13 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum>{
-    private Picasso mPicasso;
-    public FollowedForumsAdapter(Context context, Picasso picasso, List<FollowedForum> mItemList) {
-        super(context, mItemList);
-        mPicasso = picasso;
+    private Fragment mParentFragment;
+    public FollowedForumsAdapter(Fragment parentFragment, List<FollowedForum> mItemList) {
+        super(parentFragment.getContext(), mItemList);
+        this.mParentFragment = parentFragment;
     }
 
     @Override
@@ -44,11 +44,11 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
 
                 viewHolder.mForumTitleTextView.setText(forumModel.getForumName());
                 /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
-                mPicasso
+                Glide
+                        .with(mParentFragment)
                         .load(forumModel.getForumIcon())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
-                        .noFade()
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
                         .into(viewHolder.mForumIconImageView);
             }
         }
@@ -57,16 +57,16 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
-        @InjectView(R.id.recyclerview_item_forum_imageview_icon)
+        @Bind(R.id.recyclerview_item_forum_imageview_icon)
         public ImageView mForumIconImageView;
-        @InjectView(R.id.recyclerview_item_forum_textview_title)
+        @Bind(R.id.recyclerview_item_forum_textview_title)
         public TextView mForumTitleTextView;
-        /*@InjectView(R.id.recyclerview_item_forum_textview_secondary)
+        /*@Bind(R.id.recyclerview_item_forum_textview_secondary)
         public TextView mForumSecondaryTextView;*/
 
         public ViewHolder(View v) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
         }
     }
 }

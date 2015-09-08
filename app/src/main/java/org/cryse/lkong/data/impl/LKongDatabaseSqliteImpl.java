@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.cryse.lkong.application.qualifier.ApplicationContext;
+import org.cryse.lkong.constant.CacheConstants;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.data.provider.cacheobject.CacheObjectContentValues;
@@ -53,21 +54,18 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
         return mContentResolver != null;
     }
 
-    private static final String CACHE_KEY_FORUM_LIST = "cache_forum_list";
-    private static final String CACHE_KEY_PUNCH_RESULT = "cache_punch_result";
-    private static final String CACHE_KEY_NOTIFICATION_COUNT = "cache_notification_count";
     @Override
     public void cacheForumList(List<ForumModel> forumModels) throws Exception {
         String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {
         }.getType());
         CacheObjectContentValues values = new CacheObjectContentValues();
-        values.putCacheKey(CACHE_KEY_FORUM_LIST).putCacheValue(json);
+        values.putCacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).putCacheValue(json);
         values.insert(mContentResolver);
     }
 
     @Override
     public List<ForumModel> getCachedForumList() throws Exception {
-        String json = getCachedValue(CACHE_KEY_FORUM_LIST);
+        String json = getCachedValue(CacheConstants.CACHE_KEY_FORUM_LIST);
         if(!TextUtils.isEmpty(json)) {
             return mGson.fromJson(json, new TypeToken<List<ForumModel>>() {}.getType());
         } else {
@@ -78,13 +76,13 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public void removeCachedForumList() throws Exception {
         CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        cacheSelection.cacheKey(CACHE_KEY_FORUM_LIST).delete(mContentResolver);
+        cacheSelection.cacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).delete(mContentResolver);
     }
 
     @Override
     public boolean isCachedForumList() throws Exception {
         CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        CacheObjectCursor cursor = cacheSelection.cacheKey(CACHE_KEY_FORUM_LIST).query(mContentResolver);
+        CacheObjectCursor cursor = cacheSelection.cacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).query(mContentResolver);
         boolean exist = cursor.getCount() > 0;
         cursor.close();
         return exist;
@@ -140,7 +138,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     public void cachePunchResult(PunchResult punchResult) {
         String json = mGson.toJson(punchResult, PunchResult.class);
         CacheObjectContentValues values = new CacheObjectContentValues();
-        values.putCacheKey(generatePunchResultKey(punchResult.getUserId()))
+        values.putCacheKey(CacheConstants.generatePunchResultKey(punchResult.getUserId()))
                 .putCacheValue(json);
         values.insert(mContentResolver);
     }
@@ -148,12 +146,12 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public void removePunchResult(long uid) {
         CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        cacheSelection.cacheKey(generatePunchResultKey(uid)).delete(mContentResolver);
+        cacheSelection.cacheKey(CacheConstants.generatePunchResultKey(uid)).delete(mContentResolver);
     }
 
     @Override
     public PunchResult getCachePunchResult(long uid) {
-        String json = getCachedValue(generatePunchResultKey(uid));
+        String json = getCachedValue(CacheConstants.generatePunchResultKey(uid));
         if(!TextUtils.isEmpty(json)) {
             return mGson.fromJson(json, PunchResult.class);
         } else {
@@ -165,7 +163,7 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     public void cacheNoticeCount(long uid, NoticeCountModel noticeCountModel) {
         String json = mGson.toJson(noticeCountModel, NoticeCountModel.class);
         CacheObjectContentValues values = new CacheObjectContentValues();
-        values.putCacheKey(generateNoticeCountKey(uid))
+        values.putCacheKey(CacheConstants.generateNoticeCountKey(uid))
                 .putCacheValue(json);
         values.insert(mContentResolver);
     }
@@ -173,12 +171,12 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     @Override
     public void removeNoticeCount(long uid) {
         CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        cacheSelection.cacheKey(generateNoticeCountKey(uid)).delete(mContentResolver);
+        cacheSelection.cacheKey(CacheConstants.generateNoticeCountKey(uid)).delete(mContentResolver);
     }
 
     @Override
     public NoticeCountModel loadNoticeCount(long uid) {
-        String json = getCachedValue(generateNoticeCountKey(uid));
+        String json = getCachedValue(CacheConstants.generateNoticeCountKey(uid));
         if(!TextUtils.isEmpty(json)) {
             return mGson.fromJson(json, NoticeCountModel.class);
         } else {
@@ -220,14 +218,6 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
         FollowedUserSelection selection = new FollowedUserSelection();
         selection.userId(uid);
         selection.delete(mContentResolver);
-    }
-
-    private String generatePunchResultKey(long uid) {
-        return CACHE_KEY_PUNCH_RESULT + "|||" + uid;
-    }
-
-    private String generateNoticeCountKey(long uid) {
-        return CACHE_KEY_NOTIFICATION_COUNT + "|||" + uid;
     }
 
     private String getCachedValue(String key) {

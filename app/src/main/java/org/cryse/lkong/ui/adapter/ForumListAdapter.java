@@ -1,13 +1,15 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ForumModel;
@@ -18,13 +20,13 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
-public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
-    private Picasso mPicasso;
-    public ForumListAdapter(Context context, Picasso picasso, List<ForumModel> mItemList) {
-        super(context, mItemList);
-        mPicasso = picasso;
+public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
+    Fragment mParentFragment;
+    public ForumListAdapter(Fragment fragment, List<ForumModel> mItemList) {
+        super(fragment.getContext(), mItemList);
+        this.mParentFragment = fragment;
     }
 
     @Override
@@ -77,12 +79,11 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
                 // String todayPosts = getString(R.string.format_forum_item_todayposts, forumModel.getTodayPosts());
                 viewHolder.mForumSecondaryTextView.setText(secondaryInfo);
 
-
-
-                mPicasso
+                RequestManager glide = mParentFragment == null ? Glide.with(getContext()) : Glide.with(mParentFragment);
+                glide
                         .load(forumModel.getIcon())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
                         .into(viewHolder.mForumIconImageView);
             }
         }
@@ -91,16 +92,16 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel>{
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
-        @InjectView(R.id.recyclerview_item_forum_imageview_icon)
+        @Bind(R.id.recyclerview_item_forum_imageview_icon)
         public ImageView mForumIconImageView;
-        @InjectView(R.id.recyclerview_item_forum_textview_title)
+        @Bind(R.id.recyclerview_item_forum_textview_title)
         public TextView mForumTitleTextView;
-        @InjectView(R.id.recyclerview_item_forum_textview_secondary)
+        @Bind(R.id.recyclerview_item_forum_textview_secondary)
         public TextView mForumSecondaryTextView;
 
         public ViewHolder(View v) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
         }
     }
 }

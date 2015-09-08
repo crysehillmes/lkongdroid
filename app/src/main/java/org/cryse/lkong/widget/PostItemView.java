@@ -7,22 +7,29 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.NoCopySpan;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.URLSpan;
+import android.text.style.UpdateLayout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.gesture.Pointer;
+import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
@@ -89,17 +96,23 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthSize = MeasureUtils.getMeasurement(widthMeasureSpec, 0);
-        int heightSize = MeasureUtils.getMeasurement(heightMeasureSpec, getDesiredHeight());
+        final int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        final int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
         int childHeight = px_height_68 - px_margin_16 * 2;
         int childLeft = this.getPaddingLeft();
         int childRight = widthSize - this.getPaddingRight();
         int childWidth = childRight - childLeft;
 
-        measureChildren(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
-                MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
-        int height = heightSize;
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; ++i) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() != GONE) {
+                measureChild(child, MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
+                        MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
+            }
+        }
+        int height = getDesiredHeight();
         if(!isInEditMode() && mPostDisplayCache.getTextLayout() != null) {
             height = height + mPostDisplayCache.getTextLayout().getHeight();
         }
@@ -183,10 +196,13 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
             pendingImageSpan.loadImage(this);
         }
         if(mShowImages) {
-            for(int i = postDisplayCache.getUrlSpanCount(); i < postDisplayCache.getImportantSpans().size(); i++) {
-                PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
-                pendingImageSpan.loadImage(this);
-            }
+            post(() -> {
+                int viewImageMaxWidth = getMeasuredWidth() - px_margin_16 * 2;
+                for(int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
+                    PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
+                    pendingImageSpan.loadImage(this, viewImageMaxWidth);
+                }
+            });
         }
     }
 
@@ -325,7 +341,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     public boolean onTextTouched(int x, int y)
     {
         //If the text contains an url, we check its location and if it is touched: fire the click event.
-        Spanned spanned = mPostDisplayCache.getSpannableString();
+        Spanned spanned = mPostDisplayCache.getSpannableStringBuilder();
 
         int textLayoutX = x - px_margin_16;
         int textLayoutY = y - px_margin_72;
@@ -423,21 +439,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     Runnable mInvalidateRunnable;
-    @Override
-    public void notifyImageSpanLoaded(Object identityTag) {
-        if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
-            // TODO: re-layout and invalidate
-            if(mInvalidateRunnable == null) {
-                mInvalidateRunnable = () -> {
-                    if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
-                        invalidate();
-                    }
-                    mInvalidateRunnable = null;
-                };
-                mHandler.postDelayed(mInvalidateRunnable, 1000);
-            }
-        }
-    }
 
     public void setOnSpanClickListener(OnSpanClickListener listener) {
         this.mOnSpanClickListener = listener;
@@ -455,6 +456,33 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         this.mPicassoTag = picassoTag;
     }
 
+    @Override
+    public void notifyImageSpanLoaded(Object identityTag, Drawable drawable, AsyncDrawableType type) {
+        if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
+            // TODO: re-layout and invalidate
+            if(mInvalidateRunnable == null) {
+                mInvalidateRunnable = () -> {
+                    if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
+                        if(type == AsyncDrawableType.NORMAL) {
+                            SpannableStringBuilder charSequence = (SpannableStringBuilder) mPostDisplayCache.getTextLayout().getText();
+                            charSequence.setSpan(new EmptySpan(), 0, charSequence.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            EmptySpan[] emptySpans = charSequence.getSpans(0, charSequence.length(), EmptySpan.class);
+                            for (EmptySpan emptySpan : emptySpans) {
+                                charSequence.removeSpan(emptySpan);
+                            }
+                            invalidate();
+                            requestLayout();
+                        } else {
+                            invalidate();
+                        }
+                    }
+                    mInvalidateRunnable = null;
+                };
+                mHandler.postDelayed(mInvalidateRunnable, 1000);
+            }
+        }
+    }
+
     public interface OnSpanClickListener {
         public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl);
         public boolean onUrlSpanClick(long postId, URLSpan span, String target);
@@ -463,4 +491,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     public interface OnTextLongPressedListener {
         void onTextPressed(View iew);
     }
+
+    private static class EmptySpan implements UpdateLayout {}
 }

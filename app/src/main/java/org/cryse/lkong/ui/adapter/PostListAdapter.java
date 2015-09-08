@@ -7,13 +7,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.widget.PostItemView;
 import org.cryse.utils.ColorUtils;
@@ -23,7 +24,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private static final String LOG_TAG = PostListAdapter.class.getName();
@@ -33,16 +34,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mUserId;
     private int mMaxImageWidth;
-    private Picasso mPicasso;
     private int mImageDownloadPolicy;
-    private final CircleTransform mCircleTransform = new CircleTransform();
+    private final CircleTransform mCircleTransform;
     private final int mAvatarSize;
     private boolean mShouldShowImages;
     private int mAccentColor;
 
-    public PostListAdapter(Context context, Picasso picasso, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
         super(context, mItemList);
-        mPicasso = picasso;
         mTodayPrefix = getString(R.string.datetime_today);
         mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mUserId = userId;
@@ -50,6 +49,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
         mAccentColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
+        mCircleTransform = new CircleTransform(context);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
@@ -88,9 +88,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
             if (postModel.getRateScore() != 0) {
-                viewHolder.mRateButton.setText("+ " + postModel.getRateScore());
+                viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
             } else {
-                viewHolder.mRateButton.setText("");
+                viewHolder.mRateTextView.setText("");
             }
 
             if (postModel.getAuthorId() == mUserId) {
@@ -105,13 +105,11 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                 viewHolder.mEditButton.setVisibility(View.INVISIBLE);
             }
 
-            mPicasso.load(postModel.getAuthorAvatar())
-                    .tag(POST_PICASSO_TAG)
+            Glide.with(getContext()).load(postModel.getAuthorAvatar())
                     .error(R.drawable.ic_placeholder_avatar)
                     .placeholder(R.drawable.ic_placeholder_avatar)
-                    .resize(mAvatarSize, mAvatarSize)
+                    .override(mAvatarSize, mAvatarSize)
                     .transform(mCircleTransform)
-                    .noFade()
                     .into(viewHolder.mAvatarImageView);
         }
 
@@ -126,42 +124,57 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_post_view_item)
+        @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
-        @InjectView(R.id.recyclerview_item_post_imageview_avatar)
+        @Bind(R.id.recyclerview_item_post_imageview_avatar)
         ImageView mAvatarImageView;
-        @InjectView(R.id.recyclerview_item_post_button_rate)
-        Button mRateButton;
-        @InjectView(R.id.recyclerview_item_post_button_edit)
+        @Bind(R.id.recyclerview_item_post_button_rate)
+        ImageButton mRateButton;
+        @Bind(R.id.recyclerview_item_post_button_share)
+        ImageButton mShareButton;
+        @Bind(R.id.recyclerview_item_post_textview_rate)
+        TextView mRateTextView;
+        @Bind(R.id.recyclerview_item_post_button_edit)
         ImageButton mEditButton;
-        @InjectView(R.id.recyclerview_item_post_button_replay)
+        @Bind(R.id.recyclerview_item_post_button_replay)
         ImageButton mReplyButton;
 
         OnItemButtonClickListener mOnItemButtonClickListener;
-        public ViewHolder(View v, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
-            super(v);
-            ButterKnife.inject(this, v);
+        public ViewHolder(View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
             mOnItemButtonClickListener = onItemReplyClickListener;
-            mReplyButton.setOnClickListener(view -> {
+            View.OnClickListener clickListener = view -> {
+                int adapterPosition = getAdapterPosition();
                 if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onReplyClick(view, getAdapterPosition());
+                    switch (view.getId()) {
+                        case R.id.recyclerview_item_post_button_replay:
+                            mOnItemButtonClickListener.onReplyClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_rate:
+                            mOnItemButtonClickListener.onRateClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_textview_rate:
+                            mOnItemButtonClickListener.onRateTextClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_edit:
+                            mOnItemButtonClickListener.onEditClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_button_share:
+                            mOnItemButtonClickListener.onShareClick(view, adapterPosition);
+                            break;
+                        case R.id.recyclerview_item_post_imageview_avatar:
+                            mOnItemButtonClickListener.onProfileImageClick(view, adapterPosition);
+                            break;
+                    }
                 }
-            });
-            mRateButton.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onRateClick(view, getAdapterPosition());
-                }
-            });
-            mEditButton.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onEditClick(view, getAdapterPosition());
-                }
-            });
-            mAvatarImageView.setOnClickListener(view -> {
-                if(mOnItemButtonClickListener != null) {
-                    mOnItemButtonClickListener.onProfileImageClick(view, getAdapterPosition());
-                }
-            });
+            };
+            mReplyButton.setOnClickListener(clickListener);
+            mRateButton.setOnClickListener(clickListener);
+            mEditButton.setOnClickListener(clickListener);
+            mAvatarImageView.setOnClickListener(clickListener);
+            mRateTextView.setOnClickListener(clickListener);
+            mShareButton.setOnClickListener(clickListener);
             if(mOnSpanClickListener != null)
                 mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
             mPostItemView.setLongClickable(true);
@@ -176,6 +189,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public interface OnItemButtonClickListener {
         void onPostTextLongClick(View view, int position);
         void onRateClick(View view, int position);
+        void onRateTextClick(View view, int position);
+        void onShareClick(View view, int position);
         void onReplyClick(View view, int position);
         void onEditClick(View view, int position);
         void onProfileImageClick(View view, int position);

@@ -16,14 +16,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
@@ -37,22 +37,21 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private static final String LOG_TAG = TimelineAdapter.class.getName();
     private final String mTodayPrefix;
     private final String mImageTaskTag;
     private final int mAvatarSize;
-    private CircleTransform mCircleTransform = new CircleTransform();
-    private Picasso mPicasso;
+    private CircleTransform mCircleTransform;
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-    public TimelineAdapter(Context context, List<TimelineModel> items, Picasso picasso, String imgTaskTag) {
+    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
         super(context, items);
         mTodayPrefix = getString(R.string.datetime_today);
-        mPicasso = picasso;
         mImageTaskTag = imgTaskTag;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        mCircleTransform = new CircleTransform(context);
     }
 
     @Override
@@ -72,7 +71,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 TimelineModel timelineModel = (TimelineModel)item;
                 bindTimelineItem(
                         getContext(),
-                        mPicasso,
                         mTodayPrefix,
                         mImageTaskTag,
                         mAvatarSize,
@@ -86,7 +84,6 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
     public static void bindTimelineItem(
             Context context,
-            Picasso picasso,
             String todayPrefix,
             String imageTaskTag,
             int avatarSize,
@@ -112,7 +109,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
             viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
             mainContent = timelineModel.getReplyQuote().getMessage();
-        } else if(!timelineModel.isQuote() && !timelineModel.isThread()) {
+        } else if(!timelineModel.isThread()) {
             // 回复某一主题
             viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
             SpannableStringBuilder spanText = new SpannableStringBuilder();
@@ -145,51 +142,50 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
         SimpleImageGetter imageGetter = new SimpleImageGetter(context, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
                 .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(context, R.dimen.text_size_body1))
-                .setPlaceHolder(R.drawable.image_placeholder)
-                .setError(R.drawable.image_placeholder);
+                .setPlaceHolder(R.drawable.placeholder_loading)
+                .setError(R.drawable.placeholder_error);
         Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
         SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
         mainSpannable.append(mainPrefixSpannable).append(spannedText);
         viewHolder.mMessageTextView.setText(mainSpannable);
 
         viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
-        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix));
-        picasso
+        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
+        Glide.with(context)
                 .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
-                .tag(imageTaskTag)
                 .error(R.drawable.ic_placeholder_avatar)
                 .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
+                .override(avatarSize, avatarSize)
                 .transform(circleTransform)
                 .into(viewHolder.mAuthorAvatarImageView);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
-        @InjectView(R.id.recyclerview_item_timeline_cardview_root_container)
+        @Bind(R.id.recyclerview_item_timeline_cardview_root_container)
         CardView mRootCardView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_author_name)
+        @Bind(R.id.recyclerview_item_timeline_textview_author_name)
         TextView mAuthorTextView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_dateline)
+        @Bind(R.id.recyclerview_item_timeline_textview_dateline)
         TextView mDatelineTextView;
-        @InjectView(R.id.recyclerview_item_timeline_textview_message)
+        @Bind(R.id.recyclerview_item_timeline_textview_message)
         TextView mMessageTextView;
-        @InjectView(R.id.recyclerview_item_timeline_imageview_author_avatar)
+        @Bind(R.id.recyclerview_item_timeline_imageview_author_avatar)
         ImageView mAuthorAvatarImageView;
 
 
-        @InjectView(R.id.secondary_message_container)
+        @Bind(R.id.secondary_message_container)
         RelativeLayout mSecondaryContainer;
-        @InjectView(R.id.recyclerview_item_timeline_secondary_message)
+        @Bind(R.id.recyclerview_item_timeline_secondary_message)
         TextView mSecondaryMessageTextView;
-        @InjectView(R.id.recyclerview_item_timeline_third_message)
+        @Bind(R.id.recyclerview_item_timeline_third_message)
         TextView mThirdMessageTextView;
 
 
         OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
         public ViewHolder(View v, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
             mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
             mAuthorAvatarImageView.setOnClickListener(view -> {
                 if(mOnTimelineModelItemClickListener != null) {

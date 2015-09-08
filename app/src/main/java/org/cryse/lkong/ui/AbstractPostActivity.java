@@ -37,14 +37,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
@@ -61,6 +60,7 @@ import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
@@ -83,7 +83,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import timber.log.Timber;
 
 public abstract class AbstractPostActivity extends AbstractThemeableActivity {
@@ -98,27 +98,26 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_new_thread_edittext_title)
+    @Bind(R.id.activity_new_thread_edittext_title)
     EditText mTitleEditText;
-    @InjectView(R.id.activity_new_thread_view_div)
+    @Bind(R.id.activity_new_thread_view_div)
     View mDivideView;
-    @InjectView(R.id.activity_new_thread_edittext_content)
+    @Bind(R.id.activity_new_thread_edittext_content)
     EditText mContentEditText;
 
-    @InjectView(R.id.action_insert_emoji)
+    @Bind(R.id.action_insert_emoji)
     ImageButton mInsertEmoticonButton;
-    @InjectView(R.id.action_insert_image)
+    @Bind(R.id.action_insert_image)
     ImageButton mInsertImageButton;
-    @InjectView(R.id.action_insert_link)
+    @Bind(R.id.action_insert_link)
     ImageButton mInsertUrlButton;
 
     ImageEditTextHandler mContentEditTextHandler;
     ProgressDialog mProgressDialog;
     ServiceConnection mBackgroundServiceConnection;
     private SendPostService.SendPostServiceBinder mSendServiceBinder;
-    protected Picasso mPicasso;
     protected abstract void readDataFromIntent(Intent intent);
     protected abstract void sendData(String title, String content);
     protected abstract boolean hasTitleField();
@@ -136,13 +135,12 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSwipeBackEnable(false);
         setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
         mDivideView.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);
 
@@ -203,8 +201,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         super.onDestroy();
         if(mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
-        if(mPicasso != null)
-            mPicasso.shutdown();
     }
 
     @Override
@@ -367,12 +363,25 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         this,
                         null,
                         getLogTag(),
+                        AsyncDrawableType.NORMAL,
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_loading, getTheme()),
                         (int)(mContentTextSize * 4),
-                        (int)(mContentTextSize * 4),
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.image_placeholder, getTheme())
+                        (int)(mContentTextSize * 4)
                 );
-                mPicasso.load(selectedImageUri).placeholder(R.drawable.image_placeholder).resize((int)(mContentTextSize * 4), (int) (mContentTextSize * 4)).centerCrop().into(drawable);
-                addImageBetweenText(drawable, ContentProcessor.IMG_TYPE_LOCAL, ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri), 256, 256);
+                Glide
+                        .with(this)
+                        .load(selectedImageUri)
+                        .placeholder(R.drawable.placeholder_loading)
+                        .error(R.drawable.placeholder_error)
+                        .override((int) (mContentTextSize * 4), (int) (mContentTextSize * 4))
+                        .centerCrop()
+                        .into(drawable);
+                addImageBetweenText(drawable,
+                        ContentProcessor.IMG_TYPE_LOCAL,
+                        ContentUriPathUtils.getRealPathFromUri(this, selectedImageUri),
+                        256,
+                        256
+                );
             }
         }
     }
@@ -505,13 +514,12 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 spannable.removeSpan(imageSpan);
                 ClickableImageSpan clickableImageSpan = new ClickableImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(pid),
                         PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         256,
                         256,
                         DynamicDrawableSpan.ALIGN_BOTTOM,
@@ -524,13 +532,12 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 spannable.removeSpan(imageSpan);
                 EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
                         this,
-                        mPicasso,
                         null,
                         Long.toString(pid),
                         PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.image_placeholder,
-                        R.drawable.image_placeholder,
+                        R.drawable.placeholder_loading,
+                        R.drawable.placeholder_error,
                         (int)mContentTextSize * 2
                 );
                 spannable.setSpan(emoticonImageSpan,
@@ -597,7 +604,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         }
 
         @Override
-        public void notifyImageSpanLoaded(Object tag) {
+        public void notifyImageSpanLoaded(Object tag, Drawable drawable, AsyncDrawableType type) {
             if(mEditText != null && mEditText.get() != null) {
                 mEditText.get().invalidate();
             }

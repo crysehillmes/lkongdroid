@@ -17,11 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
@@ -30,46 +31,43 @@ import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ForumActivity extends AbstractThemeableActivity implements ForumView {
     public static final String LOG_TAG = ForumActivity.class.getName();
     private static final String FORUM_PINNED_KEY = "forum_pinned";
+
+    AppNavigation mNavigation = new AppNavigation();
+
     private AtomicBoolean isNoMore = new AtomicBoolean(false);
     private AtomicBoolean isLoading = new AtomicBoolean(false);
     private AtomicBoolean isLoadingMore = new AtomicBoolean(false);
     private long mLastItemSortKey = -1;
-    Picasso mPicasso;
     @Inject
     ForumPresenter mPresenter;
 
     @Inject
-    AndroidNavigation mAndroidNavigation;
-
-    @Inject
     UserAccountManager mUserAccountManager;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_forum_thread_list_recyclerview)
+    @Bind(R.id.activity_forum_thread_list_recyclerview)
     SuperRecyclerView mThreadCollectionView;
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
@@ -92,8 +90,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
-        ButterKnife.inject(this);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
@@ -113,9 +110,9 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         int actionBarSize = UIUtils.calculateActionBarSize(this);
         int statusBarSize = UIUtils.calculateStatusBarSize(this);
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
-        mThreadCollectionView.setItemAnimator(new DefaultItemAnimator());
+        mThreadCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new ThreadListAdapter(this, mPicasso, mItemList);
+        mCollectionAdapter = new ThreadListAdapter(this, mItemList);
         mThreadCollectionView.setAdapter(mCollectionAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
@@ -136,7 +133,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
+                    mNavigation.openActivityForUserProfile(ForumActivity.this, startingLocation, model.getUid());
                 }
             }
 
@@ -147,28 +144,29 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
+                    mNavigation.openActivityForPostListByThreadId(ForumActivity.this, tid);
                 }
             }
         });
         mFab.attachToSuperRecyclerView(mThreadCollectionView);
         mFab.setOnClickListener(view -> {
             if (mUserAccountManager.isSignedIn()) {
-                mAndroidNavigation.openActivityForNewThread(this, mForumId, mForumName);
+                mNavigation.openActivityForNewThread(this, mForumId, mForumName);
             } else {
-                mAndroidNavigation.navigateToSignInActivity(this, false);
+                mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getThemeEngine().getPrimaryColor(this), getThemeEngine().getPrimaryDarkColor(this));
+        setColorToViews(getThemeEngine().getPrimaryColor(), getThemeEngine().getPrimaryDarkColor());
 
         mThreadCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mPicasso.resumeTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    if(!isActivityDestroyed())
+                        Glide.with(ForumActivity.this).resumeRequests();
                 } else {
-                    mPicasso.pauseTag(ThreadListAdapter.THREAD_PICASSO_TAG);
+                    Glide.with(ForumActivity.this).pauseRequests();
                 }
             }
         });
@@ -359,7 +357,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override

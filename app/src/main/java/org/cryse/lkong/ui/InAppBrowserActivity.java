@@ -29,17 +29,17 @@ import org.cryse.lkong.widget.HTML5WebView;
 import java.lang.ref.WeakReference;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class InAppBrowserActivity extends AbstractThemeableActivity {
     private static final String LOG_TAG = InAppBrowserActivity.class.getName();
     //public AppSettings settings;
     public String url;
-    @InjectView(R.id.activity_browser_toolbar)
+    @Bind(R.id.activity_browser_toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_browser_webview)
+    @Bind(R.id.activity_browser_webview)
     HTML5WebView mBrowserView;
-    @InjectView(R.id.activity_browser_progressbar)
+    @Bind(R.id.activity_browser_progressbar)
     ProgressBar mProgressBar;
     public Context context;
 
@@ -55,14 +55,14 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
         getWindow().requestFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_app_browser);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setStatusBarColor();
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
+        mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor());
         mBrowserView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         url = getIntent().getStringExtra("url");

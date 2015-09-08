@@ -17,8 +17,6 @@ import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.utils.LUtils;
 
-import javax.inject.Inject;
-
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -29,8 +27,8 @@ public abstract class AbstractActivity extends AppCompatActivity {
     private View mSnackbarRootView;
     private ActionMode mActionMode;
     private Subscription mEventBusSubscription;
-    @Inject
-    RxEventBus mEventBus;
+    private boolean mIsDestroyed;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +62,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         SubscriptionUtils.checkAndUnsubscribe(mEventBusSubscription);
+        mIsDestroyed = true;
     }
 
     /**
@@ -170,5 +169,13 @@ public abstract class AbstractActivity extends AppCompatActivity {
         if(mSnackbarRootView == null)
             mSnackbarRootView = findViewById(android.R.id.content);
         return mSnackbarRootView;
+    }
+
+    public boolean isActivityDestroyed() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return isDestroyed();
+        } else {
+            return mIsDestroyed;
+        }
     }
 }

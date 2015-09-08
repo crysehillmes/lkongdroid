@@ -10,7 +10,7 @@ import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package org.cryse.lkong.logic.request;
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public abstract class AbstractAuthedHttpRequest<ResponseType> extends AbstractHttpRequest<ResponseType> {
     private LKAuthObject mAuthObject;

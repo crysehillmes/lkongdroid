@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -54,7 +55,7 @@ public class NewThreadActivity extends AbstractPostActivity {
             mTitleEditText.setText(mEditTitle);
             Html.ImageGetter imageGetter = new EmptyImageGetter();
             Spanned spannedText = HtmlTextUtils.htmlToSpanned(mEditHtmlContent, imageGetter, new HtmlTagHandler());
-            Drawable drawable = getResources().getDrawable(R.drawable.image_placeholder);
+            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.placeholder_loading, null);
             SpannableString spannableString = (SpannableString) replaceImageSpan(drawable, mPostId, spannedText);
             mContentEditText.append(spannableString);
             ImageSpanContainerImpl imageSpanContainer = new ImageSpanContainerImpl(mContentEditText);

@@ -6,14 +6,17 @@ import android.support.annotation.DrawableRes;
 import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import org.cryse.lkong.utils.transformation.FitSizeTransformation;
 
 import java.lang.ref.WeakReference;
 
 public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
+    private static final int MAX_HEIGHT = 1280;
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
-    private WeakReference<Picasso> mPicasso;
     private String mSource;
     private String mSourceMiddle;
     private int mPlaceHolderRes;
@@ -31,7 +34,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
      */
     public ClickableImageSpan(
             Context context,
-            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -44,7 +46,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
-        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -57,13 +58,19 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mErrorRes = errorRes;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
-        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight);
+        mDrawable = new AsyncTargetDrawable(
+                mContext.get(),
+                mContainer.get(),
+                mIdentityTag,
+                AsyncDrawableType.NORMAL,
+                mMaxWidth,
+                mMaxHeight
+        );
         // Picasso.with(context).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).into(mDrawable);
     }
 
     public ClickableImageSpan(
             Context context,
-            Picasso picasso,
             ImageSpanContainer container,
             Object identityTag,
             Object picassoTag,
@@ -77,7 +84,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     ) {
         super(verticalAlignment);
         mContext = new WeakReference<Context>(context);
-        mPicasso = new WeakReference<Picasso>(picasso);
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mIdentityTag = identityTag;
         mPicassoTag = picassoTag;
@@ -90,7 +96,16 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mErrorRes = errorRes;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
-        mDrawable = new AsyncTargetDrawable(mContext.get(), mContainer.get(), mIdentityTag, mMaxWidth, mMaxHeight, initDrawable);
+        initDrawable.setBounds(0,0, maxWidth, maxHeight);
+        mDrawable = new AsyncTargetDrawable(
+                mContext.get(),
+                mContainer.get(),
+                mIdentityTag,
+                AsyncDrawableType.NORMAL,
+                initDrawable,
+                mMaxWidth,
+                mMaxHeight
+        );
     }
 
     @Override
@@ -116,8 +131,38 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(mPicasso.get() != null && !mIsLoaded) {
-            mPicasso.get().load(mSourceMiddle).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mMaxWidth, mMaxHeight).centerCrop().noFade().into(mDrawable);
+        if(!mIsLoaded) {
+            Glide
+                    .with(mContext.get())
+                    .load(mSourceMiddle)
+                    .error(mErrorRes)
+                    .placeholder(mPlaceHolderRes)
+                    .override(mMaxWidth, mMaxHeight)
+                    .centerCrop()
+                    .into(mDrawable);
+            mIsLoaded = true;
+        }
+    }
+
+    @Override
+    public void loadImage(ImageSpanContainer container, int newMaxWidth) {
+        if(newMaxWidth > 0)
+        mMaxWidth = newMaxWidth;
+        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mDrawable.setContainer(container);
+        if(!mIsLoaded) {
+            Glide
+                    .with(mContext.get())
+                    .load(mSourceMiddle)
+                    .error(mErrorRes)
+                    .placeholder(mPlaceHolderRes)
+                    .override(Integer.MAX_VALUE, Integer.MAX_VALUE)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .skipMemoryCache(true)
+                    .transform(
+                            new FitSizeTransformation(mContext.get(), mMaxWidth, MAX_HEIGHT)
+                    )
+                    .into(mDrawable);
             mIsLoaded = true;
         }
     }

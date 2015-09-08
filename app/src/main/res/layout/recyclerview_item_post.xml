@@ -19,29 +19,57 @@
             android:layout_width="@dimen/size_avatar_default"
             android:layout_height="@dimen/size_avatar_default" />
 
-        <Button
-            android:id="@+id/recyclerview_item_post_button_rate"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:background="?selectableItemBackground"
-            android:drawableLeft="@drawable/ic_button_rate" />
+            android:layout_height="36dp">
+            <ImageButton
+                android:id="@+id/recyclerview_item_post_button_rate"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="left"
+                android:background="?theme_button_circle_background"
+                android:src="@drawable/ic_button_rate"
+                android:tint="?theme_button_tint_color"
+                android:contentDescription="@string/button_share" />
+
+            <TextView
+                android:id="@+id/recyclerview_item_post_textview_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="48dp"
+                android:layout_marginLeft="44dp"
+                android:layout_gravity="left"
+                android:gravity="center"
+                android:background="?selectableItemBackground"
+                />
+        </FrameLayout>
+
 
         <ImageButton
             android:id="@+id/recyclerview_item_post_button_replay"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:background="?selectableItemBackground"
-            android:src="@drawable/ic_button_reply"
-            android:scaleType="fitXY"
+            android:background="?theme_button_circle_background"
+            android:src="@drawable/ic_button_comment"
+            android:tint="?theme_button_tint_color"
             android:contentDescription="@string/button_reply" />
+
+        <ImageButton
+            android:id="@+id/recyclerview_item_post_button_share"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?theme_button_circle_background"
+            android:src="@drawable/ic_button_share"
+            android:tint="?theme_button_tint_color"
+            android:contentDescription="@string/button_share" />
 
         <ImageButton
             android:id="@+id/recyclerview_item_post_button_edit"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:background="?selectableItemBackground"
+            android:background="?theme_button_circle_background"
             android:src="@drawable/ic_button_edit"
-            android:scaleType="fitXY"
+            android:tint="?theme_button_tint_color"
             android:contentDescription="@string/button_edit"
             android:visibility="invisible"/>
     </org.cryse.lkong.widget.PostItemView>

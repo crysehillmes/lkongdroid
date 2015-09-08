@@ -10,7 +10,7 @@ import org.cryse.lkong.logic.restservice.model.LKForumInfo;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public class GetForumInfoRequest extends AbstractAuthedHttpRequest<ForumModel> {
     private long mForumId;

@@ -19,11 +19,10 @@ import android.widget.ImageButton;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.squareup.picasso.Picasso;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.RequestPointerType;
@@ -32,7 +31,7 @@ import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.presenter.PrivateMessagePresenter;
 import org.cryse.lkong.ui.adapter.PrivateMessagesAdapter;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.PrivateChatView;
@@ -40,29 +39,26 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PrivateChatFragment extends AbstractFragment implements PrivateChatView {
     public static final String LOG_TAG = PrivateChatFragment.class.getSimpleName();
-    private Picasso mPicasso = null;
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
     @Inject
     PrivateMessagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.fragment_private_chat_ptrrecyclerview_messages)
+    @Bind(R.id.fragment_private_chat_ptrrecyclerview_messages)
     PtrRecyclerView mRecyclerView;
-    @InjectView(R.id.fragment_private_chat_edittext_message)
+    @Bind(R.id.fragment_private_chat_edittext_message)
     EditText mMessageEditText;
-    @InjectView(R.id.fragment_private_chat_button_send)
+    @Bind(R.id.fragment_private_chat_button_send)
     ImageButton mSendButton;
 
     PrivateMessagesAdapter mCollectionAdapter;
@@ -89,7 +85,6 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
         Bundle args = getArguments();
         mTargetUserId = args.getLong(DataContract.BUNDLE_TARGET_USER_ID);
         mTargetUserName = args.getString(DataContract.BUNDLE_TARGET_USER_NAME);
@@ -99,7 +94,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_private_chat, container, false);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         setUpRecyclerView();
         getThemedActivity().setSupportActionBar(mToolbar);
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();
@@ -115,7 +110,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     }
 
     private void setUpRecyclerView() {
-        mCollectionAdapter = new PrivateMessagesAdapter(getActivity(), mPicasso, mItemList);
+        mCollectionAdapter = new PrivateMessagesAdapter(this, mItemList);
         mRecyclerView.setMode(PullToRefreshBase.Mode.BOTH);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);
@@ -182,7 +177,6 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     public void onDestroy() {
         super.onDestroy();
         mPresenter.destroy();
-        mPicasso.shutdown();
     }
 
     @Override

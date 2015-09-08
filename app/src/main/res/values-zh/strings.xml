@@ -18,9 +18,12 @@
     <string name="action_forum_followed">已关注</string>
     <string name="action_forum_not_followed">未关注</string>
     <string name="action_sign_out">退出账号</string>
+    <string name="action_share">分享</string>
+    <string name="action_save_image">保存图片</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
     <string name="button_reply">回复</string>
+    <string name="button_share">分享</string>
     <string name="datetime_today">今天</string>
     <string name="dialog_choose_emoticon_title">选择表情：</string>
     <string name="dialog_new_post_sending">正在发送…</string>
@@ -155,8 +158,10 @@
     <string name="dialog_title_rate">评分</string>
     <string name="dialog_title_insert_url">插入链接</string>
     <string name="drawer_close"></string>
+    <string name="toast_success_save_image_as">图片已保存至: /sdcard/Pictures/%1$s/%2$s</string>
     <string name="toast_error_rate_self">你不能为自己评分</string>
     <string name="toast_failure_rate_post">评分失败</string>
+    <string name="toast_failure_save_image_as">图片保存失败</string>
     <string name="toast_error_rate_score_empty">评分数值不能为0</string>
     <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
     <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
@@ -176,8 +181,8 @@
     <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
     <string name="settings_item_use_forums_first_title">首页显示板块列表</string>
     <string name="settings_category_navigation">导航</string>
-    <string name="settings_item_flip_page_by_volume_key_title">音量控制键翻页</string>
-    <string name="settings_item_flip_page_by_volume_key_summary">通过音量键翻页</string>
+    <string name="settings_item_scroll_by_volume_key_title">音量控制键滚动</string>
+    <string name="settings_item_scroll_by_volume_key_summary">在帖子页面中通过音量键控制滚动</string>
     <string name="profile_header_followers">粉丝</string>
     <string name="profile_header_following">关注</string>
     <string name="profile_header_posts">回复</string>
@@ -233,4 +238,37 @@
     <string name="format_time_n_days_ago">&#160;天前</string>
     <string name="format_time_date">yyyy年M月d日</string>
     <string name="format_time_time">HH:mm</string>
+    <string name="provider_checknotice_label">自动检查新消息</string>
+    <string name="provider_follow_status_label">自动同步关注状态</string>
+
+    <string name="format_notice_mentions">%1$d 个新提及</string>
+    <string name="format_notice_notice">%1$d 条新通知</string>
+    <string name="format_notice_private_message">%1$d 条新私信</string>
+    <string name="format_notice_rate">%1$d 个新评分</string>
+    <string name="format_notice_all_count">你有 %1$d 条新消息</string>
+    <string name="text_search_people">搜索用户:&#160;</string>
+    <string name="text_search_forum">搜索板块:&#160;</string>
+    <string name="settings_category_notification">消息通知</string>
+    <string name="settings_item_enable_background_notification_title">开启消息通知</string>
+    <string name="settings_item_enable_background_notification_summary">开启后可以在通知栏收到新消息提醒</string>
+    <string name="settings_item_check_notification_duration_title">检查周期</string>
+    <string name="settings_item_check_notification_duration_summary">设置检查新消息的周期</string>
+    <string name="settings_item_account_settings_title">账户设置</string>
+    <string name="settings_item_account_settings_summany">管理你的账户</string>
+    <string name="format_share_title">【%1$s】</string>
+    <string name="text_share_from">（分享自龙的天空 Android）</string>
+    <string name="text_share_post_title">分享回复</string>
+    <string name="text_share_thread_title">分享回复主题</string>
+    <string-array name="check_notice_duration_arrays">
+        <item>15 分钟</item>
+        <item>30 分钟</item>
+        <item>45 分钟</item>
+        <item>1 小时</item>
+        <item>2 小时</item>
+        <item>3 小时</item>
+        <item>6 小时</item>
+        <item>12 小时</item>
+        <item>24 小时</item>
+    </string-array>
+
 </resources>

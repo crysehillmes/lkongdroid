@@ -11,13 +11,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
@@ -27,29 +27,28 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static final String THREAD_PICASSO_TAG = "picasso_thread_list_adapter";
     private final String mTodayPrefix;
     private int mColorAccent;
     private final int mAvatarSize;
-    Picasso mPicasso;
     private String mPicassoTag;
 
     OnThreadItemClickListener mOnThreadItemClickListener;
-    private CircleTransform mCircleTransform = new CircleTransform();
-    public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList) {
-        this(context, picasso, mItemList, THREAD_PICASSO_TAG);
+    private CircleTransform mCircleTransform;
+    public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
+        this(context, mItemList, THREAD_PICASSO_TAG);
     }
 
-    public ThreadListAdapter(Context context, Picasso picasso, List<ThreadModel> mItemList, String picassoTag) {
+    public ThreadListAdapter(Context context, List<ThreadModel> mItemList, String picassoTag) {
         super(context, mItemList);
-        this.mPicasso = picasso;
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mPicassoTag = picassoTag;
+        this.mCircleTransform = new CircleTransform(mContext);
     }
 
     @Override
@@ -69,7 +68,6 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
             if(item instanceof ThreadModel) {
                 ThreadModel threadModel = (ThreadModel)item;
                 bindThreadModel(getContext(),
-                        mPicasso,
                         mTodayPrefix,
                         THREAD_PICASSO_TAG,
                         mAvatarSize,
@@ -82,7 +80,6 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     }
 
     public static void bindThreadModel(Context context,
-                                       Picasso picasso,
                                        String todayPrefix,
                                        String imageTaskTag,
                                        int avatarSize,
@@ -100,13 +97,15 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         viewHolder.mThreadTitleTextView.setText(spannableTitle);
         viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
         viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
-        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(threadModel.getDateline(), todayPrefix));
-        picasso
+        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(
+                threadModel.getDateline(),
+                todayPrefix,
+                context.getResources().getConfiguration().locale));
+        Glide.with(context)
                 .load(threadModel.getUserIcon())
-                .tag(imageTaskTag)
                 .error(R.drawable.ic_placeholder_avatar)
                 .placeholder(R.drawable.ic_placeholder_avatar)
-                .resize(avatarSize, avatarSize)
+                .override(avatarSize, avatarSize)
                 .transform(circleTransform)
                 .into(viewHolder.mThreadIconImageView);
     }
@@ -118,23 +117,23 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
 
-        @InjectView(R.id.recyclerview_item_thread_relative_layout_root)
+        @Bind(R.id.recyclerview_item_thread_relative_layout_root)
         RelativeLayout mRootView;
-        @InjectView(R.id.recyclerview_item_thread_imageview_icon)
+        @Bind(R.id.recyclerview_item_thread_imageview_icon)
         public ImageView mThreadIconImageView;
-        @InjectView(R.id.recyclerview_item_thread_textview_title)
+        @Bind(R.id.recyclerview_item_thread_textview_title)
         public TextView mThreadTitleTextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_secondary)
+        @Bind(R.id.recyclerview_item_thread_textview_secondary)
         public TextView mThreadSecondaryTextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_notice1)
+        @Bind(R.id.recyclerview_item_thread_textview_notice1)
         public TextView mNotice1TextView;
-        @InjectView(R.id.recyclerview_item_thread_textview_notice2)
+        @Bind(R.id.recyclerview_item_thread_textview_notice2)
         public TextView mNotice2TextView;
 
         OnThreadItemClickListener mOnThreadItemClickListener;
         public ViewHolder(View v, OnThreadItemClickListener listener) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
             mOnThreadItemClickListener = listener;
             mThreadIconImageView.setOnClickListener(view -> {
                 if(mOnThreadItemClickListener != null) {

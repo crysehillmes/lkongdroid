@@ -1,10 +1,14 @@
 package org.cryse.lkong.ui;
 
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -12,12 +16,14 @@ import com.afollestad.materialdialogs.Theme;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.dialog.ColorChooserDialog;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.ThemeEngine;
 import org.cryse.utils.preference.IntegerPreference;
 import org.cryse.utils.preference.PreferenceConstant;
@@ -29,11 +35,11 @@ import timber.log.Timber;
 public class SettingsFragment extends PreferenceFragment {
     private static final String LOG_TAG = SettingsFragment.class.getName();
     private OnConcisePreferenceChangedListener mOnConcisePreferenceChangedListener = null;
+    AppNavigation mNavigation = new AppNavigation();
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Inject
-    RxEventBus mEventBus;
-    @Inject
-    AndroidNavigation mNavigation;
+    UserAccountManager mUserAccountManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,18 @@ public class SettingsFragment extends PreferenceFragment {
         setImagePolicySummary();
         setupVersionPrefs();
         setupFeedbackPreference();
+
+        Preference syncPrefs = findPreference("prefs_goto_account_settings");
+        syncPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+                //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
+                intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     private void injectThis() {
@@ -56,6 +74,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
+        refreshCheckNoticeAutoSync();
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(mOnConcisePreferenceChangedListener);
     }
 
@@ -70,13 +89,38 @@ public class SettingsFragment extends PreferenceFragment {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             AbstractThemeableActivity parentActivity = (AbstractThemeableActivity) getActivity();
-            if (parentActivity != null) {
-                if (key.compareTo(PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE) == 0) {
-                    parentActivity.reloadTheme();
-                }
-            }
-            if(key.equals(PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY)) {
-                setImagePolicySummary();
+            switch (key) {
+                case PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE:
+                    if (parentActivity != null) {
+                        parentActivity.reloadTheme();
+                    }
+                    break;
+                case PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY:
+                    setImagePolicySummary();
+                    break;
+                case PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION:
+                    Boolean newIsAutoSync = sharedPreferences.getBoolean(key, true);
+                    boolean isCheckNoticeAutoSync2 = ContentResolver.getSyncAutomatically(
+                            mUserAccountManager.getCurrentUserAccount().getAccount(),
+                            SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE
+                    );
+                    if (newIsAutoSync != isCheckNoticeAutoSync2) {
+                        ContentResolver.setSyncAutomatically(
+                                mUserAccountManager.getCurrentUserAccount().getAccount(),
+                                SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, newIsAutoSync);
+
+                    }
+                    break;
+                case PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION:
+                    String newDurationString = sharedPreferences.getString(key, PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE);
+                    int newDuration = Integer.valueOf(newDurationString);
+                    SyncUtils.setPeriodicSync(
+                            mUserAccountManager.getCurrentUserAccount().getAccount(),
+                            SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE,
+                            false,
+                            newDuration
+                    );
+                    break;
             }
         }
     }
@@ -150,14 +194,24 @@ public class SettingsFragment extends PreferenceFragment {
         themeColorPreference.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog().show(getActivity(), themeColorPrefsValue.get(), (index, color, darker) -> {
                 themeColorPrefsValue.set(index);
-                ThemeEngine themeEngine = ((AbstractThemeableActivity)getActivity()).getThemeEngine();
+                ThemeEngine themeEngine = ((AbstractThemeableActivity) getActivity()).getThemeEngine();
                 mEventBus.sendEvent(new ThemeColorChangedEvent(
-                        themeEngine.getPrimaryColor(getActivity()),
-                        themeEngine.getPrimaryDarkColor(getActivity()),
+                        themeEngine.getPrimaryColor(),
+                        themeEngine.getPrimaryDarkColor(),
                         themeEngine.getPrimaryColorResId(),
                         themeEngine.getPrimaryDarkColorResId()));
             });
             return true;
         });
+    }
+
+    private void refreshCheckNoticeAutoSync() {
+        boolean isCheckNoticeAutoSync = ContentResolver.getSyncAutomatically(
+                mUserAccountManager.getCurrentUserAccount().getAccount(),
+                SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE
+        );
+        CheckBoxPreference autoSyncPreference = (CheckBoxPreference) findPreference(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION);
+        getPreferenceManager().getSharedPreferences().edit().putBoolean(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION, isCheckNoticeAutoSync);
+        autoSyncPreference.setChecked(isCheckNoticeAutoSync);
     }
 }

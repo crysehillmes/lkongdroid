@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="org.cryse.lkong.data.provider.checknotice"
+    android:accountType="org.cryse.lkong"
+    android:label="Sync News"
+    android:userVisible="true"
+    android:allowParallelSyncs="true"
+    android:isAlwaysSyncable="false"
+    android:supportsUploading="false"/>

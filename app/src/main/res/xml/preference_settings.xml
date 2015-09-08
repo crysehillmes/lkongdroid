@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_item_account_settings_title">
+        <Preference
+            android:key="prefs_goto_account_settings"
+            android:summary="@string/settings_item_account_settings_summany"
+            android:title="@string/settings_item_account_settings_title">
+        </Preference>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_dispaly_title">
 
         <CheckBoxPreference
@@ -12,6 +19,22 @@
             android:key="prefs_theme_color"
             android:title="@string/settings_item_theme_color_title"
             android:summary="@string/settings_item_theme_color_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_notification">
+        <CheckBoxPreference
+            android:key="prefs_enable_background_notification"
+            android:defaultValue="true"
+            android:title="@string/settings_item_enable_background_notification_title"
+            android:summary="@string/settings_item_enable_background_notification_summary"
+            android:widgetLayout="@layout/layout_switch_preference_compat"/>
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            android:key="prefs_check_notification_duration"
+            android:defaultValue="1800"
+            android:dialogTitle="@string/settings_item_check_notification_duration_title"
+            android:entries="@array/check_notice_duration_arrays"
+            android:entryValues="@array/check_notice_duration_value_arrays"
+            android:title="@string/settings_item_check_notification_duration_title"
+            android:summary="@string/settings_item_check_notification_duration_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_navigation">
         <CheckBoxPreference
@@ -49,10 +72,10 @@
             android:summary="@string/settings_item_post_extra_tail_text_summary"
             android:defaultValue="@string/settings_item_post_extra_tail_text_default"/>
         <CheckBoxPreference
-            android:key="prefs_flip_page_by_volume_key"
+            android:key="prefs_scroll_by_volume_key"
             android:defaultValue="false"
-            android:title="@string/settings_item_flip_page_by_volume_key_title"
-            android:summary="@string/settings_item_flip_page_by_volume_key_summary"
+            android:title="@string/settings_item_scroll_by_volume_key_title"
+            android:summary="@string/settings_item_scroll_by_volume_key_summary"
             android:widgetLayout="@layout/layout_switch_preference_compat"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_other_title">

@@ -15,8 +15,6 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.apache.tika.Tika;
-import org.cryse.lkong.logic.LKongWebConstants;
-import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
@@ -27,9 +25,7 @@ import org.cryse.lkong.logic.restservice.model.LKNewPostResult;
 import org.cryse.lkong.logic.restservice.model.LKNewThreadResult;
 import org.cryse.lkong.logic.restservice.model.LKNoticeRateResult;
 import org.cryse.lkong.logic.restservice.model.LKNoticeResult;
-import org.cryse.lkong.logic.restservice.model.LKPostList;
 import org.cryse.lkong.logic.restservice.model.LKPostRateItem;
-import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.logic.restservice.model.LKTimelineData;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.EditPostResult;
@@ -40,14 +36,12 @@ import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.model.PunchResult;
-import org.cryse.lkong.model.SearchDataSet;
-import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UploadImageResult;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GzipUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -404,27 +398,6 @@ public class LKongRestService {
         clearCookies();
 
         return editPostResult;
-    }
-
-    public SearchDataSet searchLKong(LKAuthObject authObject, long start, String queryString) throws Exception {
-        checkSignInStatus(authObject, true);
-        applyAuthCookies(authObject);
-        String url = LKONG_INDEX_URL + String.format("?mod=data&sars=search/%s", URLEncoder.encode(queryString, "UTF-8"));
-        if(start > 0) {
-            url = url + "&nexttime=" + Long.toString(start);
-        }
-        Request request = new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
-                .url(url)
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        String responseString = getStringFromGzipResponse(response);
-        SearchDataSet dataSet = new SearchDataSet();
-        dataSet.parseData(responseString);
-        clearCookies();
-        return dataSet;
     }
 
     public List<TimelineModel> getUserAll(LKAuthObject authObject, long uid, long start) throws Exception {

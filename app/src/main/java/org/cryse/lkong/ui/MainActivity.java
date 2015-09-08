@@ -1,57 +1,53 @@
 package org.cryse.lkong.ui;
 
 import android.accounts.Account;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.bumptech.glide.Glide;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
-import com.squareup.picasso.Picasso;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsCheckNoticeDuration;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
-import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
-import org.cryse.lkong.service.CheckNoticeService;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.preference.IntegerPreference;
-import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -63,10 +59,12 @@ import timber.log.Timber;
 
 public class MainActivity extends AbstractThemeableActivity{
     private static final String LOG_TAG = MainActivity.class.getName();
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsCheckNoticeDuration
+    StringPreference mCheckNoticeDuration;
     @Inject
     @PrefsVersionCode
     IntegerPreference mVersionCodePref;
@@ -74,11 +72,7 @@ public class MainActivity extends AbstractThemeableActivity{
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
 
-    Picasso mPicasso;
     UserAccount mCurrentAccount = null;
-
-    ServiceConnection mBackgroundServiceConnection;
-    private CheckNoticeService.CheckNoticeCountServiceBinder mCheckNoticeServiceBinder;
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
@@ -95,14 +89,12 @@ public class MainActivity extends AbstractThemeableActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         setIsOverrideStatusBarColor(false);
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this, true);
             closeActivityWithTransition();
             return;
         }
-        mNavigation.attachMainActivity(this);
         /*setDrawerLayoutBackground(isNightMode());
         getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
         getSwipeBackLayout().setEnableGesture(false);*/
@@ -114,29 +106,18 @@ public class MainActivity extends AbstractThemeableActivity{
             mIsRestorePosition = false;
         }
         initDrawer();
-        mBackgroundServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mCheckNoticeServiceBinder = (CheckNoticeService.CheckNoticeCountServiceBinder) service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mCheckNoticeServiceBinder = null;
-            }
-        };
     }
 
     private void initDrawer() {
         DrawerImageLoader.init(new DrawerImageLoader.IDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder) {
-                mPicasso.load(uri).placeholder(placeholder).into(imageView);
+                Glide.with(MainActivity.this).load(uri).placeholder(placeholder).into(imageView);
             }
 
             @Override
             public void cancel(ImageView imageView) {
-                mPicasso.cancelRequest(imageView);
+                //Glide.clear(imageView);
             }
 
             @Override
@@ -173,12 +154,12 @@ public class MainActivity extends AbstractThemeableActivity{
         drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
         drawerItems[2] = new DividerDrawerItem();
-        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withCheckable(false);
+        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withSelectable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
-                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor(this))
+                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor())
                 .addDrawerItems(
                         drawerItems
                 )
@@ -203,21 +184,23 @@ public class MainActivity extends AbstractThemeableActivity{
 
                     }
                 })
-                .withOnDrawerItemClickListener((parent, view, position, id, drawerItem) -> {
-                    // do something with the clicked item :D
-                    if (drawerItem.getType().equalsIgnoreCase("PRIMARY_ITEM"))
-                        mCurrentSelection = drawerItem.getIdentifier();
-                    mPendingRunnable = () ->  onNavigationSelected(drawerItem);
-                    return false;
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
+                        if (iDrawerItem instanceof PrimaryDrawerItem)
+                            mCurrentSelection = iDrawerItem.getIdentifier();
+                        mPendingRunnable = () ->  onNavigationSelected(iDrawerItem);
+                        return false;
+                    }
                 })
                 .build();
         addAccountProfile();
         if(mCurrentSelection == 1001 && !mIsRestorePosition) {
-            mNaviagtionDrawer.setSelectionByIdentifier(1001, false);
-            mNavigation.navigateToHomePageFragment();
+            mNaviagtionDrawer.setSelection(1001, false);
+            navigateToHomePageFragment();
             // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
-            mNaviagtionDrawer.setSelectionByIdentifier(mCurrentSelection, false);
+            mNaviagtionDrawer.setSelection(mCurrentSelection, false);
         }
 
     }
@@ -233,19 +216,29 @@ public class MainActivity extends AbstractThemeableActivity{
         super.onPostResume();
         Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
         // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
-        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
+        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
+        SyncUtils.setPeriodicSync(
+                account,
+                SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS,
+                false,
+                SyncUtils.SYNC_FREQUENCE_HALF_HOUR
+        );
+        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
+        SyncUtils.setPeriodicSync(
+                account,
+                SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE,
+                false,
+                Integer.valueOf(mCheckNoticeDuration.get())
+        );
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
             case 1001:
-                mNavigation.navigateToHomePageFragment();
-                break;
-            case 1002:
-                mNavigation.navigateToForumListFragment(null);
+                navigateToHomePageFragment();
                 break;
             case 1003:
-                mNavigation.navigateToFavoritesFragment(null);
+                navigateToFavoritesFragment(null);
                 break;
             case 1101:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
@@ -264,7 +257,6 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPicasso.shutdown();
     }
 
     @Override
@@ -289,11 +281,6 @@ public class MainActivity extends AbstractThemeableActivity{
 
     public void onSectionAttached(String title) {
         setTitle(title);
-    }
-
-    public void checkNewNoticeCount() {
-        if (mCheckNoticeServiceBinder != null && mCheckNoticeServiceBinder.isBinderAlive())
-            mCheckNoticeServiceBinder.checkNoticeCount(mUserAccountManager.getAuthObject());
     }
 
     @Override
@@ -339,7 +326,7 @@ public class MainActivity extends AbstractThemeableActivity{
                             .withName(getString(R.string.drawer_item_account_add))
                             .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.drawer_account_add, getTheme()))
                             .withIdentifier(-3001)
-                            .setSelectable(false)
+                            .withSelectable(false)
             );
         } catch (NeedSignInException ex) {
             mNavigation.navigateToSignInActivity(this, true);
@@ -363,14 +350,11 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void onStop() {
         super.onStop();
-        this.unbindService(mBackgroundServiceConnection);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Intent service = new Intent(this.getApplicationContext(), CheckNoticeService.class);
-        this.bindService(service, mBackgroundServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -401,7 +385,7 @@ public class MainActivity extends AbstractThemeableActivity{
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         versionCode -> {
-                            if(versionCode > 0) {
+                            if (versionCode > 0) {
                                 ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
 
                                 new MaterialDialog.Builder(this)
@@ -416,5 +400,37 @@ public class MainActivity extends AbstractThemeableActivity{
                         },
                         () -> {
                         });
+    }
+
+    public boolean popEntireFragmentBackStack() {
+        final int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        // Clear Back Stack
+        for (int i = 0; i < backStackCount; i++) {
+            getSupportFragmentManager().popBackStack();
+        }
+        return backStackCount > 0;
+    }
+
+    public void switchContentFragment(Fragment targetFragment, String backStackTag) {
+        popEntireFragmentBackStack();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                android.R.anim.fade_out);
+        if (backStackTag != null)
+            fragmentTransaction.addToBackStack(backStackTag);
+        fragmentTransaction.replace(R.id.container, targetFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void navigateToFavoritesFragment(Bundle args) {
+        Fragment fragment = FavoritesFragment.newInstance(args);
+        switchContentFragment(fragment, null);
+    }
+
+    public void navigateToHomePageFragment() {
+        Bundle args = new Bundle();
+        Fragment fragment = HomePageFragment.newInstance(args);
+        switchContentFragment(fragment, null);
     }
 }

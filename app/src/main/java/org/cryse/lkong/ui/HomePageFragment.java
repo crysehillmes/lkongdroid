@@ -1,28 +1,39 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
+import android.animation.Animator;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.squareup.picasso.Picasso;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -32,29 +43,35 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.presenter.HomePagePresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
+import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
 import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
+import org.cryse.widget.persistentsearch.PersistentSearchView;
+import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import timber.log.Timber;
 
 public class HomePageFragment extends AbstractFragment implements HomePageView {
+    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1023;
     public static final String LOG_TAG = HomePageFragment.class.getName();
-    private Picasso mPicasso = null;
+    private static final String SEARCH_FRAGMENT_TAG = "search_fragment_tag";
 
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
+
     @Inject
     HomePagePresenter mPresenter;
     @Inject
@@ -63,17 +80,23 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @PrefsForumsFirst
     BooleanPreference mForumsFirst;
 
-
-    @InjectView(R.id.tablayout)
+    @Bind(R.id.searchview)
+    PersistentSearchView mSearchView;
+    @Bind(R.id.view_search_tint)
+    View mSearchTintView;
+    @Bind(R.id.search_fragment_container)
+    FrameLayout mSearchContainer;
+    @Bind(R.id.tablayout)
     TabLayout mTabLayout;
-    @InjectView(R.id.fragment_homepage_viewpager)
+    @Bind(R.id.fragment_homepage_viewpager)
     ViewPager mViewPager;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     protected MenuItem mChangeThemeMenuItem;
     private MenuItem mNotificationMenuItem;
     private MenuItem mPunchMenuItem;
+    private MenuItem mSearchMenuItem;
     private boolean mHasNotification = false;
     private PunchResult mCurrentUserPunchResult;
     public static HomePageFragment newInstance(Bundle args) {
@@ -87,14 +110,13 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_homepage, container, false);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         getThemedActivity().setSupportActionBar(mToolbar);
         final ActionBar actionBar = getThemedActivity().getSupportActionBar();
         if(actionBar != null) {
@@ -107,17 +129,8 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             //mTabLayout.setupWithViewPager(mViewPager);
             mTabLayout.setBackgroundColor(getPrimaryColor());
         }
-        if (ViewCompat.isLaidOut(mTabLayout)) {
-            mTabLayout.setupWithViewPager(mViewPager);
-        } else {
-            mTabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mTabLayout.setupWithViewPager(mViewPager);
-                    mTabLayout.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
+        mTabLayout.setupWithViewPager(mViewPager);
+        setUpSearchView();
         return contentView;
     }
 
@@ -126,6 +139,122 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onActivityCreated(savedInstanceState);
         setActivityTitle();
         getActivity().invalidateOptionsMenu();
+        if (getView() != null) {
+            getView().setFocusableInTouchMode(true);
+            getView().requestFocus();
+            getView().setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        //Toast.makeText(getContext(), "onBackPressed", Toast.LENGTH_SHORT).show();
+                        if (mSearchView.isSearching()) {
+                            mSearchView.closeSearch();
+                            return true;
+                        }
+                        return false;
+                    }
+                    return false;
+                }
+            });
+        }
+    }
+
+    public void setUpSearchView() {
+        VoiceRecognitionDelegate delegate = new DefaultVoiceRecognizerDelegate(this, VOICE_RECOGNITION_REQUEST_CODE);
+        if (delegate.isVoiceRecognitionAvailable()) {
+            mSearchView.setVoiceRecognitionDelegate(delegate);
+        }
+        mSearchTintView.setOnClickListener(v -> mSearchView.cancelEditing());
+        mSearchView.setSuggestionBuilder(new SuggestionsBuilder(getContext()));
+        mSearchView.setSearchListener(new PersistentSearchView.SearchListener() {
+
+            @Override
+            public void onSearchEditOpened() {
+                //Use this to tint the screen
+                mSearchTintView.setVisibility(View.VISIBLE);
+                mSearchTintView
+                        .animate()
+                        .alpha(1.0f)
+                        .setDuration(300)
+                        .setListener(new LayerEnablingAnimatorListener(mSearchTintView))
+                        .start();
+
+            }
+
+            @Override
+            public void onSearchEditClosed() {
+                mSearchTintView
+                        .animate()
+                        .alpha(0.0f)
+                        .setDuration(300)
+                        .setListener(new LayerEnablingAnimatorListener(mSearchTintView) {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                mSearchTintView.setVisibility(View.GONE);
+                            }
+                        })
+                        .start();
+            }
+
+            @Override
+            public boolean onSearchEditBackPressed() {
+                if (mSearchView.isEditing()) {
+                    mSearchView.cancelEditing();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onSearchExit() {
+                SearchFragment searchFragment = (SearchFragment) getChildFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG);
+                if (searchFragment != null) {
+                    slideOutToButtom(mSearchContainer, true, () -> {
+                        //searchFragment::clearSearch
+                        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                        fragmentTransaction.remove(searchFragment);
+                        fragmentTransaction.commit();
+                    });
+                } else {
+                    slideOutToButtom(mSearchContainer, true, null);
+                }
+            }
+
+            @Override
+            public void onSearchTermChanged(String term) {
+
+            }
+
+            @Override
+            public void onSearch(String string) {
+                SearchFragment searchFragment = (SearchFragment) getChildFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG);
+                if (searchFragment == null) {
+
+                    searchFragment = SearchFragment.newInstance("", (novelModel, position) -> {
+                        //mPresenter.showNovelDetail(novelModel);
+                    });
+                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                    fragmentTransaction.add(R.id.search_fragment_container, searchFragment, SEARCH_FRAGMENT_TAG);
+                    fragmentTransaction.commit();
+                }
+                if (!mSearchContainer.isShown()) {
+                    final SearchFragment finalSearchFragment = searchFragment;
+                    slideInToTop(mSearchContainer, true, () -> {
+                        finalSearchFragment.search(string);
+                    });
+                } else {
+                    searchFragment.search(string);
+                }
+
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
     }
 
     @Override
@@ -133,6 +262,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onResume();
         checkNewNoticeCount();
         mPresenter.punch(mUserAccountManager.getAuthObject());
+        IntentFilter checkNoticeIntentFilter = new IntentFilter(BroadcastConstants.BROADCAST_SYNC_CHECK_NOTICE_COUNT_DONE);
+        checkNoticeIntentFilter.setPriority(10);
+        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, checkNoticeIntentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mCheckNoticeCountDoneBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -155,7 +293,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPicasso.shutdown();
         mPresenter.destroy();
     }
 
@@ -185,6 +322,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         inflater.inflate(R.menu.menu_home_page, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
+        mSearchMenuItem = menu.findItem(R.id.action_open_search);
         mPunchMenuItem = menu.findItem(R.id.action_punch);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -218,8 +356,14 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_open_search:
-                mNavigation.navigateToSearchActivity(getActivity());
-                return true;
+                if (mSearchMenuItem != null) {
+                    View menuItemView = getView().findViewById(R.id.action_open_search);
+                    mSearchView.setStartPositionFromMenuItem(menuItemView, getView().getMeasuredWidth());
+                    mSearchView.openSearch();
+                    return true;
+                } else {
+                    return false;
+                }
             case R.id.action_open_notification:
                 mNavigation.navigateToNotificationActivity(getActivity());
                 return true;
@@ -287,9 +431,10 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
     protected void checkNewNoticeCount() {
         if (isAdded()) {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).checkNewNoticeCount();
-            }
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         }
     }
 
@@ -331,6 +476,47 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         }
     }
 
+    private void slideInToTop(View v, boolean animated, Runnable runOnAnimationEnd) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        v.setTranslationY(metrics.heightPixels);
+        v.setAlpha(0);
+        if (!v.isShown())
+            v.setVisibility(View.VISIBLE);
+        v.animate().
+                translationY(0).
+                alpha(1).
+                setDuration(animated ? 500 : 0).
+                setInterpolator(new AccelerateDecelerateInterpolator())
+                .setListener(new LayerEnablingAnimatorListener(v) {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if (runOnAnimationEnd != null)
+                            runOnAnimationEnd.run();
+                    }
+                });
+    }
+
+    private void slideOutToButtom(View v, boolean animated, Runnable runOnAnimationEnd) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        v.setTranslationY(0);
+        v.setAlpha(1);
+        v.animate().
+                translationY(metrics.heightPixels).
+                alpha(0).
+                setDuration(animated ? 300 : 0).
+                setInterpolator(new AccelerateInterpolator())
+                .setListener(new LayerEnablingAnimatorListener(v) {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        v.setVisibility(View.INVISIBLE);
+                        if (runOnAnimationEnd != null)
+                            runOnAnimationEnd.run();
+                    }
+                });
+    }
+
     static class Adapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
@@ -359,4 +545,13 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             return mFragmentTitles.get(position);
         }
     }
+
+    private BroadcastReceiver mCheckNoticeCountDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            // loadData(null, 0, false);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+            abortBroadcast();
+        }
+    };
 }

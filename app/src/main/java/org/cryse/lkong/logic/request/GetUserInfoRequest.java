@@ -10,7 +10,7 @@ import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public class GetUserInfoRequest extends AbstractAuthedHttpRequest<UserInfoModel> {
     private long mUserId;

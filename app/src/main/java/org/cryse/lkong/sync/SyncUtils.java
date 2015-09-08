@@ -2,11 +2,16 @@ package org.cryse.lkong.sync;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.PeriodicSync;
 import android.os.Bundle;
 
+import java.util.List;
+
 public class SyncUtils {
-    public static final String SYNC_AUTHORITY = "org.cryse.lkong.data.provider";
-    public static final int SYNC_FREQUENCE = 1800;
+    public static final String SYNC_AUTHORITY_FOLLOW_STATUS = "org.cryse.lkong.data.provider.followstatus";
+    public static final String SYNC_AUTHORITY_CHECK_NOTICE = "org.cryse.lkong.data.provider.checknotice";
+    public static final int SYNC_FREQUENCE_ONE_HOUR = 3600;
+    public static final int SYNC_FREQUENCE_HALF_HOUR = 1800;
 
     public static void manualSync(Account account, String authority) {
         Bundle settingsBundle = new Bundle();
@@ -24,6 +29,14 @@ public class SyncUtils {
     public static void setPeriodicSync(Account account, String authority, boolean removePreviousPeriodic, int interval) {
         if(removePreviousPeriodic)
             ContentResolver.removePeriodicSync(account, authority, Bundle.EMPTY);
+        else {
+            List<PeriodicSync> periodicSyncs = ContentResolver.getPeriodicSyncs(account, authority);
+            for (PeriodicSync periodicSync : periodicSyncs) {
+                if(periodicSync.period == interval) {
+                    return;
+                }
+            }
+        }
         ContentResolver.addPeriodicSync(
                 account,
                 authority,

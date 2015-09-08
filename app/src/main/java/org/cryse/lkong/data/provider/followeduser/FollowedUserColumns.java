@@ -14,7 +14,20 @@ import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
  */
 public class FollowedUserColumns implements BaseColumns {
     public static final String TABLE_NAME = "followed_user";
-    public static final Uri CONTENT_URI = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME);
+    public static final Uri CONTENT_URI_NOTIFY = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME)
+            .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(true)).build();
+    public static final Uri CONTENT_URI = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME)
+            .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(false)).build();
+
+    public static Uri contentUri(String authority) {
+        return Uri.parse("content://" + authority + "/" + TABLE_NAME)
+                .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(false)).build();
+    }
+
+    public static Uri contentUriNotify(String authority) {
+        return Uri.parse("content://" + authority + "/" + TABLE_NAME)
+                .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(true)).build();
+    }
 
     /**
      * Primary key.

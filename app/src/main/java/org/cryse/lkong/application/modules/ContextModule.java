@@ -6,13 +6,7 @@ import android.net.ConnectivityManager;
 
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
-import org.cryse.lkong.application.qualifier.PrefsNightMode;
-import org.cryse.lkong.application.qualifier.PrefsThemeColor;
 import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.utils.ThemeEngine;
-import org.cryse.utils.preference.BooleanPreference;
-import org.cryse.utils.preference.IntegerPreference;
 
 import javax.inject.Singleton;
 
@@ -22,12 +16,8 @@ import dagger.Provides;
 @Module
 public class ContextModule {
     Application mApplicationContext;
-    AndroidNavigation mNavigation;
-    RxEventBus mEventBus;
-    public ContextModule(Application application, AndroidNavigation navigation, RxEventBus eventBus) {
+    public ContextModule(Application application) {
         this.mApplicationContext = application;
-        this.mNavigation = navigation;
-        this.mEventBus = eventBus;
     }
 
     @Singleton
@@ -45,23 +35,7 @@ public class ContextModule {
 
     @Singleton
     @Provides
-    public RxEventBus provideRxEventBus() {
-        return mEventBus;
-    }
-
-    @Singleton
-    @Provides
     public ConnectivityManager provideConnectivityManager() {
         return (ConnectivityManager)mApplicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-    }
-
-    @Provides
-    public AndroidNavigation provideAndroidNavigation() {
-        return mNavigation;
-    }
-
-    @Provides
-    public ThemeEngine provideThemeEngine(@PrefsNightMode BooleanPreference nightModePrefs, @PrefsThemeColor IntegerPreference themeColorPrefs) {
-        return new ThemeEngine(nightModePrefs, themeColorPrefs);
     }
 }

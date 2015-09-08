@@ -17,7 +17,7 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel> {
     public NoticeCollectionAdapter(Context context, List<NoticeModel> items) {
@@ -47,12 +47,12 @@ public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_notice_textview_message)
+        @Bind(R.id.recyclerview_item_notice_textview_message)
         public TextView mNoticeMessageTextView;
 
         public ViewHolder(View v) {
             super(v);
-            ButterKnife.inject(this, v);
+            ButterKnife.bind(this, v);
         }
     }
 }

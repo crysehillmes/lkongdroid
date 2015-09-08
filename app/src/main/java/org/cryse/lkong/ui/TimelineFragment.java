@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
@@ -11,7 +13,8 @@ import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
     private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     TimelinePresenter mPresenter;
@@ -69,7 +73,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, getPicasso(), LOAD_IMAGE_TASK_TAG);
+        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
@@ -79,7 +83,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUserId());
                 }
             }
 
@@ -88,7 +92,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
                 int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
                 if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
                     TimelineModel model = mCollectionAdapter.getItem(itemIndex);
-                    mAndroidNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
+                    mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
         });
@@ -126,9 +130,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    getPicasso().resumeTag(LOAD_IMAGE_TASK_TAG);
+                    if(!getThemedActivity().isActivityDestroyed())
+                        Glide.with(getActivity()).resumeRequests();
                 } else {
-                    getPicasso().pauseTag(LOAD_IMAGE_TASK_TAG);
+                    Glide.with(getActivity()).pauseRequests();
                 }
             }
 

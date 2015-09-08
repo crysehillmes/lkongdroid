@@ -18,28 +18,34 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.DataContract;
 import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
     int mColorAccent;
-    @InjectView(R.id.toolbar)
+    @Inject
+    UserAccountManager mUserAccountManager;
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.tablayout)
+    @Bind(R.id.tablayout)
     TabLayout mTabLayout;
-    @InjectView(R.id.fragment_notification_viewpager)
+    @Bind(R.id.fragment_notification_viewpager)
     ViewPager mViewPager;
     NotificationFragmentPagerAdapter mHomePagerAdapter;
 
@@ -60,14 +66,20 @@ public class NotificationFragment extends InActivityFragment {
         injectThis();
         super.onCreate(savedInstanceState);
         mColorAccent = ColorUtils.getColorFromAttr(getActivity(), R.attr.colorAccent);
+        Bundle args = getArguments();
+        if(args != null && args.containsKey(DataContract.BUNDLE_USER_ID)) {
+            long userId = args.getLong(DataContract.BUNDLE_USER_ID);
+            if(mUserAccountManager.getCurrentUserId() != userId)
+                mUserAccountManager.setCurrentUserAccount(userId);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
-        ButterKnife.inject(this, contentView);
-        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor(getActivity()));
+        ButterKnife.bind(this, contentView);
+        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor());
         return contentView;
     }
 

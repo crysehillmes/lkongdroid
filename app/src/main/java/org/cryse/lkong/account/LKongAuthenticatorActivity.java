@@ -22,13 +22,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.utils.ToastErrorConstant;
+import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -63,22 +63,22 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     private AccountManager mAccountManager;
     private String mAuthTokenType;
 
-    @InjectView(R.id.activity_sign_in_cardview)
+    @Bind(R.id.activity_sign_in_cardview)
     CardView mSignInCardView;
-    @InjectView(R.id.edit_email)
+    @Bind(R.id.edit_email)
     EditText mEmailEditText;
-    @InjectView(R.id.edit_password)
+    @Bind(R.id.edit_password)
     EditText mPasswordEditText;
-    @InjectView(R.id.edit_email_textlayout)
+    @Bind(R.id.edit_email_textlayout)
     TextInputLayout mEmailTextLayout;
-    @InjectView(R.id.edit_password_textlayout)
+    @Bind(R.id.edit_password_textlayout)
     TextInputLayout mPasswordTextLayout;
-    @InjectView(R.id.sign_in_result_textview)
+    @Bind(R.id.sign_in_result_textview)
     TextView mResultTextView;
 
-    @InjectView(R.id.fab_sign_up)
+    @Bind(R.id.fab_sign_up)
     FloatingActionButton mSignInButton;
-    @InjectView(R.id.button_sign_up)
+    @Bind(R.id.button_sign_up)
     Button mSignUpButton;
 
     private View mSnackbarRootView;
@@ -96,7 +96,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_signin);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         CoordinatorLayout.LayoutParams cardViewLayoutParams;
         if (isTablet()) {

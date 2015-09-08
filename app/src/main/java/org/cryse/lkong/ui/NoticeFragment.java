@@ -11,7 +11,7 @@ import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.presenter.NoticePresenter;
 import org.cryse.lkong.ui.adapter.NoticeCollectionAdapter;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 
 import java.util.List;

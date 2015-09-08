@@ -3,7 +3,7 @@ package org.cryse.lkong.presenter;
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.logic.TimelineListType;
 import org.cryse.lkong.model.TimelineModel;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 

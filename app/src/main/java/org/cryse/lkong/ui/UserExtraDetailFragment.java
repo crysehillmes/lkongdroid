@@ -17,40 +17,40 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.TimeFormatUtils;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class UserExtraDetailFragment extends AbstractFragment {
     public static final String LOG_TAG = UserExtraDetailFragment.class.getSimpleName();
 
-    @InjectView(R.id.fragment_user_detail_cardview_introduction)
+    @Bind(R.id.fragment_user_detail_cardview_introduction)
     CardView mIntroductionCardView;
-    @InjectView(R.id.fragment_user_detail_cardview_wealth)
+    @Bind(R.id.fragment_user_detail_cardview_wealth)
     CardView mWealthCardView;
-    @InjectView(R.id.fragment_user_detail_cardview_punch)
+    @Bind(R.id.fragment_user_detail_cardview_punch)
     CardView mPunchCardView;
-    @InjectView(R.id.fragment_user_detail_cardview_registration_time)
+    @Bind(R.id.fragment_user_detail_cardview_registration_time)
     CardView mRegistrationTimeCardView;
 
 
-    @InjectView(R.id.fragment_user_detail_textview_introduction)
+    @Bind(R.id.fragment_user_detail_textview_introduction)
     TextView mIntroductionTextView;
-    @InjectView(R.id.fragment_user_detail_textview_wealth1)
+    @Bind(R.id.fragment_user_detail_textview_wealth1)
     TextView mActivePointsTextView;
-    @InjectView(R.id.fragment_user_detail_textview_wealth2)
+    @Bind(R.id.fragment_user_detail_textview_wealth2)
     TextView mDragonMoneyTextView;
-    @InjectView(R.id.fragment_user_detail_textview_wealth3)
+    @Bind(R.id.fragment_user_detail_textview_wealth3)
     TextView mDragonCrystalTextView;
 
-    @InjectView(R.id.fragment_user_detail_textview_punch1)
+    @Bind(R.id.fragment_user_detail_textview_punch1)
     TextView mCurrentContinuousPunchDaysTextView;
-    @InjectView(R.id.fragment_user_detail_textview_punch2)
+    @Bind(R.id.fragment_user_detail_textview_punch2)
     TextView mLongestContinuousPunchDaysTextView;
-    @InjectView(R.id.fragment_user_detail_textview_punch3)
+    @Bind(R.id.fragment_user_detail_textview_punch3)
     TextView mLastPunchTimeTextView;
-    @InjectView(R.id.fragment_user_detail_textview_punch4)
+    @Bind(R.id.fragment_user_detail_textview_punch4)
     TextView mTotalPunchDaysTextView;
 
-    @InjectView(R.id.fragment_user_detail_textview_registration_time)
+    @Bind(R.id.fragment_user_detail_textview_registration_time)
     TextView mRegistrationTextView;
 
 
@@ -88,7 +88,7 @@ public class UserExtraDetailFragment extends AbstractFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_user_detail, container, false);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         displayUserInfo();
         return contentView;
     }
@@ -134,9 +134,9 @@ public class UserExtraDetailFragment extends AbstractFragment {
         mPunchCardView.setVisibility(View.VISIBLE);
         String currentContinuousPunchDays = getString(R.string.format_current_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
         mCurrentContinuousPunchDaysTextView.setText(currentContinuousPunchDays);
-        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
+        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getLongestContinuousPunch());
         mLongestContinuousPunchDaysTextView.setText(longestContinuousPunchDays);
-        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getCurrentContinuousPunch());
+        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getTotalPunchCount());
         mTotalPunchDaysTextView.setText(totalPunchDays);
         String lastPunchTime = getString(
                 R.string.format_last_punch_time,

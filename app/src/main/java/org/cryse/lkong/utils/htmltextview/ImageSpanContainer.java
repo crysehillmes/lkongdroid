@@ -1,5 +1,7 @@
 package org.cryse.lkong.utils.htmltextview;
 
+import android.graphics.drawable.Drawable;
+
 public interface ImageSpanContainer {
-    public void notifyImageSpanLoaded(Object tag);
+    void notifyImageSpanLoaded(Object tag, Drawable drawable, AsyncDrawableType type);
 }

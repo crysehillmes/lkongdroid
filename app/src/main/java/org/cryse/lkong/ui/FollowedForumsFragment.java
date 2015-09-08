@@ -20,10 +20,11 @@ import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.presenter.FollowedForumsPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
+
+import com.malinskiy.superrecyclerview.OnMoreListener;
 
 import java.util.List;
 
@@ -39,8 +40,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     @Inject
     FollowedForumsPresenter mPresenter;
 
-    @Inject
-    AndroidNavigation mNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     public static FollowedForumsFragment newInstance(Bundle args) {
         FollowedForumsFragment fragment = new FollowedForumsFragment();
@@ -64,7 +64,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     @Override
     public void onResume() {
         super.onResume();
-        loadData(null, 0, false);
+        //loadData(null, 0, false);
         getActivity().registerReceiver(mSyncFollowedForumsDoneBroadcastReceiver, new IntentFilter(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
     }
 
@@ -72,7 +72,6 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     public void onPause() {
         getActivity().unregisterReceiver(mSyncFollowedForumsDoneBroadcastReceiver);
         super.onPause();
-
     }
 
     @Override
@@ -97,7 +96,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
-        return new FollowedForumsAdapter(getActivity(), getPicasso(), mItemList);
+        return new FollowedForumsAdapter(this, mItemList);
     }
 
     @Override
@@ -121,12 +120,12 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
             getPresenter().loadPinnedForums(mUserAccountManager.getAuthObject().getUserId());
             Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
             if(account != null)
-                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY);
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
         }
     }
 
     @Override
-    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+    protected OnMoreListener getOnMoreListener() {
         return null;
     }
 

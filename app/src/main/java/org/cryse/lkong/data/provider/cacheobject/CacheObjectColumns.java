@@ -4,17 +4,26 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import org.cryse.lkong.data.provider.LKongContentProvider;
-import org.cryse.lkong.data.provider.cacheobject.CacheObjectColumns;
-import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
-import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
-import org.cryse.lkong.data.provider.followeduser.FollowedUserColumns;
 
 /**
  * Cache any kind of object here.
  */
 public class CacheObjectColumns implements BaseColumns {
     public static final String TABLE_NAME = "cache_object";
-    public static final Uri CONTENT_URI = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME);
+    public static final Uri CONTENT_URI_NOTIFY = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME)
+            .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(true)).build();
+    public static final Uri CONTENT_URI = Uri.parse(LKongContentProvider.CONTENT_URI_BASE + "/" + TABLE_NAME)
+            .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(false)).build();
+
+    public static Uri contentUri(String authority) {
+        return Uri.parse("content://" + authority + "/" + TABLE_NAME)
+                .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(false)).build();
+    }
+
+    public static Uri contentUriNotify(String authority) {
+        return Uri.parse("content://" + authority + "/" + TABLE_NAME)
+                .buildUpon().appendQueryParameter("QUERY_NOTIFY", Boolean.toString(true)).build();
+    }
 
     /**
      * Primary key.

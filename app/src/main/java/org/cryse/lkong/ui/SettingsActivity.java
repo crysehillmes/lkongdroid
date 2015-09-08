@@ -13,12 +13,12 @@ import org.cryse.lkong.ui.common.AbstractThemeableActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SettingsActivity extends AbstractThemeableActivity {
     public static final String LOG_TAG = SettingsActivity.class.getName();
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     @Override
@@ -26,7 +26,7 @@ public class SettingsActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction =

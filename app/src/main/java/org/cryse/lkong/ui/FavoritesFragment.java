@@ -1,6 +1,11 @@
 package org.cryse.lkong.ui;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -12,6 +17,7 @@ import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.FavoritesChangedEvent;
@@ -19,8 +25,9 @@ import org.cryse.lkong.event.NoticeCountEvent;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.FavoritesPresenter;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.FavoritesView;
 
@@ -98,10 +105,10 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_open_search:
-                mAndroidNavigation.navigateToSearchActivity(getActivity());
+                mNavigation.navigateToSearchActivity(getActivity());
                 return true;
             case R.id.action_open_notification:
-                mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                mNavigation.navigateToNotificationActivity(getActivity());
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
@@ -133,6 +140,15 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             mNeedRefresh = false;
             getPresenter().loadFavorites(mUserAccountManager.getAuthObject(), false);
         }
+        IntentFilter checkNoticeIntentFilter = new IntentFilter(BroadcastConstants.BROADCAST_SYNC_CHECK_NOTICE_COUNT_DONE);
+        checkNoticeIntentFilter.setPriority(10);
+        getActivity().registerReceiver(mCheckNoticeCountDoneBroadcastReceiver, checkNoticeIntentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mCheckNoticeCountDoneBroadcastReceiver);
+        super.onPause();
     }
 
     @Override
@@ -157,7 +173,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), getPicasso(), mItemList);
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList);
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
@@ -167,7 +183,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
-                    mAndroidNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
+                    mNavigation.openActivityForUserProfile(getActivity(), startingLocation, model.getUid());
                 }
             }
 
@@ -178,7 +194,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
-                    mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+                    mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
                 }
             }
         });
@@ -197,7 +213,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
             ThreadModel item = mCollectionAdapter.getItem(position);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);
-            mAndroidNavigation.openActivityForPostListByThreadId(getActivity(), tid);
+            mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
         }
     }
 
@@ -229,9 +245,10 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     protected void checkNewNoticeCount() {
         if (isAdded()) {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).checkNewNoticeCount();
-            }
+            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
         }
     }
 
@@ -243,4 +260,13 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                 getActivity().invalidateOptionsMenu();
         }
     }
+
+    private BroadcastReceiver mCheckNoticeCountDoneBroadcastReceiver = new BroadcastReceiver() {
+        @Override public void onReceive(Context context, Intent intent) {
+            // update your views
+            // loadData(null, 0, false);
+            mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
+            abortBroadcast();
+        }
+    };
 }

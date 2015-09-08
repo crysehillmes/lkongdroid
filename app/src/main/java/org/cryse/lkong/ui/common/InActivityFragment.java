@@ -8,13 +8,10 @@ import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.ui.MainActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
-
-import javax.inject.Inject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 
 public abstract class InActivityFragment extends AbstractFragment {
-    @Inject
-    AndroidNavigation mAndroidNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     protected MenuItem mChangeThemeMenuItem;
 
@@ -52,7 +49,7 @@ public abstract class InActivityFragment extends AbstractFragment {
                 }
                 return true;
             case R.id.action_open_notification:
-                mAndroidNavigation.navigateToNotificationActivity(getActivity());
+                mNavigation.navigateToNotificationActivity(getActivity());
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,32 +11,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
+import com.malinskiy.superrecyclerview.OnMoreListener;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.SimpleCollectionItem;
 import org.cryse.lkong.presenter.BasePresenter;
 import org.cryse.lkong.ui.common.AbstractFragment;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
+import butterknife.Bind;
 
 public abstract class SimpleCollectionFragment<
         ItemType extends SimpleCollectionItem,
@@ -47,18 +46,16 @@ public abstract class SimpleCollectionFragment<
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
     private long mLastItemSortKey = -1;
-    private Picasso mPicasso = null;
 
-    @Inject
-    AndroidNavigation mAndroidNavigation;
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Optional
-    @InjectView(R.id.toolbar)
+    @Nullable
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.simple_collection_recyclerview)
+    @Bind(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
     AdapterType mCollectionAdapter;
@@ -71,13 +68,12 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPicasso = new Picasso.Builder(getActivity()).executor(Executors.newSingleThreadExecutor()).build();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(getLayoutId(), null);
-        ButterKnife.inject(this, contentView);
+        ButterKnife.bind(this, contentView);
         initRecyclerView();
         return contentView;
     }
@@ -86,14 +82,15 @@ public abstract class SimpleCollectionFragment<
         UIUtils.InsetsValue insetsValue = getRecyclerViewInsets();
         if(insetsValue != null)
             mCollectionView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
-        mCollectionView.setItemAnimator(getRecyclerViewItemAnimator());
+        mCollectionView.getRecyclerView().setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
         mCollectionView.setAdapter(mCollectionAdapter);
         initHeaderView();
-        mCollectionView.setRefreshListener(getRefreshListener());
+        if(getRefreshListener() != null)
+            mCollectionView.setRefreshListener(getRefreshListener());
         mCollectionView.setOnMoreListener(getOnMoreListener());
-        mCollectionView.setOnItemClickListener(this::onItemClick);
+        mCollectionAdapter.setOnItemClickListener(this::onItemClick);
         onCollectionViewInitComplete();
     }
 
@@ -115,7 +112,10 @@ public abstract class SimpleCollectionFragment<
                 mLastItemSortKey = savedInstanceState.getLong(DataContract.BUNDLE_THREAD_LIST_LAST_SORTKEY);
 
             } else {
-                loadInitialData();
+                if(getView() != null)
+                    getView().post(() -> loadInitialData());
+                else
+                    loadInitialData();
             }
         }
     }
@@ -145,7 +145,6 @@ public abstract class SimpleCollectionFragment<
     public void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override
@@ -193,9 +192,17 @@ public abstract class SimpleCollectionFragment<
     @Override
     public void setLoading(Boolean value) {
         isLoading = value;
-        if(mCollectionView.getSwipeToRefresh().getMeasuredHeight() == 0)
-            mCollectionView.getSwipeToRefresh().measure(0, 0);
-        mCollectionView.getSwipeToRefresh().setRefreshing(value);
+        if (isLoading) {
+            if(!mCollectionView.getSwipeToRefresh().isRefreshing()) {
+                mCollectionView.hideRecycler();
+                mCollectionView.showProgress();
+            }
+        } else {
+            if(mCollectionView.getSwipeToRefresh().isRefreshing())
+                mCollectionView.getSwipeToRefresh().setRefreshing(isLoading);
+            mCollectionView.hideProgress();
+            mCollectionView.showRecycler();
+        }
     }
 
     @Override
@@ -240,7 +247,7 @@ public abstract class SimpleCollectionFragment<
                 loadData(mUserAccountManager.getAuthObject(), 0, false);
     }
 
-    protected SuperRecyclerView.OnMoreListener getOnMoreListener() {
+    protected OnMoreListener getOnMoreListener() {
         return (numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
                 loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
@@ -253,10 +260,6 @@ public abstract class SimpleCollectionFragment<
 
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return UIUtils.getInsets(getActivity(), mCollectionView, false, false, false, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-    }
-
-    public Picasso getPicasso() {
-        return mPicasso;
     }
 
     protected long getLastItemSortKey() {

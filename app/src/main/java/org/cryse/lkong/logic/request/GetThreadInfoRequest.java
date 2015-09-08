@@ -10,7 +10,7 @@ import org.cryse.lkong.logic.restservice.model.LKThreadInfo;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.utils.GsonUtils;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 public class GetThreadInfoRequest extends AbstractAuthedHttpRequest<ThreadInfoModel> {
     private long mThreadId;

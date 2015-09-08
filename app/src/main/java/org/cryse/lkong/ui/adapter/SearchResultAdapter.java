@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.AbstractSearchResult;
@@ -15,7 +15,7 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
-import org.cryse.lkong.utils.CircleTransform;
+import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -23,11 +23,10 @@ import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchResult> {
     private int mResultType = 0;
-    private Picasso mPicasso;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     public void setDataSet(SearchDataSet searchDataSet) {
@@ -44,10 +43,9 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         }
     }
 
-    public SearchResultAdapter(Context context, Picasso picasso) {
+    public SearchResultAdapter(Context context) {
         super(context, new ArrayList<AbstractSearchResult>());
-        this.mPicasso = picasso;
-        this.mCircleTransform = new CircleTransform();
+        this.mCircleTransform = new CircleTransform(context);
         mTodayPrefix = getString(R.string.datetime_today);
     }
 
@@ -91,17 +89,20 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(item.getDateline(), mTodayPrefix));
+        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(
+                item.getDateline(),
+                mTodayPrefix,
+                getContext().getResources().getConfiguration().locale
+        ));
         viewHolder.replyCountTextView.setText(Integer.toString(item.getReplyCount()));
     }
 
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {
         viewHolder.nameTextView.setText(item.getUserName());
         viewHolder.signTextView.setText(item.getSignHtml());
-        mPicasso.load(item.getAvatarUrl())
+        Glide.with(getContext()).load(item.getAvatarUrl())
                 .placeholder(R.drawable.ic_placeholder_avatar)
                 .error(R.drawable.ic_placeholder_avatar)
-                .fit()
                 .centerCrop()
                 .transform(mCircleTransform)
                 .into(viewHolder.avatarImageView);
@@ -110,10 +111,9 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private void bindGroupResult(SearchGroupViewHolder viewHolder, int position, SearchGroupItem item) {
         viewHolder.nameTextView.setText(item.getGroupName());
         viewHolder.descriptionTextView.setText(item.getGroupDescription());
-        mPicasso.load(item.getIconUrl())
-                .placeholder(R.drawable.image_placeholder)
-                .error(R.drawable.image_placeholder)
-                .fit()
+        Glide.with(getContext()).load(item.getIconUrl())
+                .placeholder(R.drawable.placeholder_loading)
+                .error(R.drawable.placeholder_error)
                 .centerCrop()
                 .into(viewHolder.iconImageView);
     }
@@ -128,41 +128,41 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     }
 
     protected static class SearchPostViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_post_title)
+        @Bind(R.id.recyclerview_item_search_post_title)
         TextView titleTextView;
-        @InjectView(R.id.recyclerview_item_search_post_secondary)
+        @Bind(R.id.recyclerview_item_search_post_secondary)
         TextView secondaryTextView;
-        @InjectView(R.id.recyclerview_item_search_post_reply_count)
+        @Bind(R.id.recyclerview_item_search_post_reply_count)
         TextView replyCountTextView;
         public SearchPostViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     protected static class SearchUserViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_user_icon)
+        @Bind(R.id.recyclerview_item_search_user_icon)
         ImageView avatarImageView;
-        @InjectView(R.id.recyclerview_item_search_user_name)
+        @Bind(R.id.recyclerview_item_search_user_name)
         TextView nameTextView;
-        @InjectView(R.id.recyclerview_item_search_user_sign)
+        @Bind(R.id.recyclerview_item_search_user_sign)
         TextView signTextView;
         public SearchUserViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     protected static class SearchGroupViewHolder extends RecyclerViewHolder {
-        @InjectView(R.id.recyclerview_item_search_group_icon)
+        @Bind(R.id.recyclerview_item_search_group_icon)
         ImageView iconImageView;
-        @InjectView(R.id.recyclerview_item_search_group_name)
+        @Bind(R.id.recyclerview_item_search_group_name)
         TextView nameTextView;
-        @InjectView(R.id.recyclerview_item_search_group_description)
+        @Bind(R.id.recyclerview_item_search_group_description)
         TextView descriptionTextView;
         public SearchGroupViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

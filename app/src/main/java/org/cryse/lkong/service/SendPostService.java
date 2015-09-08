@@ -29,7 +29,7 @@ import org.cryse.lkong.service.task.SendPostTask;
 import org.cryse.lkong.service.task.SendTask;
 import org.cryse.lkong.service.task.SendThreadTask;
 import org.cryse.lkong.utils.ContentProcessor;
-import org.cryse.lkong.utils.LKAuthObject;
+import org.cryse.lkong.account.LKAuthObject;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,8 +41,7 @@ public class SendPostService extends Service {
     @Inject
     LKongRestService mLKRestService;
 
-    @Inject
-    RxEventBus mEventBus;
+    RxEventBus mEventBus = RxEventBus.getInstance();
 
     BlockingQueue<SendTask> mTaskQueue = new LinkedBlockingQueue<SendTask>();
     SendTask mCurrentTask = null;
@@ -140,11 +139,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
@@ -184,11 +179,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);
@@ -226,11 +217,7 @@ public class SendPostService extends Service {
             }
         } catch (Exception e) {
             PostErrorEvent errorEvent = new PostErrorEvent();
-            if(e instanceof UploadImageException) {
-                errorEvent.setErrorMessage(e.getMessage());
-            } else {
-                errorEvent.setErrorMessage("[NETWORK_ERROR]");
-            }
+            errorEvent.setErrorMessage(e.getMessage());
             mEventBus.sendEvent(errorEvent);
         } finally {
             mNotifyManager.cancel(SENDING_NOTIFICATION_ID);

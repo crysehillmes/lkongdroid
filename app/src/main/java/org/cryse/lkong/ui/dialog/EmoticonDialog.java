@@ -14,12 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class EmoticonDialog extends DialogFragment {
 
@@ -55,11 +55,11 @@ public class EmoticonDialog extends DialogFragment {
         mEmoticonCollectionView = (SuperRecyclerView) dialog.getCustomView().findViewById(R.id.dialog_emoticon_recyclerview);
         mEmoticonFileNames = listAssetFiles("emoji");
         Collections.sort(mEmoticonFileNames, new EmojiComparator());
-        mEmoticonCollectionView.setItemAnimator(new DefaultItemAnimator());
+        mEmoticonCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mEmoticonCollectionView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         mCollectionAdapter = new EmoticonAdapter(getActivity(), mEmoticonFileNames);
         mEmoticonCollectionView.setAdapter(mCollectionAdapter);
-        mEmoticonCollectionView.setOnItemClickListener(new RecyclerViewOnItemClickListener() {
+        mCollectionAdapter.setOnItemClickListener(new RecyclerViewOnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, long id) {
                 if(mCallback != null)
@@ -130,7 +130,7 @@ public class EmoticonDialog extends DialogFragment {
                         viewHolder.mEmoticonImageView.setImageDrawable(d);
                     } catch (IOException e) {
                         e.printStackTrace();
-                        viewHolder.mEmoticonImageView.setImageResource(R.drawable.image_placeholder);
+                        viewHolder.mEmoticonImageView.setImageResource(R.drawable.placeholder_error);
                     }
                 }
             }
@@ -139,12 +139,12 @@ public class EmoticonDialog extends DialogFragment {
         public static class ViewHolder extends RecyclerViewHolder {
             // each data item is just a string in this case
 
-            @InjectView(R.id.recyclerview_item_emoticon_imageview)
+            @Bind(R.id.recyclerview_item_emoticon_imageview)
             public ImageView mEmoticonImageView;
 
             public ViewHolder(View v) {
                 super(v);
-                ButterKnife.inject(this, v);
+                ButterKnife.bind(this, v);
             }
         }
     }

@@ -10,11 +10,11 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.squareup.picasso.Picasso;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.UserAccountManager;
+import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
@@ -22,35 +22,31 @@ import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
 import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.navigation.AndroidNavigation;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SearchForumView;
-import org.cryse.widget.recyclerview.SuperRecyclerView;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SearchActivity extends AbstractThemeableActivity implements SearchForumView {
     private static final String LOG_TAG = SearchActivity.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
     SearchView mSearchView = null;
     private String mQueryString = null;
-    Picasso mPicasso;
     @Inject
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    AndroidNavigation mNavigation;
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @InjectView(R.id.activity_search_recyclerview)
+    @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
     SearchResultAdapter mSearchResultAdapter;
 
@@ -64,10 +60,9 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         mToolbar.setContentInsetsAbsolute(UIUtils.calculateActionBarSize(this), 0);
-        mPicasso = new Picasso.Builder(this).executor(Executors.newSingleThreadExecutor()).build();
         initSearchBox();
     }
 
@@ -75,7 +70,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mSearchResultRecyclerView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
         mSearchResultRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mSearchResultAdapter = new SearchResultAdapter(this, mPicasso);
         mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
         mSearchResultRecyclerView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!mIsNoMore.get() && !mIsLoadingMore.get() && mNextTime.get() > 0) {
@@ -85,7 +79,7 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                 mSearchResultRecyclerView.hideMoreProgress();
             }
         });
-        mSearchResultRecyclerView.setOnItemClickListener((view, position, id) -> {
+        mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
             int headerCount = mSearchResultAdapter.getHeaderViewCount();
             switch (mSearchResultAdapter.getResultType()) {
                 case SearchDataSet.TYPE_POST:
@@ -197,7 +191,6 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-        mPicasso.shutdown();
     }
 
     @Override

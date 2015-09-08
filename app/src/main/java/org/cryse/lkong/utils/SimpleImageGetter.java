@@ -3,6 +3,7 @@ package org.cryse.lkong.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html.ImageGetter;
 import android.util.Log;
 
@@ -60,13 +61,21 @@ public class SimpleImageGetter implements ImageGetter {
                 return emojiDrawable;
             } catch (IOException e) {
                 Log.d("UrlImageGetter", "getDrawable() from assets failed.", e);
-                Drawable emojiPlaceholder = mContext.getResources().getDrawable(R.drawable.image_placeholder);
+                Drawable emojiPlaceholder = ResourcesCompat.getDrawable(
+                        mContext.getResources(),
+                        R.drawable.placeholder_error,
+                        null
+                );
                 emojiPlaceholder.setBounds(0, 0, mEmoticonSize == 0 ? emojiPlaceholder.getIntrinsicWidth() : mEmoticonSize,
                         mEmoticonSize == 0 ? emojiPlaceholder.getIntrinsicHeight() : mEmoticonSize);
                 return emojiPlaceholder;
             }
         } else {
-            Drawable placeHolderDrawable = mContext.getResources().getDrawable(R.drawable.image_placeholder);
+            Drawable placeHolderDrawable = ResourcesCompat.getDrawable(
+                    mContext.getResources(),
+                    R.drawable.placeholder_loading,
+                    null
+            );
             placeHolderDrawable.setBounds(0, 0, mMaxImageWidth == 0 ? placeHolderDrawable.getIntrinsicWidth() : mMaxImageWidth,
                     mMaxImageHeight == 0 ? placeHolderDrawable.getIntrinsicHeight() : mMaxImageHeight);
             return placeHolderDrawable;

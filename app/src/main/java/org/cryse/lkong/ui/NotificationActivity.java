@@ -1,5 +1,6 @@
 package org.cryse.lkong.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -26,6 +27,8 @@ public class NotificationActivity extends SimpleContainerActivity {
 
     @Override
     protected Fragment newFragment() {
-        return NotificationFragment.newInstance(null);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        return NotificationFragment.newInstance(extras);
     }
 }

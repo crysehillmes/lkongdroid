@@ -28,17 +28,17 @@ public class LKongContentProvider extends BaseContentProvider {
     public static final String AUTHORITY = "org.cryse.lkong.data.provider";
     public static final String CONTENT_URI_BASE = "content://" + AUTHORITY;
 
-    private static final int URI_TYPE_CACHE_OBJECT = 0;
-    private static final int URI_TYPE_CACHE_OBJECT_ID = 1;
+    protected static final int URI_TYPE_CACHE_OBJECT = 0;
+    protected static final int URI_TYPE_CACHE_OBJECT_ID = 1;
 
-    private static final int URI_TYPE_FOLLOWED_FORUM = 2;
-    private static final int URI_TYPE_FOLLOWED_FORUM_ID = 3;
+    protected static final int URI_TYPE_FOLLOWED_FORUM = 2;
+    protected static final int URI_TYPE_FOLLOWED_FORUM_ID = 3;
 
-    private static final int URI_TYPE_FOLLOWED_THREAD = 4;
-    private static final int URI_TYPE_FOLLOWED_THREAD_ID = 5;
+    protected static final int URI_TYPE_FOLLOWED_THREAD = 4;
+    protected static final int URI_TYPE_FOLLOWED_THREAD_ID = 5;
 
-    private static final int URI_TYPE_FOLLOWED_USER = 6;
-    private static final int URI_TYPE_FOLLOWED_USER_ID = 7;
+    protected static final int URI_TYPE_FOLLOWED_USER = 6;
+    protected static final int URI_TYPE_FOLLOWED_USER_ID = 7;
 
 
 
@@ -67,7 +67,7 @@ public class LKongContentProvider extends BaseContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        int match = URI_MATCHER.match(uri);
+        int match = getUriMatcher().match(uri);
         switch (match) {
             case URI_TYPE_CACHE_OBJECT:
                 return TYPE_CURSOR_DIR + CacheObjectColumns.TABLE_NAME;
@@ -95,32 +95,32 @@ public class LKongContentProvider extends BaseContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (DEBUG) Log.d(TAG, "insert uri=" + uri + " values=" + values);
+        if (DEBUG) Log.d(getLogTag(), "insert uri=" + uri + " values=" + values);
         return super.insert(uri, values);
     }
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        if (DEBUG) Log.d(TAG, "bulkInsert uri=" + uri + " values.length=" + values.length);
+        if (DEBUG) Log.d(getLogTag(), "bulkInsert uri=" + uri + " values.length=" + values.length);
         return super.bulkInsert(uri, values);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (DEBUG) Log.d(TAG, "update uri=" + uri + " values=" + values + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
+        if (DEBUG) Log.d(getLogTag(), "update uri=" + uri + " values=" + values + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
         return super.update(uri, values, selection, selectionArgs);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (DEBUG) Log.d(TAG, "delete uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
+        if (DEBUG) Log.d(getLogTag(), "delete uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
         return super.delete(uri, selection, selectionArgs);
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (DEBUG)
-            Log.d(TAG, "query uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs) + " sortOrder=" + sortOrder
+            Log.d(getLogTag(), "query uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs) + " sortOrder=" + sortOrder
                     + " groupBy=" + uri.getQueryParameter(QUERY_GROUP_BY) + " having=" + uri.getQueryParameter(QUERY_HAVING) + " limit=" + uri.getQueryParameter(QUERY_LIMIT));
         return super.query(uri, projection, selection, selectionArgs, sortOrder);
     }
@@ -129,7 +129,7 @@ public class LKongContentProvider extends BaseContentProvider {
     protected QueryParams getQueryParams(Uri uri, String selection, String[] projection) {
         QueryParams res = new QueryParams();
         String id = null;
-        int matchedId = URI_MATCHER.match(uri);
+        int matchedId = getUriMatcher().match(uri);
         switch (matchedId) {
             case URI_TYPE_CACHE_OBJECT:
             case URI_TYPE_CACHE_OBJECT_ID:
@@ -184,5 +184,13 @@ public class LKongContentProvider extends BaseContentProvider {
             res.selection = selection;
         }
         return res;
+    }
+
+    protected String getLogTag() {
+        return TAG;
+    }
+
+    protected UriMatcher getUriMatcher() {
+        return URI_MATCHER;
     }
 }
