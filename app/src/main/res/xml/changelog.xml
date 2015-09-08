@@ -12,8 +12,9 @@
         <changelogtext>改进：部分应用外链接的响应</changelogtext>
         <changelogtext>改进：帖子中的图片缩略图不再强制为正方形</changelogtext>
         <changelogtext>改进：部分界面细节改进</changelogtext>
+        <changelogtext>改进：音量键翻页改为音量键滚动</changelogtext>
         <changelogbug>修复：账户切换和注销的错误</changelogbug>
-        <changelogbug>修复：用户信息中签到信息显示错误的问题</changelogbug>
+        <changelogbug>修复：用户信息中签到天数显示错误的问题</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="2015年7月30日"

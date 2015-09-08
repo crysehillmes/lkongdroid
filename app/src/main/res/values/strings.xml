@@ -204,8 +204,8 @@
     <string name="settings_item_use_forums_first_title">Forums page first</string>
     <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app)</string>
 
-    <string name="settings_item_flip_page_by_volume_key_title">Volume rocker flipping</string>
-    <string name="settings_item_flip_page_by_volume_key_summary">Enable flipping with the volume buttons</string>
+    <string name="settings_item_scroll_by_volume_key_title">Volume rocker scrolling</string>
+    <string name="settings_item_scroll_by_volume_key_summary">Enable scrolling with the volume buttons</string>
     <string name="settings_item_enable_background_notification_title">Enable Notification</string>
     <string name="settings_item_enable_background_notification_summary">Enable this if want to receive notifications</string>
     <string name="settings_item_check_notification_duration_title">Check Duration</string>

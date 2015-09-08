@@ -32,7 +32,6 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            debuggable true
             minifyEnabled true
             shrinkResources true
             signingConfig signingConfigs.release
