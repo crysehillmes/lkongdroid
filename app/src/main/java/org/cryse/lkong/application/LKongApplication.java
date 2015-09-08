@@ -42,7 +42,7 @@ public class LKongApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
-        AnalyticsUtils.init(getString(R.string.UMENG_APPKEY_VALUE));
+        AnalyticsUtils.init(this, getString(R.string.UMENG_APPKEY_VALUE));
         Fabric.with(this, new Crashlytics());
         if(BuildConfig.InAppUpdate) {
             UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));

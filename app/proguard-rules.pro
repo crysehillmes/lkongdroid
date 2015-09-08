@@ -146,3 +146,4 @@ public *;
 # LeakCanary
 -keep class org.eclipse.mat.** { *; }
 -keep class com.squareup.leakcanary.** { *; }
+-dontwarn com.google.android.gms.**
