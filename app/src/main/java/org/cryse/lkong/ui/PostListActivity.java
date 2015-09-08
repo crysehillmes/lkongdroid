@@ -3,8 +3,6 @@ package org.cryse.lkong.ui;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -46,9 +44,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsFlipPageByVolumeKey;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
+import org.cryse.lkong.application.qualifier.PrefsScrollByVolumeKey;
 import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
@@ -88,8 +86,6 @@ import org.cryse.widget.recyclerview.PtrRecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -123,8 +119,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @PrefsUseInAppBrowser
     BooleanPreference mUseInAppBrowser;
     @Inject
-    @PrefsFlipPageByVolumeKey
-    BooleanPreference mFlipPageByVolumeKey;
+    @PrefsScrollByVolumeKey
+    BooleanPreference mScrollByVolumeKey;
 
 
     @Bind(R.id.toolbar)
@@ -1165,21 +1161,34 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     @Override
     public boolean onKeyDown (int keyCode, KeyEvent event) {
-        boolean isFlipPageByVolumeKey = mFlipPageByVolumeKey.get();
+        boolean isFlipPageByVolumeKey = mScrollByVolumeKey.get();
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if(isFlipPageByVolumeKey) {
-                    goToNextPage(true);
+                    scrollDown();
                     return true;
                 }
                 return false;
             case KeyEvent.KEYCODE_VOLUME_UP:
                 if(isFlipPageByVolumeKey) {
-                    goToPrevPage(true);
+                    scrollUp();
                     return true;
                 }
                 return false;
         }
         return super.onKeyDown (keyCode, event);
+    }
+
+    private int calcScrollDistance() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        return displayMetrics.heightPixels * 3 / 5;
+    }
+
+    private void scrollDown() {
+        mPostCollectionView.getRefreshableView().smoothScrollBy(0, calcScrollDistance());
+    }
+
+    private void scrollUp() {
+        mPostCollectionView.getRefreshableView().smoothScrollBy(0, -calcScrollDistance());
     }
 }

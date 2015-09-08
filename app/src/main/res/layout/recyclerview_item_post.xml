@@ -36,6 +36,7 @@
                 android:id="@+id/recyclerview_item_post_textview_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
+                android:minWidth="48dp"
                 android:layout_marginLeft="44dp"
                 android:layout_gravity="left"
                 android:gravity="center"

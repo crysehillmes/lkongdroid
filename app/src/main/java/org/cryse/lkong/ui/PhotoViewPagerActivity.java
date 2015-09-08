@@ -156,10 +156,10 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         Observable.from(fileFuture).subscribeOn(Schedulers.io()).subscribe(cachedFile -> {
             String fileName = URLUtil.guessFileName(url, null, null);
             File sdPicturesFolder = new File(Environment.getExternalStorageDirectory(), "Pictures");
-            if(!sdPicturesFolder.exists())
+            if (!sdPicturesFolder.exists())
                 sdPicturesFolder.mkdirs();
             File appPicturesFolder = new File(sdPicturesFolder, mImageFolderName);
-            if(!appPicturesFolder.exists())
+            if (!appPicturesFolder.exists())
                 appPicturesFolder.mkdirs();
             File targetFile = new File(appPicturesFolder, fileName);
 
@@ -174,8 +174,9 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
                     runOnUiThread(() -> showSnackbar(getString(R.string.toast_success_save_image_as, mImageFolderName, fileName), SimpleSnackbarType.INFO));
                 }
             });
+        }, error -> {
+            runOnUiThread(() -> showSnackbar(ToastErrorConstant.TOAST_FAILURE_SAVE_IMAGE_AS, SimpleSnackbarType.ERROR));
         });
-
     }
 
     @Override
@@ -281,7 +282,7 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
                             getString(R.string.toast_error_open_origin_image),
                             SimpleSnackbarType.ERROR,
                             Snackbar.LENGTH_SHORT
-                    );
+                    ).show();
                 }
             });
             return contentView;
@@ -326,6 +327,12 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
                             error -> {
                                 Timber.e(error, "Load image onError().", LOG_TAG);
                                 mProgressBar.setVisibility(View.INVISIBLE);
+                                SnackbarUtils.makeSimple(
+                                        getSnackbarRootView(),
+                                        getString(R.string.toast_error_open_origin_image),
+                                        SimpleSnackbarType.ERROR,
+                                        Snackbar.LENGTH_SHORT
+                                ).show();
                             },
                             () -> {
                                 mProgressBar.setVisibility(View.INVISIBLE);

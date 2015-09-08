@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion appCompileSdkVersion
@@ -67,12 +68,13 @@ dependencies {
     compile "com.android.support:appcompat-v7:$supportlibraryVersion"
     compile "com.android.support:recyclerview-v7:$supportlibraryVersion"
     compile "com.android.support:cardview-v7:$supportlibraryVersion"
+    compile 'com.google.android.gms:play-services-analytics:7.3.0'
     compile project(':utils')
     compile project(':widgets')
     compile project(':changelog')
     // compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.umeng.analytics:analytics:5.5.3'
-    compile files('libs/umeng-update-v2.5.0.jar')
+    compile files('libs/umeng-update-v2.6.0.1.jar')
     retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:$retroLambdaVersion"
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
