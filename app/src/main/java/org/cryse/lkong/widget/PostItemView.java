@@ -470,8 +470,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                             for (EmptySpan emptySpan : emptySpans) {
                                 charSequence.removeSpan(emptySpan);
                             }
-                            invalidate();
                             requestLayout();
+                            invalidate();
                         } else {
                             invalidate();
                         }
