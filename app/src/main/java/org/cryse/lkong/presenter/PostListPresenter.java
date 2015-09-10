@@ -62,12 +62,13 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                 .subscribe(
                         result -> {
                             if (mView != null) {
-                                mView.onLoadThreadInfoComplete(result);
+                                mView.onLoadThreadInfoComplete(result, null);
                             }
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadThreadInfo() onError().", LOG_TAG);
                             if (mView != null) {
+                                mView.onLoadThreadInfoComplete(null, error);
                                 mView.setLoading(false);
                             }
                         },

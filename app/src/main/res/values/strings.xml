@@ -108,6 +108,7 @@
     <string name="toast_error_url_empty">Url name or value could not be empty.</string>
     <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
     <string name="toast_error_open_origin_image">Failed to load this image.</string>
+    <string name="toast_error_open_thread_failed">Failed to load this thread.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>

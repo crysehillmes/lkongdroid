@@ -727,12 +727,20 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
-    public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel) {
-        mThreadModel = threadInfoModel;
-        mThreadSubject = threadInfoModel.getSubject();
-        setThreadSubjectSpanned(mThreadModel);
+    public void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel, Throwable throwable) {
+        if(threadInfoModel == null) {
+            showSnackbar(
+                    getString(R.string.toast_error_open_thread_failed) +
+                            (throwable == null ? "" : (": " + throwable.getMessage())),
+                    SimpleSnackbarType.ERROR
+            );
+        } else {
+            mThreadModel = threadInfoModel;
+            mThreadSubject = threadInfoModel.getSubject();
+            setThreadSubjectSpanned(mThreadModel);
 
-        calculatePageAndLoad();
+            calculatePageAndLoad();
+        }
     }
 
     private void calculatePageAndLoad() {
@@ -825,46 +833,48 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void onClickGotoFloor() {
-        final int[] inputFloorNumber = {0};
-        new MaterialDialog.Builder(this)
-                .title(R.string.action_thread_goto_floor)
-                .inputType(InputType.TYPE_CLASS_NUMBER)
-                .positiveText(android.R.string.ok)
-                .alwaysCallInputCallback() // this forces the callback to be invoked with every input change
-                .input(R.string.hint_goto_floor, 0, false, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        if (TextUtils.isEmpty(input) || !TextUtils.isDigitsOnly(input)) {
-                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                            return;
-                        }
-                        inputFloorNumber[0] = Integer.valueOf(input.toString());
-                    }
-                })
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                        int floor = inputFloorNumber[0];
-
-                        int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
-                        if (floor > 0 && floor <= replyCount) {
-                            int page = (replyCount - 1 == 0) ? 1 : (int) Math.ceil((double) floor / 20d);
-                            if (page == mCurrentPage) {
-                                scrollToOrdinal(floor);
-                            } else {
-                                mTargetOrdinal = floor;
-                                getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
+        if (mThreadModel != null) {
+            final int[] inputFloorNumber = {0};
+            new MaterialDialog.Builder(this)
+                    .title(R.string.action_thread_goto_floor)
+                    .inputType(InputType.TYPE_CLASS_NUMBER)
+                    .positiveText(android.R.string.ok)
+                    .alwaysCallInputCallback() // this forces the callback to be invoked with every input change
+                    .input(R.string.hint_goto_floor, 0, false, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog dialog, CharSequence input) {
+                            if (TextUtils.isEmpty(input) || !TextUtils.isDigitsOnly(input)) {
+                                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                                return;
                             }
-                        } else {
-                            showSnackbar(
-                                    getString(R.string.toast_error_invalid_floor),
-                                    SimpleSnackbarType.ERROR,
-                                    SimpleSnackbarType.LENGTH_SHORT
-                            );
+                            inputFloorNumber[0] = Integer.valueOf(input.toString());
                         }
-                    }
-                }).show();
+                    })
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            int floor = inputFloorNumber[0];
+
+                            int replyCount = mThreadModel.getReplies() + 1; // 楼主本身的一楼未计算
+                            if (floor > 0 && floor <= replyCount) {
+                                int page = (replyCount - 1 == 0) ? 1 : (int) Math.ceil((double) floor / 20d);
+                                if (page == mCurrentPage) {
+                                    scrollToOrdinal(floor);
+                                } else {
+                                    mTargetOrdinal = floor;
+                                    getPresenter().loadPostList(mUserAccountManager.getAuthObject(), mThreadId, page, true, SHOW_MODE_REPLACE);
+                                }
+                            } else {
+                                showSnackbar(
+                                        getString(R.string.toast_error_invalid_floor),
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
+                            }
+                        }
+                    }).show();
+        }
     }
 
     private void scrollToOrdinal(int targetOrdinal) {
@@ -898,31 +908,35 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void sendSharePostIntent(PostModel postModel) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
-        String shareContent = ShareContentBuilder.buildSharePostContent(
-                this,
-                mThreadModel,
-                mCurrentPage,
-                postModel
-        );
-        sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+        if (postModel != null) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
+            String shareContent = ShareContentBuilder.buildSharePostContent(
+                    this,
+                    mThreadModel,
+                    mCurrentPage,
+                    postModel
+            );
+            sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+        }
     }
 
     private void sendShareThreadIntent() {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
-        String shareContent = ShareContentBuilder.buildShareThreadContent(
-                this,
-                mThreadModel
-        );
-        sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+        if (mThreadModel != null) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
+            String shareContent = ShareContentBuilder.buildShareThreadContent(
+                    this,
+                    mThreadModel
+            );
+            sendIntent.putExtra(Intent.EXTRA_TEXT, shareContent);
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.text_share_post_title)));
+        }
     }
 
     private void openRateDialog(PostModel postModel) {

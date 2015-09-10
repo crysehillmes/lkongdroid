@@ -259,6 +259,7 @@
     <string name="text_share_from">（分享自龙的天空 Android）</string>
     <string name="text_share_post_title">分享回复</string>
     <string name="text_share_thread_title">分享回复主题</string>
+    <string name="toast_error_open_thread_failed">加载主题失败</string>
     <string-array name="check_notice_duration_arrays">
         <item>15 分钟</item>
         <item>30 分钟</item>
