@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年9月10日"
+        versionCode="902"
+        versionName="0.9.2">
+        <changelogtext>改进：通知中的评分可以跳转到对应的回复</changelogtext>
+        <changelogbug>修复：部分图片覆盖文字的错误</changelogbug>
+        <changelogbug>修复：一些崩溃错误</changelogbug>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年9月7日"
         versionCode="901"
         versionName="0.9.1">
