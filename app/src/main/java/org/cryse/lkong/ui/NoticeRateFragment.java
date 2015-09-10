@@ -79,6 +79,9 @@ public class NoticeRateFragment extends SimpleCollectionFragment<
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
             NoticeRateModel noticeModel = mCollectionAdapter.getItem(itemIndex);
             // TODO: Goto thread by post.
+            if(noticeModel.getPid() > 0) {
+                mNavigation.openActivityForPostListByPostId(getContext(), noticeModel.getPid());
+            }
         }
     }
 
