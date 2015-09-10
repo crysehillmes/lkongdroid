@@ -47,7 +47,7 @@ android {
         }
         playStore {
             resValue 'string', 'track_channel_name', 'playStore'
-            buildConfigField "boolean", "InAppUpdate", "false"
+            buildConfigField "boolean", "InAppUpdate", "true"
         }
     }
 
