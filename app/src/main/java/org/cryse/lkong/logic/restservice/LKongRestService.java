@@ -482,7 +482,7 @@ public class LKongRestService {
     }
 
     private static String getStringFromGzipResponse(Response response) throws Exception {
-        return GzipUtils.decompress(response.body().bytes());
+        return GzipUtils.responseToString(response);
     }
 
     private void checkSignInStatus(LKAuthObject authObject, boolean checkIdentity) {
