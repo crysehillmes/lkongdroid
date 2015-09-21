@@ -66,7 +66,6 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
                 mMaxWidth,
                 mMaxHeight
         );
-        // Picasso.with(context).load(mPlaceHolderRes).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).into(mDrawable);
     }
 
     public ClickableImageSpan(
@@ -131,7 +130,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(!mIsLoaded) {
+        if(!mIsLoaded && mContext.get() != null) {
             Glide
                     .with(mContext.get())
                     .load(mSourceMiddle)
@@ -150,7 +149,7 @@ public class ClickableImageSpan extends DynamicDrawableSpan implements PendingIm
         mMaxWidth = newMaxWidth;
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(!mIsLoaded) {
+        if(!mIsLoaded && mContext.get() != null) {
             Glide
                     .with(mContext.get())
                     .load(mSourceMiddle)

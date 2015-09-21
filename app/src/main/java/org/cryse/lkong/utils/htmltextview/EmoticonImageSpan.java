@@ -54,7 +54,6 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
                 AsyncDrawableType.NORMAL,
                 emoticonSize,
                 emoticonSize);
-        // Picasso.with(context).load(mLocalSource).tag(mPicassoTag).error(mErrorRes).placeholder(mPlaceHolderRes).resize(mEmoticonSize, mEmoticonSize).into((AsyncTargetDrawable) mDrawable);
     }
 
     @Override
@@ -95,7 +94,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     public void loadImage(ImageSpanContainer container) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(!mIsLoaded) {
+        if(!mIsLoaded && mContext.get() != null) {
             Glide
                     .with(mContext.get())
                     .load(mLocalSource)
@@ -111,7 +110,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     public void loadImage(ImageSpanContainer container, int newMaxWidth) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
-        if(!mIsLoaded) {
+        if(!mIsLoaded && mContext.get() != null) {
             Glide
                     .with(mContext.get())
                     .load(mLocalSource)

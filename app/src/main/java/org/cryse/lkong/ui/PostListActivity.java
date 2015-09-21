@@ -908,7 +908,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void sendSharePostIntent(PostModel postModel) {
-        if (postModel != null) {
+        if (postModel != null && mThreadModel != null) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             //sendIntent.putExtra(Intent.EXTRA_HTML_TEXT, postModel.getMessage());
