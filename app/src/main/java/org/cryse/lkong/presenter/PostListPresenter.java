@@ -91,7 +91,7 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                         },
                         error -> {
                             Timber.e(error, "PostListPresenter::loadPostList() onError().", LOG_TAG);
-                            {
+                            if (mView != null) {
                                 mView.setLoading(false);
                             }
                         },
