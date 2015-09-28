@@ -11,7 +11,7 @@ public interface PostListView extends ContentView{
     int SHOW_MODE_REPLACE = 1;
     int SHOW_MODE_PREV_PAGE = 2;
     int SHOW_MODE_NEXT_PAGE = 3;
-    void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode);
+    void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode, Throwable throwable);
     void onGetPostLocationComplete(DataItemLocationModel locationModel, boolean loadThreadInfo);
     void onLoadThreadInfoComplete(ThreadInfoModel threadInfoModel, Throwable throwable);
     void onAddOrRemoveFavoriteComplete(boolean isFavorite);

@@ -453,7 +453,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 ArrayList<PostModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
                 // mCollectionAdapter.addAll(list);
                 setThreadSubjectSpanned(mThreadModel);
-                showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE);
+                showPostList(mCurrentPage, list, false, SHOW_MODE_REPLACE, null);
 
                 if(savedInstanceState.containsKey("listview_index") && savedInstanceState.containsKey("listview_top")) {
                     // Restore last state for checked position.
@@ -655,9 +655,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     @Override
-    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
+    public void showPostList(int page, List<PostModel> posts, boolean refreshPosition, int showMode, Throwable throwable) {
         setLoading(true);
-        createSpan(page, posts, refreshPosition, showMode);
+        if(posts == null) {
+            showSnackbar(
+                    getString(R.string.toast_error_open_thread_failed) +
+                            (throwable == null ? "" : (": " + throwable.getMessage())),
+                    SimpleSnackbarType.ERROR
+            );
+        } else {
+            createSpan(page, posts, refreshPosition, showMode);
+        }
     }
 
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
