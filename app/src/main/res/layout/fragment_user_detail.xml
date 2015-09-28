@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="?attr/theme_card_bg_color"
             app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
+            app:cardElevation="@dimen/default_card_elevation"
             app:cardUseCompatPadding="true"
             app:contentPadding="0dp">
             <RelativeLayout
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="?attr/theme_card_bg_color"
             app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
+            app:cardElevation="@dimen/default_card_elevation"
             app:cardUseCompatPadding="true"
             app:contentPadding="0dp">
             <RelativeLayout
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="?attr/theme_card_bg_color"
             app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
+            app:cardElevation="@dimen/default_card_elevation"
             app:cardUseCompatPadding="true"
             app:contentPadding="0dp">
             <RelativeLayout
@@ -148,8 +148,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="?attr/theme_card_bg_color"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="@dimen/default_card_radius"
+            app:cardElevation="@dimen/default_card_elevation"
             app:cardUseCompatPadding="true"
             app:contentPadding="0dp">
 

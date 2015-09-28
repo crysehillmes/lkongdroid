@@ -47,6 +47,12 @@ public class SuggestionsBuilder implements SearchSuggestionsBuilder {
             );
             items.add(toppicSuggestion);
         } else {
+            SearchItem simpleSuggestion = new SearchItem(
+                    mContext.getString(R.string.text_search_thread) + query,
+                    query,
+                    SearchItem.TYPE_SEARCH_ITEM_SUGGESTION
+            );
+            items.add(simpleSuggestion);
             SearchItem peopleSuggestion = new SearchItem(
                     mContext.getString(R.string.text_search_people) + query,
                     "@" + query,

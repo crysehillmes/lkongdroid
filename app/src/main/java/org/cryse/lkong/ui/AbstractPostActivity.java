@@ -522,7 +522,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         R.drawable.placeholder_error,
                         256,
                         256,
-                        DynamicDrawableSpan.ALIGN_BOTTOM,
+                        DynamicDrawableSpan.ALIGN_BASELINE,
                         initPlaceHolder);
                 spannable.setSpan(clickableImageSpan,
                         spanStart,
