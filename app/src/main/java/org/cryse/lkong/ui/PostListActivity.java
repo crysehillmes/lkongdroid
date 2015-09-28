@@ -1078,7 +1078,10 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         // Generate content StaticLayout
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        UIUtils.InsetsValue padding = UIUtils.getCardViewPadding((int)(4.0 * dm.density), (int)(2.0 * dm.density));
+        UIUtils.InsetsValue padding = UIUtils.getCardViewPadding(
+                getResources().getDimensionPixelSize(R.dimen.default_card_elevation),
+                (int)(2.0 * dm.density)
+        );
         int contentWidth = dm.widthPixels - UIUtils.dp2px(this, 16f) * 2 - padding.getLeft() - padding.getRight();
         DynamicLayout layout = new DynamicLayout(spannable, mContentTextPaint, contentWidth, Layout.Alignment.ALIGN_NORMAL, 1.3f, 0.0f, false);
         postDisplayCache.setTextLayout(layout);

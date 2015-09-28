@@ -41,7 +41,7 @@
     <string name="drawer_item_timeline">Timeline</string>
     <string name="drawer_item_followed_forums">Followed Forums</string>
     <string name="drawer_item_homepage">Home Page</string>
-    <string name="drawer_item_mentions">Mentions</string>
+    <string name="drawer_item_mentions">Mention</string>
     <string name="drawer_item_notice">Notice</string>
     <string name="drawer_item_notice_rate">Rate</string>
     <string name="drawer_item_private_messages">PM</string>
@@ -115,6 +115,7 @@
     <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
     <string name="text_loading">Loading…</string>
+    <string name="text_search_thread">Search Thread:&#160;</string>
     <string name="text_search_people">Search People:&#160;</string>
     <string name="text_search_forum">Search Forum:&#160;</string>
 

@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,7 +129,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             viewHolder.mSecondaryContainer.setVisibility(View.GONE);
             String createInfo = context.getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
             mainPrefixSpannable.append(createInfo);
-            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_primary)),
+            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_secondary)),
+                    0,
+                    createInfo.length(),
+                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            mainPrefixSpannable.setSpan(new StyleSpan(Typeface.BOLD),
                     0,
                     createInfo.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

@@ -52,7 +52,7 @@
         android:layout_height="match_parent"
         android:alpha="0.0"
         android:background="@color/transparent_tint"
-        android:elevation="6dp"
+        android:elevation="5dp"
         android:visibility="gone" />
 
     <org.cryse.widget.persistentsearch.PersistentSearchView
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:elevation="@dimen/toolbar_elevation"
+        android:elevation="@dimen/searchview_elevation"
         android:visibility="gone"
         app:persistentSV_customToolbarHeight="@dimen/search_toolbar_height"
         app:persistentSV_displayMode="menuItem"

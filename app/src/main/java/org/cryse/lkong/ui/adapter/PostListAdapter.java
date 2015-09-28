@@ -88,8 +88,10 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
             if (postModel.getRateScore() != 0) {
+                viewHolder.mRateTextView.setVisibility(View.VISIBLE);
                 viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
             } else {
+                viewHolder.mRateTextView.setVisibility(View.INVISIBLE);
                 viewHolder.mRateTextView.setText("");
             }
 
