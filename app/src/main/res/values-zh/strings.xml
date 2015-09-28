@@ -246,6 +246,7 @@
     <string name="format_notice_private_message">%1$d 条新私信</string>
     <string name="format_notice_rate">%1$d 个新评分</string>
     <string name="format_notice_all_count">你有 %1$d 条新消息</string>
+    <string name="text_search_thread">搜索帖子:&#160;</string>
     <string name="text_search_people">搜索用户:&#160;</string>
     <string name="text_search_forum">搜索板块:&#160;</string>
     <string name="settings_category_notification">消息通知</string>
@@ -259,6 +260,7 @@
     <string name="text_share_from">（分享自龙的天空 Android）</string>
     <string name="text_share_post_title">分享回复</string>
     <string name="text_share_thread_title">分享回复主题</string>
+    <string name="toast_error_open_thread_failed">加载主题失败</string>
     <string-array name="check_notice_duration_arrays">
         <item>15 分钟</item>
         <item>30 分钟</item>

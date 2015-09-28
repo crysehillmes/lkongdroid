@@ -19,7 +19,7 @@ public class HtmlCleaner {
             pInLi.unwrap();
         }
         for (Element pInLi: fixedDoc.select("blockquote")) {
-            if(pInLi.nextElementSibling() != null && pInLi.nextElementSibling().tagName().equalsIgnoreCase("br"))
+            if(elementTagNameEquals(pInLi.nextElementSibling(), "br"))
                 pInLi.nextElementSibling().remove();
         }
         /*for (Element pHasImg: fixedDoc.select("p:has(img)")) {
@@ -30,8 +30,8 @@ public class HtmlCleaner {
                 img.after("<br>");
         }*/
         for (Element element : fixedDoc.select("*")) {
-            if (!element.hasText() && element.isBlock() && !element.tagName().equalsIgnoreCase("img")
-                    && !element.tagName().equalsIgnoreCase("ul")
+            if (!element.hasText() && element.isBlock() && elementTagNameNotEquals(element, "img")
+                    && elementTagNameNotEquals(element, "ul")
             ) {
                 if(element.select("img").size() > 0)
                     continue;
@@ -51,7 +51,7 @@ public class HtmlCleaner {
             }
         }*/
         for (Element pInLi: fixedDoc.select("p")) {
-                pInLi.after("<br>");
+                //pInLi.after("<br>");
             pInLi.unwrap();
         }
         return fixedDoc.html();
@@ -71,5 +71,13 @@ public class HtmlCleaner {
         Document fixedDoc = cleaner.clean(originalDoc);
         result[0] = fixedDoc.html();
         return result;
+    }
+
+    private static boolean elementTagNameEquals(Element element, String tagName) {
+        return element != null && element.tagName().equalsIgnoreCase(tagName);
+    }
+
+    private static boolean elementTagNameNotEquals(Element element, String tagName) {
+        return element != null && !element.tagName().equalsIgnoreCase(tagName);
     }
 }

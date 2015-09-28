@@ -173,9 +173,9 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     public boolean isActivityDestroyed() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return isDestroyed();
+            return isDestroyed() || isFinishing();
         } else {
-            return mIsDestroyed;
+            return mIsDestroyed || isFinishing();
         }
     }
 }

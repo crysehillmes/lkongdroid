@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -215,6 +214,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                         fragmentTransaction.remove(searchFragment);
                         fragmentTransaction.commit();
+                        getChildFragmentManager().executePendingTransactions();
                     });
                 } else {
                     slideOutToButtom(mSearchContainer, true, null);
@@ -237,16 +237,16 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                     FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                     fragmentTransaction.add(R.id.search_fragment_container, searchFragment, SEARCH_FRAGMENT_TAG);
                     fragmentTransaction.commit();
+                    getChildFragmentManager().executePendingTransactions();
                 }
-                if (!mSearchContainer.isShown()) {
-                    final SearchFragment finalSearchFragment = searchFragment;
-                    slideInToTop(mSearchContainer, true, () -> {
-                        finalSearchFragment.search(string);
-                    });
-                } else {
-                    searchFragment.search(string);
+                if(searchFragment != null) {
+                    if (!mSearchContainer.isShown()) {
+                        final SearchFragment finalSearchFragment = searchFragment;
+                        slideInToTop(mSearchContainer, true, () -> finalSearchFragment.search(string));
+                    } else {
+                        searchFragment.search(string);
+                    }
                 }
-
             }
 
             @Override
@@ -356,7 +356,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_open_search:
-                if (mSearchMenuItem != null) {
+                if (mSearchMenuItem != null && getView() != null) {
                     View menuItemView = getView().findViewById(R.id.action_open_search);
                     mSearchView.setStartPositionFromMenuItem(menuItemView, getView().getMeasuredWidth());
                     mSearchView.openSearch();

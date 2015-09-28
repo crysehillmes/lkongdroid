@@ -465,13 +465,9 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                     if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
                         if(type == AsyncDrawableType.NORMAL) {
                             SpannableStringBuilder charSequence = (SpannableStringBuilder) mPostDisplayCache.getTextLayout().getText();
-                            charSequence.setSpan(new EmptySpan(), 0, charSequence.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            EmptySpan[] emptySpans = charSequence.getSpans(0, charSequence.length(), EmptySpan.class);
-                            for (EmptySpan emptySpan : emptySpans) {
-                                charSequence.removeSpan(emptySpan);
-                            }
-                            invalidate();
+                            notifyDynamicLayoutChange(charSequence);
                             requestLayout();
+                            invalidate();
                         } else {
                             invalidate();
                         }
@@ -490,6 +486,14 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
     public interface OnTextLongPressedListener {
         void onTextPressed(View iew);
+    }
+
+    private static void notifyDynamicLayoutChange(SpannableStringBuilder stringBuilder) {
+        stringBuilder.setSpan(new EmptySpan(), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        EmptySpan[] emptySpans = stringBuilder.getSpans(0, stringBuilder.length(), EmptySpan.class);
+        for (EmptySpan emptySpan : emptySpans) {
+            stringBuilder.removeSpan(emptySpan);
+        }
     }
 
     private static class EmptySpan implements UpdateLayout {}

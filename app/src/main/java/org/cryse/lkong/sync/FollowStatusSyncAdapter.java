@@ -95,7 +95,7 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
 
             Response response = mOkHttpClient.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            String responseString = GzipUtils.decompress(response.body().bytes());
+            String responseString = GzipUtils.responseToString(response);
             Document document = Jsoup.parseBodyFragment(responseString);
             Elements elements = document.select("#setfollows");
             if(elements != null && elements.size() > 0) {

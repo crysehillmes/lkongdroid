@@ -41,7 +41,7 @@
     <string name="drawer_item_timeline">Timeline</string>
     <string name="drawer_item_followed_forums">Followed Forums</string>
     <string name="drawer_item_homepage">Home Page</string>
-    <string name="drawer_item_mentions">Mentions</string>
+    <string name="drawer_item_mentions">Mention</string>
     <string name="drawer_item_notice">Notice</string>
     <string name="drawer_item_notice_rate">Rate</string>
     <string name="drawer_item_private_messages">PM</string>
@@ -71,7 +71,7 @@
     <string name="format_post_list_page_indicator">%1$d / %2$d</string>
     <string name="format_post_reply_title">Reply: %1$s</string>
     <string name="format_timeline_reply_to_reply">\@%1$s replies in %2$s</string>
-    <string name="format_timeline_create_thread">Create New Thread: %1$s</string>
+    <string name="format_timeline_create_thread">New Thread: %1$s</string>
     <string name="format_timeline_reply_to_thread">\@%1$s create a new thread:</string>
     <string name="format_note_rate_log_prefix">Your post&#160;</string>
     <string name="format_note_rate_log_middle">&#160;is rated by %1$s:&#160;</string>
@@ -108,12 +108,14 @@
     <string name="toast_error_url_empty">Url name or value could not be empty.</string>
     <string name="toast_error_link_to_current_thread">This link is point to current thread.</string>
     <string name="toast_error_open_origin_image">Failed to load this image.</string>
+    <string name="toast_error_open_thread_failed">Failed to load this thread.</string>
 
     <string name="toast_sign_in_success">Sign in successfully.</string>
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
     <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
     <string name="text_loading">Loading…</string>
+    <string name="text_search_thread">Search Thread:&#160;</string>
     <string name="text_search_people">Search People:&#160;</string>
     <string name="text_search_forum">Search Forum:&#160;</string>
 

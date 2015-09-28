@@ -58,6 +58,6 @@ public abstract class AbstractHttpRequest<ResponseType> {
     }
 
     protected String gzipToString(Response response) throws Exception {
-        return GzipUtils.decompress(response.body().bytes());
+        return GzipUtils.responseToString(response);
     }
 }

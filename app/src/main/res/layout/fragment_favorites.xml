@@ -5,8 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        layout="@layout/layout_appbar"/>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_toolbar_height"
+            android:minHeight="@dimen/search_toolbar_height"
+            android:background="?attr/colorPrimary"
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="72dp"
+            app:contentInsetStart="72dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <com.malinskiy.superrecyclerview.SuperRecyclerView
         android:id="@+id/simple_collection_recyclerview"
@@ -19,4 +38,34 @@
         app:recyclerClipToPadding="false"
         app:scrollbarStyle="outsideOverlay" />
 
+    <FrameLayout
+        android:id="@+id/search_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="6dp"
+        android:visibility="invisible" />
+
+    <View
+        android:id="@+id/view_search_tint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.0"
+        android:background="@color/transparent_tint"
+        android:elevation="5dp"
+        android:visibility="gone" />
+
+    <org.cryse.widget.persistentsearch.PersistentSearchView
+        android:id="@+id/searchview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:elevation="@dimen/searchview_elevation"
+        android:visibility="gone"
+        app:persistentSV_customToolbarHeight="@dimen/search_toolbar_height"
+        app:persistentSV_displayMode="menuItem"
+        app:persistentSV_editHintText="@string/hint_search_hint"
+        app:persistentSV_editHintTextColor="@color/text_color_tint"
+        app:persistentSV_editTextColor="@color/text_color_primary"
+        app:persistentSV_searchCardElevation="4dp"
+        app:persistentSV_searchTextColor="@color/text_color_primary" />
 </android.support.design.widget.CoordinatorLayout>
