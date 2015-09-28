@@ -3,7 +3,6 @@ package org.cryse.lkong.utils.htmltextview;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.text.style.DynamicDrawableSpan;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -13,7 +12,7 @@ import org.cryse.lkong.utils.transformation.FitSizeTransformation;
 
 import java.lang.ref.WeakReference;
 
-public class ClickableImageSpan extends DynamicDrawableSpan implements PendingImageSpan {
+public class ClickableImageSpan extends DynamicDrawableSpanWithoutSpacing implements PendingImageSpan {
     private static final int MAX_HEIGHT = 1280;
     private AsyncTargetDrawable mDrawable;
     private WeakReference<Context> mContext;
