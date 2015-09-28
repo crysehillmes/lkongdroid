@@ -128,7 +128,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             viewHolder.mSecondaryContainer.setVisibility(View.GONE);
             String createInfo = context.getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
             mainPrefixSpannable.append(createInfo);
-            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_secondary)),
+            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_primary)),
                     0,
                     createInfo.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

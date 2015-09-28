@@ -53,7 +53,9 @@
             android:layout_marginTop="72dp"
             android:lineSpacingMultiplier="1.3"
             android:text="placeholder"
-            android:textColor="?theme_text_color_primary"
+            android:textColor="?theme_text_color_secondary"
+            android:maxLines="5"
+            android:ellipsize="end"
             android:textSize="@dimen/text_size_subhead" />
 
         <RelativeLayout
@@ -83,7 +85,7 @@
                 android:lineSpacingMultiplier="1.3"
                 android:maxLines="1"
                 android:text="placeholder"
-                android:textColor="?theme_text_color_secondary"
+                android:textColor="?theme_text_color_primary"
                 android:textSize="@dimen/text_size_subhead" />
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
@@ -96,7 +98,8 @@
                 android:layout_marginTop="1dp"
                 android:lineSpacingMultiplier="1.3"
                 android:text="placeholder"
-                android:textColor="?theme_text_color_primary"
+                android:textColor="?theme_text_color_secondary"
+                android:maxLines="5"
                 android:textSize="@dimen/text_size_subhead" />
 
         </RelativeLayout>
