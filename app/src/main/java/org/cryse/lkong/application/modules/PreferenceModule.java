@@ -9,6 +9,7 @@ import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsScrollByVolumeKey;
+import org.cryse.lkong.application.qualifier.PrefsTimelineOnlyShowThread;
 import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.application.qualifier.PrefsNightMode;
 import org.cryse.lkong.application.qualifier.PrefsPostTail;
@@ -101,5 +102,11 @@ public class PreferenceModule {
     @PrefsCheckNoticeDuration
     StringPreference provideCheckNoticeDuration(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION, PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE);
+    }
+
+    @Provides
+    @PrefsTimelineOnlyShowThread
+    BooleanPreference provideTimelineOnlyShowThread(SharedPreferences preferences) {
+        return new BooleanPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD, PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE);
     }
 }

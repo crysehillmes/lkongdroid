@@ -30,4 +30,6 @@ public class PreferenceConstant {
     public static final boolean SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION_VALUE = true;
     public static final String SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION = "prefs_check_notification_duration";
     public static final String SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE = "1800";
+    public static final String SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD = "prefs_timeline_only_thread";
+    public static final boolean SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE = false;
 }

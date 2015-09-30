@@ -205,6 +205,8 @@
     <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
     <string name="settings_item_use_forums_first_title">Forums page first</string>
     <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app)</string>
+    <string name="settings_item_timeline_only_thread_title">Only thread in Timeline</string>
+    <string name="settings_item_timeline_only_thread_summary">Only show thread in timeline</string>
 
     <string name="settings_item_scroll_by_volume_key_title">Volume rocker scrolling</string>
     <string name="settings_item_scroll_by_volume_key_summary">Enable scrolling with the volume buttons</string>
