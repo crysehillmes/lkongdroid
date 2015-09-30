@@ -44,6 +44,12 @@
             android:defaultValue="false"
             android:widgetLayout="@layout/layout_switch_preference_compat"/>
         <CheckBoxPreference
+            android:key="prefs_timeline_only_thread"
+            android:title="@string/settings_item_timeline_only_thread_title"
+            android:summary="@string/settings_item_timeline_only_thread_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/layout_switch_preference_compat"/>
+        <CheckBoxPreference
             android:key="prefs_use_in_app_browser"
             android:title="@string/settings_item_use_in_app_browser_title"
             android:summary="@string/settings_item_use_in_app_browser_summary"

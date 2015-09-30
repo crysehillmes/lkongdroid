@@ -233,11 +233,16 @@ public class LKongRestService {
         return isFavorite;
     }
 
-    public List<TimelineModel> getTimeline(LKAuthObject authObject, long start, int listType) throws Exception {
+    public List<TimelineModel> getTimeline(LKAuthObject authObject, long start, int listType, boolean onlyThread) throws Exception {
         checkSignInStatus(authObject, true);
         applyAuthCookies(authObject);
 
-        String url = String.format(LKONG_INDEX_URL + TimelineListType.typeToRequestParam(listType));
+        String url;
+        if(onlyThread) {
+            url = "http://lkong.cn/index/index.php?mod=data&sars=index/thread";
+        } else {
+            url = String.format(LKONG_INDEX_URL + TimelineListType.typeToRequestParam(listType));
+        }
         url = url + (start >= 0 ? "&nexttime=" + Long.toString(start) : "");
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")

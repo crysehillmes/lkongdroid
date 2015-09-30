@@ -180,6 +180,8 @@
     <string name="hint_search_hint">搜索位面，主题或用户</string>
     <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
     <string name="settings_item_use_forums_first_title">首页显示板块列表</string>
+    <string name="settings_item_timeline_only_thread_title">信息流只显示主题</string>
+    <string name="settings_item_timeline_only_thread_summary">信息流（时间线）只显示主题</string>
     <string name="settings_category_navigation">导航</string>
     <string name="settings_item_scroll_by_volume_key_title">音量控制键滚动</string>
     <string name="settings_item_scroll_by_volume_key_summary">在帖子页面中通过音量键控制滚动</string>

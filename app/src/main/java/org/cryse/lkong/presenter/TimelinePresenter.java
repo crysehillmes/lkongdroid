@@ -21,12 +21,12 @@ public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel, 
         super(forumService);
     }
 
-    public void loadTimeline(LKAuthObject authObject, boolean isLoadingMore) {
-        loadTimeline(authObject, -1, isLoadingMore);
+    public void loadTimeline(LKAuthObject authObject, boolean isLoadingMore, boolean onlyThread) {
+        loadTimeline(authObject, -1, isLoadingMore, onlyThread);
     }
 
-    public void loadTimeline(LKAuthObject authObject, long start, boolean isLoadingMore) {
-        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_TIMELINE);
+    public void loadTimeline(LKAuthObject authObject, long start, boolean isLoadingMore, boolean onlyThread) {
+        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_TIMELINE, onlyThread);
     }
 
     public void loadMentions(LKAuthObject authObject, boolean isLoadingMore) {
@@ -34,14 +34,14 @@ public class TimelinePresenter extends SimpleCollectionPresenter<TimelineModel, 
     }
 
     public void loadMentions(LKAuthObject authObject, long start, boolean isLoadingMore) {
-        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_MENTIONS);
+        loadData(authObject, start, isLoadingMore, TimelineListType.TYPE_MENTIONS, false);
     }
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
         setLoadingStatus(isLoadingMore, true);
-        mLoadDataSubscription = mLKongForumService.getTimeline(authObject, start, (Integer) extraArgs[0])
+        mLoadDataSubscription = mLKongForumService.getTimeline(authObject, start, (Integer) extraArgs[0], (Boolean) extraArgs[1])
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

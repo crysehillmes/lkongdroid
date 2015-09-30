@@ -107,7 +107,7 @@ public class EmoticonImageSpan extends DynamicDrawableSpan implements PendingIma
     }
 
     @Override
-    public void loadImage(ImageSpanContainer container, int newMaxWidth) {
+    public void loadImage(ImageSpanContainer container, int newMaxWidth, int backgroundColor) {
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
         if(!mIsLoaded && mContext.get() != null) {

@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.qualifier.PrefsTimelineOnlyShowThread;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.model.TimelineModel;
@@ -16,6 +17,7 @@ import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.utils.preference.BooleanPreference;
 
 import java.util.List;
 
@@ -31,6 +33,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Inject
     TimelinePresenter mPresenter;
+
+    @Inject
+    @PrefsTimelineOnlyShowThread
+    BooleanPreference mTimelineOnlyThread;
 
     public static TimelineFragment newInstance(Bundle args) {
         TimelineFragment fragment = new TimelineFragment();
@@ -101,7 +107,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadTimeline(authObject, start, isLoadingMore);
+        getPresenter().loadTimeline(authObject, start, isLoadingMore, mTimelineOnlyThread.get());
     }
 
     @Override
