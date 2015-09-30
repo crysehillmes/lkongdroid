@@ -2,7 +2,9 @@ package org.cryse.lkong.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -10,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.NoCopySpan;
 import android.text.SpannableStringBuilder;
@@ -34,6 +37,8 @@ import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
 import org.cryse.utils.ColorUtils;
+import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.PreferenceConstant;
 
 import java.util.ArrayList;
 
@@ -197,10 +202,19 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         }
         if(mShowImages) {
             post(() -> {
+                BooleanPreference isNightMode = new BooleanPreference(
+                        PreferenceManager.getDefaultSharedPreferences(getContext()),
+                        PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE,
+                        PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE
+                );
                 int viewImageMaxWidth = getMeasuredWidth() - px_margin_16 * 2;
                 for(int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
                     PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
-                    pendingImageSpan.loadImage(this, viewImageMaxWidth);
+                    pendingImageSpan.loadImage(
+                            this,
+                            viewImageMaxWidth,
+                            isNightMode.get() ? Color.argb(255, 15, 15, 15) : Color.argb(255, 229, 229, 229)
+                    );
                 }
             });
         }

@@ -145,8 +145,7 @@ public class ClickableImageSpan extends DynamicDrawableSpanWithoutSpacing implem
     }
 
     @Override
-    public void loadImage(ImageSpanContainer container, int newMaxWidth) {
-        if(newMaxWidth > 0)
+    public void loadImage(ImageSpanContainer container, int newMaxWidth, int backgroundColor) {
         mMaxWidth = 256; //newMaxWidth;
         mContainer = new WeakReference<ImageSpanContainer>(container);
         mDrawable.setContainer(container);
@@ -160,7 +159,7 @@ public class ClickableImageSpan extends DynamicDrawableSpanWithoutSpacing implem
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .skipMemoryCache(true)
                     .transform(
-                            new FitInTransformation(mContext.get(), mMaxWidth, mMaxHeight, Color.argb(26, 0, 0, 0))
+                            new FitInTransformation(mContext.get(), mMaxWidth, mMaxHeight, backgroundColor)
                     )
                     .into(mDrawable);
             mIsLoaded = true;
