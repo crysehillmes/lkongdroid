@@ -29,6 +29,7 @@
     <string name="dialog_new_post_sending">正在发送…</string>
     <string name="dialog_post_list_choose_page">跳转至</string>
     <string name="drawer_item_favorites">我的收藏</string>
+    <string name="drawer_item_browse_history">浏览历史</string>
     <string name="drawer_item_notification">消息通知</string>
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>

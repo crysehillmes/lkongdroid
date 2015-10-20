@@ -1,7 +1,11 @@
 package org.cryse.lkong.data;
 
+import android.support.annotation.Nullable;
+
 import org.cryse.lkong.data.model.FollowedForum;
+import org.cryse.lkong.data.provider.browsehistory.BrowseHistoryModel;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumModel;
+import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -36,4 +40,19 @@ public interface LKongDatabase {
     void unfollowUser(long uid, long targetUid);
     boolean isUserFollowed(long uid, long targetUid);
     void removeAllFollowedUser(long uid);
+
+    void saveBrowseHistory(long uid,
+                           long threadId,
+                           String threadTitle,
+                           @Nullable Long forumId,
+                           @Nullable String forumTitle,
+                           @Nullable Long postId,
+                           long authorId,
+                           String authorName,
+                           long lastReadTime
+    );
+    List<BrowseHistory> getBrowseHistory(long uid, int start);
+    List<BrowseHistory> getBrowseHistory(int start);
+    void clearBrowserHistory(long uid);
+    void clearBrowserHistory();
 }

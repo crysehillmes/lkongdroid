@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 
 import org.cryse.lkong.BuildConfig;
+import org.cryse.lkong.data.provider.browsehistory.BrowseHistoryColumns;
 import org.cryse.lkong.data.provider.cacheobject.CacheObjectColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
@@ -19,12 +20,33 @@ public class LKongSQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = LKongSQLiteOpenHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "lkong.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static LKongSQLiteOpenHelper sInstance;
     private final Context mContext;
     private final LKongSQLiteOpenHelperCallbacks mOpenHelperCallbacks;
 
     // @formatter:off
+    public static final String SQL_CREATE_TABLE_BROWSE_HISTORY = "CREATE TABLE IF NOT EXISTS "
+            + BrowseHistoryColumns.TABLE_NAME + " ( "
+            + BrowseHistoryColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + BrowseHistoryColumns.USER_ID + " INTEGER NOT NULL, "
+            + BrowseHistoryColumns.FORUM_ID + " INTEGER, "
+            + BrowseHistoryColumns.FORUM_TITLE + " TEXT, "
+            + BrowseHistoryColumns.THREAD_ID + " INTEGER NOT NULL, "
+            + BrowseHistoryColumns.POST_ID + " INTEGER, "
+            + BrowseHistoryColumns.THREAD_TITLE + " TEXT NOT NULL, "
+            + BrowseHistoryColumns.THREAD_AUTHOR_ID + " INTEGER NOT NULL, "
+            + BrowseHistoryColumns.THREAD_AUTHOR_NAME + " TEXT NOT NULL, "
+            + BrowseHistoryColumns.LAST_READ_TIME + " INTEGER NOT NULL "
+            + ", CONSTRAINT unique_browse_history_thread_id UNIQUE (thread_id) ON CONFLICT REPLACE"
+            + " );";
+
+    public static final String SQL_CREATE_INDEX_BROWSE_HISTORY_USER_ID = "CREATE INDEX IDX_BROWSE_HISTORY_USER_ID "
+            + " ON " + BrowseHistoryColumns.TABLE_NAME + " ( " + BrowseHistoryColumns.USER_ID + " );";
+
+    public static final String SQL_CREATE_INDEX_BROWSE_HISTORY_LAST_READ_TIME = "CREATE INDEX IDX_BROWSE_HISTORY_LAST_READ_TIME "
+            + " ON " + BrowseHistoryColumns.TABLE_NAME + " ( " + BrowseHistoryColumns.LAST_READ_TIME + " );";
+
     public static final String SQL_CREATE_TABLE_CACHE_OBJECT = "CREATE TABLE IF NOT EXISTS "
             + CacheObjectColumns.TABLE_NAME + " ( "
             + CacheObjectColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -142,6 +164,9 @@ public class LKongSQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         mOpenHelperCallbacks.onPreCreate(mContext, db);
+        db.execSQL(SQL_CREATE_TABLE_BROWSE_HISTORY);
+        db.execSQL(SQL_CREATE_INDEX_BROWSE_HISTORY_USER_ID);
+        db.execSQL(SQL_CREATE_INDEX_BROWSE_HISTORY_LAST_READ_TIME);
         db.execSQL(SQL_CREATE_TABLE_CACHE_OBJECT);
         db.execSQL(SQL_CREATE_INDEX_CACHE_OBJECT_CACHE_KEY);
         db.execSQL(SQL_CREATE_TABLE_FOLLOWED_FORUM);

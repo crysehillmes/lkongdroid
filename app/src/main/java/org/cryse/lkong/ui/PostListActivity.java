@@ -645,6 +645,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onStop() {
         super.onStop();
+        if(mThreadModel != null) {
+            getPresenter().saveBrowseHistory(
+                    mUserAccountManager.getAuthObject(),
+                    mThreadId,
+                    mThreadModel.getSubject(),
+                    mThreadModel.getFid(),
+                    mThreadModel.getForumName(),
+                    null,
+                    mThreadModel.getAuthorId(),
+                    mThreadModel.getAuthorName(),
+                    System.currentTimeMillis()
+            );
+        }
         getPresenter().unbindView();
     }
 
@@ -748,6 +761,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             setThreadSubjectSpanned(mThreadModel);
 
             calculatePageAndLoad();
+            getPresenter().saveBrowseHistory(
+                    mUserAccountManager.getAuthObject(),
+                    mThreadId,
+                    mThreadModel.getSubject(),
+                    mThreadModel.getFid(),
+                    mThreadModel.getForumName(),
+                    null,
+                    mThreadModel.getAuthorId(),
+                    mThreadModel.getAuthorName(),
+                    System.currentTimeMillis()
+            );
         }
     }
 

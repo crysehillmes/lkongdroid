@@ -1,5 +1,6 @@
 package org.cryse.lkong.logic;
 
+import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 
 import org.cryse.lkong.data.LKongDatabase;
@@ -17,6 +18,7 @@ import org.cryse.lkong.logic.request.GetUserInfoRequest;
 import org.cryse.lkong.logic.request.SearchRequest;
 import org.cryse.lkong.logic.request.SendNewPrivateMessageRequest;
 import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
@@ -423,6 +425,48 @@ public class LKongForumService {
             try {
                 SendNewPrivateMessageRequest request = new SendNewPrivateMessageRequest(authObject, targetUserId, targetUserName, message);
                 SendNewPrivateMessageResult result = request.execute();
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Void> saveBrowseHistory(long uid,
+                                              long threadId,
+                                              String threadTitle,
+                                              @Nullable Long forumId,
+                                              @Nullable String forumTitle,
+                                              @Nullable Long postId,
+                                              long authorId,
+                                              String authorName,
+                                              long lastReadTime) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.saveBrowseHistory(
+                        uid,
+                        threadId,
+                        threadTitle,
+                        forumId,
+                        forumTitle,
+                        postId,
+                        authorId,
+                        authorName,
+                        lastReadTime
+                );
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<BrowseHistory>> getBrowseHistory(long uid, int start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<BrowseHistory> result = mLKongDatabase.getBrowseHistory(uid, start);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {

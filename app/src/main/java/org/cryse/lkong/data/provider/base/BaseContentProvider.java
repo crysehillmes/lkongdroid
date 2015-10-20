@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 public abstract class BaseContentProvider extends ContentProvider {
@@ -22,6 +23,7 @@ public abstract class BaseContentProvider extends ContentProvider {
     public static final String QUERY_GROUP_BY = "QUERY_GROUP_BY";
     public static final String QUERY_HAVING = "QUERY_HAVING";
     public static final String QUERY_LIMIT = "QUERY_LIMIT";
+    public static final String QUERY_OFFSET = "QUERY_OFFSET";
 
     public static class QueryParams {
         public String table;
@@ -127,10 +129,12 @@ public abstract class BaseContentProvider extends ContentProvider {
         String groupBy = uri.getQueryParameter(QUERY_GROUP_BY);
         String having = uri.getQueryParameter(QUERY_HAVING);
         String limit = uri.getQueryParameter(QUERY_LIMIT);
+        String offset = uri.getQueryParameter(QUERY_OFFSET);
+        String limitString = TextUtils.isEmpty(offset) ? limit : offset + "," + limit;
         QueryParams queryParams = getQueryParams(uri, selection, projection);
         projection = ensureIdIsFullyQualified(projection, queryParams.table, queryParams.idColumn);
         Cursor res = mSqLiteOpenHelper.getReadableDatabase().query(queryParams.tablesWithJoins, projection, queryParams.selection, selectionArgs, groupBy,
-                having, sortOrder == null ? queryParams.orderBy : sortOrder, limit);
+                having, sortOrder == null ? queryParams.orderBy : sortOrder, limitString);
         res.setNotificationUri(getContext().getContentResolver(), uri);
         return res;
     }
@@ -192,5 +196,9 @@ public abstract class BaseContentProvider extends ContentProvider {
 
     public static Uri limit(Uri uri, String limit) {
         return uri.buildUpon().appendQueryParameter(QUERY_LIMIT, limit).build();
+    }
+
+    public static Uri offset(Uri uri, String limit) {
+        return uri.buildUpon().appendQueryParameter(QUERY_OFFSET, limit).build();
     }
 }
