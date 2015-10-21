@@ -25,18 +25,12 @@ import butterknife.ButterKnife;
 
 public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory> {
     private final String mTodayPrefix;
-    private int mColorAccent;
-    private final int mAvatarSize;
 
     OnBrowseHistoryItemClickListener mOnBrowseHistoryItemClickListener;
-    private CircleTransform mCircleTransform;
 
     public BrowseHistoryAdapter(Context context, List<BrowseHistory> mItemList) {
         super(context, mItemList);
         this.mTodayPrefix = getString(R.string.datetime_today);
-        this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
-        this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        this.mCircleTransform = new CircleTransform(mContext);
     }
 
     @Override

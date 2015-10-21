@@ -4,20 +4,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
+import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.widget.PostItemView;
-import org.cryse.utils.ColorUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -29,26 +26,20 @@ import butterknife.Bind;
 public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private static final String LOG_TAG = PostListAdapter.class.getName();
     public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
-    private final String mTodayPrefix;
     private OnItemButtonClickListener mOnItemButtonClickListener;
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mUserId;
-    private int mMaxImageWidth;
     private int mImageDownloadPolicy;
     private final CircleTransform mCircleTransform;
     private final int mAvatarSize;
     private boolean mShouldShowImages;
-    private int mAccentColor;
 
     public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
         super(context, mItemList);
-        mTodayPrefix = getString(R.string.datetime_today);
-        mMaxImageWidth = UIUtils.dp2px(context, 128f);
         mUserId = userId;
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
-        mAccentColor = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         mCircleTransform = new CircleTransform(context);
     }
 
@@ -106,13 +97,14 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             } else {
                 viewHolder.mEditButton.setVisibility(View.INVISIBLE);
             }
-
-            Glide.with(getContext()).load(postModel.getAuthorAvatar())
-                    .error(R.drawable.ic_placeholder_avatar)
-                    .placeholder(R.drawable.ic_placeholder_avatar)
-                    .override(mAvatarSize, mAvatarSize)
-                    .transform(mCircleTransform)
-                    .into(viewHolder.mAvatarImageView);
+            ImageLoader.loadAvatar(
+                    getContext(),
+                    viewHolder.mAvatarImageView,
+                    postModel.getAuthorAvatar(),
+                    mAvatarSize,
+                    mCircleTransform,
+                    ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+            );
         }
 
     }

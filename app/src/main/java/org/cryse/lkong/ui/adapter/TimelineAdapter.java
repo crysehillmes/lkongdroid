@@ -8,7 +8,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
+import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
@@ -156,13 +154,14 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
         viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
         viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
-        Glide.with(context)
-                .load(ModelConverter.uidToAvatarUrl(timelineModel.getUserId()))
-                .error(R.drawable.ic_placeholder_avatar)
-                .placeholder(R.drawable.ic_placeholder_avatar)
-                .override(avatarSize, avatarSize)
-                .transform(circleTransform)
-                .into(viewHolder.mAuthorAvatarImageView);
+        ImageLoader.loadAvatar(
+                context,
+                viewHolder.mAuthorAvatarImageView,
+                ModelConverter.uidToAvatarUrl(timelineModel.getUserId()),
+                avatarSize,
+                circleTransform,
+                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+        );
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

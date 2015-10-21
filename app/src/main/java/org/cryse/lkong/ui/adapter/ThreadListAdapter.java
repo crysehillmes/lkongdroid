@@ -11,12 +11,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
+import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.utils.ColorUtils;
@@ -101,13 +100,14 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                 threadModel.getDateline(),
                 todayPrefix,
                 context.getResources().getConfiguration().locale));
-        Glide.with(context)
-                .load(threadModel.getUserIcon())
-                .error(R.drawable.ic_placeholder_avatar)
-                .placeholder(R.drawable.ic_placeholder_avatar)
-                .override(avatarSize, avatarSize)
-                .transform(circleTransform)
-                .into(viewHolder.mThreadIconImageView);
+        ImageLoader.loadAvatar(
+                context,
+                viewHolder.mThreadIconImageView,
+                threadModel.getUserIcon(),
+                avatarSize,
+                circleTransform,
+                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+        );
     }
 
     public void setOnThreadItemClickListener(OnThreadItemClickListener listener) {

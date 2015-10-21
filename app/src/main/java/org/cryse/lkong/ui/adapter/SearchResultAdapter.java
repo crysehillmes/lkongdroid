@@ -15,6 +15,8 @@ import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
+import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -29,6 +31,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private int mResultType = 0;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
+    private final int mAvatarSize;
     public void setDataSet(SearchDataSet searchDataSet) {
         this.clear();
         if(searchDataSet != null) {
@@ -47,6 +50,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         super(context, new ArrayList<AbstractSearchResult>());
         this.mCircleTransform = new CircleTransform(context);
         mTodayPrefix = getString(R.string.datetime_today);
+        this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
     }
 
     @Override
@@ -100,12 +104,14 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private void bindUserResult(SearchUserViewHolder viewHolder, int position, SearchUserItem item) {
         viewHolder.nameTextView.setText(item.getUserName());
         viewHolder.signTextView.setText(item.getSignHtml());
-        Glide.with(getContext()).load(item.getAvatarUrl())
-                .placeholder(R.drawable.ic_placeholder_avatar)
-                .error(R.drawable.ic_placeholder_avatar)
-                .centerCrop()
-                .transform(mCircleTransform)
-                .into(viewHolder.avatarImageView);
+        ImageLoader.loadAvatar(
+                getContext(),
+                viewHolder.avatarImageView,
+                item.getAvatarUrl(),
+                mAvatarSize,
+                mCircleTransform,
+                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+        );
     }
 
     private void bindGroupResult(SearchGroupViewHolder viewHolder, int position, SearchGroupItem item) {
