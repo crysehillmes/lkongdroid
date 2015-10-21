@@ -54,5 +54,6 @@ public interface LKongDatabase {
     List<BrowseHistory> getBrowseHistory(long uid, int start);
     List<BrowseHistory> getBrowseHistory(int start);
     void clearBrowserHistory(long uid);
+    void removeBrowserHistory(long uid, long threadId);
     void clearBrowserHistory();
 }

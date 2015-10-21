@@ -20,6 +20,7 @@
     <string name="action_send_post">Send</string>
     <string name="action_open_notification">Notifications</string>
     <string name="action_open_search">Search</string>
+    <string name="action_clear_browse_history">Clear Browse History</string>
     <string name="action_punch">Punch</string>
     <string name="action_follow_forum">Follow</string>
     <string name="action_unfollow_forum">Unfollow</string>

@@ -1,26 +1,19 @@
 package org.cryse.lkong.ui;
 
 import android.accounts.Account;
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.FrameLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.LKAuthObject;
@@ -35,41 +28,25 @@ import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.presenter.BrowseHistoryPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.BrowseHistoryAdapter;
-import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.view.BrowseHistoryView;
-import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
-import org.cryse.widget.persistentsearch.PersistentSearchView;
-import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
 
 import java.util.List;
 
 import javax.inject.Inject;
-
-import butterknife.Bind;
 
 public class BrowseHistoryFragment extends SimpleCollectionFragment<
         BrowseHistory,
         BrowseHistoryAdapter,
         BrowseHistoryPresenter> implements BrowseHistoryView<BrowseHistory> {
     private static final String LOG_TAG = BrowseHistoryFragment.class.getName();
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1023;
-    private static final String SEARCH_FRAGMENT_TAG = "search_fragment_tag";
 
     boolean mNeedRefresh = false;
     @Inject
     BrowseHistoryPresenter mPresenter;
-    @Bind(R.id.searchview)
-    PersistentSearchView mSearchView;
-    @Bind(R.id.view_search_tint)
-    View mSearchTintView;
-    @Bind(R.id.search_fragment_container)
-    FrameLayout mSearchContainer;
 
     protected MenuItem mChangeThemeMenuItem;
     private MenuItem mNotificationMenuItem;
-    private MenuItem mSearchMenuItem;
     private boolean mHasNotification = false;
 
     public static BrowseHistoryFragment newInstance(Bundle args) {
@@ -96,16 +73,14 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setUpSearchView();
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_favorites, menu);
+        inflater.inflate(R.menu.menu_browse_history, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mNotificationMenuItem = menu.findItem(R.id.action_open_notification);
-        mSearchMenuItem = menu.findItem(R.id.action_open_search);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -129,15 +104,9 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_open_search:
-                if (mSearchMenuItem != null) {
-                    View menuItemView = getView().findViewById(R.id.action_open_search);
-                    mSearchView.setStartPositionFromMenuItem(menuItemView, getView().getMeasuredWidth());
-                    mSearchView.openSearch();
-                    return true;
-                } else {
-                    return false;
-                }
+            case R.id.action_clear_browse_history:
+                mPresenter.clearBrowseHistory(mUserAccountManager.getAuthObject());
+                return true;
             case R.id.action_open_notification:
                 mNavigation.navigateToNotificationActivity(getActivity());
                 return true;
@@ -161,122 +130,6 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setActivityTitle();
-        if (getView() != null) {
-            getView().setFocusableInTouchMode(true);
-            getView().requestFocus();
-            getView().setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        //Toast.makeText(getContext(), "onBackPressed", Toast.LENGTH_SHORT).show();
-                        if (mSearchView.isSearching()) {
-                            mSearchView.closeSearch();
-                            return true;
-                        }
-                        return false;
-                    }
-                    return false;
-                }
-            });
-        }
-    }
-
-    public void setUpSearchView() {
-        VoiceRecognitionDelegate delegate = new DefaultVoiceRecognizerDelegate(this, VOICE_RECOGNITION_REQUEST_CODE);
-        if (delegate.isVoiceRecognitionAvailable()) {
-            mSearchView.setVoiceRecognitionDelegate(delegate);
-        }
-        mSearchTintView.setOnClickListener(v -> mSearchView.cancelEditing());
-        mSearchView.setSuggestionBuilder(new SuggestionsBuilder(getContext()));
-        mSearchView.setSearchListener(new PersistentSearchView.SearchListener() {
-
-            @Override
-            public void onSearchEditOpened() {
-                //Use this to tint the screen
-                mSearchTintView.setVisibility(View.VISIBLE);
-                mSearchTintView
-                        .animate()
-                        .alpha(1.0f)
-                        .setDuration(300)
-                        .setListener(new LayerEnablingAnimatorListener(mSearchTintView))
-                        .start();
-
-            }
-
-            @Override
-            public void onSearchEditClosed() {
-                mSearchTintView
-                        .animate()
-                        .alpha(0.0f)
-                        .setDuration(300)
-                        .setListener(new LayerEnablingAnimatorListener(mSearchTintView) {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                mSearchTintView.setVisibility(View.GONE);
-                            }
-                        })
-                        .start();
-            }
-
-            @Override
-            public boolean onSearchEditBackPressed() {
-                if (mSearchView.isEditing()) {
-                    mSearchView.cancelEditing();
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public void onSearchExit() {
-                SearchFragment searchFragment = (SearchFragment) getChildFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG);
-                if (searchFragment != null) {
-                    slideOutToButtom(mSearchContainer, true, () -> {
-                        //searchFragment::clearSearch
-                        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-                        fragmentTransaction.remove(searchFragment);
-                        fragmentTransaction.commit();
-                    });
-                } else {
-                    slideOutToButtom(mSearchContainer, true, null);
-                }
-            }
-
-            @Override
-            public void onSearchTermChanged(String term) {
-
-            }
-
-            @Override
-            public void onSearch(String string) {
-                SearchFragment searchFragment = (SearchFragment) getChildFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG);
-                if (searchFragment == null) {
-
-                    searchFragment = SearchFragment.newInstance("", (novelModel, position) -> {
-                        //mPresenter.showNovelDetail(novelModel);
-                    });
-                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-                    fragmentTransaction.add(R.id.search_fragment_container, searchFragment, SEARCH_FRAGMENT_TAG);
-                    fragmentTransaction.commit();
-                }
-                if (!mSearchContainer.isShown()) {
-                    final SearchFragment finalSearchFragment = searchFragment;
-                    slideInToTop(mSearchContainer, true, () -> {
-                        finalSearchFragment.search(string);
-                    });
-                } else {
-                    searchFragment.search(string);
-                }
-
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
     }
 
     @Override
@@ -310,7 +163,7 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_favorites;
+        return R.layout.fragment_browse_history;
     }
 
     @Override
@@ -400,47 +253,6 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
         }
     }
 
-    private void slideInToTop(View v, boolean animated, Runnable runOnAnimationEnd) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        v.setTranslationY(metrics.heightPixels);
-        v.setAlpha(0);
-        if (!v.isShown())
-            v.setVisibility(View.VISIBLE);
-        v.animate().
-                translationY(0).
-                alpha(1).
-                setDuration(animated ? 500 : 0).
-                setInterpolator(new AccelerateDecelerateInterpolator())
-                .setListener(new LayerEnablingAnimatorListener(v) {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if (runOnAnimationEnd != null)
-                            runOnAnimationEnd.run();
-                    }
-                });
-    }
-
-    private void slideOutToButtom(View v, boolean animated, Runnable runOnAnimationEnd) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        v.setTranslationY(0);
-        v.setAlpha(1);
-        v.animate().
-                translationY(metrics.heightPixels).
-                alpha(0).
-                setDuration(animated ? 300 : 0).
-                setInterpolator(new AccelerateInterpolator())
-                .setListener(new LayerEnablingAnimatorListener(v) {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        v.setVisibility(View.INVISIBLE);
-                        if (runOnAnimationEnd != null)
-                            runOnAnimationEnd.run();
-                    }
-                });
-    }
-
     private BroadcastReceiver mCheckNoticeCountDoneBroadcastReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             // update your views
@@ -449,4 +261,9 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
             abortBroadcast();
         }
     };
+
+    @Override
+    public void onClearBrowseHistory() {
+        loadInitialData();
+    }
 }

@@ -63,6 +63,27 @@ public class BrowseHistoryPresenter extends SimpleCollectionPresenter<BrowseHist
                 );
     }
 
+    public void clearBrowseHistory(LKAuthObject authObject) {
+        SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
+        mLoadDataSubscription = mLKongForumService.cleanBrowseHistory(authObject.getUserId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            Timber.d("BrowseHistoryPresenter::clearBrowseHistory() onNext().", LOG_TAG);
+                            if (mView != null) {
+                                mView.onClearBrowseHistory();
+                            }
+                        },
+                        error -> {
+                            Timber.e(error, "BrowseHistoryPresenter::clearBrowseHistory() onError().", LOG_TAG);
+                        },
+                        () -> {
+                            Timber.d("BrowseHistoryPresenter::clearBrowseHistory() onComplete().", LOG_TAG);
+                        }
+                );
+    }
+
     public void checkNoticeCountFromDatabase(long uid) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckNoticeCountSubscription);
         mCheckNoticeCountSubscription = mLKongForumService.checkNoticeCountFromDatabase(uid)

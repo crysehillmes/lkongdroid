@@ -291,14 +291,21 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
 
     @Override
     public void clearBrowserHistory(long uid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
+        BrowseHistorySelection selection = new BrowseHistorySelection();
         selection.userId(uid);
         selection.delete(mContentResolver);
     }
 
     @Override
+    public void removeBrowserHistory(long uid, long threadId) {
+        BrowseHistorySelection selection = new BrowseHistorySelection();
+        selection.threadId(uid).and().userId(uid);
+        selection.delete(mContentResolver);
+    }
+
+    @Override
     public void clearBrowserHistory() {
-        FollowedUserSelection selection = new FollowedUserSelection();
+        BrowseHistorySelection selection = new BrowseHistorySelection();
         selection.delete(mContentResolver);
     }
 

@@ -474,4 +474,16 @@ public class LKongForumService {
             }
         });
     }
+
+    public Observable<Void> cleanBrowseHistory(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.clearBrowserHistory(uid);
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
 }
