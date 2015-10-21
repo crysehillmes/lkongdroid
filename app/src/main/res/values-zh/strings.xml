@@ -29,6 +29,7 @@
     <string name="dialog_new_post_sending">正在发送…</string>
     <string name="dialog_post_list_choose_page">跳转至</string>
     <string name="drawer_item_favorites">我的收藏</string>
+    <string name="drawer_item_browse_history">浏览历史</string>
     <string name="drawer_item_notification">消息通知</string>
     <string name="drawer_item_forum_list">板块列表</string>
     <string name="drawer_item_settings">设置</string>
@@ -175,6 +176,7 @@
     <string name="toast_error_open_origin_image">图片加载失败</string>
     <string name="drawer_item_account_add">添加账户</string>
     <string name="action_open_search">搜索</string>
+    <string name="action_clear_browse_history">清除浏览记录</string>
     <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; 回复</string>
     <string name="hint_search_label">搜索</string>
     <string name="hint_search_hint">搜索位面，主题或用户</string>

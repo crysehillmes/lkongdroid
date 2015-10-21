@@ -1,5 +1,7 @@
 package org.cryse.lkong.presenter;
 
+import android.support.annotation.Nullable;
+
 import org.cryse.lkong.logic.LKongForumService;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -143,6 +145,46 @@ public class PostListPresenter implements BasePresenter<PostListView> {
                                 );
                             }
                             Timber.e(error, "PostListPresenter::ratePost() onError().", LOG_TAG);
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void saveBrowseHistory(LKAuthObject authObject,
+                                  long threadId,
+                                  String threadTitle,
+                                  @Nullable Long forumId,
+                                  @Nullable String forumTitle,
+                                  @Nullable Long postId,
+                                  long authorId,
+                                  String authorName,
+                                  long lastReadTime) {
+        SubscriptionUtils.checkAndUnsubscribe(mRatePostSubscription);
+        mRatePostSubscription = mLKongForumService.saveBrowseHistory(authObject.getUserId(),
+                threadId,
+                threadTitle,
+                forumId,
+                forumTitle,
+                postId,
+                authorId,
+                authorName,
+                lastReadTime
+        )
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                        },
+                        error -> {
+                            if (mView != null) {
+                                mView.showSnackbar(
+                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST,
+                                        SimpleSnackbarType.ERROR,
+                                        SimpleSnackbarType.LENGTH_SHORT
+                                );
+                            }
+                            Timber.e(error, "PostListPresenter::saveBrowseHistory() onError().", LOG_TAG);
                         },
                         () -> {
                         }

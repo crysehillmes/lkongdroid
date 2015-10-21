@@ -150,11 +150,12 @@ public class MainActivity extends AbstractThemeableActivity{
             return true;
         }).withCurrentProfileHiddenInList(true);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem[] drawerItems = new IDrawerItem[4];
+        IDrawerItem[] drawerItems = new IDrawerItem[5];
         drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
         drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
-        drawerItems[2] = new DividerDrawerItem();
-        drawerItems[3] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withSelectable(false);
+        drawerItems[2] = new PrimaryDrawerItem().withName(R.string.drawer_item_browse_history).withIcon(R.drawable.ic_drawer_browse_history).withIdentifier(1004);
+        drawerItems[3] = new DividerDrawerItem();
+        drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withSelectable(false);
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -239,6 +240,9 @@ public class MainActivity extends AbstractThemeableActivity{
                 break;
             case 1003:
                 navigateToFavoritesFragment(null);
+                break;
+            case 1004:
+                navigateToBrowseHistoryFragment(null);
                 break;
             case 1101:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
@@ -425,6 +429,11 @@ public class MainActivity extends AbstractThemeableActivity{
 
     public void navigateToFavoritesFragment(Bundle args) {
         Fragment fragment = FavoritesFragment.newInstance(args);
+        switchContentFragment(fragment, null);
+    }
+
+    public void navigateToBrowseHistoryFragment(Bundle args) {
+        Fragment fragment = BrowseHistoryFragment.newInstance(args);
         switchContentFragment(fragment, null);
     }
 

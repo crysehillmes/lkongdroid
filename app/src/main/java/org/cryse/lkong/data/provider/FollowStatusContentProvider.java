@@ -2,6 +2,7 @@ package org.cryse.lkong.data.provider;
 
 import android.content.UriMatcher;
 
+import org.cryse.lkong.data.provider.browsehistory.BrowseHistoryColumns;
 import org.cryse.lkong.data.provider.cacheobject.CacheObjectColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
@@ -21,6 +22,8 @@ public class FollowStatusContentProvider extends LKongContentProvider {
         URI_MATCHER.addURI(FOLLOW_STATUS_AUTHORITY, FollowedThreadColumns.TABLE_NAME + "/#", URI_TYPE_FOLLOWED_THREAD_ID);
         URI_MATCHER.addURI(FOLLOW_STATUS_AUTHORITY, FollowedUserColumns.TABLE_NAME, URI_TYPE_FOLLOWED_USER);
         URI_MATCHER.addURI(FOLLOW_STATUS_AUTHORITY, FollowedUserColumns.TABLE_NAME + "/#", URI_TYPE_FOLLOWED_USER_ID);
+        URI_MATCHER.addURI(FOLLOW_STATUS_AUTHORITY, BrowseHistoryColumns.TABLE_NAME, URI_TYPE_BROWSE_HISTORY);
+        URI_MATCHER.addURI(FOLLOW_STATUS_AUTHORITY, BrowseHistoryColumns.TABLE_NAME + "/#", URI_TYPE_BROWSE_HISTORY_ID);
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.util.Log;
 
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.data.provider.base.BaseContentProvider;
+import org.cryse.lkong.data.provider.browsehistory.BrowseHistoryColumns;
 import org.cryse.lkong.data.provider.cacheobject.CacheObjectColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedthread.FollowedThreadColumns;
@@ -40,6 +41,8 @@ public class LKongContentProvider extends BaseContentProvider {
     protected static final int URI_TYPE_FOLLOWED_USER = 6;
     protected static final int URI_TYPE_FOLLOWED_USER_ID = 7;
 
+    protected static final int URI_TYPE_BROWSE_HISTORY = 8;
+    protected static final int URI_TYPE_BROWSE_HISTORY_ID = 9;
 
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -53,6 +56,8 @@ public class LKongContentProvider extends BaseContentProvider {
         URI_MATCHER.addURI(AUTHORITY, FollowedThreadColumns.TABLE_NAME + "/#", URI_TYPE_FOLLOWED_THREAD_ID);
         URI_MATCHER.addURI(AUTHORITY, FollowedUserColumns.TABLE_NAME, URI_TYPE_FOLLOWED_USER);
         URI_MATCHER.addURI(AUTHORITY, FollowedUserColumns.TABLE_NAME + "/#", URI_TYPE_FOLLOWED_USER_ID);
+        URI_MATCHER.addURI(AUTHORITY, BrowseHistoryColumns.TABLE_NAME, URI_TYPE_BROWSE_HISTORY);
+        URI_MATCHER.addURI(AUTHORITY, BrowseHistoryColumns.TABLE_NAME + "/#", URI_TYPE_BROWSE_HISTORY_ID);
     }
 
     @Override
@@ -69,6 +74,11 @@ public class LKongContentProvider extends BaseContentProvider {
     public String getType(Uri uri) {
         int match = getUriMatcher().match(uri);
         switch (match) {
+            case URI_TYPE_BROWSE_HISTORY:
+                return TYPE_CURSOR_DIR + BrowseHistoryColumns.TABLE_NAME;
+            case URI_TYPE_BROWSE_HISTORY_ID:
+                return TYPE_CURSOR_ITEM + BrowseHistoryColumns.TABLE_NAME;
+
             case URI_TYPE_CACHE_OBJECT:
                 return TYPE_CURSOR_DIR + CacheObjectColumns.TABLE_NAME;
             case URI_TYPE_CACHE_OBJECT_ID:
@@ -131,6 +141,14 @@ public class LKongContentProvider extends BaseContentProvider {
         String id = null;
         int matchedId = getUriMatcher().match(uri);
         switch (matchedId) {
+            case URI_TYPE_BROWSE_HISTORY:
+            case URI_TYPE_BROWSE_HISTORY_ID:
+                res.table = BrowseHistoryColumns.TABLE_NAME;
+                res.idColumn = BrowseHistoryColumns._ID;
+                res.tablesWithJoins = BrowseHistoryColumns.TABLE_NAME;
+                res.orderBy = BrowseHistoryColumns.DEFAULT_ORDER;
+                break;
+
             case URI_TYPE_CACHE_OBJECT:
             case URI_TYPE_CACHE_OBJECT_ID:
                 res.table = CacheObjectColumns.TABLE_NAME;
@@ -168,6 +186,7 @@ public class LKongContentProvider extends BaseContentProvider {
         }
 
         switch (matchedId) {
+            case URI_TYPE_BROWSE_HISTORY_ID:
             case URI_TYPE_CACHE_OBJECT_ID:
             case URI_TYPE_FOLLOWED_FORUM_ID:
             case URI_TYPE_FOLLOWED_THREAD_ID:
