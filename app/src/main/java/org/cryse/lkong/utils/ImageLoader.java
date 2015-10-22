@@ -1,6 +1,7 @@
 package org.cryse.lkong.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 
@@ -28,7 +29,7 @@ public class ImageLoader {
         if(shouldDownloadAvatar(avatarLoadPolicy)) {
             Glide
                     .with(context)
-                    .load(avatarUrl)
+                    .load(toSmallAvatar(avatarUrl))
                     .error(R.drawable.ic_placeholder_avatar)
                     .placeholder(R.drawable.ic_placeholder_avatar)
                     .override(avatarSize, avatarSize)
@@ -56,7 +57,7 @@ public class ImageLoader {
         if(shouldDownloadAvatar(avatarLoadPolicy)) {
             Glide
                     .with(fragment)
-                    .load(avatarUrl)
+                    .load(toSmallAvatar(avatarUrl))
                     .error(R.drawable.ic_placeholder_avatar)
                     .placeholder(R.drawable.ic_placeholder_avatar)
                     .override(avatarSize, avatarSize)
@@ -98,5 +99,12 @@ public class ImageLoader {
             default:
                 return true;
         }
+    }
+
+    private static String toSmallAvatar(String url) {
+        if(!NetworkPolicyManager.sIsWifiConnected && NetworkPolicyManager.sNetworkType == ConnectivityManager.TYPE_MOBILE)
+            return url.replace("middle", "small");
+        else
+            return url;
     }
 }
