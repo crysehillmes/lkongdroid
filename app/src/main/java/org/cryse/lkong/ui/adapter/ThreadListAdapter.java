@@ -33,21 +33,17 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     private final String mTodayPrefix;
     private int mColorAccent;
     private final int mAvatarSize;
-    private String mPicassoTag;
+    private int mAvatarLoadPolicy;
 
     OnThreadItemClickListener mOnThreadItemClickListener;
     private CircleTransform mCircleTransform;
-    public ThreadListAdapter(Context context, List<ThreadModel> mItemList) {
-        this(context, mItemList, THREAD_PICASSO_TAG);
-    }
-
-    public ThreadListAdapter(Context context, List<ThreadModel> mItemList, String picassoTag) {
+    public ThreadListAdapter(Context context, List<ThreadModel> mItemList, int avatarLoadPolicy) {
         super(context, mItemList);
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        this.mPicassoTag = picassoTag;
         this.mCircleTransform = new CircleTransform(mContext);
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -73,7 +69,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                         mColorAccent,
                         mCircleTransform,
                         viewHolder,
-                        threadModel);
+                        threadModel,
+                        mAvatarLoadPolicy);
             }
         }
     }
@@ -85,7 +82,8 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                                        int colorAccent,
                                        CircleTransform circleTransform,
                                        ViewHolder viewHolder,
-                                       ThreadModel threadModel) {
+                                       ThreadModel threadModel,
+                                       int avatarLoadPolicy) {
         SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
         if(threadModel.isDigest()) {
             String digestIndicator = context.getString(R.string.indicator_thread_digest);
@@ -106,7 +104,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                 threadModel.getUserIcon(),
                 avatarSize,
                 circleTransform,
-                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                avatarLoadPolicy
         );
     }
 

@@ -36,7 +36,6 @@ public class LKongApplication extends Application {
     private UserAccountComponent mUserAccountComponent;
     private SendServiceComponet mSendServiceComponet;
     private UserAccountManager mUserAccountManager;
-    private NetworkPolicyManager mNetworkPolicyManager;
 
     @Override
     public void onCreate() {
@@ -49,7 +48,7 @@ public class LKongApplication extends Application {
             UmengUpdateAgent.update(this);
         }
         mUserAccountManager = new UserAccountManager();
-        mNetworkPolicyManager = new NetworkPolicyManager(this);
+        NetworkPolicyManager.checkNetworkState(this);
         initComponents();
         userAccountComponent().inject(mUserAccountManager);
         mUserAccountManager.init();
@@ -102,10 +101,6 @@ public class LKongApplication extends Application {
 
     public SendServiceComponet sendServiceComponet() {
         return mSendServiceComponet;
-    }
-
-    public NetworkPolicyManager getNetworkPolicyManager() {
-        return mNetworkPolicyManager;
     }
 
     /** A tree which logs important information for crash reporting. */

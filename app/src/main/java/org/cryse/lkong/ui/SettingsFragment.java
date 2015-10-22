@@ -51,6 +51,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         setUpThemeColorPreference();
         setImagePolicySummary();
+        setAvatarPolicySummary();
         setupVersionPrefs();
         setupFeedbackPreference();
 
@@ -98,6 +99,9 @@ public class SettingsFragment extends PreferenceFragment {
                 case PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY:
                     setImagePolicySummary();
                     break;
+                case PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY:
+                    setAvatarPolicySummary();
+                    break;
                 case PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION:
                     Boolean newIsAutoSync = sharedPreferences.getBoolean(key, true);
                     boolean isCheckNoticeAutoSync2 = ContentResolver.getSyncAutomatically(
@@ -131,6 +135,14 @@ public class SettingsFragment extends PreferenceFragment {
         String[] policyArray = getActivity().getResources().getStringArray(R.array.image_download_policy_arrays);
         Preference imageDownloadPolicyPrefs = findPreference(PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY);
         imageDownloadPolicyPrefs.setSummary(policyArray[imageDownloadPolicy]);
+    }
+
+    public void setAvatarPolicySummary() {
+        String avatarPolicyString = getPreferenceManager().getSharedPreferences().getString(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
+        int imageDownloadPolicy = Integer.valueOf(avatarPolicyString);
+        String[] policyArray = getActivity().getResources().getStringArray(R.array.image_download_policy_arrays);
+        Preference avatarDownloadPolicyPrefs = findPreference(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY);
+        avatarDownloadPolicyPrefs.setSummary(policyArray[imageDownloadPolicy]);
     }
 
     public void setupVersionPrefs() {

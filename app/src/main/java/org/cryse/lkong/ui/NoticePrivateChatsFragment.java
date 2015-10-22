@@ -5,12 +5,14 @@ import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.presenter.NoticePrivateChatsPresenter;
 import org.cryse.lkong.ui.adapter.NoticePrivateChatsCollectionAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Inject
     NoticePrivateChatsPresenter mPresenter;
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
 
     public static NoticePrivateChatsFragment newInstance(Bundle args) {
         NoticePrivateChatsFragment fragment = new NoticePrivateChatsFragment();
@@ -60,7 +65,7 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Override
     protected NoticePrivateChatsCollectionAdapter createAdapter(List<PrivateChatModel> itemList) {
-        return new NoticePrivateChatsCollectionAdapter(getActivity(), mItemList);
+        return new NoticePrivateChatsCollectionAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
     }
 
     @Override

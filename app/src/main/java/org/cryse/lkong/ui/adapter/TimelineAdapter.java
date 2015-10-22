@@ -23,7 +23,6 @@ import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.lkong.utils.ConnectionUtils;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
@@ -41,16 +40,16 @@ import butterknife.Bind;
 public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private static final String LOG_TAG = TimelineAdapter.class.getName();
     private final String mTodayPrefix;
-    private final String mImageTaskTag;
     private final int mAvatarSize;
     private CircleTransform mCircleTransform;
+    private int mAvatarLoadPolicy;
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-    public TimelineAdapter(Context context, List<TimelineModel> items, String imgTaskTag) {
+    public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy) {
         super(context, items);
-        mTodayPrefix = getString(R.string.datetime_today);
-        mImageTaskTag = imgTaskTag;
-        mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        mCircleTransform = new CircleTransform(context);
+        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        this.mCircleTransform = new CircleTransform(context);
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -71,11 +70,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                 bindTimelineItem(
                         getContext(),
                         mTodayPrefix,
-                        mImageTaskTag,
                         mAvatarSize,
                         mCircleTransform,
                         viewHolder,
-                        timelineModel
+                        timelineModel,
+                        mAvatarLoadPolicy
                 );
             }
         }
@@ -84,11 +83,11 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     public static void bindTimelineItem(
             Context context,
             String todayPrefix,
-            String imageTaskTag,
             int avatarSize,
             CircleTransform circleTransform,
             ViewHolder viewHolder,
-            TimelineModel timelineModel) {
+            TimelineModel timelineModel,
+            int avatarLoadPolicy) {
 
         SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
         String mainContent;
@@ -143,7 +142,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             mainContent = timelineModel.getMessage();
         }
 
-        SimpleImageGetter imageGetter = new SimpleImageGetter(context, ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS)
+        SimpleImageGetter imageGetter = new SimpleImageGetter(context, ImageLoader.IMAGE_LOAD_ALWAYS)
                 .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(context, R.dimen.text_size_body1))
                 .setPlaceHolder(R.drawable.placeholder_loading)
                 .setError(R.drawable.placeholder_error);

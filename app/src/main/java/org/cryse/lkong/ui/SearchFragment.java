@@ -13,6 +13,7 @@ import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
@@ -24,6 +25,7 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.SearchForumView;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -42,6 +44,11 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     SearchPresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
+
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
+
     @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
     SearchResultAdapter mSearchResultAdapter;
@@ -89,7 +96,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     }
 
     private void initRecyclerView() {
-        mSearchResultAdapter = new SearchResultAdapter(getContext());
+        mSearchResultAdapter = new SearchResultAdapter(getContext(), Integer.valueOf(mAvatarDownloadPolicy.get()));
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
         mSearchResultRecyclerView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {

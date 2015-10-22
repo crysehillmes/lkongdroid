@@ -1,36 +1,35 @@
-package org.cryse.lkong.application;
+package org.cryse.lkong.broadcast;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-public class NetworkPolicyManager {
-    public static int sNetworkType = ConnectivityManager.TYPE_MOBILE;
-    public static boolean sIsWifiConnected = false;
+import org.cryse.lkong.application.NetworkPolicyManager;
 
-    public static void checkNetworkState(Context context) {
+public class NetworkStateBroadCastReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null) { // connected to the internet
-            sNetworkType = activeNetwork.getType();
+            NetworkPolicyManager.sNetworkType = activeNetwork.getType();
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
-                sIsWifiConnected = activeNetwork.isConnected() && activeNetwork.isAvailable();
+                NetworkPolicyManager.sIsWifiConnected = activeNetwork.isConnected() && activeNetwork.isAvailable();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to the mobile provider's data plan
-                sIsWifiConnected = false;
+                NetworkPolicyManager.sIsWifiConnected = false;
             } else {
                 // connected to the mobile provider's data plan
-                sIsWifiConnected = false;
+                NetworkPolicyManager.sIsWifiConnected = false;
             }
         } else {
             // not connected to the internet
-            sNetworkType = -1;
-            sIsWifiConnected = false;
+            NetworkPolicyManager.sNetworkType = -1;
+            NetworkPolicyManager.sIsWifiConnected = false;
         }
-    }
-
-    public static boolean isWifiAvailable() {
-        return sNetworkType == ConnectivityManager.TYPE_WIFI && sIsWifiConnected;
     }
 }

@@ -32,6 +32,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private final int mAvatarSize;
+    private int mAvatarLoadPolicy;
     public void setDataSet(SearchDataSet searchDataSet) {
         this.clear();
         if(searchDataSet != null) {
@@ -46,11 +47,12 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         }
     }
 
-    public SearchResultAdapter(Context context) {
+    public SearchResultAdapter(Context context, int avatarLoadPolicy) {
         super(context, new ArrayList<AbstractSearchResult>());
         this.mCircleTransform = new CircleTransform(context);
-        mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -110,7 +112,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
                 item.getAvatarUrl(),
                 mAvatarSize,
                 mCircleTransform,
-                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                mAvatarLoadPolicy
         );
     }
 

@@ -34,13 +34,15 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
     private final CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private final int mAvatarSize;
+    private int mAvatarLoadPolicy;
 
-    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList) {
+    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList, int avatarLoadPolicy) {
         super(parentFragment.getContext(), itemList);
         this.mParentFragment = parentFragment;
         this.mTodayPrefix = getContext().getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(parentFragment.getContext());
         this.mCircleTransform = new CircleTransform(getContext());
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
                         model.getAvatarUrl(),
                         mAvatarSize,
                         mCircleTransform,
-                        ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                        mAvatarLoadPolicy
                 );
             }
         }

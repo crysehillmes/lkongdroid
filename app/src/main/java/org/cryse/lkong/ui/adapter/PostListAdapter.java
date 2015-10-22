@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.PostModel;
 import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
@@ -30,22 +29,28 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
     private long mUserId;
     private int mImageDownloadPolicy;
+    private int mAvatarDownloadPolicy;
     private final CircleTransform mCircleTransform;
     private final int mAvatarSize;
     private boolean mShouldShowImages;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy) {
+    public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy, int avatarDownloadPolicy) {
         super(context, mItemList);
         mUserId = userId;
         mImageDownloadPolicy = imageDownloadPolicy;
+        mAvatarDownloadPolicy = avatarDownloadPolicy;
         mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
+        mShouldShowImages = ImageLoader.shouldDownloadImage(mImageDownloadPolicy);
         mCircleTransform = new CircleTransform(context);
     }
 
     public void setImageDownloadPolicy(int imageDownloadPolicy) {
         mImageDownloadPolicy = imageDownloadPolicy;
-        mShouldShowImages = LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy);
+        mShouldShowImages = ImageLoader.shouldDownloadImage(mImageDownloadPolicy);
+    }
+
+    public void setAvatarDownloadPolicy(int avatarDownloadPolicy) {
+        mAvatarDownloadPolicy = avatarDownloadPolicy;
     }
 
     public void setOnItemButtonClickListener(OnItemButtonClickListener onItemButtonClickListener) {
@@ -103,7 +108,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     postModel.getAuthorAvatar(),
                     mAvatarSize,
                     mCircleTransform,
-                    ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                    mAvatarDownloadPolicy
             );
         }
 

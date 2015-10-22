@@ -23,6 +23,7 @@ import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
@@ -37,6 +38,7 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,9 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
 
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -112,7 +117,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
         mThreadCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new ThreadListAdapter(this, mItemList);
+        mCollectionAdapter = new ThreadListAdapter(this, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mThreadCollectionView.setAdapter(mCollectionAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));

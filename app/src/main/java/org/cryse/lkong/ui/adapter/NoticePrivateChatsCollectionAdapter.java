@@ -25,11 +25,13 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private final int mAvatarSize;
-    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items) {
+    private int mAvatarLoadPolicy;
+    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items, int avatarLoadPolicy) {
         super(context, items);
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(getContext());
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
                         model.getTargetUserAvatar(),
                         mAvatarSize,
                         mCircleTransform,
-                        ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                        mAvatarLoadPolicy
                 );
             }
         }

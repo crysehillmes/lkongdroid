@@ -23,6 +23,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.RequestPointerType;
@@ -35,6 +36,7 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.PrivateChatView;
+import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -52,6 +54,9 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     PrivateMessagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.fragment_private_chat_ptrrecyclerview_messages)
@@ -110,7 +115,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     }
 
     private void setUpRecyclerView() {
-        mCollectionAdapter = new PrivateMessagesAdapter(this, mItemList);
+        mCollectionAdapter = new PrivateMessagesAdapter(this, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mRecyclerView.setMode(PullToRefreshBase.Mode.BOTH);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);

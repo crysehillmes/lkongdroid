@@ -93,6 +93,7 @@
     <string name="settings_item_about_title">关于</string>
 
     <string name="settings_item_image_download_policy_title">图片加载策略</string>
+    <string name="settings_item_avatar_download_policy_title">头像加载策略</string>
     <!-- About -->
     <string name="settings_about_activity_title">关于</string>
     <string name="settings_category_author_title">关于</string>

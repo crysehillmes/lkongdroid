@@ -72,6 +72,13 @@
             android:entries="@array/image_download_policy_arrays"
             android:entryValues="@array/image_download_policy_values_arrays"
             android:title="@string/settings_item_image_download_policy_title" />
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            android:key="prefs_avatar_download_policy"
+            android:defaultValue="0"
+            android:dialogTitle="@string/settings_item_avatar_download_policy_title"
+            android:entries="@array/image_download_policy_arrays"
+            android:entryValues="@array/image_download_policy_values_arrays"
+            android:title="@string/settings_item_avatar_download_policy_title" />
         <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
             android:key="prefs_post_extra_tail_text"
             android:title="@string/settings_item_post_extra_tail_text_title"
