@@ -20,10 +20,13 @@ import timber.log.Timber;
 
 public class ForumListRequest extends AbstractHttpRequest<List<ForumModel>> {
     private static final String LOG_TAG = ForumListRequest.class.getSimpleName();
+    private static final int FORUM_DETAIL_CACHE_TIME = 60*10;
+    private static final int FORUM_LIST_CACHE_TIME = 60*60*24;
     @Override
     protected Request buildRequest() {
         return new Request.Builder()
-                .addHeader("Accept-Encoding", "gzip")
+                .addHeader(ACCEPT_ENCODING, ACCEPT_ENCODING_GZIP)
+                .addHeader(CACHE_CONTROL, CACHE_CONTROL_MAX_AGE + FORUM_LIST_CACHE_TIME)
                 .url(LKongWebConstants.LKONG_FORUM_LIST_REQUEST_URL)
                 .build();
     }
@@ -44,7 +47,8 @@ public class ForumListRequest extends AbstractHttpRequest<List<ForumModel>> {
 
             try {
                 Request itemInfoRequest = new Request.Builder()
-                        .addHeader("Accept-Encoding", "gzip")
+                        .addHeader(ACCEPT_ENCODING, ACCEPT_ENCODING_GZIP)
+                        .addHeader(CACHE_CONTROL, CACHE_CONTROL_MAX_AGE + FORUM_DETAIL_CACHE_TIME)
                         .url(String.format(LKongWebConstants.LKONG_FORUM_CONFIG_REQUEST_URL, item.getFid()))
                         .build();
 
