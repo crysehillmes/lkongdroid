@@ -83,6 +83,7 @@
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
+    <string name="format_post_date_and_rate">%1$s · [ %2$d rates ]</string>
     <string name="format_active_points">Active Points: %1$d</string>
     <string name="format_dragon_money">Dragon Money: %1$d</string>
     <string name="format_dragon_crystal">Dragon Crystal: %1$d</string>
@@ -142,6 +143,7 @@
     <string name="button_reply">Reply</string>
     <string name="button_share">Share</string>
     <string name="button_rate">Rate</string>
+    <string name="button_rate_log">Rate Log</string>
     <string name="button_edit">Edit</string>
 
     <string name="card_title_sign_in">Sign In</string>

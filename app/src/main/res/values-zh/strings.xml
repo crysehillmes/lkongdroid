@@ -22,6 +22,7 @@
     <string name="action_save_image">保存图片</string>
     <string name="activity_title_post_list">查看主题</string>
     <string name="button_rate">评分</string>
+    <string name="button_rate_log">评分记录</string>
     <string name="button_reply">回复</string>
     <string name="button_share">分享</string>
     <string name="datetime_today">今天</string>
@@ -201,6 +202,7 @@
     </string-array>
     <string name="format_punchday_count">已签到 %1$d 天</string>
     <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>
+    <string name="format_post_date_and_rate">%1$s · [ %2$d 评分 ]</string>
     <string name="dialog_exit_new_post_title">要舍弃这条信息吗？</string>
     <string name="dialog_exit_confirm">确认</string>
     <string name="dialog_exit_discard">舍弃</string>

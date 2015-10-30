@@ -104,17 +104,11 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         final int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         final int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        int childHeight = px_height_68 - px_margin_16 * 2;
-        int childLeft = this.getPaddingLeft();
-        int childRight = widthSize - this.getPaddingRight();
-        int childWidth = childRight - childLeft;
-
         int childCount = getChildCount();
         for (int i = 0; i < childCount; ++i) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                measureChild(child, MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
-                        MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
+                measureChild(child, widthMeasureSpec, heightMeasureSpec);
             }
         }
         int height = getDesiredHeight();
@@ -176,7 +170,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     private int getDesiredHeight() {
-        return px_margin_72 + px_height_68;
+        return px_margin_72 + px_margin_16;
     }
 
 
@@ -218,6 +212,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                 }
             });
         }
+        requestLayout();
     }
 
     public void setOrdinal(CharSequence ordinal) {
