@@ -1155,6 +1155,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
         @Override
+        public void onThreadByPostId(long postId) {
+            mTargetPostId = postId;
+            getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
+        }
+
+        @Override
         public void onThreadByPostId(long threadId, long postId) {
             if(threadId == mThreadId) {
                 mTargetPostId = postId;

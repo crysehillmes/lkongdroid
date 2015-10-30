@@ -36,6 +36,11 @@ public class UrlSchemaDispatcherActivity extends Activity {
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
         @Override
+        public void onThreadByPostId(long postId) {
+            mNavigation.openActivityForPostListByPostId(UrlSchemaDispatcherActivity.this, postId);
+        }
+
+        @Override
         public void onThreadByPostId(long threadId, long postId) {
             mNavigation.openActivityForPostListByPostId(UrlSchemaDispatcherActivity.this, postId);
         }
