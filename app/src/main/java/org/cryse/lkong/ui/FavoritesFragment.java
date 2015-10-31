@@ -38,7 +38,7 @@ import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
+import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.view.FavoritesView;
 import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;

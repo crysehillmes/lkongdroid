@@ -96,6 +96,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 public class PostListActivity extends AbstractThemeableActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
@@ -137,6 +138,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     PagerControl mFooterPagerControl;
     @Bind(R.id.loading_progressbar)
     ProgressBar mProgressBar;
+    @Bind(R.id.fast_scroller)
+    VerticalRecyclerViewFastScroller mFastScroller;
 
     View mTopPaddingHeaderView;
     View mBottomPaddingFooterView;
@@ -204,6 +207,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 Integer.valueOf(mAvatarDownloadPolicy.get())
         );
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
+        mFastScroller.setRecyclerView(mPostCollectionView.getRefreshableView());
+        mPostCollectionView.getRefreshableView().addOnScrollListener(mFastScroller.getOnScrollListener());
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
         // ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));

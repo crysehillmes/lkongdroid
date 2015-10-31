@@ -1,4 +1,4 @@
-package org.cryse.lkong.utils.animation;
+package org.cryse.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
