@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_rate_log"
+        android:title="@string/button_rate_log"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_rate"
+        android:title="@string/button_rate"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/button_share"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/button_edit"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_reply"
+        android:title="@string/button_reply"
+        app:showAsAction="never" />
+</menu>

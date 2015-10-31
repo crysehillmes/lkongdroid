@@ -18,7 +18,10 @@ import org.cryse.lkong.event.NewPostDoneEvent;
 import org.cryse.lkong.event.NewThreadDoneEvent;
 import org.cryse.lkong.event.PostErrorEvent;
 import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.logic.request.EditPostRequest;
+import org.cryse.lkong.logic.request.NewReplyRequest;
+import org.cryse.lkong.logic.request.NewThreadRequest;
+import org.cryse.lkong.logic.request.UploadImageRequest;
 import org.cryse.lkong.logic.restservice.exception.UploadImageException;
 import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.model.NewPostResult;
@@ -38,8 +41,6 @@ import javax.inject.Inject;
 
 public class SendPostService extends Service {
     private static final String LOG_TAG = SendPostService.class.getName();
-    @Inject
-    LKongRestService mLKRestService;
 
     RxEventBus mEventBus = RxEventBus.getInstance();
 
@@ -125,7 +126,8 @@ public class SendPostService extends Service {
         String replaceResult;
         try {
             replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
-            postResult = mLKRestService.newPostReply(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
+            NewReplyRequest request = new NewReplyRequest(task.getAuthObject(), task.getTid(), task.getPid(), replaceResult);
+            postResult = request.execute();
             if(postResult != null && postResult.isSuccess()) {
                 mEventBus.sendEvent(new NewPostDoneEvent(postResult));
             } else {
@@ -165,7 +167,8 @@ public class SendPostService extends Service {
         String replaceResult = null;
         try {
             replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
-            threadResult = mLKRestService.newPostThread(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
+            NewThreadRequest request = new NewThreadRequest(task.getAuthObject(), task.getTitle(), task.getFid(), replaceResult, task.isFollow());
+            threadResult = request.execute();
             if(threadResult != null && threadResult.isSuccess()) {
                 mEventBus.sendEvent(new NewThreadDoneEvent(threadResult));
             } else {
@@ -203,7 +206,8 @@ public class SendPostService extends Service {
         EditPostResult editPostResult = null;
         try {
             String replaceResult = preprocessContent(task.getAuthObject(), task.getContent());
-            editPostResult = mLKRestService.editPost(task.getAuthObject(), task.getTid(), task.getPid(), task.getAction(), task.getTitle(), replaceResult);
+            EditPostRequest request = new EditPostRequest(task.getAuthObject(), task.getTid(), task.getPid(), task.getAction(), task.getTitle(), replaceResult);
+            editPostResult = request.execute();
             if(editPostResult != null && editPostResult.isSuccess()) {
                 mEventBus.sendEvent(new EditPostDoneEvent(editPostResult));
             } else{
@@ -229,7 +233,8 @@ public class SendPostService extends Service {
         String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
         ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
         contentProcessor.setUploadImageCallback(path -> {
-            UploadImageResult result = mLKRestService.uploadImageToLKong(authObject, path);
+            UploadImageRequest request = new UploadImageRequest(authObject, path);
+            UploadImageResult result = request.execute();
             if(result.isSuccess()) {
                 return result.getImageUrl();
             } else {

@@ -1136,9 +1136,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mTodayPrefix,
                 getResources().getConfiguration().locale
         );
+        String secondaryInfo = null;
+        if(postModel.getRateScore() > 0) {
+            secondaryInfo = getString(R.string.format_post_date_and_rate, datelineString, postModel.getRateScore());
+        } else {
+            secondaryInfo = datelineString;
+        }
+
+
         int start = autherNameSpannable.length();
-        int end = autherNameSpannable.length() + datelineString.length();
-        autherNameSpannable.append(datelineString);
+        int end = autherNameSpannable.length() + secondaryInfo.length();
+        autherNameSpannable.append(secondaryInfo);
         autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)mDatelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -1154,6 +1162,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
+        @Override
+        public void onThreadByPostId(long postId) {
+            mTargetPostId = postId;
+            getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
+        }
+
         @Override
         public void onThreadByPostId(long threadId, long postId) {
             if(threadId == mThreadId) {

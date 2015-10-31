@@ -9,7 +9,6 @@ import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.impl.LKongDatabaseSqliteImpl;
 import org.cryse.lkong.logic.LKongForumService;
-import org.cryse.lkong.logic.restservice.LKongRestService;
 
 import javax.inject.Singleton;
 
@@ -19,11 +18,6 @@ import dagger.Provides;
 @Module(includes = { ContextModule.class })
 public class LKongModule {
 
-    @Provides
-    public LKongRestService provideLKongRestService(@ApplicationContext Context context) {
-        return new LKongRestService(context);
-    }
-
     @Singleton
     @Provides
     public LKongDatabase provideLKongDatabase(@ApplicationContext Context context) {
@@ -32,8 +26,8 @@ public class LKongModule {
 
     @Singleton
     @Provides
-    public LKongForumService provideLKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
-        return new LKongForumService(lKongRestService, lKongDatabase);
+    public LKongForumService provideLKongForumService(LKongDatabase lKongDatabase) {
+        return new LKongForumService(lKongDatabase);
     }
 
     @Singleton

@@ -195,14 +195,23 @@ public class ModelConverter {
                     postModel.setRateLog(new ArrayList<PostModel.PostRate>());
                 }
 
-                postModel.setMessage(
-                        HtmlCleaner.fixTagBalanceAndRemoveEmpty(
-                                item.getMessage(),
-                                Whitelist.basicWithImages()
-                                        .addTags("font")
-                                        .addAttributes(":all", "style", "color")
-                        )
+                Document cleanedHtmlDoc = HtmlCleaner.fixTagBalanceAndRemoveEmpty(
+                        item.getMessage(),
+                        Whitelist.basicWithImages()
+                                .addTags("font")
+                                .addAttributes(":all", "style", "color")
                 );
+                for (Element hyperlink: cleanedHtmlDoc.select("blockquote a")) {
+                    if(hyperlink.hasAttr("href")) {
+                        String href = hyperlink.attr("href");
+                        if(href.contains("pid=") && hyperlink.childNodeSize() > 0 &&
+                                hyperlink.child(0).tagName().equalsIgnoreCase("i")) {
+                            hyperlink.child(0).html("\uD83D\uDC46");
+                            hyperlink.child(0).unwrap();
+                        }
+                    }
+                }
+                postModel.setMessage(cleanedHtmlDoc.html());
                 itemList.add(postModel);
             }
         }

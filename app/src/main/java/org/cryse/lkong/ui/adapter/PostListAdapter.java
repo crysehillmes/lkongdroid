@@ -1,7 +1,10 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -17,6 +20,7 @@ import org.cryse.lkong.widget.PostItemView;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -65,7 +69,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_post, parent, false);
-        return new ViewHolder(v, mOnItemButtonClickListener, mOnSpanClickListener);
+        return new ViewHolder(this, v, mOnItemButtonClickListener, mOnSpanClickListener);
     }
 
     @Override
@@ -83,25 +87,13 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
             viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
             viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
-            if (postModel.getRateScore() != 0) {
+            /*if (postModel.getRateScore() != 0) {
                 viewHolder.mRateTextView.setVisibility(View.VISIBLE);
                 viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
             } else {
                 viewHolder.mRateTextView.setVisibility(View.INVISIBLE);
                 viewHolder.mRateTextView.setText("");
-            }
-
-            if (postModel.getAuthorId() == mUserId) {
-                viewHolder.mEditButton.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-            }
-
-            if (postModel.getAuthorId() == mUserId) {
-                viewHolder.mEditButton.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-            }
+            }*/
             ImageLoader.loadAvatar(
                     getContext(),
                     viewHolder.mAvatarImageView,
@@ -121,59 +113,87 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         }
     }
 
+    void buildPopup(final ViewHolder viewHolder) {
+        int position = viewHolder.getAdapterPosition();
+        int headerCount = getHeaderViewCount();
+        if (position >= headerCount && position < headerCount + mObjectList.getItemCount()) {
+            PostModel postModel = getItem(position - headerCount);
+            PopupMenu p = new PopupMenu(mContext, viewHolder.mPopupButton);
+            p.inflate(R.menu.menu_popup_post_item);
+            final Menu menu = p.getMenu();
+            if (postModel.getAuthorId() == mUserId) {
+                menu.findItem(R.id.action_edit).setVisible(true);
+            } else {
+                menu.findItem(R.id.action_edit).setVisible(false);
+            }
+
+            if (postModel.getRateScore() != 0) {
+                menu.findItem(R.id.action_rate_log).setVisible(true);
+            } else {
+                menu.findItem(R.id.action_rate_log).setVisible(false);
+            }
+
+            p.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+                View menuButton = viewHolder.mPopupButton;
+                if (mOnItemButtonClickListener != null) {
+                    switch (item.getItemId()) {
+                        case R.id.action_rate:
+                            mOnItemButtonClickListener.onRateClick(menuButton, position);
+                            break;
+                        case R.id.action_rate_log:
+                            mOnItemButtonClickListener.onRateTextClick(menuButton, position);
+                            break;
+                        case R.id.action_edit:
+                            mOnItemButtonClickListener.onEditClick(menuButton, position);
+                            break;
+                        case R.id.action_share:
+                            mOnItemButtonClickListener.onShareClick(menuButton, position);
+                            break;
+                        case R.id.action_reply:
+                            mOnItemButtonClickListener.onReplyClick(menuButton, position);
+                            break;
+                    }
+                }
+                return true;
+            });
+
+            // Pop up!
+            p.show();
+        }
+    }
+
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
+        WeakReference<PostListAdapter> mAdapter;
         @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
         @Bind(R.id.recyclerview_item_post_imageview_avatar)
         ImageView mAvatarImageView;
-        @Bind(R.id.recyclerview_item_post_button_rate)
-        ImageButton mRateButton;
-        @Bind(R.id.recyclerview_item_post_button_share)
-        ImageButton mShareButton;
-        @Bind(R.id.recyclerview_item_post_textview_rate)
-        TextView mRateTextView;
-        @Bind(R.id.recyclerview_item_post_button_edit)
-        ImageButton mEditButton;
-        @Bind(R.id.recyclerview_item_post_button_replay)
-        ImageButton mReplyButton;
+        @Bind(R.id.recyclerview_item_post_button_overflow)
+        ImageButton mPopupButton;
 
         OnItemButtonClickListener mOnItemButtonClickListener;
-        public ViewHolder(View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
+        public ViewHolder(PostListAdapter adapter, View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
             super(itemView);
+            mAdapter = new WeakReference<PostListAdapter>(adapter);
             ButterKnife.bind(this, itemView);
             mOnItemButtonClickListener = onItemReplyClickListener;
             View.OnClickListener clickListener = view -> {
                 int adapterPosition = getAdapterPosition();
                 if(mOnItemButtonClickListener != null) {
                     switch (view.getId()) {
-                        case R.id.recyclerview_item_post_button_replay:
-                            mOnItemButtonClickListener.onReplyClick(view, adapterPosition);
-                            break;
-                        case R.id.recyclerview_item_post_button_rate:
-                            mOnItemButtonClickListener.onRateClick(view, adapterPosition);
-                            break;
-                        case R.id.recyclerview_item_post_textview_rate:
-                            mOnItemButtonClickListener.onRateTextClick(view, adapterPosition);
-                            break;
-                        case R.id.recyclerview_item_post_button_edit:
-                            mOnItemButtonClickListener.onEditClick(view, adapterPosition);
-                            break;
-                        case R.id.recyclerview_item_post_button_share:
-                            mOnItemButtonClickListener.onShareClick(view, adapterPosition);
-                            break;
                         case R.id.recyclerview_item_post_imageview_avatar:
                             mOnItemButtonClickListener.onProfileImageClick(view, adapterPosition);
                             break;
                     }
                 }
             };
-            mReplyButton.setOnClickListener(clickListener);
-            mRateButton.setOnClickListener(clickListener);
-            mEditButton.setOnClickListener(clickListener);
             mAvatarImageView.setOnClickListener(clickListener);
-            mRateTextView.setOnClickListener(clickListener);
-            mShareButton.setOnClickListener(clickListener);
+            mPopupButton.setOnClickListener(view -> {
+                if(mAdapter != null)
+                    mAdapter.get().buildPopup(this);
+            });
             if(mOnSpanClickListener != null)
                 mPostItemView.setOnSpanClickListener(mOnSpanClickListener);
             mPostItemView.setLongClickable(true);
