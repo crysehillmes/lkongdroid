@@ -206,7 +206,7 @@ public class ModelConverter {
                         String href = hyperlink.attr("href");
                         if(href.contains("pid=") && hyperlink.childNodeSize() > 0 &&
                                 hyperlink.child(0).tagName().equalsIgnoreCase("i")) {
-                            hyperlink.child(0).html("\uD83D\uDC46");
+                            hyperlink.child(0).html("\u2191\u2191\u2191\u2191");
                             hyperlink.child(0).unwrap();
                         }
                     }
