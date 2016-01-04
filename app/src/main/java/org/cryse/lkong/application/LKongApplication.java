@@ -2,7 +2,6 @@ package org.cryse.lkong.application;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -40,7 +39,6 @@ public class LKongApplication extends Application {
 
     @Override
     public void onCreate() {
-        MultiDex.install(this);
         super.onCreate();
         Timber.plant(new CrashReportingTree());
         AnalyticsUtils.init(this, getString(R.string.UMENG_APPKEY_VALUE));
