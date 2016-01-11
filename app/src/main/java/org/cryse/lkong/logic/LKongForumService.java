@@ -1,22 +1,33 @@
 package org.cryse.lkong.logic;
 
+import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.logic.request.AddOrRemoveFavoriteRequest;
 import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
+import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
+import org.cryse.lkong.logic.request.GetFavoritesRequest;
+import org.cryse.lkong.logic.request.GetNoticeRateLogRequest;
+import org.cryse.lkong.logic.request.GetNoticeRequest;
 import org.cryse.lkong.logic.request.GetPrivateChatListRequest;
 import org.cryse.lkong.logic.request.GetPrivateMessagesRequest;
 import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
+import org.cryse.lkong.logic.request.GetTimelineRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
+import org.cryse.lkong.logic.request.GetUserThreadsRequest;
+import org.cryse.lkong.logic.request.GetUserTimelineRequest;
+import org.cryse.lkong.logic.request.PunchRequest;
+import org.cryse.lkong.logic.request.RatePostRequest;
 import org.cryse.lkong.logic.request.SearchRequest;
 import org.cryse.lkong.logic.request.SendNewPrivateMessageRequest;
-import org.cryse.lkong.logic.restservice.LKongRestService;
+import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
@@ -46,14 +57,12 @@ import timber.log.Timber;
 
 public class LKongForumService {
     public static final String LOG_TAG = LKongForumService.class.getName();
-    LKongRestService mLKongRestService;
     LKongDatabase mLKongDatabase;
     RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Inject
     @Singleton
-    public LKongForumService(LKongRestService lKongRestService, LKongDatabase lKongDatabase) {
-        this.mLKongRestService = lKongRestService;
+    public LKongForumService(LKongDatabase lKongDatabase) {
         this.mLKongDatabase = lKongDatabase;
         try {
             this.mLKongDatabase.initialize();
@@ -138,7 +147,8 @@ public class LKongForumService {
     public Observable<List<ThreadModel>> getFavorite(LKAuthObject authObject, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<ThreadModel> forumModelList = mLKongRestService.getFavorites(authObject, start);
+                GetFavoritesRequest request = new GetFavoritesRequest(authObject, start);
+                List<ThreadModel> forumModelList = request.execute();
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
             } catch (Exception e) {
@@ -150,7 +160,8 @@ public class LKongForumService {
     public Observable<Boolean> addOrRemoveFavorite(LKAuthObject authObject, long tid, boolean remove) {
         return Observable.create(subscriber -> {
             try {
-                Boolean result = mLKongRestService.addOrRemoveFavorite(authObject, tid, remove);
+                AddOrRemoveFavoriteRequest request = new AddOrRemoveFavoriteRequest(authObject, tid, remove);
+                Boolean result = request.execute();
                 mEventBus.sendEvent(new FavoritesChangedEvent());
                 subscriber.onNext(result);
                 subscriber.onCompleted();
@@ -163,7 +174,8 @@ public class LKongForumService {
     public Observable<List<TimelineModel>> getTimeline(LKAuthObject authObject, long start, int listType, boolean onlyThread) {
         return Observable.create(subscriber -> {
             try {
-                List<TimelineModel> result = mLKongRestService.getTimeline(authObject, start, listType, onlyThread);
+                GetTimelineRequest request = new GetTimelineRequest(authObject, start, listType, onlyThread);
+                List<TimelineModel> result = request.execute();
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -175,7 +187,8 @@ public class LKongForumService {
     public Observable<List<NoticeModel>> getNotice(LKAuthObject authObject, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<NoticeModel> result = mLKongRestService.getNotice(authObject, start);
+                GetNoticeRequest request = new GetNoticeRequest(authObject, start);
+                List<NoticeModel> result = request.execute();
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -187,7 +200,8 @@ public class LKongForumService {
     public Observable<List<NoticeRateModel>> getNoticeRateLog(LKAuthObject authObject, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<NoticeRateModel> result = mLKongRestService.getNoticeRateLog(authObject, start);
+                GetNoticeRateLogRequest request = new GetNoticeRateLogRequest(authObject, start);
+                List<NoticeRateModel> result = request.execute();
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -212,7 +226,8 @@ public class LKongForumService {
     public Observable<DataItemLocationModel> getPostIdLocation(LKAuthObject authObject, long postId) {
         return Observable.create(subscriber -> {
             try {
-                DataItemLocationModel locationModel = mLKongRestService.getDataItemLocation(authObject, String.format("post_%d", postId));
+                GetDataItemLocationRequest request = new GetDataItemLocationRequest(authObject, String.format("post_%d", postId));
+                DataItemLocationModel locationModel = request.execute();
                 subscriber.onNext(locationModel);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -221,10 +236,11 @@ public class LKongForumService {
         });
     }
 
-    public Observable<PostModel.PostRate> ratePost(LKAuthObject authObject, long postId, int score, String reaseon) {
+    public Observable<PostModel.PostRate> ratePost(LKAuthObject authObject, long postId, int score, String reason) {
         return Observable.create(subscriber -> {
             try {
-                PostModel.PostRate postRate = mLKongRestService.ratePost(authObject, postId, score, reaseon);
+                RatePostRequest request = new RatePostRequest(authObject, postId, score, reason);
+                PostModel.PostRate postRate = request.execute();
                 subscriber.onNext(postRate);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -249,7 +265,8 @@ public class LKongForumService {
     public Observable<List<TimelineModel>> getUserAll(LKAuthObject authObject, long uid, long start) {
         return Observable.create(subscriber -> {
             try {
-                List<TimelineModel> dataSet = mLKongRestService.getUserAll(authObject, uid, start);
+                GetUserTimelineRequest request = new GetUserTimelineRequest(authObject, uid, start);
+                List<TimelineModel> dataSet = request.execute();
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -261,7 +278,8 @@ public class LKongForumService {
     public Observable<List<ThreadModel>> getUserThreads(LKAuthObject authObject, long uid, long start, boolean isDigest) {
         return Observable.create(subscriber -> {
             try {
-                List<ThreadModel> dataSet = mLKongRestService.getUserThreads(authObject, uid, start, isDigest);
+                GetUserThreadsRequest request = new GetUserThreadsRequest(authObject, uid, start, isDigest);
+                List<ThreadModel> dataSet = request.execute();
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -279,7 +297,8 @@ public class LKongForumService {
                         subscriber.onNext(result);
                         return;
                     } else {
-                        result = mLKongRestService.punch(authObject);
+                        PunchRequest request = new PunchRequest(authObject);
+                        result = request.execute();
                         if(result != null)
                             mLKongDatabase.cachePunchResult(result);
                     }
@@ -424,6 +443,60 @@ public class LKongForumService {
                 SendNewPrivateMessageRequest request = new SendNewPrivateMessageRequest(authObject, targetUserId, targetUserName, message);
                 SendNewPrivateMessageResult result = request.execute();
                 subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Void> saveBrowseHistory(long uid,
+                                              long threadId,
+                                              String threadTitle,
+                                              @Nullable Long forumId,
+                                              @Nullable String forumTitle,
+                                              @Nullable Long postId,
+                                              long authorId,
+                                              String authorName,
+                                              long lastReadTime) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.saveBrowseHistory(
+                        uid,
+                        threadId,
+                        threadTitle,
+                        forumId,
+                        forumTitle,
+                        postId,
+                        authorId,
+                        authorName,
+                        lastReadTime
+                );
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<BrowseHistory>> getBrowseHistory(long uid, int start) {
+        return Observable.create(subscriber -> {
+            try {
+                List<BrowseHistory> result = mLKongDatabase.getBrowseHistory(uid, start);
+                subscriber.onNext(result);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Void> cleanBrowseHistory(long uid) {
+        return Observable.create(subscriber -> {
+            try {
+                mLKongDatabase.clearBrowserHistory(uid);
+                subscriber.onNext(null);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

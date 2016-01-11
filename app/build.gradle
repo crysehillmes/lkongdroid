@@ -63,45 +63,55 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:support-v13:$supportlibraryVersion"
-    compile "com.android.support:design:$supportlibraryVersion"
-    compile "com.android.support:appcompat-v7:$supportlibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportlibraryVersion"
-    compile "com.android.support:cardview-v7:$supportlibraryVersion"
-    compile 'com.google.android.gms:play-services-analytics:7.3.0'
     compile project(':utils')
     compile project(':widgets')
     compile project(':changelog')
-    // compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.umeng.analytics:analytics:5.5.3'
-    compile files('libs/umeng-update-v2.6.0.1.jar')
-    retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:$retroLambdaVersion"
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
-    provided 'javax.annotation:jsr250-api:1.0'
-    compile 'com.jakewharton:butterknife:7.0.1'
-    // ReactiveX
-    compile 'io.reactivex:rxjava:1.0.14'
-    compile 'io.reactivex:rxandroid:1.0.1'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.github.bumptech.glide:glide:3.7.0-SNAPSHOT'
-    compile 'com.jakewharton.timber:timber:3.1.0'
-    compile 'org.jsoup:jsoup:1.8.3'
-    compile 'com.afollestad:material-dialogs:0.7.9.1'
-    compile 'com.melnykov:floatingactionbutton:1.3.0'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.apache.tika:tika-core:1.10'
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
-    provided 'de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:1.2.1'
-    compile('com.mikepenz:materialdrawer:4.0.6') {
+
+    compile libDependencies.support_v13
+    compile libDependencies.design
+    compile libDependencies.appcompat
+    compile libDependencies.recyclerview
+    compile libDependencies.cardview
+
+    compile libDependencies.gson
+    compile libDependencies.okhttp
+    compile libDependencies.okhttp_urlconnection
+
+    compile libDependencies.rxjava
+    compile libDependencies.rxandroid
+    compile libDependencies.butterknife
+
+    compile libDependencies.commons_lang3
+    compile libDependencies.tika
+    compile libDependencies.timber
+
+    compile(libDependencies.materialdrawer) {
         transitive = true
     }
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+
+    compile(libDependencies.materialdialog) {
+        transitive = true
+    }
+
+    compile libDependencies.play_services_analytics
+    // compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile libDependencies.umeng_analytics
+    retrolambdaConfig libDependencies.retorlambda
+    compile libDependencies.dagger
+    apt libDependencies.dagger_compiler
+    provided libDependencies.jsr250_api
+
+    compile libDependencies.glide
+    compile libDependencies.jsoup
+    compile libDependencies.fab
+    compile libDependencies.subsampling_scale_image_view
+    provided libDependencies.tagsoup_osgi
+    compile(libDependencies.crashlytics) {
         transitive = true;
     }
-    compile 'org.cryse.widget:persistentsearchview:1.0.3@aar'
+    compile libDependencies.persistentsearchview
+
+    compile files('libs/umeng-update-v2.6.0.1.jar')
 }
 
 retrolambda {

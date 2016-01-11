@@ -39,10 +39,10 @@ retrolambda {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:appcompat-v7:$supportlibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportlibraryVersion"
-    compile ('com.navercorp.pulltorefresh:library:3.2.3@aar') {
+    compile libDependencies.appcompat
+    compile libDependencies.recyclerview
+    compile (libDependencies.pulltorefresh) {
         exclude module: 'support-v4'
     }
-    retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:$retroLambdaVersion"
+    retrolambdaConfig libDependencies.retorlambda
 }

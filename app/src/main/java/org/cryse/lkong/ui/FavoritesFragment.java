@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -37,8 +38,9 @@ import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
+import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.view.FavoritesView;
+import org.cryse.utils.preference.StringPreference;
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
 import org.cryse.widget.persistentsearch.PersistentSearchView;
 import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
@@ -60,6 +62,11 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     boolean mNeedRefresh = false;
     @Inject
     FavoritesPresenter mPresenter;
+
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
+
     @Bind(R.id.searchview)
     PersistentSearchView mSearchView;
     @Bind(R.id.view_search_tint)
@@ -320,7 +327,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList);
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {

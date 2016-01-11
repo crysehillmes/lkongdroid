@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2015年10月31日"
+        versionCode="905"
+        versionName="0.9.5">
+        <changelogtext>新功能：帖子浏览历史</changelogtext>
+        <changelogtext>新功能：帖子页面快速滚动</changelogtext>
+        <changelogtext>新功能：跳转至回复引用楼层</changelogtext>
+        <changelogtext>新功能：可选择头像加载策略</changelogtext>
+        <changelogtext>改进：减小帖子高度</changelogtext>
+    </changelogversion>
+    <changelogversion
         changeDate="2015年9月30日"
         versionCode="904"
         versionName="0.9.4">

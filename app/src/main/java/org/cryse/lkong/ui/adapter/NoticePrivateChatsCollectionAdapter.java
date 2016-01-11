@@ -7,13 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateChatModel;
+import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.ColorUtils;
 import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
@@ -24,19 +22,16 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter<PrivateChatModel> {
-    public static final String PRIVATE_CHATS_PICASSO_TAG = "PRIVATE_CHATS_PICASSO_TAG";
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
-    private int mColorAccent;
     private final int mAvatarSize;
-    private String mPicassoTag;
-    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items) {
+    private int mAvatarLoadPolicy;
+    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items, int avatarLoadPolicy) {
         super(context, items);
         this.mTodayPrefix = getString(R.string.datetime_today);
-        this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        this.mPicassoTag = PRIVATE_CHATS_PICASSO_TAG;
         this.mCircleTransform = new CircleTransform(getContext());
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -61,14 +56,14 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
                         model.getDateline(),
                         mTodayPrefix,
                         getContext().getResources().getConfiguration().locale));
-                Glide
-                        .with(getContext())
-                        .load(model.getTargetUserAvatar())
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .override(mAvatarSize, mAvatarSize)
-                        .transform(mCircleTransform)
-                        .into(viewHolder.mAvatarImageView);
+                ImageLoader.loadAvatar(
+                        getContext(),
+                        viewHolder.mAvatarImageView,
+                        model.getTargetUserAvatar(),
+                        mAvatarSize,
+                        mCircleTransform,
+                        mAvatarLoadPolicy
+                );
             }
         }
     }

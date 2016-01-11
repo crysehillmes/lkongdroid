@@ -11,10 +11,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateMessageModel;
+import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
@@ -33,12 +33,16 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
     private Fragment mParentFragment;
     private final CircleTransform mCircleTransform;
     private final String mTodayPrefix;
+    private final int mAvatarSize;
+    private int mAvatarLoadPolicy;
 
-    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList) {
+    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList, int avatarLoadPolicy) {
         super(parentFragment.getContext(), itemList);
         this.mParentFragment = parentFragment;
         this.mTodayPrefix = getContext().getString(R.string.datetime_today);
+        this.mAvatarSize = UIUtils.getDefaultAvatarSize(parentFragment.getContext());
         this.mCircleTransform = new CircleTransform(getContext());
+        this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
@@ -51,13 +55,14 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
             viewHolder.mMessageTextView.setText(Html.fromHtml(model.getMessage()));
             viewHolder.mDatelineTextView.setText(TimeFormatUtils.getTimeAgo(getContext(), model.getDateline().getTime()));
             if(viewHolder.mAvatarImageView != null) {
-                Glide.with(mParentFragment)
-                        .load(model.getAvatarUrl())
-                        .placeholder(R.drawable.ic_placeholder_avatar)
-                        .error(R.drawable.ic_placeholder_avatar)
-                        .centerCrop()
-                        .transform(mCircleTransform)
-                        .into(viewHolder.mAvatarImageView);
+                ImageLoader.loadAvatar(
+                        mParentFragment,
+                        viewHolder.mAvatarImageView,
+                        model.getAvatarUrl(),
+                        mAvatarSize,
+                        mCircleTransform,
+                        mAvatarLoadPolicy
+                );
             }
         }
 

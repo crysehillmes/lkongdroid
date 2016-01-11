@@ -9,11 +9,13 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.UserProfileTimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.utils.preference.StringPreference;
 
 import java.util.List;
 
@@ -30,6 +32,9 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
     @Inject
     UserProfileTimelinePresenter mPresenter;
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
 
     public static UserProfileTimelineFragment newInstance(long uid) {
         Bundle args = new Bundle();
@@ -76,7 +81,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, LOAD_IMAGE_TASK_TAG);
+        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {

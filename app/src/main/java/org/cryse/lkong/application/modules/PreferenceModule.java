@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsCheckNoticeDuration;
 import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
@@ -60,6 +61,12 @@ public class PreferenceModule {
     @PrefsImageDownloadPolicy
     StringPreference provideImageDownloadPolicy(SharedPreferences preferences) {
         return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE);
+    }
+
+    @Provides
+    @PrefsAvatarDownloadPolicy
+    StringPreference provideAvatarDownloadPolicy(SharedPreferences preferences) {
+        return new StringPreference(preferences, PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY, PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
     }
 
     @Provides

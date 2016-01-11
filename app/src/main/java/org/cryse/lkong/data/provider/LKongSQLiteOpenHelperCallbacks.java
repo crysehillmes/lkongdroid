@@ -49,5 +49,10 @@ public class LKongSQLiteOpenHelperCallbacks {
             db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_INDEX_FOLLOWED_USER_USER_ID);
             db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_INDEX_FOLLOWED_USER_TARGET_USER_ID);
         }
+        if(oldVersion < 5) {
+            db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_TABLE_BROWSE_HISTORY);
+            db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_INDEX_BROWSE_HISTORY_USER_ID);
+            db.execSQL(LKongSQLiteOpenHelper.SQL_CREATE_INDEX_BROWSE_HISTORY_LAST_READ_TIME);
+        }
     }
 }

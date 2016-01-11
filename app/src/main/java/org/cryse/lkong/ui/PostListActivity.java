@@ -44,6 +44,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
+import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
 import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.application.qualifier.PrefsScrollByVolumeKey;
@@ -95,6 +96,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 public class PostListActivity extends AbstractThemeableActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
@@ -112,6 +114,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     @PrefsImageDownloadPolicy
     StringPreference mImageDownloadPolicy;
+    @Inject
+    @PrefsAvatarDownloadPolicy
+    StringPreference mAvatarDownloadPolicy;
     @Inject
     @PrefsReadFontSize
     StringPreference mReadFontSizePref;
@@ -133,6 +138,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     PagerControl mFooterPagerControl;
     @Bind(R.id.loading_progressbar)
     ProgressBar mProgressBar;
+    @Bind(R.id.fast_scroller)
+    VerticalRecyclerViewFastScroller mFastScroller;
 
     View mTopPaddingHeaderView;
     View mBottomPaddingFooterView;
@@ -189,12 +196,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setLayerType(View.LAYER_TYPE_NONE, null);
         mPostCollectionView.getRefreshableView().setDrawingCacheEnabled(false);
-        mPostCollectionView.getRefreshableView().setAnimationCacheEnabled(false);
         // mPostCollectionView.getRefreshableView().setItemViewCacheSize(20);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new PostListAdapter(this, mItemList, mUserAccountManager.getCurrentUserAccount().getUserId(), Integer.valueOf(mImageDownloadPolicy.get()));
+        mCollectionAdapter = new PostListAdapter(
+                this,
+                mItemList,
+                mUserAccountManager.getCurrentUserAccount().getUserId(),
+                Integer.valueOf(mImageDownloadPolicy.get()),
+                Integer.valueOf(mAvatarDownloadPolicy.get())
+        );
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
+        mFastScroller.setRecyclerView(mPostCollectionView.getRefreshableView());
+        mPostCollectionView.getRefreshableView().addOnScrollListener(mFastScroller.getOnScrollListener());
 
         mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
         // ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
@@ -645,6 +659,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Override
     protected void onStop() {
         super.onStop();
+        if(mThreadModel != null) {
+            getPresenter().saveBrowseHistory(
+                    mUserAccountManager.getAuthObject(),
+                    mThreadId,
+                    mThreadModel.getSubject(),
+                    mThreadModel.getFid(),
+                    mThreadModel.getForumName(),
+                    null,
+                    mThreadModel.getAuthorId(),
+                    mThreadModel.getAuthorName(),
+                    System.currentTimeMillis()
+            );
+        }
         getPresenter().unbindView();
     }
 
@@ -748,6 +775,17 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
             setThreadSubjectSpanned(mThreadModel);
 
             calculatePageAndLoad();
+            getPresenter().saveBrowseHistory(
+                    mUserAccountManager.getAuthObject(),
+                    mThreadId,
+                    mThreadModel.getSubject(),
+                    mThreadModel.getFid(),
+                    mThreadModel.getForumName(),
+                    null,
+                    mThreadModel.getAuthorId(),
+                    mThreadModel.getAuthorName(),
+                    System.currentTimeMillis()
+            );
         }
     }
 
@@ -900,6 +938,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
         mFab.setColorNormal(primaryColor);
         mFab.setColorPressed(primaryDarkColor);
+        mFastScroller.setBarColor(primaryColor);
+        mFastScroller.setHandleColor(primaryDarkColor);
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 
@@ -1121,6 +1161,12 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
+        @Override
+        public void onThreadByPostId(long postId) {
+            mTargetPostId = postId;
+            getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);
+        }
+
         @Override
         public void onThreadByPostId(long threadId, long postId) {
             if(threadId == mThreadId) {

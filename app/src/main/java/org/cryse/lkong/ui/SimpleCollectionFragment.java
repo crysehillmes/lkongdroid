@@ -45,7 +45,7 @@ public abstract class SimpleCollectionFragment<
     private boolean isNoMore = false;
     private boolean isLoading = false;
     private boolean isLoadingMore = false;
-    private long mLastItemSortKey = -1;
+    protected long mLastItemSortKey = 0;
 
     AppNavigation mNavigation = new AppNavigation();
 
@@ -121,7 +121,7 @@ public abstract class SimpleCollectionFragment<
     }
 
     public void loadInitialData() {
-        loadData(mUserAccountManager.getAuthObject(), -1, false);
+        loadData(mUserAccountManager.getAuthObject(), 0, false);
     }
 
     @Override
@@ -170,7 +170,7 @@ public abstract class SimpleCollectionFragment<
             ItemType lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
-            mLastItemSortKey = -1;
+            mLastItemSortKey = 0;
         }
     }
 
@@ -249,7 +249,7 @@ public abstract class SimpleCollectionFragment<
 
     protected OnMoreListener getOnMoreListener() {
         return (numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != -1) {
+            if (!isNoMore && !isLoadingMore && mLastItemSortKey != 0) {
                 loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
             } else {
                 mCollectionView.setLoadingMore(false);

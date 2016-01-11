@@ -47,7 +47,7 @@ import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.animation.LayerEnablingAnimatorListener;
+import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
 import org.cryse.utils.preference.BooleanPreference;

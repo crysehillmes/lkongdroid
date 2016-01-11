@@ -20,6 +20,7 @@ import com.bumptech.glide.request.target.Target;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.utils.ImageLoader;
 
 import java.io.IOException;
 
@@ -84,7 +85,7 @@ public class UrlImageGetter implements ImageGetter {
         }
 
         UrlDrawable urlDrawable = new UrlDrawable(mContext, mMaxImageWidth);
-        if(LKongApplication.get(mContext).getNetworkPolicyManager().shouldDownloadImage(mImageDownloadPolicy)) {
+        if(ImageLoader.shouldDownloadImage(mImageDownloadPolicy)) {
             Glide
                     .with(mContext)
                     .load(source)

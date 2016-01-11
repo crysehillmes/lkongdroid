@@ -7,7 +7,7 @@ import org.jsoup.safety.Cleaner;
 import org.jsoup.safety.Whitelist;
 
 public class HtmlCleaner {
-    public static String fixTagBalanceAndRemoveEmpty(String html, Whitelist whitelist) {
+    public static Document fixTagBalanceAndRemoveEmpty(String html, Whitelist whitelist) {
         Document originalDoc = Jsoup.parse(html);
         Cleaner cleaner = new Cleaner(whitelist);
         Document fixedDoc = cleaner.clean(originalDoc);
@@ -17,6 +17,10 @@ public class HtmlCleaner {
         }
         for (Element pInLi: fixedDoc.select("li p")) {
             pInLi.unwrap();
+        }
+        for (Element pInLi: fixedDoc.select("blockquote")) {
+            if(elementTagNameEquals(pInLi.nextElementSibling(), "br"))
+                pInLi.nextElementSibling().remove();
         }
         for (Element pInLi: fixedDoc.select("blockquote")) {
             if(elementTagNameEquals(pInLi.nextElementSibling(), "br"))
@@ -54,7 +58,7 @@ public class HtmlCleaner {
                 pInLi.after("<br>");
             pInLi.unwrap();
         }
-        return fixedDoc.html();
+        return fixedDoc;
     }
 
     public static String[] processNoticeData(String html, Whitelist whitelist) {

@@ -82,6 +82,16 @@ public class LKongUrlDispatcher {
                     if(mUrlCallback != null)
                         mUrlCallback.onFailed(url);
                 }
+            } else if(url.contains("mod=redirect")) {
+                // 解析失败
+                int index = url.lastIndexOf("pid=");
+                String pid = url.substring(index + 4);
+                if(mUrlCallback != null)
+                    mUrlCallback.onThreadByPostId(Long.valueOf(pid));
+            } else {
+                // 解析失败
+                if(mUrlCallback != null)
+                    mUrlCallback.onFailed(url);
             }
         } else if(url.contains("thread-")) {
             Matcher matcher = sOldLKongThreadPattern.matcher(url);
@@ -105,6 +115,7 @@ public class LKongUrlDispatcher {
     }
 
     public interface UrlCallback {
+        void onThreadByPostId(long postId);
         void onThreadByPostId(long tid, long postId);
         void onThreadByThreadId(long threadId);
         void onThreadByThreadId(long threadId, int page);

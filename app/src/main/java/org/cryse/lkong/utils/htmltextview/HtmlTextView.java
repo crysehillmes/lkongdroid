@@ -20,9 +20,8 @@ import android.content.Context;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
-import org.cryse.lkong.utils.ConnectionUtils;
+import org.cryse.lkong.utils.ImageLoader;
 
 import java.io.InputStream;
 
@@ -79,7 +78,7 @@ public class HtmlTextView extends JellyBeanSpanFixTextView {
         if (useLocalDrawables) {
             imgGetter = new LocalImageGetter(getContext());
         } else {
-            imgGetter = new UrlImageGetter(getContext(), ConnectionUtils.IMAGE_DOWNLOAD_ALWAYS);
+            imgGetter = new UrlImageGetter(getContext(), ImageLoader.IMAGE_LOAD_ALWAYS);
         }
         // this uses Android's Html class for basic parsing, and HtmlTagHandler
         setText(Html.fromHtml(html, imgGetter, new HtmlTagHandler()));
