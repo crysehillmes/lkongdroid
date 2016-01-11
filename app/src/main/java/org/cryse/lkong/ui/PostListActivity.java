@@ -938,6 +938,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
         mFab.setColorNormal(primaryColor);
         mFab.setColorPressed(primaryDarkColor);
+        mFastScroller.setBarColor(primaryColor);
+        mFastScroller.setHandleColor(primaryDarkColor);
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
     }
 
@@ -1141,17 +1143,9 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mTodayPrefix,
                 getResources().getConfiguration().locale
         );
-        String secondaryInfo = null;
-        if(postModel.getRateScore() > 0) {
-            secondaryInfo = getString(R.string.format_post_date_and_rate, datelineString, postModel.getRateScore());
-        } else {
-            secondaryInfo = datelineString;
-        }
-
-
         int start = autherNameSpannable.length();
-        int end = autherNameSpannable.length() + secondaryInfo.length();
-        autherNameSpannable.append(secondaryInfo);
+        int end = autherNameSpannable.length() + datelineString.length();
+        autherNameSpannable.append(datelineString);
         autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)mDatelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 

@@ -41,7 +41,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     /** Animation **/
     private static final int DURATION_FADE_IN = 150;
     private static final int DURATION_FADE_OUT = 300;
-    private static final int FADE_TIMEOUT = 1500;
+    private static final int FADE_TIMEOUT = 1200;
     private HideHandler mHideHandler;
 
     private static final int[] STYLEABLE = R.styleable.AbsRecyclerViewFastScroller;
