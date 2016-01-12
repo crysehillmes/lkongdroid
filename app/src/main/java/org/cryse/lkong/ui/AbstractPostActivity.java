@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpanWatcher;
@@ -44,8 +45,6 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsPostTail;
-import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -53,12 +52,13 @@ import org.cryse.lkong.event.NewThreadDoneEvent;
 import org.cryse.lkong.event.PostErrorEvent;
 import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.service.SendPostService;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
+import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
@@ -66,7 +66,9 @@ import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -78,7 +80,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -86,17 +87,13 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 import timber.log.Timber;
 
-public abstract class AbstractPostActivity extends AbstractThemeableActivity {
+public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Inject
-    @PrefsPostTail
-    StringPreference mPostTailText;
+    StringPrefs mPostTailText;
 
-    @Inject
-    @PrefsReadFontSize
-    StringPreference mReadFontSizePref;
+    StringPrefs mReadFontSizePref;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -136,6 +133,14 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
         ButterKnife.bind(this);
+        mPostTailText = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT,
+                PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE
+        );
+        mReadFontSizePref = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
+        );
         setSwipeBackEnable(false);
         setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
@@ -160,6 +165,14 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mInsertEmoticonButton.setOnClickListener(view -> showInsertEmoticonDialog());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
         mInsertUrlButton.setOnClickListener(view -> showInsertUrlDialog());
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -187,7 +200,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 submitPost();
                 return true;
             case R.id.action_change_theme:
-                setNightMode(!isNightMode());
+                toggleNightMode();
                 return true;
             case android.R.id.home:
                 closeActivityWithTransition();
@@ -659,8 +672,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             } else {
                 if (mContentEditText != null && !TextUtils.isEmpty(mContentEditText.getText())) {
                     new MaterialDialog.Builder(this)
-                            .content(getString(R.string.dialog_exit_new_post_title, getString(R.string.app_name)))
-                            .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)  // the default is light, so you don't need this line
+                            .content(getString(R.string.dialog_exit_new_post_title))
                             .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
                             .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
                             .callback(new MaterialDialog.ButtonCallback() {
@@ -688,7 +700,6 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     protected void showInsertUrlDialog() {
         MaterialDialog urlInputDialog = new MaterialDialog.Builder(AbstractPostActivity.this)
                 .title(R.string.dialog_title_insert_url)
-                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                 .customView(R.layout.dialog_input_url, false)
                 .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
                     @Override

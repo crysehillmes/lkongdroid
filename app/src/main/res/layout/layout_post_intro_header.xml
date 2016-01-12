@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="?attr/theme_card_bg_color"
     app:cardCornerRadius="@dimen/default_card_radius"
     app:cardElevation="@dimen/default_card_elevation"
     app:cardUseCompatPadding="true"
@@ -22,8 +21,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:text="@string/placeholder_thread_title"
-            android:textColor="?theme_text_color_primary"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:tag="text_primary" />
         <TextView
             android:id="@+id/layout_post_intro_header_textview_detail_count"
             android:layout_width="wrap_content"
@@ -34,8 +33,8 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:textColor="?theme_text_color_secondary"
-            android:textSize="@dimen/text_size_caption" />
+            android:textSize="@dimen/text_size_caption"
+            android:tag="text_secondary" />
         <TextView
             android:id="@+id/layout_post_intro_header_textview_forum_name"
             android:layout_width="wrap_content"
@@ -46,7 +45,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:textColor="?theme_text_color_secondary"
-            android:textSize="@dimen/text_size_caption" />
+            android:textSize="@dimen/text_size_caption"
+            android:tag="text_secondary"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

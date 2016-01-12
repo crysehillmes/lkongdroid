@@ -1,6 +1,7 @@
 ext {
     junitVersion = '4.12'
     supportLibraryVersion = '23.1.1'
+    multidexVersion='1.0.0'
     gsonVersion = '2.4'
     rxVersion = '1.1.0'
     realmVersion = '0.87.0'
@@ -18,7 +19,7 @@ ext {
     timberVersion = '3.1.0'
     playServiceVersion = '8.3.0'
     umengAnalyticsVersion = '5.5.3'
-    retroLambdaVersion = '2.0.6'
+    retroLambdaVersion = '2.1.0'
     daggerVersion = '2.0.1'
     jsr250ApiVersion = '1.0'
     glideVersion = '3.7.0-SNAPSHOT'
@@ -29,6 +30,7 @@ ext {
     crashlyticsVersion = '2.5.1'
     persistentsearchviewVersion = '1.0.3'
     pulltorefreshVersion = '3.2.3'
+    themeEngineVersion = '0.7.6'
 
     libDependencies = [
             // Test
@@ -40,6 +42,7 @@ ext {
             cardview: "com.android.support:cardview-v7:$supportLibraryVersion",
             recyclerview: "com.android.support:recyclerview-v7:$supportLibraryVersion",
             design: "com.android.support:design:$supportLibraryVersion",
+            multidex: "com.android.support:multidex:$multidexVersion",
 
             // Permissions
             easypermission: "pub.devrel:easypermissions:$easyPermissionVersion",
@@ -77,6 +80,8 @@ ext {
             // UI Elements
             materialdrawer: "com.mikepenz:materialdrawer:$materialDrawerVersion@aar",
             materialdialog: "com.github.afollestad.material-dialogs:core:$materialDialogVersion@aar",
+            materialdialog_commons: "com.github.afollestad.material-dialogs:commons:$materialDialogVersion@aar",
+            theme_engine: "com.github.afollestad:app-theme-engine:$themeEngineVersion@aar",
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])

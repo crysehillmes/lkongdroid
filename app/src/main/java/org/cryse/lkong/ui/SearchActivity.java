@@ -3,6 +3,7 @@ package org.cryse.lkong.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +22,7 @@ import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.UIUtils;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SearchActivity extends AbstractThemeableActivity implements SearchForumView {
+public class SearchActivity extends AbstractSwipeBackActivity implements SearchForumView {
     private static final String LOG_TAG = SearchActivity.class.getName();
     AppNavigation mNavigation = new AppNavigation();
     SearchView mSearchView = null;
@@ -64,6 +65,14 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         setUpToolbar(mToolbar);
         mToolbar.setContentInsetsAbsolute(UIUtils.calculateActionBarSize(this), 0);
         initSearchBox();
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void initSearchBox() {

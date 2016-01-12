@@ -24,7 +24,6 @@
             android:layout_gravity="bottom"
             android:gravity="center"
             android:text="placeholder"
-            android:textColor="?theme_text_color_primary"
             android:textSize="@dimen/text_size_subhead"
             android:textStyle="bold"
             android:paddingTop="4dp"

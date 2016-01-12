@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:maxLines="2"
         android:ellipsize="end"
-        android:textColor="?theme_text_color_primary"
         android:textSize="@dimen/text_size_subhead"
-        android:text="placeholder"/>
+        android:text="placeholder"
+        android:tag="text_primary"/>
     <TextView
         android:id="@+id/recyclerview_item_search_post_secondary"
         android:layout_width="wrap_content"
@@ -24,9 +24,9 @@
         android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="?theme_text_color_secondary"
         android:textSize="@dimen/text_size_body1"
-        android:text="placeholder"/>
+        android:text="placeholder"
+        android:tag="text_secondary"/>
     <TextView
         android:id="@+id/recyclerview_item_search_post_reply_count"
         android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
         android:layout_alignParentRight="true"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="?theme_text_color_secondary"
         android:textSize="@dimen/text_size_body1"
-        android:text="placeholder"/>
+        android:text="placeholder"
+        android:tag="text_secondary"/>
 </RelativeLayout>

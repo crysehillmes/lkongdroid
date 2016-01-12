@@ -1,10 +1,14 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,23 +36,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
+import com.afollestad.appthemeengine.util.Util;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
-import org.cryse.lkong.application.qualifier.PrefsImageDownloadPolicy;
-import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
-import org.cryse.lkong.application.qualifier.PrefsScrollByVolumeKey;
-import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -60,13 +63,15 @@ import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.presenter.PostListPresenter;
 import org.cryse.lkong.ui.adapter.PostListAdapter;
 import org.cryse.lkong.ui.adapter.PostRateAdapter;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.LKongUrlDispatcher;
 import org.cryse.lkong.utils.QuickReturnUtils;
+import org.cryse.lkong.utils.ThemeUtils;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
@@ -78,10 +83,10 @@ import org.cryse.lkong.view.PostListView;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.widget.PagerControl;
 import org.cryse.lkong.widget.PostItemView;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
-import org.cryse.utils.preference.BooleanPreference;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -98,7 +103,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
-public class PostListActivity extends AbstractThemeableActivity implements PostListView {
+public class PostListActivity extends AbstractSwipeBackActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
     AppNavigation mNavigation = new AppNavigation();
     private int mCurrentPage = -1;
@@ -111,21 +116,11 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Inject
-    @PrefsImageDownloadPolicy
-    StringPreference mImageDownloadPolicy;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
-    @Inject
-    @PrefsReadFontSize
-    StringPreference mReadFontSizePref;
-    @Inject
-    @PrefsUseInAppBrowser
-    BooleanPreference mUseInAppBrowser;
-    @Inject
-    @PrefsScrollByVolumeKey
-    BooleanPreference mScrollByVolumeKey;
+    StringPrefs mImageDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
+    StringPrefs mReadFontSizePref;
+    BooleanPrefs mUseInAppBrowser;
+    BooleanPrefs mScrollByVolumeKey;
 
 
     @Bind(R.id.toolbar)
@@ -141,8 +136,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     @Bind(R.id.fast_scroller)
     VerticalRecyclerViewFastScroller mFastScroller;
 
-    View mTopPaddingHeaderView;
-    View mBottomPaddingFooterView;
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
     TextView mThreadDetailCountTextView;
@@ -165,8 +158,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     private Boolean mIsFavorite = null;
     private int mBaseTranslationY = 0;
     private String[] mPageIndicatorItems;
-    private int mAccentColor;
-    private int mTextSecondaryColor;
+    private int mTextColorPrimary;
+    private int mTextColorSecondary;
     private String mTodayPrefix;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +167,25 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
         ButterKnife.bind(this);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
+        mReadFontSizePref = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
+        );
+        mImageDownloadPolicy = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE
+        );
+        mUseInAppBrowser = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER,
+                PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER_VALUE
+        );
+        mScrollByVolumeKey = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY,
+                PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY_VALUE
+        );
         setUpToolbar(mToolbar);
         setupPageControlListener();
         setTitle(R.string.activity_title_post_list);
@@ -192,6 +204,14 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mUrlDispatcher = new LKongUrlDispatcher(mUrlCallback);
     }
 
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setLayerType(View.LAYER_TYPE_NONE, null);
@@ -201,6 +221,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(
                 this,
+                mATEKey,
                 mItemList,
                 mUserAccountManager.getCurrentUserAccount().getUserId(),
                 Integer.valueOf(mImageDownloadPolicy.get()),
@@ -210,20 +231,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mFastScroller.setRecyclerView(mPostCollectionView.getRefreshableView());
         mPostCollectionView.getRefreshableView().addOnScrollListener(mFastScroller.getOnScrollListener());
 
-        mTopPaddingHeaderView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        // ((TextView)mTopPaddingHeaderView).setText(getString(R.string.text_load_prev_page));
-        RecyclerView.LayoutParams topPaddingLP = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
-        mTopPaddingHeaderView.setLayoutParams(topPaddingLP);
-        mCollectionAdapter.addHeaderView(mTopPaddingHeaderView);
-
-        mBottomPaddingFooterView = getLayoutInflater().inflate(R.layout.layout_empty_recyclerview_top_padding, null);
-        // ((TextView)mBottomPaddingFooterView).setText(getString(R.string.text_load_next_page));
-        RecyclerView.LayoutParams bottomPaddingLP = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, UIUtils.calculateActionBarSize(this) + UIUtils.dp2px(this, 16f * 2));
-        mBottomPaddingFooterView.setLayoutParams(bottomPaddingLP);
-        mCollectionAdapter.addFooterView(mBottomPaddingFooterView);
-
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -231,6 +238,8 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
         mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
         mForumNameTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_forum_name);
+        ATE.apply(mThreadIntroHeaderView, mATEKey);
+        ((CardView)mThreadIntroHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
 
         mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
 
@@ -290,7 +299,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 if(postItem != null) {
                     MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
                             .title(R.string.dialog_title_copy_content)
-                            .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                             .content(postItem.getPostDisplayCache().getSpannableStringBuilder())
                             .show();
                     materialDialog.getContentView().setTextIsSelectable(true);
@@ -401,7 +409,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getThemeEngine().getPrimaryColor(), getThemeEngine().getPrimaryDarkColor());
+        setColorToViews(getPrimaryColor(), getPrimaryDarkColor());
     }
 
     private void setupPageControlListener() {
@@ -416,7 +424,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 MaterialDialog.Builder dialogBuilder = new MaterialDialog.Builder(PostListActivity.this)
                         .title(R.string.dialog_post_list_choose_page)
                         .items(mPageIndicatorItems)
-                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                         .itemsCallbackSingleChoice(mCurrentPage - 1, (materialDialog, view, i, charSequence) -> {
                             goToPage(i + 1);
                             return true;
@@ -612,7 +619,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                 sendShareThreadIntent();
                 return true;
             case R.id.action_change_theme:
-                setNightMode(!isNightMode());
+                toggleNightMode();
                 return true;
             case R.id.action_thread_favorite:
                 getPresenter().addOrRemoveFavorite(mUserAccountManager.getAuthObject(), mThreadId, mIsFavorite);
@@ -865,7 +872,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(threadInfoModel.isDigest()) {
             String digestIndicator = getString(R.string.indicator_thread_digest);
             spannableTitle.append(digestIndicator);
-            spannableTitle.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(this, R.attr.colorAccent)), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            spannableTitle.setSpan(new ForegroundColorSpan(getAccentColor()), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         spannableTitle.append(android.text.Html.fromHtml(threadInfoModel.getSubject()));
         mThreadTitleTextView.setText(spannableTitle);
@@ -936,11 +943,26 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     }
 
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
-        mFab.setColorNormal(primaryColor);
-        mFab.setColorPressed(primaryDarkColor);
+        int accentColor = getAccentColor();
+        int accentColorDark = ThemeUtils.makeColorDarken(accentColor, 0.8f);
+        int accentColorRipple = ThemeUtils.makeColorDarken(accentColor, 0.9f);
+        mFab.setColorNormal(accentColor);
+        mFab.setColorPressed(accentColorDark);
+        mFab.setColorRipple(accentColorRipple);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_fab_action_create, null).mutate();
+        int toolbarTextColor = Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE;
+        DrawableCompat.setTint(drawable, toolbarTextColor);
+        mFab.setImageDrawable(drawable);
+
         mFastScroller.setBarColor(primaryColor);
         mFastScroller.setHandleColor(primaryDarkColor);
-        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(primaryColor);
+        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
+        Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back_black, null).mutate();
+        Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward_black, null).mutate();
+        DrawableCompat.setTint(backwardArrow, toolbarTextColor);
+        DrawableCompat.setTint(forwardArrow, toolbarTextColor);
+        ((ImageButton)mFooterPagerControl.findViewById(R.id.widget_pager_control_button_backward)).setImageDrawable(backwardArrow);
+        ((ImageButton)mFooterPagerControl.findViewById(R.id.widget_pager_control_button_forward)).setImageDrawable(forwardArrow);
     }
 
     private void openRateLogDialog(PostModel postModel) {
@@ -949,7 +971,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
                     .adapter(new PostRateAdapter(this, postModel.getRateLog()), (materialDialog, view, i, charSequence) -> {
 
                     })
-                    .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .positiveText(android.R.string.ok)
                     .build();
         rateListDialog.show();
@@ -991,7 +1012,6 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(mUserAccountManager.getCurrentUserAccount().getUserId() != postModel.getAuthorId()) {
             MaterialDialog ratePostDialog = new MaterialDialog.Builder(PostListActivity.this)
                     .title(R.string.dialog_title_rate)
-                    .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .customView(R.layout.dialog_input_score, false)
                     .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
                         @Override
@@ -1132,13 +1152,13 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         if(postModel.getAuthorId() == mThreadModel.getAuthorId()) {
             String threadAuthorIndicator = getString(R.string.indicator_thread_author);
             autherNameSpannable.append(threadAuthorIndicator);
-            autherNameSpannable.setSpan(new ForegroundColorSpan(mAccentColor),
+            autherNameSpannable.setSpan(new ForegroundColorSpan(getAccentColor()),
                     postModel.getAuthorName().length(),
                     postModel.getAuthorName().length() + threadAuthorIndicator.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         autherNameSpannable.append('\n');
-        String datelineString = DateFormatUtils.formatFullDateDividByToday(
+        String datelineString = TimeFormatUtils.formatFullDateDividByToday(
                 postModel.getDateline(),
                 mTodayPrefix,
                 getResources().getConfiguration().locale
@@ -1146,7 +1166,7 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
         int start = autherNameSpannable.length();
         int end = autherNameSpannable.length() + datelineString.length();
         autherNameSpannable.append(datelineString);
-        autherNameSpannable.setSpan(new ForegroundColorSpan(mTextSecondaryColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        autherNameSpannable.setSpan(new ForegroundColorSpan(mTextColorSecondary), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         autherNameSpannable.setSpan(new AbsoluteSizeSpan((int)mDatelineTextSize), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         int authorWidth = dm.widthPixels - UIUtils.dp2px(this, 72f) - padding.getLeft() - padding.getRight();
@@ -1214,19 +1234,19 @@ public class PostListActivity extends AbstractThemeableActivity implements PostL
     TextPaint mContentTextPaint;
     float mDatelineTextSize;
     private void initTextPaint() {
-        mTextSecondaryColor = ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_secondary);
-        mAccentColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mTextColorPrimary = Config.textColorPrimary(this, mATEKey);
+        mTextColorSecondary = Config.textColorSecondary(this, mATEKey);
         mTodayPrefix = getString(R.string.datetime_today);
         mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentTextPaint.setTextSize(contentTextSize);
-        mContentTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
-        mContentTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mContentTextPaint.setColor(mTextColorPrimary);
+        mContentTextPaint.linkColor = getAccentColor();
         mAuthorTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         float authorTextSize =  UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_subhead);
         mAuthorTextPaint.setTextSize(authorTextSize);
-        mAuthorTextPaint.setColor(ColorUtils.getColorFromAttr(this, R.attr.theme_text_color_primary));
-        mAuthorTextPaint.linkColor = ColorUtils.getColorFromAttr(this, R.attr.colorAccent);
+        mAuthorTextPaint.setColor(mTextColorPrimary);
+        mAuthorTextPaint.linkColor = getAccentColor();
         mDatelineTextSize = UIUtils.getSpDimensionPixelSize(this, R.dimen.text_size_body1);
     }
 

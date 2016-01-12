@@ -1,6 +1,5 @@
 package org.cryse.lkong.ui.adapter;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
@@ -24,16 +24,18 @@ import butterknife.Bind;
 
 public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
     Fragment mParentFragment;
-    public ForumListAdapter(Fragment fragment, List<ForumModel> mItemList) {
+    private String mATEKey;
+    public ForumListAdapter(Fragment fragment, String ateKey, List<ForumModel> mItemList) {
         super(fragment.getContext(), mItemList);
         this.mParentFragment = fragment;
+        this.mATEKey = ateKey;
     }
 
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_forum_detail, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, mATEKey);
     }
 
     @Override
@@ -99,9 +101,10 @@ public class ForumListAdapter extends RecyclerViewBaseAdapter<ForumModel> {
         @Bind(R.id.recyclerview_item_forum_textview_secondary)
         public TextView mForumSecondaryTextView;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, String ateKey) {
             super(v);
             ButterKnife.bind(this, v);
+            ATE.apply(itemView, ateKey);
         }
     }
 }

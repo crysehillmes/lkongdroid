@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,13 +32,11 @@ import android.widget.FrameLayout;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -50,7 +49,9 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
-import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
 import org.cryse.widget.persistentsearch.PersistentSearchView;
 import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
@@ -75,9 +76,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     HomePagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    @PrefsForumsFirst
-    BooleanPreference mForumsFirst;
+    BooleanPrefs mForumsFirst;
 
     @Bind(R.id.searchview)
     PersistentSearchView mSearchView;
@@ -109,6 +108,10 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mForumsFirst = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST,
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST_VALUE
+        );
         setHasOptionsMenu(true);
     }
 
@@ -125,12 +128,15 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
-            //mTabLayout.setupWithViewPager(mViewPager);
-            mTabLayout.setBackgroundColor(getPrimaryColor());
         }
         mTabLayout.setupWithViewPager(mViewPager);
         setUpSearchView();
         return contentView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -369,7 +375,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
-                    getThemedActivity().setNightMode(!isNightMode());
+                    toggleNightMode();
                 }
                 return true;
             case android.R.id.home:
@@ -418,9 +424,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onEvent(event);
         if(event instanceof NoticeCountEvent) {
             mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
-        } else if(event instanceof ThemeColorChangedEvent) {
-            int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
-            if(mTabLayout != null) mTabLayout.setBackgroundColor(newPrimaryColor);
         } else if (event instanceof CurrentAccountChangedEvent) {
             mCurrentUserPunchResult = null;
             getThemedActivity().invalidateOptionsMenu();

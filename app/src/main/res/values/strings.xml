@@ -49,6 +49,7 @@
     <string name="drawer_item_private_messages">PM</string>
     <string name="drawer_item_settings">Settings</string>
     <string name="drawer_item_account_add">Add account</string>
+    <string name="drawer_item_theme_settings">Theme Settings</string>
     <string name="hint_account_email">Your Email</string>
     <string name="hint_account_password">Password</string>
     <string name="hint_title">Title</string>
@@ -197,7 +198,7 @@
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_theme_color_title">Theme</string>
-    <string name="settings_item_theme_color_summary">Choose your theme color</string>
+    <string name="settings_item_theme_color_summary">Choose your theme</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable</string>

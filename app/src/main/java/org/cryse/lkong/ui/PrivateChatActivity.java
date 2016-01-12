@@ -14,7 +14,6 @@ public class PrivateChatActivity extends SimpleContainerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarColor();
     }
 
     @Override

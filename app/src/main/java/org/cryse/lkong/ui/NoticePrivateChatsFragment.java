@@ -5,14 +5,15 @@ import android.view.View;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.presenter.NoticePrivateChatsPresenter;
 import org.cryse.lkong.ui.adapter.NoticePrivateChatsCollectionAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
 
@@ -26,9 +27,7 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Inject
     NoticePrivateChatsPresenter mPresenter;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     public static NoticePrivateChatsFragment newInstance(Bundle args) {
         NoticePrivateChatsFragment fragment = new NoticePrivateChatsFragment();
@@ -41,6 +40,8 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Override
     protected NoticePrivateChatsCollectionAdapter createAdapter(List<PrivateChatModel> itemList) {
-        return new NoticePrivateChatsCollectionAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        return new NoticePrivateChatsCollectionAdapter(getActivity(), mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
     }
 
     @Override

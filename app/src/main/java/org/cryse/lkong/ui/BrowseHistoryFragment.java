@@ -112,7 +112,7 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
-                    getThemedActivity().setNightMode(!isNightMode());
+                    toggleNightMode();
                 }
                 return true;
             case android.R.id.home:
@@ -173,7 +173,7 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
 
     @Override
     protected BrowseHistoryAdapter createAdapter(List<BrowseHistory> itemList) {
-        BrowseHistoryAdapter adapter = new BrowseHistoryAdapter(getActivity(), mItemList);
+        BrowseHistoryAdapter adapter = new BrowseHistoryAdapter(getActivity(), mATEKey, mItemList);
         adapter.setOnBrowseHistoryItemClickListener(new BrowseHistoryAdapter.OnBrowseHistoryItemClickListener() {
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {

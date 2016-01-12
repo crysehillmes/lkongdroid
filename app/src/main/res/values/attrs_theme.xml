@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="BaseTheme">
-        <attr name="actionBarIconColor" format="color" />
-        <attr name="actionBarInsetStart" format="dimension" />
-        <attr name="spinnerBarInsetStart" format="dimension" />
-        <attr name="popupItemBackground" format="reference" />
-        <attr name="photoItemForeground" format="reference" />
-        <attr name="photoItemForegroundBorderless" format="reference" />
-    </declare-styleable>
+    <attr name="ate_key" format="string" />
     <attr name="theme_toolbar_popup_theme" format="reference" />
-    <attr name="theme_navigation_drawer_bg" format="reference" />
-    <attr name="theme_navigation_drawer_top_drawable" format="reference"/>
-    <attr name="theme_navigation_drawer_text_color" format="reference|color"/>
-    <attr name="theme_navigation_drawer_icon_color" format="reference|color"/>
-    <attr name="theme_selector_no_check_item_navigation" format="reference"/>
-    <attr name="theme_float_label_layout_text_appearence" format="reference"/>
-    <attr name="theme_float_label_layout_selector" format="reference" />
-    <attr name="theme_card_bg_color" format="reference|color"/>
-    <attr name="theme_card_divier_color" format="reference|color"/>
-
-    <attr name="theme_text_color_primary" format="reference|color"/>
-    <attr name="theme_text_color_secondary" format="reference|color"/>
-
-    <attr name="theme_arrow_backward_drawable" format="reference"/>
-    <attr name="theme_arrow_forward_drawable" format="reference"/>
     <attr name="theme_send_pm_drawable" format="reference"/>
-    <attr name="theme_bottom_bar_color" format="reference|color"/>
-    <attr name="theme_button_tint_color" format="reference|color"/>
-    <attr name="theme_button_circle_background" format="reference|color"/>
+    <declare-styleable name="CustomColorSwitchCompat">
+        <attr name="toggleOnColor" format="color" />
+        <attr name="toggleOffColor" format="color" />
+        <attr name="bgOnColor" format="color" />
+        <attr name="bgOffColor" format="color" />
+    </declare-styleable>
 </resources>

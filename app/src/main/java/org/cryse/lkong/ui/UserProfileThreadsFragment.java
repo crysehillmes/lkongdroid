@@ -9,13 +9,14 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.presenter.UserProfileThreadsPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
 
@@ -34,9 +35,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
 
     @Inject
     UserProfileThreadsPresenter mPresenter;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     public static UserProfileThreadsFragment newInstance(long uid, boolean isDigest) {
         Bundle args = new Bundle();
@@ -51,6 +50,8 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         Bundle args = getArguments();
         if(args != null && args.containsKey(KEY_UID) && args.containsKey(KEY_IS_DIGEST)) {
             mUid = args.getLong(KEY_UID);
@@ -86,7 +87,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {

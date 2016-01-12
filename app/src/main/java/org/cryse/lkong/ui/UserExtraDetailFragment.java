@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.Config;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.model.UserInfoModel;
@@ -91,6 +93,15 @@ public class UserExtraDetailFragment extends AbstractFragment {
         ButterKnife.bind(this, contentView);
         displayUserInfo();
         return contentView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mIntroductionCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
+        mWealthCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
+        mPunchCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
+        mRegistrationTimeCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
     }
 
     public void setUserInfo(UserInfoModel userInfo) {

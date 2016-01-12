@@ -13,6 +13,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
@@ -32,8 +33,6 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsCheckNoticeDuration;
-import org.cryse.lkong.application.qualifier.PrefsVersionCode;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -41,11 +40,14 @@ import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.sync.SyncUtils;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.utils.preference.IntegerPreference;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.utils.ThemeUtils;
+import org.cryse.utils.preference.IntegerPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
 
@@ -57,17 +59,13 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivity extends AbstractThemeableActivity{
+public class MainActivity extends AbstractActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    @PrefsCheckNoticeDuration
-    StringPreference mCheckNoticeDuration;
-    @Inject
-    @PrefsVersionCode
-    IntegerPreference mVersionCodePref;
+    StringPrefs mCheckNoticeDuration;
+    IntegerPrefs mVersionCodePref;
 
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
@@ -88,8 +86,14 @@ public class MainActivity extends AbstractThemeableActivity{
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //setUpToolbar(R.id.appbar, R.id.my_awesome_toolbar, R.id.toolbar_shadow);
-        setIsOverrideStatusBarColor(false);
+        mCheckNoticeDuration = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION,
+                PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE
+        );
+        mVersionCodePref = Prefs.getIntPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
+        );
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this, true);
             closeActivityWithTransition();
@@ -122,6 +126,11 @@ public class MainActivity extends AbstractThemeableActivity{
 
             @Override
             public Drawable placeholder(Context ctx) {
+                return null;
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
                 return null;
             }
         });
@@ -160,7 +169,7 @@ public class MainActivity extends AbstractThemeableActivity{
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
-                .withStatusBarColor(getThemeEngine().getPrimaryDarkColor())
+                .withStatusBarColor(getPrimaryDarkColor())
                 .addDrawerItems(
                         drawerItems
                 )
@@ -203,7 +212,6 @@ public class MainActivity extends AbstractThemeableActivity{
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelection(mCurrentSelection, false);
         }
-
     }
 
     @Override
@@ -266,11 +274,6 @@ public class MainActivity extends AbstractThemeableActivity{
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
-    }
-
-    @Override
-    protected boolean hasSwipeBackLayout() {
-        return false;
     }
 
     @Override
@@ -361,10 +364,8 @@ public class MainActivity extends AbstractThemeableActivity{
         super.onStart();
     }
 
-    @Override
     public void closeActivityWithTransition() {
         finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     public Drawer getNavigationDrawer() {
@@ -394,7 +395,6 @@ public class MainActivity extends AbstractThemeableActivity{
 
                                 new MaterialDialog.Builder(this)
                                         .title(R.string.text_new_version_changes)
-                                        .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                                         .content(reader.toSpannable(versionCode))
                                         .show();
                             }

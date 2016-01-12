@@ -7,12 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -22,12 +24,14 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter<PrivateChatModel> {
+    private String mATEKey;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private final int mAvatarSize;
     private int mAvatarLoadPolicy;
-    public NoticePrivateChatsCollectionAdapter(Context context, List<PrivateChatModel> items, int avatarLoadPolicy) {
+    public NoticePrivateChatsCollectionAdapter(Context context, String ateKey, List<PrivateChatModel> items, int avatarLoadPolicy) {
         super(context, items);
+        this.mATEKey = ateKey;
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(getContext());
@@ -38,7 +42,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_private_chat, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, mATEKey);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
 
                 viewHolder.mChatMessageTextView.setText(model.getMessage());
                 viewHolder.mUserNameTextView.setText(model.getTargetUserName());
-                viewHolder.mDatelineTextView.setText(DateFormatUtils.formatDateDividByToday(
+                viewHolder.mDatelineTextView.setText(TimeFormatUtils.formatDateDividByToday(
                         model.getDateline(),
                         mTodayPrefix,
                         getContext().getResources().getConfiguration().locale));
@@ -78,9 +82,10 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
         @Bind(R.id.recyclerview_item_private_chat_textview_dateline)
         public TextView mDatelineTextView;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, String ateKey) {
             super(v);
             ButterKnife.bind(this, v);
+            ATE.apply(itemView, ateKey);
         }
     }
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="primary_color">Primary Color</string>
+    <string name="primary_color_summary">Change the primary theme color</string>
+
+    <string name="accent_color">Accent Color</string>
+    <string name="accent_color_summary">Change the accent theme color</string>
+
+    <string name="primary_text_color">Primary Text Color</string>
+    <string name="primary_text_color_summary">Change the primary text color</string>
+
+    <string name="secondary_text_color">Secondary Text Color</string>
+    <string name="secondary_text_color_summary">Change the secondary text color</string>
+
+    <string name="colored_status_bar">Colored Status Bar</string>
+    <string name="colored_status_bar_summary">Toggle status bar coloring</string>
+
+    <string name="colored_nav_bar">Colored Navigation Bar</string>
+    <string name="colored_nav_bar_summary">Toggle navigation bar coloring</string>
+
+    <string name="light_status_bar_mode">Light Status Bar Mode</string>
+    <string name="light_toolbar_mode">Light Toolbar Mode</string>
+
+    <string name="ate_colors">ATE Colors</string>
+    <string name="base_theme">Base Theme</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_ui_modes">Light UI Modes</string>
+    <string name="dark_theme_summary">Apply a dark theme throughout the app</string>
+    <string name="system_ui_colors">System UI Colors</string>
+    <string name="not_available_below_m">Not available below 6.0 Marshmallow.</string>
+    <string name="not_available_below_lollipop">Not available below 5.0 Lollipop.</string>
+
+    <string-array name="light_status_mode_entries">
+        <item>Off, status bar icons will be white</item>
+        <item>On, status bar icons will be black</item>
+        <item>Auto, status bar icons will be black if primary color is light</item>
+    </string-array>
+
+    <string-array name="light_toolbar_mode_entries">
+        <item>Off, toolbar text/icons will be white</item>
+        <item>On, toolbar text/icons will be black</item>
+        <item>Auto, toolbar text/icons will be black if primary color is light</item>
+    </string-array>
+
+    <string-array name="light_status_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

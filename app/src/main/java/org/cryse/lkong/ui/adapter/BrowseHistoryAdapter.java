@@ -8,13 +8,12 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -24,12 +23,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory> {
+    private String mATEKey;
     private final String mTodayPrefix;
 
     OnBrowseHistoryItemClickListener mOnBrowseHistoryItemClickListener;
 
-    public BrowseHistoryAdapter(Context context, List<BrowseHistory> mItemList) {
+    public BrowseHistoryAdapter(Context context, String ateKey, List<BrowseHistory> mItemList) {
         super(context, mItemList);
+        this.mATEKey = ateKey;
         this.mTodayPrefix = getString(R.string.datetime_today);
     }
 
@@ -38,7 +39,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_browse_history, parent, false);
-        return new ViewHolder(v, mOnBrowseHistoryItemClickListener);
+        return new ViewHolder(v, mATEKey, mOnBrowseHistoryItemClickListener);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
                 viewHolder.mTitleTextView.setText(historyItem.getThreadTitle());
                 viewHolder.mSecondaryTextView.setText(historyItem.getThreadAuthorName());
                 viewHolder.mSecondaryTextView.setText(historyItem.getForumTitle() + " - " + historyItem.getThreadAuthorName());
-                viewHolder.mTimeTextView.setText(DateFormatUtils.formatDateDividByToday(
+                viewHolder.mTimeTextView.setText(TimeFormatUtils.formatDateDividByToday(
                         historyItem.getLastReadTimeDate(),
                         mTodayPrefix,
                         getContext().getResources().getConfiguration().locale));
@@ -79,7 +80,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
         public TextView mTimeTextView;
 
         OnBrowseHistoryItemClickListener mOnThreadItemClickListener;
-        public ViewHolder(View v, OnBrowseHistoryItemClickListener listener) {
+        public ViewHolder(View v, String ateKey, OnBrowseHistoryItemClickListener listener) {
             super(v);
             ButterKnife.bind(this, v);
             mOnThreadItemClickListener = listener;
@@ -88,6 +89,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
                     mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
         }
     }
 

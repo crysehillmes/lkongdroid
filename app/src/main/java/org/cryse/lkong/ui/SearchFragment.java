@@ -13,7 +13,6 @@ import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
@@ -25,7 +24,9 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.SearchForumView;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,9 +46,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
@@ -73,7 +72,8 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         // UIUtils.setInsets(this, mCollectionView, false, false, true, Build.VERSION.SDK_INT < 21);
         Bundle args = getArguments();
         if (args != null) {
