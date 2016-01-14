@@ -25,7 +25,6 @@
         android:layout_marginTop="?actionBarSize"
         android:layout_marginBottom="88dp"
         android:layout_alignParentRight="true"
-        android:visibility="invisible"
         />
 
     <android.support.v7.widget.Toolbar

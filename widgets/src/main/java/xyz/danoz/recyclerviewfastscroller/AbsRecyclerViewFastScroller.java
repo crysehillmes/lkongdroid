@@ -1,6 +1,5 @@
 package xyz.danoz.recyclerviewfastscroller;
 
-import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -41,7 +40,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     /** Animation **/
     private static final int DURATION_FADE_IN = 150;
     private static final int DURATION_FADE_OUT = 300;
-    private static final int FADE_TIMEOUT = 1200;
+    private static final int FADE_TIMEOUT = 1500;
     private HideHandler mHideHandler;
 
     private static final int[] STYLEABLE = R.styleable.AbsRecyclerViewFastScroller;
@@ -62,6 +61,8 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     /** If I had my druthers, AbsRecyclerViewFastScroller would implement this as an interface, but Android has made
      * {@link OnScrollListener} an abstract class instead of an interface. Hmmm */
     protected OnScrollListener mOnScrollListener;
+
+    private boolean shouldCreateScrollProgressCalculator;
 
     public AbsRecyclerViewFastScroller(Context context) {
         this(context, null, 0);
@@ -244,10 +245,18 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        shouldCreateScrollProgressCalculator = true;
+    }
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (getScrollProgressCalculator() == null) {
+        if (getScrollProgressCalculator() == null || shouldCreateScrollProgressCalculator) {
+            shouldCreateScrollProgressCalculator = false;
             onCreateScrollProgressCalculator();
         }
 
@@ -297,14 +306,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
     private void show(int timeout) {
         animate()
             .alpha(1f)
-            .setDuration(DURATION_FADE_IN)
-                .setListener(new LayerEnablingAnimatorListener(AbsRecyclerViewFastScroller.this) {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        super.onAnimationStart(animation);
-                        AbsRecyclerViewFastScroller.this.setVisibility(VISIBLE);
-                    }
-                });
+            .setDuration(DURATION_FADE_IN);
 
         Message msg = mHideHandler.obtainMessage(1);
         mHideHandler.removeMessages(1);
@@ -328,14 +330,7 @@ public abstract class AbsRecyclerViewFastScroller extends FrameLayout implements
                     if (scroller == null) break;
                     scroller.animate()
                             .alpha(0f)
-                            .setDuration(DURATION_FADE_OUT)
-                            .setListener(new LayerEnablingAnimatorListener(scroller) {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    super.onAnimationEnd(animation);
-                                    scroller.setVisibility(INVISIBLE);
-                                }
-                            });
+                            .setDuration(DURATION_FADE_OUT);
                     break;
             }
         }
