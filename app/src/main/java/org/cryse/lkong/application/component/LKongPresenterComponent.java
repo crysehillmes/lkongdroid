@@ -2,7 +2,6 @@ package org.cryse.lkong.application.component;
 
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
-import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.ui.BrowseHistoryFragment;
 import org.cryse.lkong.ui.FavoritesFragment;
 import org.cryse.lkong.ui.FollowedForumsFragment;
@@ -36,7 +35,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ContextModule.class, LKongModule.class, PreferenceModule.class})
+@Component(modules = {ContextModule.class, LKongModule.class})
 public interface LKongPresenterComponent {
     void inject(MainActivity activity);
     void inject(UrlSchemaDispatcherActivity activity);

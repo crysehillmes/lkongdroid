@@ -12,7 +12,6 @@ public class NotificationActivity extends SimpleContainerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarColor();
     }
 
     @Override

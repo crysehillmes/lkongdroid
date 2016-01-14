@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -30,6 +31,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
@@ -40,7 +43,7 @@ import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
@@ -56,7 +59,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class UserProfileActivity extends AbstractThemeableActivity implements /*RevealBackgroundView.OnStateChangeListener, */UserProfileView {
+public class UserProfileActivity extends AbstractSwipeBackActivity implements /*RevealBackgroundView.OnStateChangeListener, */UserProfileView {
     private static final String LOG_TAG = UserProfileActivity.class.getName();
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
     private static final String LOAD_IMAGE_TASK_TAG = "user_profile_load_image_tag_";
@@ -148,10 +151,17 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
         mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);/*
         setupUserProfileGrid();
         setupRevealBackground(savedInstanceState);*/
-        setupBackground();
         setupAnimations();
         initViewPager();
+        ATE.apply(mTabLayout, mATEKey);
+    }
 
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -178,14 +188,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
-    }
-
-    private void setupBackground() {
-        int primaryColor = getThemeEngine().getPrimaryColor();
-        mCollapsingToolbarLayout.setContentScrimColor(primaryColor);
-        mAppBarLayout.setBackgroundColor(primaryColor);
-        mTabLayout.setBackgroundColor(primaryColor);
-        //mHeaderRootView.setBackgroundColor(getThemeEngine().getPrimaryColor(this));
     }
 
     private void initViewPager() {
@@ -313,11 +315,6 @@ public class UserProfileActivity extends AbstractThemeableActivity implements /*
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
-    }
-
-    @Override
-    public int getToolbarColor() {
-        return Color.TRANSPARENT;
     }
 
     @Override

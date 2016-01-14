@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import org.apache.tika.Tika;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -54,7 +55,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PhotoViewPagerActivity extends AbstractThemeableActivity {
+public class PhotoViewPagerActivity extends AbstractSwipeBackActivity {
     private static final String LOG_TAG = PhotoViewPagerActivity.class.getName();
 
     private List<String> mPhotoUrls = new ArrayList<String>();
@@ -72,7 +73,6 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
-        setIsOverrideToolbarColor(false);
         ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -123,6 +123,14 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         });
         mViewPager.setCurrentItem(initPosition);
         setTitle(mPagerAdapter.getPageTitle(initPosition));
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override

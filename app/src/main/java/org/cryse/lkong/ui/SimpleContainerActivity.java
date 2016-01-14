@@ -5,10 +5,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
-public abstract class SimpleContainerActivity extends AbstractThemeableActivity{
+public abstract class SimpleContainerActivity extends AbstractSwipeBackActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();

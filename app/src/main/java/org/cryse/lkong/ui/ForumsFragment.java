@@ -92,7 +92,7 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected ForumListAdapter createAdapter(List<ForumModel> itemList) {
-        return new ForumListAdapter(this, mItemList);
+        return new ForumListAdapter(this, mATEKey, mItemList);
     }
 
     @Override

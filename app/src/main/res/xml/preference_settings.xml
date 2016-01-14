@@ -8,15 +8,8 @@
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_dispaly_title">
-
-        <CheckBoxPreference
-            android:key="prefs_is_night_mode"
-            android:title="@string/settings_item_is_night_mode_title"
-            android:summary="@string/settings_item_is_night_mode_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
         <Preference
-            android:key="prefs_theme_color"
+            android:key="prefs_theme"
             android:title="@string/settings_item_theme_color_title"
             android:summary="@string/settings_item_theme_color_summary"/>
     </PreferenceCategory>

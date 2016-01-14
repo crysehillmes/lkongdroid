@@ -62,7 +62,7 @@ public class NoticeFragment extends SimpleCollectionFragment<
 
     @Override
     protected NoticeCollectionAdapter createAdapter(List<NoticeModel> itemList) {
-        return new NoticeCollectionAdapter(getActivity(), mItemList);
+        return new NoticeCollectionAdapter(getActivity(), mATEKey, mItemList);
     }
 
     @Override

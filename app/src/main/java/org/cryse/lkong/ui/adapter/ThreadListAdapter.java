@@ -11,15 +11,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
 import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.ThemeUtils;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -30,6 +32,7 @@ import butterknife.Bind;
 
 public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public static final String THREAD_PICASSO_TAG = "picasso_thread_list_adapter";
+    private String mATEKey;
     private final String mTodayPrefix;
     private int mColorAccent;
     private final int mAvatarSize;
@@ -37,10 +40,11 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
 
     OnThreadItemClickListener mOnThreadItemClickListener;
     private CircleTransform mCircleTransform;
-    public ThreadListAdapter(Context context, List<ThreadModel> mItemList, int avatarLoadPolicy) {
+    public ThreadListAdapter(Context context, String ateKey, List<ThreadModel> mItemList, int avatarLoadPolicy) {
         super(context, mItemList);
+        this.mATEKey = ateKey;
         this.mTodayPrefix = getString(R.string.datetime_today);
-        this.mColorAccent = ColorUtils.getColorFromAttr(getContext(), R.attr.colorAccent);
+        this.mColorAccent = ThemeUtils.accentColor(context);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(mContext);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
@@ -51,7 +55,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_thread, parent, false);
-        return new ViewHolder(v, mOnThreadItemClickListener);
+        return new ViewHolder(v, mATEKey, mOnThreadItemClickListener);
     }
 
     @Override
@@ -94,7 +98,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         viewHolder.mThreadTitleTextView.setText(spannableTitle);
         viewHolder.mThreadSecondaryTextView.setText(threadModel.getUserName());
         viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
-        viewHolder.mNotice2TextView.setText(DateFormatUtils.formatDateDividByToday(
+        viewHolder.mNotice2TextView.setText(TimeFormatUtils.formatDateDividByToday(
                 threadModel.getDateline(),
                 todayPrefix,
                 context.getResources().getConfiguration().locale));
@@ -129,7 +133,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         public TextView mNotice2TextView;
 
         OnThreadItemClickListener mOnThreadItemClickListener;
-        public ViewHolder(View v, OnThreadItemClickListener listener) {
+        public ViewHolder(View v, String ateKey, OnThreadItemClickListener listener) {
             super(v);
             ButterKnife.bind(this, v);
             mOnThreadItemClickListener = listener;
@@ -143,6 +147,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
                     mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
         }
     }
 

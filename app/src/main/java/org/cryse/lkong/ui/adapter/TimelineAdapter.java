@@ -16,19 +16,21 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -43,20 +45,24 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private final int mAvatarSize;
     private CircleTransform mCircleTransform;
     private int mAvatarLoadPolicy;
+    private int mTextColorSecondary;
+    private String mATEKey;
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-    public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy) {
+    public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy, String ateKey) {
         super(context, items);
         this.mTodayPrefix = getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(context);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
+        this.mATEKey = ateKey;
+        this.mTextColorSecondary = Config.textColorPrimary(context, mATEKey);
     }
 
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recyclerview_item_timeline, parent, false);
-        return new ViewHolder(v, mOnTimelineModelItemClickListener);
+        return new ViewHolder(v, mATEKey, mOnTimelineModelItemClickListener);
     }
 
     @Override
@@ -74,7 +80,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                         mCircleTransform,
                         viewHolder,
                         timelineModel,
-                        mAvatarLoadPolicy
+                        mAvatarLoadPolicy,
+                        mTextColorSecondary
                 );
             }
         }
@@ -87,7 +94,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             CircleTransform circleTransform,
             ViewHolder viewHolder,
             TimelineModel timelineModel,
-            int avatarLoadPolicy) {
+            int avatarLoadPolicy,
+            int textColorSecondary) {
 
         SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
         String mainContent;
@@ -126,7 +134,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
             viewHolder.mSecondaryContainer.setVisibility(View.GONE);
             String createInfo = context.getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
             mainPrefixSpannable.append(createInfo);
-            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_secondary)),
+            mainPrefixSpannable.setSpan(new ForegroundColorSpan(textColorSecondary),
                     0,
                     createInfo.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -152,7 +160,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         viewHolder.mMessageTextView.setText(mainSpannable);
 
         viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
-        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
+        viewHolder.mDatelineTextView.setText(TimeFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
         ImageLoader.loadAvatar(
                 context,
                 viewHolder.mAuthorAvatarImageView,
@@ -186,7 +194,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
 
 
         OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-        public ViewHolder(View v, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
+        public ViewHolder(View v, String ateKey, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
             super(v);
             ButterKnife.bind(this, v);
             mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
@@ -200,6 +208,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mOnTimelineModelItemClickListener.onItemTimelineClick(v1, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
+            mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(v.getContext(), ateKey));
         }
     }
 

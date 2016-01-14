@@ -16,6 +16,8 @@ android {
         versionName appVersionName
     }
 
+    dexOptions { jumboMode = true }
+
     compileOptions {
         encoding 'UTF-8'
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -67,6 +69,7 @@ dependencies {
     compile project(':widgets')
     compile project(':changelog')
 
+    compile libDependencies.multidex
     compile libDependencies.support_v13
     compile libDependencies.design
     compile libDependencies.appcompat
@@ -75,13 +78,11 @@ dependencies {
 
     compile libDependencies.gson
     compile libDependencies.okhttp
-    compile libDependencies.okhttp_urlconnection
 
     compile libDependencies.rxjava
     compile libDependencies.rxandroid
     compile libDependencies.butterknife
 
-    compile libDependencies.commons_lang3
     compile libDependencies.tika
     compile libDependencies.timber
 
@@ -90,6 +91,14 @@ dependencies {
     }
 
     compile(libDependencies.materialdialog) {
+        transitive = true
+    }
+
+    compile(libDependencies.materialdialog_commons) {
+        transitive = true
+    }
+
+    compile(libDependencies.theme_engine) {
         transitive = true
     }
 

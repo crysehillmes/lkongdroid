@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpanWatcher;
@@ -44,8 +45,6 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsPostTail;
-import org.cryse.lkong.application.qualifier.PrefsReadFontSize;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
@@ -53,7 +52,7 @@ import org.cryse.lkong.event.NewThreadDoneEvent;
 import org.cryse.lkong.event.PostErrorEvent;
 import org.cryse.lkong.model.EditPostResult;
 import org.cryse.lkong.service.SendPostService;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.dialog.EmoticonDialog;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
@@ -63,10 +62,12 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
-import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmojiSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -78,7 +79,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -86,17 +86,13 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 import timber.log.Timber;
 
-public abstract class AbstractPostActivity extends AbstractThemeableActivity {
+public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Inject
-    @PrefsPostTail
-    StringPreference mPostTailText;
+    StringPrefs mPostTailText;
 
-    @Inject
-    @PrefsReadFontSize
-    StringPreference mReadFontSizePref;
+    StringPrefs mReadFontSizePref;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -136,6 +132,14 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         setContentView(R.layout.activity_new_thread);
         ButterKnife.bind(this);
+        mPostTailText = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT,
+                PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE
+        );
+        mReadFontSizePref = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
+                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
+        );
         setSwipeBackEnable(false);
         setUpToolbar(mToolbar);
         mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
@@ -160,6 +164,14 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         mInsertEmoticonButton.setOnClickListener(view -> showInsertEmoticonDialog());
         mInsertImageButton.setOnClickListener(view -> openImageIntent());
         mInsertUrlButton.setOnClickListener(view -> showInsertUrlDialog());
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -187,7 +199,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                 submitPost();
                 return true;
             case R.id.action_change_theme:
-                setNightMode(!isNightMode());
+                toggleNightMode();
                 return true;
             case android.R.id.home:
                 closeActivityWithTransition();
@@ -530,14 +542,13 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
                         spanFlags);
             } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
                 spannable.removeSpan(imageSpan);
-                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+
+
+                EmojiSpan emoticonImageSpan = new EmojiSpan(
                         this,
-                        null,
-                        Long.toString(pid),
-                        PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.placeholder_loading,
-                        R.drawable.placeholder_error,
+                        (int)(mContentTextSize * 2 * 2),
+                        ImageSpan.ALIGN_BASELINE,
                         (int)mContentTextSize * 2
                 );
                 spannable.setSpan(emoticonImageSpan,
@@ -615,7 +626,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
         Spannable spannable = new SpannableString(content);
         Drawable tempDrawable = new ColorDrawable(Color.TRANSPARENT);
         ClickableImageSpan[] clickableImageSpans = spannable.getSpans(0, spannable.length(), ClickableImageSpan.class);
-        EmoticonImageSpan[] emoticonImageSpans = spannable.getSpans(0, spannable.length(), EmoticonImageSpan.class);
+        EmojiSpan[] emoticonImageSpans = spannable.getSpans(0, spannable.length(), EmojiSpan.class);
         for (ClickableImageSpan span : clickableImageSpans) {
             int start = spannable.getSpanStart(span);
             int end = spannable.getSpanEnd(span);
@@ -623,7 +634,7 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             spannable.removeSpan(span);
             spannable.setSpan(imageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        for (EmoticonImageSpan span : emoticonImageSpans) {
+        for (EmojiSpan span : emoticonImageSpans) {
             int start = spannable.getSpanStart(span);
             int end = spannable.getSpanEnd(span);
             ImageSpan imageSpan = new ImageSpan(tempDrawable, span.getSource());
@@ -659,21 +670,15 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
             } else {
                 if (mContentEditText != null && !TextUtils.isEmpty(mContentEditText.getText())) {
                     new MaterialDialog.Builder(this)
-                            .content(getString(R.string.dialog_exit_new_post_title, getString(R.string.app_name)))
-                            .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)  // the default is light, so you don't need this line
+                            .content(getString(R.string.dialog_exit_new_post_title))
                             .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
                             .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog dialog) {
-                                    dialog.dismiss();
-                                    AbstractPostActivity.this.finish();
-                                }
-
-                                @Override
-                                public void onNegative(MaterialDialog dialog) {
-                                    dialog.dismiss();
-                                }
+                            .onPositive((dialog, which) -> {
+                                dialog.dismiss();
+                                AbstractPostActivity.this.finish();
+                            })
+                            .onNegative((dialog, which) -> {
+                                dialog.dismiss();
                             })
                             .build()
                             .show();
@@ -688,28 +693,23 @@ public abstract class AbstractPostActivity extends AbstractThemeableActivity {
     protected void showInsertUrlDialog() {
         MaterialDialog urlInputDialog = new MaterialDialog.Builder(AbstractPostActivity.this)
                 .title(R.string.dialog_title_insert_url)
-                .theme(isNightMode() ? Theme.DARK : Theme.LIGHT)
                 .customView(R.layout.dialog_input_url, false)
-                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog urlInputDialogRef) {
-                        super.onPositive(urlInputDialogRef);
-                        if (urlInputDialogRef != null && urlInputDialogRef.getCustomView() != null) {
-                            EditText nameEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_name);
-                            EditText valueEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_value);
-                            String urlName = nameEditText.getText().toString();
-                            String urlValue = valueEditText.getText().toString();
-                            if (!TextUtils.isEmpty(urlName) && !TextUtils.isEmpty(urlValue)) {
-                                insertUrlSpan(urlName, urlValue);
-                            } else {
-                                showSnackbar(
-                                        getString(R.string.toast_error_url_empty),
-                                        SimpleSnackbarType.ERROR,
-                                        SimpleSnackbarType.LENGTH_SHORT
-                                );
-                            }
+                .positiveText(android.R.string.ok)
+                .onPositive((dialog, which) -> {
+                    if (dialog != null && dialog.getCustomView() != null) {
+                        EditText nameEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_url_name);
+                        EditText valueEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_url_value);
+                        String urlName = nameEditText.getText().toString();
+                        String urlValue = valueEditText.getText().toString();
+                        if (!TextUtils.isEmpty(urlName) && !TextUtils.isEmpty(urlValue)) {
+                            insertUrlSpan(urlName, urlValue);
+                        } else {
+                            showSnackbar(
+                                    getString(R.string.toast_error_url_empty),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
                         }
-
                     }
                 })
                 .build();

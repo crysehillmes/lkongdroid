@@ -18,22 +18,11 @@
         app:ptrDrawableStart="@android:color/transparent"
         app:ptrDrawableEnd="@android:color/transparent"/>
 
-    <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
-        android:id="@+id/fast_scroller"
-        android:layout_width="24dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        android:layout_marginBottom="88dp"
-        android:layout_alignParentRight="true"
-        android:visibility="invisible"
-        />
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_alignParentTop="true"
-        android:background="?colorPrimary"
         android:elevation="@dimen/toolbar_elevation"
         android:minHeight="?actionBarSize"
         app:popupTheme="?theme_toolbar_popup_theme"
@@ -45,11 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_fab_action_create"
-        app:fab_colorNormal="?colorPrimary"
-        app:fab_colorPressed="?colorPrimaryDark"
-        app:fab_colorRipple="?colorAccent" />
+        android:layout_margin="16dp" />
 
     <include
         android:id="@+id/activity_post_list_page_control"

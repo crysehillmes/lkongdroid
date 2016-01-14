@@ -4,18 +4,19 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SettingsActivity extends AbstractThemeableActivity {
+public class SettingsActivity extends AbstractSwipeBackActivity {
     public static final String LOG_TAG = SettingsActivity.class.getName();
 
     @Bind(R.id.toolbar)
@@ -45,6 +46,14 @@ public class SettingsActivity extends AbstractThemeableActivity {
         fragmentTransaction.replace(R.id.content_frame, fragment);
         fragmentTransaction.commit();
 
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override

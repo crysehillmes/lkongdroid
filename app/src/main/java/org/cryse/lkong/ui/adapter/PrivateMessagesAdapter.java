@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.utils.ImageLoader;
@@ -30,14 +32,16 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
     private static final int TYPE_SEND = ITEM_TYPE_ITEM_START + 1;
     private static final int TYPE_RECEIVE = ITEM_TYPE_ITEM_START + 2;
 
+    private String mATEKey;
     private Fragment mParentFragment;
     private final CircleTransform mCircleTransform;
     private final String mTodayPrefix;
     private final int mAvatarSize;
     private int mAvatarLoadPolicy;
 
-    public PrivateMessagesAdapter(Fragment parentFragment, List<PrivateMessageModel> itemList, int avatarLoadPolicy) {
+    public PrivateMessagesAdapter(Fragment parentFragment, String ateKey, List<PrivateMessageModel> itemList, int avatarLoadPolicy) {
         super(parentFragment.getContext(), itemList);
+        this.mATEKey = ateKey;
         this.mParentFragment = parentFragment;
         this.mTodayPrefix = getContext().getString(R.string.datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(parentFragment.getContext());
@@ -75,11 +79,11 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         switch (viewType) {
             case TYPE_SEND:
                 view = inflater.inflate(R.layout.recyclerview_item_private_message_item_send, parent, false);
-                return new PrivateMessageViewHolder(view);
+                return new PrivateMessageViewHolder(view, mATEKey);
             case TYPE_RECEIVE:
             default:
                 view = inflater.inflate(R.layout.recyclerview_item_private_message_item_receive, parent, false);
-                return new PrivateMessageViewHolder(view);
+                return new PrivateMessageViewHolder(view, mATEKey);
         }
     }
 
@@ -106,9 +110,10 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         @Bind(R.id.recyclerview_item_private_message_textview_dateline)
         TextView mDatelineTextView;
 
-        public PrivateMessageViewHolder(View itemView) {
+        public PrivateMessageViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            ATE.apply(itemView, ateKey);
             mMessageTextView.setMovementMethod(
                     LinkMovementMethod.getInstance()
             );

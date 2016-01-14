@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
 import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
@@ -16,9 +17,9 @@ import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.utils.DateFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchResult> {
+    private String mATEKey;
     private int mResultType = 0;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
@@ -62,13 +64,13 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         switch (viewType) {
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_POST:
                 view = inflater.inflate(R.layout.recyclerview_item_search_post, parent, false);
-                return new SearchPostViewHolder(view);
+                return new SearchPostViewHolder(view, mATEKey);
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_USER:
                 view = inflater.inflate(R.layout.recyclerview_item_search_user, parent, false);
-                return new SearchUserViewHolder(view);
+                return new SearchUserViewHolder(view, mATEKey);
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_GROUP:
                 view = inflater.inflate(R.layout.recyclerview_item_search_group, parent, false);
-                return new SearchGroupViewHolder(view);
+                return new SearchGroupViewHolder(view, mATEKey);
             default:
                 throw new IllegalArgumentException("Unknown viewType.");
         }
@@ -95,7 +97,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
 
     private void bindPostResult(SearchPostViewHolder viewHolder, int position, SearchPostItem item) {
         viewHolder.titleTextView.setText(item.getSubject());
-        viewHolder.secondaryTextView.setText(DateFormatUtils.formatDateDividByToday(
+        viewHolder.secondaryTextView.setText(TimeFormatUtils.formatDateDividByToday(
                 item.getDateline(),
                 mTodayPrefix,
                 getContext().getResources().getConfiguration().locale
@@ -142,9 +144,10 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         TextView secondaryTextView;
         @Bind(R.id.recyclerview_item_search_post_reply_count)
         TextView replyCountTextView;
-        public SearchPostViewHolder(View itemView) {
+        public SearchPostViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            ATE.apply(itemView, ateKey);
         }
     }
 
@@ -155,9 +158,10 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         TextView nameTextView;
         @Bind(R.id.recyclerview_item_search_user_sign)
         TextView signTextView;
-        public SearchUserViewHolder(View itemView) {
+        public SearchUserViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            ATE.apply(itemView, ateKey);
         }
     }
 
@@ -168,9 +172,10 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         TextView nameTextView;
         @Bind(R.id.recyclerview_item_search_group_description)
         TextView descriptionTextView;
-        public SearchGroupViewHolder(View itemView) {
+        public SearchGroupViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            ATE.apply(itemView, ateKey);
         }
     }
 }

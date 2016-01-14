@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recyclerview_item_notice_cardview_root_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="?attr/theme_card_bg_color"
     app:cardCornerRadius="@dimen/default_card_radius"
     app:cardElevation="@dimen/default_card_elevation"
     app:cardUseCompatPadding="true"
@@ -20,10 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:textColor="?theme_text_color_primary"
                 android:textSize="@dimen/text_size_subhead"
                 android:lineSpacingMultiplier="1.3"
-                android:text="placeholder"/>
+                android:text="placeholder"
+                android:tag="text_primary" />
 
         </RelativeLayout>
 

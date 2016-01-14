@@ -1,7 +1,13 @@
 package org.cryse.lkong.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,13 +23,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
+import com.afollestad.appthemeengine.Config;
+import com.afollestad.appthemeengine.util.Util;
 import com.bumptech.glide.Glide;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
@@ -31,14 +38,18 @@ import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
+import org.cryse.lkong.widget.CustomColorSwitchCompat;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +60,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class ForumActivity extends AbstractThemeableActivity implements ForumView {
+public class ForumActivity extends AbstractSwipeBackActivity implements ForumView {
     public static final String LOG_TAG = ForumActivity.class.getName();
     private static final String FORUM_PINNED_KEY = "forum_pinned";
 
@@ -64,9 +75,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
 
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+
+    StringPrefs mAvatarDownloadPolicy;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -78,7 +88,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     View mHeaderView;
     Spinner mListTypeSpinner;
     MenuItem mPinForumMenuItem;
-    SwitchCompat mPinForumSwitch;
+    CustomColorSwitchCompat mPinForumSwitch;
     MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
@@ -96,6 +106,8 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_list);
         ButterKnife.bind(this);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         setUpToolbar(mToolbar);
         initRecyclerView();
         setUpHeaderView();
@@ -108,16 +120,23 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         if(mForumId == -1 || TextUtils.isEmpty(mForumName))
             throw new IllegalStateException("ForumActivity missing extra in intent.");
         setTitle(mForumName);
-
-
     }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     private void initRecyclerView() {
         int actionBarSize = UIUtils.calculateActionBarSize(this);
         int statusBarSize = UIUtils.calculateStatusBarSize(this);
         mThreadCollectionView.getSwipeToRefresh().setProgressViewOffset(true, statusBarSize, actionBarSize * 2);
         mThreadCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
-        mCollectionAdapter = new ThreadListAdapter(this, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        mCollectionAdapter = new ThreadListAdapter(this, mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mThreadCollectionView.setAdapter(mCollectionAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
@@ -161,7 +180,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                 mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getThemeEngine().getPrimaryColor(), getThemeEngine().getPrimaryDarkColor());
+        setColorToViews(getPrimaryColor(), getPrimaryDarkColor());
 
         mThreadCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -188,6 +207,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         mListTypeSpinner.setAdapter(dataAdapter);
         RecyclerView.LayoutParams headerLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mHeaderView.setLayoutParams(headerLP);
+        ((CardView)mHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
         mCollectionAdapter.addHeaderView(mHeaderView);
     }
 
@@ -245,9 +265,6 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if(event instanceof ThemeColorChangedEvent) {
-            setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
-        }
     }
 
     @Override
@@ -268,8 +285,14 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
         getMenuInflater().inflate(R.menu.menu_forum, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
         mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
-        if(mPinForumMenuItem != null)
-            mPinForumSwitch = (SwitchCompat) mPinForumMenuItem.getActionView().findViewById(android.R.id.checkbox);
+        if(mPinForumMenuItem != null) {
+            mPinForumSwitch = (CustomColorSwitchCompat) mPinForumMenuItem.getActionView().findViewById(android.R.id.checkbox);
+            mPinForumSwitch.setToggleOnColor(getAccentColor());
+            mPinForumSwitch.setToggleOffColor(ThemeUtils.makeColorDarken(getAccentColor(), 0.5f));
+            mPinForumSwitch.setBgOffColor(Color.TRANSPARENT);
+            mPinForumSwitch.setBgOnColor(Color.TRANSPARENT);
+            mPinForumSwitch.setTextColor(Util.isColorLight(getPrimaryColor()) ? Color.BLACK : Color.WHITE);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -311,7 +334,7 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
                 closeActivityWithTransition();
                 return true;
             case R.id.action_change_theme:
-                setNightMode(!isNightMode());
+                toggleNightMode();
                 return true;
             case R.id.action_forum_pin_to_home:
 
@@ -422,8 +445,15 @@ public class ForumActivity extends AbstractThemeableActivity implements ForumVie
     }
 
     private void setColorToViews(int primaryColor, int primaryDarkColor) {
-        mFab.setColorNormal(primaryColor);
-        mFab.setColorPressed(primaryDarkColor);
+        int accentColor = getAccentColor();
+        int accentColorDark = ThemeUtils.makeColorDarken(accentColor, 0.8f);
+        int accentColorRipple = ThemeUtils.makeColorDarken(accentColor, 0.9f);
+        mFab.setColorNormal(accentColor);
+        mFab.setColorPressed(accentColorDark);
+        mFab.setColorRipple(accentColorRipple);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_fab_action_create, null).mutate();
+        DrawableCompat.setTint(drawable, Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
+        mFab.setImageDrawable(drawable);
     }
 
     private void pinForum() {
