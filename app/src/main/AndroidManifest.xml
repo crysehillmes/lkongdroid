@@ -51,36 +51,36 @@
         </activity>
         <activity
             android:name=".ui.ForumActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PostListActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.NewPostActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.NewThreadActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.SettingsActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.ThemeSettingsActivity"
             android:label="@string/drawer_item_theme_settings"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ui.NotificationActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PrivateChatActivity"
-            android:theme="@style/AppThemeDark.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PhotoViewPagerActivity"
             android:theme="@style/AppThemeDark.Translucent"/>
         <activity
             android:name=".ui.SearchActivity"
             android:label=""
-            android:theme="@style/AppThemeDark.Translucent">
+            android:theme="@style/AppTheme.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -90,15 +90,15 @@
         </activity>
         <activity
             android:name=".ui.UserProfileActivity"
-            android:theme="@style/AppThemeDark.Translucent"
+            android:theme="@style/AppTheme.Translucent"
             android:label=""/>
         <activity
             android:name=".ui.InAppBrowserActivity"
             android:label=""
-            android:theme="@style/AppThemeDark.Translucent" />
+            android:theme="@style/AppTheme.Translucent" />
         <activity
             android:name=".account.LKongAuthenticatorActivity"
-            android:theme="@style/AppThemeDark.NoTranslucent"/>
+            android:theme="@style/AppTheme.NoTranslucent"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".account.LKongAuthenticateService">
             <intent-filter>

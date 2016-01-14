@@ -13,9 +13,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -43,7 +41,6 @@ import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;

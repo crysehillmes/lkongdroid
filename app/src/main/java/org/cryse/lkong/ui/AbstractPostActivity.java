@@ -673,17 +673,12 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
                             .content(getString(R.string.dialog_exit_new_post_title))
                             .positiveText(R.string.dialog_exit_discard)  // the default is 'OK'
                             .negativeText(R.string.dialog_exit_cancel)  // leaving this line out will remove the negative button
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog dialog) {
-                                    dialog.dismiss();
-                                    AbstractPostActivity.this.finish();
-                                }
-
-                                @Override
-                                public void onNegative(MaterialDialog dialog) {
-                                    dialog.dismiss();
-                                }
+                            .onPositive((dialog, which) -> {
+                                dialog.dismiss();
+                                AbstractPostActivity.this.finish();
+                            })
+                            .onNegative((dialog, which) -> {
+                                dialog.dismiss();
                             })
                             .build()
                             .show();
@@ -699,26 +694,22 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
         MaterialDialog urlInputDialog = new MaterialDialog.Builder(AbstractPostActivity.this)
                 .title(R.string.dialog_title_insert_url)
                 .customView(R.layout.dialog_input_url, false)
-                .positiveText(android.R.string.ok).callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog urlInputDialogRef) {
-                        super.onPositive(urlInputDialogRef);
-                        if (urlInputDialogRef != null && urlInputDialogRef.getCustomView() != null) {
-                            EditText nameEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_name);
-                            EditText valueEditText = (EditText) urlInputDialogRef.getCustomView().findViewById(R.id.edit_url_value);
-                            String urlName = nameEditText.getText().toString();
-                            String urlValue = valueEditText.getText().toString();
-                            if (!TextUtils.isEmpty(urlName) && !TextUtils.isEmpty(urlValue)) {
-                                insertUrlSpan(urlName, urlValue);
-                            } else {
-                                showSnackbar(
-                                        getString(R.string.toast_error_url_empty),
-                                        SimpleSnackbarType.ERROR,
-                                        SimpleSnackbarType.LENGTH_SHORT
-                                );
-                            }
+                .positiveText(android.R.string.ok)
+                .onPositive((dialog, which) -> {
+                    if (dialog != null && dialog.getCustomView() != null) {
+                        EditText nameEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_url_name);
+                        EditText valueEditText = (EditText) dialog.getCustomView().findViewById(R.id.edit_url_value);
+                        String urlName = nameEditText.getText().toString();
+                        String urlValue = valueEditText.getText().toString();
+                        if (!TextUtils.isEmpty(urlName) && !TextUtils.isEmpty(urlValue)) {
+                            insertUrlSpan(urlName, urlValue);
+                        } else {
+                            showSnackbar(
+                                    getString(R.string.toast_error_url_empty),
+                                    SimpleSnackbarType.ERROR,
+                                    SimpleSnackbarType.LENGTH_SHORT
+                            );
                         }
-
                     }
                 })
                 .build();
