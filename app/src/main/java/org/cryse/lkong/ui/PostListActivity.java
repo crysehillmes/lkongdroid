@@ -99,7 +99,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 public class PostListActivity extends AbstractSwipeBackActivity implements PostListView {
     public static final String LOG_TAG = PostListActivity.class.getName();
@@ -131,8 +130,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     PagerControl mFooterPagerControl;
     @Bind(R.id.loading_progressbar)
     ProgressBar mProgressBar;
-    @Bind(R.id.fast_scroller)
-    VerticalRecyclerViewFastScroller mFastScroller;
 
     View mThreadIntroHeaderView;
     TextView mThreadTitleTextView;
@@ -226,8 +223,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 Integer.valueOf(mAvatarDownloadPolicy.get())
         );
         mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
-        mFastScroller.setRecyclerView(mPostCollectionView.getRefreshableView());
-        mPostCollectionView.getRefreshableView().addOnScrollListener(mFastScroller.getOnScrollListener());
 
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
@@ -943,8 +938,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         DrawableCompat.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
-        mFastScroller.setBarColor(primaryColor);
-        mFastScroller.setHandleColor(primaryDarkColor);
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
         Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back_black, null).mutate();
         Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward_black, null).mutate();
