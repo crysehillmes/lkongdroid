@@ -58,12 +58,11 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.ContentProcessor;
 import org.cryse.lkong.utils.ContentUriPathUtils;
 import org.cryse.lkong.utils.PostTailUtils;
-import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.AsyncTargetDrawable;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
-import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmojiSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.application.PreferenceConstant;
@@ -543,14 +542,13 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
                         spanFlags);
             } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
                 spannable.removeSpan(imageSpan);
-                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+
+
+                EmojiSpan emoticonImageSpan = new EmojiSpan(
                         this,
-                        null,
-                        Long.toString(pid),
-                        PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.placeholder_loading,
-                        R.drawable.placeholder_error,
+                        (int)(mContentTextSize * 2 * 2),
+                        ImageSpan.ALIGN_BASELINE,
                         (int)mContentTextSize * 2
                 );
                 spannable.setSpan(emoticonImageSpan,
@@ -628,7 +626,7 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
         Spannable spannable = new SpannableString(content);
         Drawable tempDrawable = new ColorDrawable(Color.TRANSPARENT);
         ClickableImageSpan[] clickableImageSpans = spannable.getSpans(0, spannable.length(), ClickableImageSpan.class);
-        EmoticonImageSpan[] emoticonImageSpans = spannable.getSpans(0, spannable.length(), EmoticonImageSpan.class);
+        EmojiSpan[] emoticonImageSpans = spannable.getSpans(0, spannable.length(), EmojiSpan.class);
         for (ClickableImageSpan span : clickableImageSpans) {
             int start = spannable.getSpanStart(span);
             int end = spannable.getSpanEnd(span);
@@ -636,7 +634,7 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
             spannable.removeSpan(span);
             spannable.setSpan(imageSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        for (EmoticonImageSpan span : emoticonImageSpans) {
+        for (EmojiSpan span : emoticonImageSpans) {
             int start = spannable.getSpanStart(span);
             int end = spannable.getSpanEnd(span);
             ImageSpan imageSpan = new ImageSpan(tempDrawable, span.getSource());

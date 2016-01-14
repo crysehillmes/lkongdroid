@@ -37,7 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,7 +45,6 @@ import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.util.Util;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
 import org.cryse.lkong.R;
@@ -74,7 +72,7 @@ import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
-import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmojiSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.utils.share.ShareContentBuilder;
@@ -259,18 +257,11 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                     mFab.show();
                     mToolbarQuickReturn.show();
                 }
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(!isActivityDestroyed())
-                        Glide.with(PostListActivity.this).resumeRequests();
-                } else {
-                    Glide.with(PostListActivity.this).pauseRequests();
-                }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                //Glide.with(PostListActivity.this).pauseRequests();
 
                 mAmountScrollY = mAmountScrollY + dy;
                 int toolbarHeight = mToolbar.getHeight();
@@ -705,8 +696,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     private void showPostListInternal(int page, List<PostModel> posts, boolean refreshPosition, int showMode) {
         setLoading(false);
         // Resume tag when display new items.
-        if(!isActivityDestroyed())
-            Glide.with(PostListActivity.this).resumeRequests();
         this.mCurrentPage = page;
         updatePageIndicator();
         int currentItemCount = mItemList.size();
@@ -1116,15 +1105,13 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 postDisplayCache.getImageUrls().add(imageSpan.getSource());
             } else if(!TextUtils.isEmpty(imageSpan.getSource()) && imageSpan.getSource().contains("http://img.lkong.cn/bq/")){
                 spannable.removeSpan(imageSpan);
-                EmoticonImageSpan emoticonImageSpan = new EmoticonImageSpan(
+
+                EmojiSpan emoticonImageSpan = new EmojiSpan(
                         this,
-                        null,
-                        Long.toString(postModel.getPid()),
-                        PostListAdapter.POST_PICASSO_TAG,
                         imageSpan.getSource(),
-                        R.drawable.placeholder_loading,
-                        R.drawable.placeholder_error,
-                        (int)mContentTextPaint.getTextSize() * 2
+                        (int)(mContentTextPaint.getTextSize() * 2),
+                        ImageSpan.ALIGN_BASELINE,
+                        (int)mContentTextPaint.getTextSize()
                 );
                 spannable.setSpan(emoticonImageSpan,
                         spanStart,
