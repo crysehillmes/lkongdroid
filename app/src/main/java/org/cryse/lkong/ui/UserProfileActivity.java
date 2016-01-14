@@ -32,7 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.Config;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
@@ -40,12 +40,15 @@ import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.ThemeColorChangedEvent;
+import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
+import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.UserProfilePresenter;
 import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.UserProfileView;
@@ -58,6 +61,11 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class UserProfileActivity extends AbstractSwipeBackActivity implements /*RevealBackgroundView.OnStateChangeListener, */UserProfileView {
     private static final String LOG_TAG = UserProfileActivity.class.getName();
@@ -120,6 +128,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     private boolean mLockedAnimations = false;
     private long mProfileHeaderAnimationStartTime = 0;
     private long mUid;
+    private Subscription mGetUserIdSubscription;
 
     private boolean isLoading = false;
     private String mUserAvatarUrl;
@@ -134,6 +143,13 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         startingContext.startActivity(intent);
     }
 
+    public static void startUserProfileFromLocation(Context startingContext, int[] startingLocation, String userName) {
+        Intent intent = new Intent(startingContext, UserProfileActivity.class);
+        intent.putExtra(ARG_REVEAL_START_LOCATION, startingLocation);
+        intent.putExtra(DataContract.BUNDLE_USER_NAME, userName);
+        startingContext.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
@@ -141,18 +157,22 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
-        //ViewCompat.setElevation(mToolbar, 0f);
         setUpToolbar(mToolbar);
         mAppBarLayout.setTargetElevation(0f);
-        /*mActivityRevealBackground.setFillPaintColor(ColorUtils.getColorFromAttr(this, android.R.attr.colorBackground));
-        */mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
-        if(mUid == 0l)
-            throw new IllegalArgumentException("Must set uid in intent.");
-        mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);/*
+        Intent intent = getIntent();
+        if(intent.hasExtra(DataContract.BUNDLE_USER_ID)) {
+            mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
+            if(mUid == 0)
+                throw new IllegalArgumentException("Must set uid in intent.");
+        } else if(intent.hasExtra(DataContract.BUNDLE_USER_NAME)) {
+            mUid = -1;
+            getUserIdFromName(intent.getStringExtra(DataContract.BUNDLE_USER_NAME));
+        } else {
+            throw new IllegalArgumentException();
+        }/*
         setupUserProfileGrid();
         setupRevealBackground(savedInstanceState);*/
         setupAnimations();
-        initViewPager();
         ATE.apply(mTabLayout, mATEKey);
     }
 
@@ -166,9 +186,16 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);/*
-        mProfileCollectionView.measure(0, 0);*/
+        super.onPostCreate(savedInstanceState);
+        if(mUid > 0) {
+            loadUserProfile();
+        }
+    }
+
+    private void loadUserProfile() {
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
+        mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);
+        initViewPager();
         checkFollowStatus();
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
         Glide.with(this).load(mUserAvatarUrl)
@@ -258,19 +285,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(mFollowContainer != null) {
-            if(mIsUserFollowed != null) {
-                mFollowContainer.setVisibility(View.VISIBLE);
-                if(mIsUserFollowed) {
-                    mFollowButton.setText(R.string.action_user_profile_unfollow);
-                }
-                else {
-                    mFollowButton.setText(R.string.action_user_profile_follow);
-                }
-            } else {
-                mFollowContainer.setVisibility(View.GONE);
-            }
-        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -315,6 +329,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     protected void onDestroy() {
         super.onDestroy();
         getPresenter().destroy();
+        SubscriptionUtils.checkAndUnsubscribe(mGetUserIdSubscription);
     }
 
     @Override
@@ -377,7 +392,19 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     @Override
     public void onCheckFollowStatusComplete(boolean isFollowed) {
         mIsUserFollowed = isFollowed;
-        invalidateOptionsMenu();
+        if(mFollowContainer != null) {
+            if(mIsUserFollowed != null) {
+                mFollowContainer.setVisibility(View.VISIBLE);
+                if(mIsUserFollowed) {
+                    mFollowButton.setText(R.string.action_user_profile_unfollow);
+                }
+                else {
+                    mFollowButton.setText(R.string.action_user_profile_follow);
+                }
+            } else {
+                mFollowContainer.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -416,6 +443,41 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         builder.setSpan(new RelativeSizeSpan(0.8f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return builder;
     }
+
+    private void getUserIdFromName(String name) {
+        mGetUserIdSubscription = Observable.create(new Observable.OnSubscribe<Long>() {
+            @Override
+            public void call(Subscriber<? super Long> subscriber) {
+                try {
+                    GetDataItemLocationRequest request = new GetDataItemLocationRequest(mUserAccountManager.getAuthObject(), "name_" + name);
+                    DataItemLocationModel model = request.execute();
+                    if(model != null && model.isLoad()) {
+                        String locationString = model.getLocation();
+                        if(!TextUtils.isEmpty(locationString)) {
+                            subscriber.onNext(Long.valueOf(locationString.substring(5)));
+                            subscriber.onCompleted();
+                        }
+                    }
+                    subscriber.onError(new Exception("Could not get user id"));
+                } catch (Exception ex) {
+                    subscriber.onError(ex);
+                }
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(result -> {
+                    mUid = result;
+                    loadUserProfile();
+                }, error -> {
+                    new MaterialDialog.Builder(this)
+                            .title(R.string.dialog_title_error)
+                            .content(R.string.dialog_content_cannot_get_user_profile)
+                            .show();
+                    finish();
+                }, () -> {
+
+                });
+    }
+
 
     private void animateUserProfileHeader() {
         if (!mLockedAnimations) {

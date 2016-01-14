@@ -54,6 +54,14 @@ public class HtmlCleaner {
                 break;
             }
         }*/
+        for (Element aAt: fixedDoc.select("a")) {
+            if(aAt.hasText() && (aAt.children() == null || (aAt.children() != null && aAt.children().size() == 0))) {
+                String content = aAt.html().trim();
+                if(content.startsWith("@")) {
+                    aAt.attr("href", "lkong://lkonguser_" + content.substring(1));
+                }
+            }
+        }
         for (Element pInLi: fixedDoc.select("p")) {
                 pInLi.after("<br>");
             pInLi.unwrap();

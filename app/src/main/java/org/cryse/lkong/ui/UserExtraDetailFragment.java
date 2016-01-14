@@ -73,6 +73,7 @@ public class UserExtraDetailFragment extends AbstractFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
+        setHasOptionsMenu(false);
         super.onCreate(savedInstanceState);
     }
 

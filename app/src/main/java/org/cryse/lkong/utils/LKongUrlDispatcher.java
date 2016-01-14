@@ -18,7 +18,9 @@ public class LKongUrlDispatcher {
     }
 
     public void parseUrl(String url) {
-        if(url.contains("lkong.net")) {
+        if(url.startsWith("lkong://")) {
+            parserInternalUrl(url.substring(8));
+        } else if(url.contains("lkong.net")) {
             parseLegacyUrl(url);
         } else if(url.contains("lkong.cn")) {
             parseNewUrl(url);
@@ -26,6 +28,11 @@ public class LKongUrlDispatcher {
             if(mUrlCallback != null)
                 mUrlCallback.onFailed(url);
         }
+    }
+
+    public void parserInternalUrl(String url) {
+        if(mUrlCallback != null)
+            mUrlCallback.onUserByName(url.substring(10));
     }
 
     public void parseNewUrl(String url) {
@@ -115,6 +122,7 @@ public class LKongUrlDispatcher {
     }
 
     public interface UrlCallback {
+        void onUserByName(String username);
         void onThreadByPostId(long postId);
         void onThreadByPostId(long tid, long postId);
         void onThreadByThreadId(long threadId);

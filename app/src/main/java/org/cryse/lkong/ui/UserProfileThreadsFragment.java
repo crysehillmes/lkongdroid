@@ -50,6 +50,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
         mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         Bundle args = getArguments();

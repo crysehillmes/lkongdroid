@@ -37,6 +37,11 @@ public class UrlSchemaDispatcherActivity extends Activity {
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
         @Override
+        public void onUserByName(String username) {
+            // Do nothing here, links only use internal.
+        }
+
+        @Override
         public void onThreadByPostId(long postId) {
             mNavigation.openActivityForPostListByPostId(UrlSchemaDispatcherActivity.this, postId);
         }

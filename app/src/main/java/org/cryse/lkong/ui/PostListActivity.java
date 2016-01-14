@@ -1156,6 +1156,11 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
         @Override
+        public void onUserByName(String username) {
+            mNavigation.openActivityForUserProfileNyName(PostListActivity.this, null, username);
+        }
+
+        @Override
         public void onThreadByPostId(long postId) {
             mTargetPostId = postId;
             getPresenter().getPostLocation(mUserAccountManager.getAuthObject(), mTargetPostId, false);

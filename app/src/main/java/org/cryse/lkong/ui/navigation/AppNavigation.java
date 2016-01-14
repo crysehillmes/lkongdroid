@@ -131,6 +131,10 @@ public class AppNavigation {
         UserProfileActivity.startUserProfileFromLocation(context, startingLocation, uid);
     }
 
+    public void openActivityForUserProfileNyName(Activity context, int[] startingLocation, String name) {
+        UserProfileActivity.startUserProfileFromLocation(context, startingLocation, name);
+    }
+
     public void openActivityForPrivateMessage(Activity context, long targetUserId, String targetUserName) {
         Intent intent = new Intent(context, PrivateChatActivity.class);
         intent.putExtra(DataContract.BUNDLE_TARGET_USER_ID, targetUserId);
