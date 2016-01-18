@@ -26,7 +26,6 @@ import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
