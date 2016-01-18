@@ -30,7 +30,7 @@ ext {
     crashlyticsVersion = '2.5.1'
     persistentsearchviewVersion = '1.0.3'
     pulltorefreshVersion = '3.2.3'
-    themeEngineVersion = '0.7.6'
+    themeEngineVersion = '0.7.7'
 
     libDependencies = [
             // Test
