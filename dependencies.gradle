@@ -5,7 +5,6 @@ ext {
     gsonVersion = '2.4'
     rxVersion = '1.1.0'
     butterknifeVersion = '7.0.1'
-    msaAuthVersion = '0.8.4'
     materialDrawerVersion = '4.6.1'
     materialDialogVersion = '0.8.5.3'
     easyPermissionVersion = '0.1.0'
@@ -58,20 +57,8 @@ ext {
             // Log
             timber: "com.jakewharton.timber:timber:$timberVersion",
 
-            // Database
-            realm: "io.realm:realm-android:$realmVersion",
-
-            // IO
-            commons_io: "commons-io:commons-io:$commonsioVersion",
-            commons_lang3: "org.apache.commons:commons-lang3:$commonslang3Version",
-
             // Injection
             butterknife: "com.jakewharton:butterknife:$butterknifeVersion",
-
-            // Cloud Drive dependencies
-            onedrive: "com.onedrive.sdk:onedrive-sdk-android:$oneDriveSdkVersion",
-            msa_auth: "com.microsoft.services.msa:msa-auth:$msaAuthVersion",
-            dropbox: "com.dropbox.core:dropbox-core-sdk:$dropboxVersion",
 
             // UI Elements
             materialdrawer: "com.mikepenz:materialdrawer:$materialDrawerVersion@aar",
