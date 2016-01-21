@@ -29,6 +29,7 @@ import org.cryse.lkong.ui.UserExtraDetailFragment;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.ui.UserProfileThreadsFragment;
 import org.cryse.lkong.ui.UserProfileTimelineFragment;
+import org.cryse.lkong.ui.UserProfileUsersFragment;
 
 import javax.inject.Singleton;
 
@@ -60,6 +61,7 @@ public interface LKongPresenterComponent {
     void inject(InAppBrowserActivity activity);
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
+    void inject(UserProfileUsersFragment fragment);
     void inject(UserExtraDetailFragment fragment);
     void inject(NoticePrivateChatsFragment fragment);
     void inject(PrivateChatFragment fragment);

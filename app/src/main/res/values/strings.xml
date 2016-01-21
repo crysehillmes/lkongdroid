@@ -274,6 +274,8 @@
         <item>All</item>
         <item>Threads</item>
         <item>Digests</item>
+        <item>Followers</item>
+        <item>Following</item>
     </string-array>
     <string name="day_title_today">Today</string>
     <string name="day_title_tomorrow">Tomorrow</string>

@@ -198,6 +198,8 @@
         <item>全部</item>
         <item>主题</item>
         <item>精华</item>
+        <item>粉丝</item>
+        <item>关注</item>
     </string-array>
     <string name="format_punchday_count">已签到 %1$d 天</string>
     <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>

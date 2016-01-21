@@ -20,6 +20,7 @@ import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
 import org.cryse.lkong.logic.request.GetTimelineRequest;
+import org.cryse.lkong.logic.request.GetUserFollowRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
 import org.cryse.lkong.logic.request.GetUserThreadsRequest;
 import org.cryse.lkong.logic.request.GetUserTimelineRequest;
@@ -39,6 +40,7 @@ import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
+import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
@@ -280,6 +282,19 @@ public class LKongForumService {
             try {
                 GetUserThreadsRequest request = new GetUserThreadsRequest(authObject, uid, start, isDigest);
                 List<ThreadModel> dataSet = request.execute();
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<List<SearchUserItem>> getUserFollow(LKAuthObject authObject, long uid, boolean follower) {
+        return Observable.create(subscriber -> {
+            try {
+                GetUserFollowRequest request = new GetUserFollowRequest(authObject, uid, follower);
+                List<SearchUserItem> dataSet = request.execute();
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
             } catch (Exception ex) {

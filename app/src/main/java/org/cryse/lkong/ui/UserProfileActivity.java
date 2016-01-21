@@ -525,6 +525,8 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
             mFragments.add(UserProfileTimelineFragment.newInstance(mUserId));
             mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, false));
             mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, true));
+            mFragments.add(UserProfileUsersFragment.newInstance(mUserId, true));
+            mFragments.add(UserProfileUsersFragment.newInstance(mUserId, false));
         }
 
         @Override
@@ -534,7 +536,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
         @Override
         public int getCount() {
-            return 4;
+            return 6;
         }
 
         @Override

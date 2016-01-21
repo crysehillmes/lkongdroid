@@ -15,7 +15,7 @@ public class AnalyticsUtils {
     /*private static Tracker sTracker;*/
 
     public static void init(Context context, String appKey) {
-        AnalyticsConfig.setAppkey(appKey);
+        AnalyticsConfig.setAppkey(context, appKey);
         MobclickAgent.openActivityDurationTrack(false);
         AnalyticsConfig.enableEncrypt(true);
         /*if (sTracker == null) {
