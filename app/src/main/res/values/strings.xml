@@ -117,6 +117,10 @@
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
     <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
+    <string name="text_last_punch_time">Last Punch</string>
+    <string name="text_current_continuous_punch_days">Current Continuous Punch Days</string>
+    <string name="text_longest_continuous_punch_days">Longest Continuous Punch Days</string>
+    <string name="text_total_punch_days">Total Punch Days</string>
     <string name="text_loading">Loading…</string>
     <string name="text_search_thread">Search Thread:&#160;</string>
     <string name="text_search_people">Search People:&#160;</string>

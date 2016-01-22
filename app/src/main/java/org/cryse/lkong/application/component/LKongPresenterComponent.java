@@ -61,7 +61,6 @@ public interface LKongPresenterComponent {
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
     void inject(UserProfileUsersFragment fragment);
-    void inject(UserExtraDetailFragment fragment);
     void inject(NoticePrivateChatsFragment fragment);
     void inject(PrivateChatFragment fragment);
     void inject(PrivateChatActivity activity);

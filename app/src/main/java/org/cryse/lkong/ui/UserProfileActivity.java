@@ -6,11 +6,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +25,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.appthemeengine.Config;
@@ -110,37 +109,39 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     @Bind(R.id.fragment_user_detail_cardview_introduction)
     CardView mIntroductionCardView;
-    @Bind(R.id.fragment_user_detail_cardview_wealth)
-    CardView mWealthCardView;
-    @Bind(R.id.fragment_user_detail_cardview_punch)
-    CardView mPunchCardView;
-    @Bind(R.id.fragment_user_detail_cardview_registration_time)
-    CardView mRegistrationTimeCardView;
 
 
     @Bind(R.id.fragment_user_detail_textview_introduction)
     TextView mIntroductionTextView;
-    @Bind(R.id.fragment_user_detail_textview_wealth1)
-    TextView mActivePointsTextView;
-    @Bind(R.id.fragment_user_detail_textview_wealth2)
-    TextView mDragonMoneyTextView;
-    @Bind(R.id.fragment_user_detail_textview_wealth3)
-    TextView mDragonCrystalTextView;
 
-    @Bind(R.id.fragment_user_detail_textview_punch1)
+    @Bind(R.id.activity_profile_layout_all_activities)
+    RelativeLayout mAllActivitiesLayout;
+    @Bind(R.id.activity_profile_layout_digests)
+    RelativeLayout mDigestsLayout;
+
+    @Bind(R.id.activity_profile_imageview_crystal)
+    ImageView mCrystalImageView;
+    @Bind(R.id.activity_profile_textview_crystal)
+    TextView mCrystalTextView;
+    @Bind(R.id.activity_profile_imageview_coin)
+    ImageView mCoinImageView;
+    @Bind(R.id.activity_profile_textview_coin)
+    TextView mCoinTextView;
+
+    @Bind(R.id.activity_profile_textview_current_punch)
     TextView mCurrentContinuousPunchDaysTextView;
-    @Bind(R.id.fragment_user_detail_textview_punch2)
+    @Bind(R.id.activity_profile_textview_longest_punch)
     TextView mLongestContinuousPunchDaysTextView;
-    @Bind(R.id.fragment_user_detail_textview_punch3)
+    @Bind(R.id.activity_profile_textview_last_punch)
     TextView mLastPunchTimeTextView;
-    @Bind(R.id.fragment_user_detail_textview_punch4)
+    @Bind(R.id.activity_profile_textview_total_punch)
     TextView mTotalPunchDaysTextView;
-
-    @Bind(R.id.fragment_user_detail_textview_registration_time)
+    @Bind(R.id.activity_profile_textview_registration_time)
     TextView mRegistrationTextView;
 
 
     MenuItem mFollowUserMenuItem;
+    MenuItem mPMMenuItem;
 
     private UserDataFragmentPagerAdapter mViewPagerAdapter;
 
@@ -202,6 +203,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setColors();
+        setClickListeners();
         if(mUid > 0) {
             loadUserProfile();
         }
@@ -209,9 +211,27 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     private void setColors() {
         mIntroductionCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
-        mWealthCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
-        mPunchCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
-        mRegistrationTimeCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
+    }
+
+    private void setClickListeners() {
+        mUserFollowerCountTextView.setOnClickListener(view -> {
+
+        });
+        mUserFollowingCountTextView.setOnClickListener(view -> {
+
+        });
+        mUserThreadCountTextView.setOnClickListener(view -> {
+
+        });
+        mUserPostCountTextView.setOnClickListener(view -> {
+
+        });
+        mAllActivitiesLayout.setOnClickListener(view -> {
+
+        });
+        mDigestsLayout.setOnClickListener(view -> {
+
+        });
     }
 
     private void loadUserProfile() {
@@ -226,12 +246,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
                 .centerCrop()
                 .transform(new CircleTransform(this))
                 .into(mAvatarImageView);
-        /*mFollowButton.setOnClickListener(view -> {
-            if (mIsUserFollowed)
-                getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
-            else
-                getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
-        });*/
     }
 
     @Override
@@ -259,6 +273,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_user_profile, menu);
         mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        mPMMenuItem = menu.findItem(R.id.action_user_profile_pm);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -267,6 +282,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         if(mFollowUserMenuItem != null) {
             if(mUserAccountManager.getCurrentUserId() == mUid) {
                 mFollowUserMenuItem.setVisible(false);
+                mPMMenuItem.setVisible(false);
             } else {
                 mFollowUserMenuItem.setVisible(true);
                 if(mIsUserFollowed) {
@@ -474,9 +490,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     public void displayUserInfo() {
         if(mUserInfo == null) {
             mIntroductionCardView.setVisibility(View.GONE);
-            mWealthCardView.setVisibility(View.GONE);
-            mPunchCardView.setVisibility(View.GONE);
-            mRegistrationTimeCardView.setVisibility(View.GONE);
             return;
         }
 
@@ -490,36 +503,24 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         }
 
         // Display Wealth Info
-        mWealthCardView.setVisibility(View.VISIBLE);
-        String activePoints = getString(R.string.format_active_points, mUserInfo.getActivePoints());
-        mActivePointsTextView.setText(activePoints);
-        String dragonCrystal = getString(R.string.format_dragon_crystal, mUserInfo.getDragonCrystal());
-        mDragonCrystalTextView.setText(dragonCrystal);
+        mCrystalTextView.setText(String.format("%d", mUserInfo.getDragonCrystal()));
         if(mUserInfo.getUid() == mUserInfo.getMe()) {
             String dragonMoney = getString(R.string.format_dragon_money, mUserInfo.getDragonMoney());
-            mDragonMoneyTextView.setText(dragonMoney);
-            mDragonMoneyTextView.setVisibility(View.VISIBLE);
+            mCoinTextView.setText(dragonMoney);
+            mCoinTextView.setText(String.format("%d", mUserInfo.getDragonMoney()));
         } else {
-            mDragonMoneyTextView.setVisibility(View.GONE);
+            mCoinTextView.setVisibility(View.GONE);
+            mCoinImageView.setVisibility(View.GONE);
         }
 
         // Display Punch Info
-        mPunchCardView.setVisibility(View.VISIBLE);
-        String currentContinuousPunchDays = getString(R.string.format_current_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
-        mCurrentContinuousPunchDaysTextView.setText(currentContinuousPunchDays);
-        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getLongestContinuousPunch());
-        mLongestContinuousPunchDaysTextView.setText(longestContinuousPunchDays);
-        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getTotalPunchCount());
-        mTotalPunchDaysTextView.setText(totalPunchDays);
-        String lastPunchTime = getString(
-                R.string.format_last_punch_time,
-                (mUserInfo.getTotalPunchCount() > 0 ? TimeFormatUtils.formatDate(this, mUserInfo.getLastPunchTime(), false) : ""));
-        mLastPunchTimeTextView.setText(lastPunchTime);
+        mCurrentContinuousPunchDaysTextView.setText(String.format("%d", mUserInfo.getCurrentContinuousPunch()));
+        mLongestContinuousPunchDaysTextView.setText(String.format("%d", mUserInfo.getLongestContinuousPunch()));
+        mTotalPunchDaysTextView.setText(String.format("%d", mUserInfo.getTotalPunchCount()));
+        mLastPunchTimeTextView.setText(mUserInfo.getTotalPunchCount() > 0 ? TimeFormatUtils.formatDate(this, mUserInfo.getLastPunchTime(), false) : "N/A");
 
         // Display Registration Time
-        mRegistrationTimeCardView.setVisibility(View.VISIBLE);
-        String regTime = getString(R.string.format_registration_time, TimeFormatUtils.formatDate(this, mUserInfo.getRegDate(), true));
-        mRegistrationTextView.setText(regTime);
+        mRegistrationTextView.setText(TimeFormatUtils.formatDate(this, mUserInfo.getRegDate(), true));
     }
 
     static class UserDataFragmentPagerAdapter extends FragmentStatePagerAdapter {
