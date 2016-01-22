@@ -81,18 +81,14 @@
     <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
     <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; Replies</string>
     <string name="format_punchday_count">Punched %1$d days</string>
+    <string name="format_digests_by">Digests by %1$s</string>
+    <string name="format_all_activities_of">All activities of %1$s</string>
+    <string name="format_followers_of">Followers of %1$s</string>
+    <string name="format_following_of">%1$s is following</string>
+    <string name="format_threads_by">Threads by %1$s</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
-    <string name="format_active_points">Active Points: %1$d</string>
-    <string name="format_dragon_money">Dragon Money: %1$d</string>
-    <string name="format_dragon_crystal">Dragon Crystal: %1$d</string>
-    <string name="format_current_continuous_punch_days">Current Continuous Punch Days: %1$d</string>
-    <string name="format_total_punch_days">Total Punch Days: %1$d</string>
-    <string name="format_longest_continuous_punch_days">Longest Continuous Punch Days: %1$d</string>
-    <string name="format_last_punch_time">Last Punch Time: %1$s</string>
-    <string name="format_registration_time">Registration Time: %1$s</string>
-
 
     <string name="toast_success_save_image_as">Image saved to: /sdcard/Pictures/%1$s/%2$s</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>

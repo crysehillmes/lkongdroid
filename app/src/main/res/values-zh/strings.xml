@@ -218,15 +218,6 @@
     <string name="action_refresh">刷新</string>
     <string name="text_dragon_money">龙币</string>
     <string name="text_dragon_crystal">龙晶</string>
-    <string name="text_active_points">活跃</string>
-    <string name="format_active_points">活跃：%1$d</string>
-    <string name="format_dragon_money">龙币：%1$d</string>
-    <string name="format_dragon_crystal">龙晶：%1$d</string>
-    <string name="format_current_continuous_punch_days">连续签到: %1$d 天</string>
-    <string name="format_total_punch_days">总签到天数: %1$d 天</string>
-    <string name="format_longest_continuous_punch_days">最长连续签到: %1$d 天</string>
-    <string name="format_last_punch_time">最后签到: %1$s </string>
-    <string name="format_registration_time">注册时间: %1$s</string>
     <string name="text_user_introduction_title">个人简介</string>
     <string name="text_user_wealth_title">财富</string>
     <string name="text_user_punch_info_title">签到情况</string>
@@ -253,6 +244,7 @@
     <string name="format_notice_private_message">%1$d 条新私信</string>
     <string name="format_notice_rate">%1$d 个新评分</string>
     <string name="format_notice_all_count">你有 %1$d 条新消息</string>
+    <string name="format_digests_by">$1%s 的精华帖</string>
     <string name="text_search_thread">搜索帖子:&#160;</string>
     <string name="text_search_people">搜索用户:&#160;</string>
     <string name="text_search_forum">搜索板块:&#160;</string>

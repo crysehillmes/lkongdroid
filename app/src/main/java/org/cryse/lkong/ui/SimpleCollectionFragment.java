@@ -120,6 +120,10 @@ public abstract class SimpleCollectionFragment<
         }
     }
 
+    public void restoreFromState(Bundle savedInstanceState) {
+
+    }
+
     public void loadInitialData() {
         loadData(mUserAccountManager.getAuthObject(), 0, false);
     }

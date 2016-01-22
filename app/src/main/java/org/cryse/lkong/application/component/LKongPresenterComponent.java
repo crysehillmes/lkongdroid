@@ -26,6 +26,7 @@ import org.cryse.lkong.ui.SearchFragment;
 import org.cryse.lkong.ui.TimelineFragment;
 import org.cryse.lkong.ui.UrlSchemaDispatcherActivity;
 import org.cryse.lkong.ui.UserProfileActivity;
+import org.cryse.lkong.ui.UserProfileFragment;
 import org.cryse.lkong.ui.UserProfileThreadsFragment;
 import org.cryse.lkong.ui.UserProfileTimelineFragment;
 import org.cryse.lkong.ui.UserProfileUsersFragment;
@@ -56,7 +57,7 @@ public interface LKongPresenterComponent {
     void inject(NotificationActivity activity);
     void inject(SearchFragment fragment);
     void inject(SearchActivity activity);
-    void inject(UserProfileActivity activity);
+    void inject(UserProfileFragment fragment);
     void inject(InAppBrowserActivity activity);
     void inject(UserProfileTimelineFragment fragment);
     void inject(UserProfileThreadsFragment fragment);
