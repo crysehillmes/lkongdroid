@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -19,19 +20,16 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
@@ -39,7 +37,6 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.UserInfoModel;
@@ -49,6 +46,7 @@ import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.UserProfileView;
@@ -86,10 +84,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.tablayout)
-    TabLayout mTabLayout;
-    @Bind(R.id.activity_profile_viewpager)
-    ViewPager mViewPager;
 
     @Bind(R.id.activity_profile_imageview_avatar)
     ImageView mAvatarImageView;
@@ -97,8 +91,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     TextView mUserNameTextView;
     @Bind(R.id.activity_profile_textview_user_extra0)
     TextView mUserExtra0TextView;
-    @Bind(R.id.activity_profile_textview_user_extra1)
-    TextView mUserExtra1TextView;
 
     @Bind(R.id.activity_profile_textview_follower_count)
     TextView mUserFollowerCountTextView;
@@ -116,12 +108,39 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     @Bind(R.id.activity_profile_header_stats)
     View mHeaderStatsView;
 
-    @Bind(R.id.activity_profile_header_container_follow)
-    FrameLayout mFollowContainer;
-    @Bind(R.id.activity_profile_header_button_follow)
-    Button mFollowButton;
+    @Bind(R.id.fragment_user_detail_cardview_introduction)
+    CardView mIntroductionCardView;
+    @Bind(R.id.fragment_user_detail_cardview_wealth)
+    CardView mWealthCardView;
+    @Bind(R.id.fragment_user_detail_cardview_punch)
+    CardView mPunchCardView;
+    @Bind(R.id.fragment_user_detail_cardview_registration_time)
+    CardView mRegistrationTimeCardView;
 
-    /*MenuItem mFollowUserMenuItem;*/
+
+    @Bind(R.id.fragment_user_detail_textview_introduction)
+    TextView mIntroductionTextView;
+    @Bind(R.id.fragment_user_detail_textview_wealth1)
+    TextView mActivePointsTextView;
+    @Bind(R.id.fragment_user_detail_textview_wealth2)
+    TextView mDragonMoneyTextView;
+    @Bind(R.id.fragment_user_detail_textview_wealth3)
+    TextView mDragonCrystalTextView;
+
+    @Bind(R.id.fragment_user_detail_textview_punch1)
+    TextView mCurrentContinuousPunchDaysTextView;
+    @Bind(R.id.fragment_user_detail_textview_punch2)
+    TextView mLongestContinuousPunchDaysTextView;
+    @Bind(R.id.fragment_user_detail_textview_punch3)
+    TextView mLastPunchTimeTextView;
+    @Bind(R.id.fragment_user_detail_textview_punch4)
+    TextView mTotalPunchDaysTextView;
+
+    @Bind(R.id.fragment_user_detail_textview_registration_time)
+    TextView mRegistrationTextView;
+
+
+    MenuItem mFollowUserMenuItem;
 
     private UserDataFragmentPagerAdapter mViewPagerAdapter;
 
@@ -132,7 +151,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     private boolean isLoading = false;
     private String mUserAvatarUrl;
-    private UserInfoModel mUserModelInfo;
+    private UserInfoModel mUserInfo;
     private ArrayList<Object> mItemList;
     private Boolean mIsUserFollowed = null;
 
@@ -158,7 +177,6 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
         setUpToolbar(mToolbar);
-        mAppBarLayout.setTargetElevation(0f);
         Intent intent = getIntent();
         if(intent.hasExtra(DataContract.BUNDLE_USER_ID)) {
             mUid = getIntent().getLongExtra(DataContract.BUNDLE_USER_ID, 0l);
@@ -169,11 +187,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
             getUserIdFromName(intent.getStringExtra(DataContract.BUNDLE_USER_NAME));
         } else {
             throw new IllegalArgumentException();
-        }/*
-        setupUserProfileGrid();
-        setupRevealBackground(savedInstanceState);*/
-        setupAnimations();
-        ATE.apply(mTabLayout, mATEKey);
+        }
     }
 
     protected void setUpToolbar(Toolbar toolbar) {
@@ -187,15 +201,23 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        setColors();
         if(mUid > 0) {
             loadUserProfile();
         }
     }
 
+    private void setColors() {
+        mIntroductionCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
+        mWealthCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
+        mPunchCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
+        mRegistrationTimeCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
+    }
+
     private void loadUserProfile() {
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
         mUserAvatarUrl = ModelConverter.uidToAvatarUrl(mUid);
-        initViewPager();
+        /*initViewPager();*/
         checkFollowStatus();
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.size_avatar_user_profile);
         Glide.with(this).load(mUserAvatarUrl)
@@ -204,49 +226,17 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
                 .centerCrop()
                 .transform(new CircleTransform(this))
                 .into(mAvatarImageView);
-        mFollowButton.setOnClickListener(view -> {
+        /*mFollowButton.setOnClickListener(view -> {
             if (mIsUserFollowed)
                 getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
             else
                 getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
-        });
+        });*/
     }
 
     @Override
     protected void injectThis() {
         LKongApplication.get(this).lKongPresenterComponent().inject(this);
-    }
-
-    private void initViewPager() {
-        mViewPagerAdapter = new UserDataFragmentPagerAdapter(this, getSupportFragmentManager(), mUid);
-        mViewPager.setAdapter(mViewPagerAdapter);
-
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if (mViewPager.getCurrentItem() == 0) {
-                    DisplayMetrics displaymetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                    int width = displaymetrics.widthPixels;
-                    getSwipeBackLayout().setEnableGesture(true);
-                    getSwipeBackLayout().setEdgeSize(width);
-                } else {
-                    getSwipeBackLayout().setEnableGesture(false);
-                    getSwipeBackLayout().setEdgeSize(0);
-                }
-            }
-        });
-        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     public void setupAnimations() {
@@ -258,33 +248,34 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
                 return false;
             }
         });
-        mTabLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mTabLayout.getViewTreeObserver().removeOnPreDrawListener(this);
-                animateUserProfileOptions();
-                return false;
-            }
-        });
     }
 
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if(event instanceof ThemeColorChangedEvent) {
-            mTabLayout.setBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryColor());
-        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_user_profile, menu);
-        // mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if(mFollowUserMenuItem != null) {
+            if(mUserAccountManager.getCurrentUserId() == mUid) {
+                mFollowUserMenuItem.setVisible(false);
+            } else {
+                mFollowUserMenuItem.setVisible(true);
+                if(mIsUserFollowed) {
+                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_unfollow);
+                } else {
+                    mFollowUserMenuItem.setTitle(R.string.action_user_profile_follow);
+                }
+            }
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -294,12 +285,12 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
             case android.R.id.home:
                 closeActivityWithTransition();
                 return true;
-            /*case R.id.action_user_profile_follow:
+            case R.id.action_user_profile_follow:
                 if(mIsUserFollowed)
                     getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
                 else
                     getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
-                return true;*/
+                return true;
             case R.id.action_user_profile_pm:
                 startPrivateChat();
                 return true;
@@ -348,11 +339,11 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     @Override
     public void onLoadUserProfileComplete(UserInfoModel userInfoModel) {
-        mUserModelInfo = userInfoModel;
-        mUserNameTextView.setText(buildUserName(mUserModelInfo.getUserName(), mUserModelInfo.getGender()));
-        if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
+        mUserInfo = userInfoModel;
+        mUserNameTextView.setText(buildUserName(mUserInfo.getUserName(), mUserInfo.getGender()));
+        if(!TextUtils.isEmpty(mUserInfo.getCustomStatus())) {
             mUserExtra0TextView.setVisibility(View.VISIBLE);
-            mUserExtra0TextView.setText(mUserModelInfo.getCustomStatus());
+            mUserExtra0TextView.setText(mUserInfo.getCustomStatus());
         } else {
             mUserExtra0TextView.setVisibility(View.GONE);
         }
@@ -364,47 +355,36 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
         }*/
         int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
         mUserFollowerCountTextView.setText(
-                getUserStatsText(mUserModelInfo.getFansCount(),
+                getUserStatsText(mUserInfo.getFansCount(),
                         getString(R.string.profile_header_followers),
                         statsTextSize)
         );
         mUserFollowingCountTextView.setText(
-                getUserStatsText(mUserModelInfo.getFollowCount(),
+                getUserStatsText(mUserInfo.getFollowCount(),
                         getString(R.string.profile_header_following),
                         statsTextSize)
         );
         mUserThreadCountTextView.setText(
-                getUserStatsText(mUserModelInfo.getThreads(),
+                getUserStatsText(mUserInfo.getThreads(),
                         getString(R.string.profile_header_threads),
                         statsTextSize)
         );
         mUserPostCountTextView.setText(
-                getUserStatsText(mUserModelInfo.getPosts(),
+                getUserStatsText(mUserInfo.getPosts(),
                         getString(R.string.profile_header_posts),
                         statsTextSize)
         );
-        Fragment fragment = mViewPagerAdapter.getItem(0);
+        displayUserInfo();
+        /*Fragment fragment = mViewPagerAdapter.getItem(0);
         if(fragment instanceof UserExtraDetailFragment) {
             ((UserExtraDetailFragment) fragment).setUserInfo(mUserModelInfo);
-        }
+        }*/
     }
 
     @Override
     public void onCheckFollowStatusComplete(boolean isFollowed) {
         mIsUserFollowed = isFollowed;
-        if(mFollowContainer != null) {
-            if(mIsUserFollowed != null) {
-                mFollowContainer.setVisibility(View.VISIBLE);
-                if(mIsUserFollowed) {
-                    mFollowButton.setText(R.string.action_user_profile_unfollow);
-                }
-                else {
-                    mFollowButton.setText(R.string.action_user_profile_follow);
-                }
-            } else {
-                mFollowContainer.setVisibility(View.GONE);
-            }
-        }
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -481,36 +461,65 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
 
     private void animateUserProfileHeader() {
         if (!mLockedAnimations) {
-            //mAppBarLayout.setTranslationY(-mAppBarLayout.getHeight());
             mProfileHeaderAnimationStartTime = System.currentTimeMillis();
 
-            //mHeaderRootView.setTranslationY(-mHeaderRootView.getHeight());
-            //mAvatarImageView.setTranslationY(-mAvatarImageView.getHeight());
             mHeaderDetailView.setTranslationY(-mHeaderDetailView.getHeight());
             mHeaderStatsView.setAlpha(0);
 
-            //mAppBarLayout.animate().translationY(0).setDuration(900).setInterpolator(INTERPOLATOR);
-            //mHeaderRootView.animate().translationY(0).setDuration(300).setInterpolator(INTERPOLATOR);
-            //mAvatarImageView.animate().translationY(0).setDuration(300).setStartDelay(100).setInterpolator(INTERPOLATOR);
             mHeaderDetailView.animate().translationY(0).setDuration(300).setStartDelay(200).setInterpolator(INTERPOLATOR);
             mHeaderStatsView.animate().alpha(1).setDuration(200).setStartDelay(400).setInterpolator(INTERPOLATOR).start();
-            /*ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mAppBarLayout, "elevation", 0.0f, getResources().getDimensionPixelSize(R.dimen.toolbar_elevation));
-            //设置插值器
-            objectAnimator.setStartDelay(400);
-            objectAnimator.setInterpolator(INTERPOLATOR);
-            objectAnimator.setDuration(500);
-            objectAnimator.start();*/
         }
     }
 
-    private void animateUserProfileOptions() {
-        if (!mLockedAnimations) {
-            mTabLayout.setTranslationY(-mTabLayout.getHeight());
-            mTabLayout.setAlpha(0f);
-
-            mTabLayout.animate().translationY(0).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
-            mTabLayout.animate().alpha(1f).setDuration(300).setStartDelay(USER_OPTIONS_ANIMATION_DELAY).setInterpolator(INTERPOLATOR);
+    public void displayUserInfo() {
+        if(mUserInfo == null) {
+            mIntroductionCardView.setVisibility(View.GONE);
+            mWealthCardView.setVisibility(View.GONE);
+            mPunchCardView.setVisibility(View.GONE);
+            mRegistrationTimeCardView.setVisibility(View.GONE);
+            return;
         }
+
+        // Display Introduction Info
+        if(!TextUtils.isEmpty(mUserInfo.getSigHtml())) {
+            mIntroductionCardView.setVisibility(View.VISIBLE);
+            String introduction = mUserInfo.getSigHtml();
+            mIntroductionTextView.setText(introduction);
+        } else {
+            mIntroductionCardView.setVisibility(View.GONE);
+        }
+
+        // Display Wealth Info
+        mWealthCardView.setVisibility(View.VISIBLE);
+        String activePoints = getString(R.string.format_active_points, mUserInfo.getActivePoints());
+        mActivePointsTextView.setText(activePoints);
+        String dragonCrystal = getString(R.string.format_dragon_crystal, mUserInfo.getDragonCrystal());
+        mDragonCrystalTextView.setText(dragonCrystal);
+        if(mUserInfo.getUid() == mUserInfo.getMe()) {
+            String dragonMoney = getString(R.string.format_dragon_money, mUserInfo.getDragonMoney());
+            mDragonMoneyTextView.setText(dragonMoney);
+            mDragonMoneyTextView.setVisibility(View.VISIBLE);
+        } else {
+            mDragonMoneyTextView.setVisibility(View.GONE);
+        }
+
+        // Display Punch Info
+        mPunchCardView.setVisibility(View.VISIBLE);
+        String currentContinuousPunchDays = getString(R.string.format_current_continuous_punch_days, mUserInfo.getCurrentContinuousPunch());
+        mCurrentContinuousPunchDaysTextView.setText(currentContinuousPunchDays);
+        String longestContinuousPunchDays = getString(R.string.format_longest_continuous_punch_days, mUserInfo.getLongestContinuousPunch());
+        mLongestContinuousPunchDaysTextView.setText(longestContinuousPunchDays);
+        String totalPunchDays = getString(R.string.format_total_punch_days, mUserInfo.getTotalPunchCount());
+        mTotalPunchDaysTextView.setText(totalPunchDays);
+        String lastPunchTime = getString(
+                R.string.format_last_punch_time,
+                (mUserInfo.getTotalPunchCount() > 0 ? TimeFormatUtils.formatDate(this, mUserInfo.getLastPunchTime(), false) : ""));
+        mLastPunchTimeTextView.setText(lastPunchTime);
+
+        // Display Registration Time
+        mRegistrationTimeCardView.setVisibility(View.VISIBLE);
+        String regTime = getString(R.string.format_registration_time, TimeFormatUtils.formatDate(this, mUserInfo.getRegDate(), true));
+        mRegistrationTextView.setText(regTime);
     }
 
     static class UserDataFragmentPagerAdapter extends FragmentStatePagerAdapter {
@@ -521,7 +530,7 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
             super(fm);
             Collections.addAll(mTabTitles, context.getResources().getStringArray(R.array.string_array_user_profile_tabs));
             mUserId = uid;
-            mFragments.add(UserExtraDetailFragment.newInstance());
+            // mFragments.add(UserExtraDetailFragment.newInstance());
             mFragments.add(UserProfileTimelineFragment.newInstance(mUserId));
             mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, false));
             mFragments.add(UserProfileThreadsFragment.newInstance(mUserId, true));
@@ -546,8 +555,8 @@ public class UserProfileActivity extends AbstractSwipeBackActivity implements /*
     }
 
     private void startPrivateChat() {
-        if(mUserModelInfo != null)
-            mNavigation.openActivityForPrivateMessage(this, mUid, mUserModelInfo.getUserName());
+        if(mUserInfo != null)
+            mNavigation.openActivityForPrivateMessage(this, mUid, mUserInfo.getUserName());
     }
 
     private void checkFollowStatus() {
