@@ -62,7 +62,6 @@ android {
 }
 
 dependencies {
-    compile project(':utils')
     compile project(':widgets')
     compile project(':changelog')
 
