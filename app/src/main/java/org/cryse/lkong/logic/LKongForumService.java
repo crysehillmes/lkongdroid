@@ -12,6 +12,7 @@ import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
 import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
 import org.cryse.lkong.logic.request.GetFavoritesRequest;
+import org.cryse.lkong.logic.request.GetHotThreadRequest;
 import org.cryse.lkong.logic.request.GetNoticeRateLogRequest;
 import org.cryse.lkong.logic.request.GetNoticeRequest;
 import org.cryse.lkong.logic.request.GetPrivateChatListRequest;
@@ -32,6 +33,7 @@ import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.HotThreadModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
@@ -290,6 +292,19 @@ public class LKongForumService {
         });
     }
 
+    public Observable<List<HotThreadModel>> getHotThread(boolean digest) {
+        return Observable.create(subscriber -> {
+            try {
+                GetHotThreadRequest request = new GetHotThreadRequest(digest);
+                List<HotThreadModel> hotThreadModels = request.execute();
+                subscriber.onNext(hotThreadModels);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
     public Observable<List<SearchUserItem>> getUserFollow(LKAuthObject authObject, long uid, boolean follower, long start) {
         return Observable.create(subscriber -> {
             try {
@@ -465,15 +480,17 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Void> saveBrowseHistory(long uid,
-                                              long threadId,
-                                              String threadTitle,
-                                              @Nullable Long forumId,
-                                              @Nullable String forumTitle,
-                                              @Nullable Long postId,
-                                              long authorId,
-                                              String authorName,
-                                              long lastReadTime) {
+    public Observable<Void> saveBrowseHistory(
+            long uid,
+            long threadId,
+            String threadTitle,
+            @Nullable Long forumId,
+            @Nullable String forumTitle,
+            @Nullable Long postId,
+            long authorId,
+            String authorName,
+            long lastReadTime
+    ) {
         return Observable.create(subscriber -> {
             try {
                 mLKongDatabase.saveBrowseHistory(

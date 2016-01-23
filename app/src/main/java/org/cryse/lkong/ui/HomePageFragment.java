@@ -318,6 +318,8 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
             adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
             adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
         }
+        adapter.addFragment(HotThreadFragment.newInstance(false), getString(R.string.drawer_item_hot_thread));
+        adapter.addFragment(HotThreadFragment.newInstance(true), getString(R.string.drawer_item_digest_thread));
         viewPager.setAdapter(adapter);
     }
 

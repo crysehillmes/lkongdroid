@@ -12,15 +12,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetHotThreadRequest extends AbstractAuthedHttpRequest<List<HotThreadModel>> {
+public class GetHotThreadRequest extends AbstractHttpRequest<List<HotThreadModel>> {
     private boolean mDigest;
-    public GetHotThreadRequest(LKAuthObject authObject, boolean digest) {
-        super(authObject);
+    public GetHotThreadRequest(boolean digest) {
+        super();
         this.mDigest = digest;
     }
 
-    public GetHotThreadRequest(HttpDelegate httpDelegate, LKAuthObject authObject, boolean digest) {
-        super(httpDelegate, authObject);
+    public GetHotThreadRequest(HttpDelegate httpDelegate, boolean digest) {
+        super(httpDelegate);
         this.mDigest = digest;
     }
 

@@ -8,6 +8,7 @@ import org.cryse.lkong.ui.FollowedForumsFragment;
 import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.ForumsFragment;
 import org.cryse.lkong.ui.HomePageFragment;
+import org.cryse.lkong.ui.HotThreadFragment;
 import org.cryse.lkong.ui.InAppBrowserActivity;
 import org.cryse.lkong.ui.MainActivity;
 import org.cryse.lkong.ui.MentionsFragment;
@@ -47,6 +48,7 @@ public interface LKongPresenterComponent {
     void inject(NewThreadActivity activity);
     void inject(HomePageFragment fragment);
     void inject(FavoritesFragment fragment);
+    void inject(HotThreadFragment fragment);
     void inject(BrowseHistoryFragment fragment);
     void inject(FollowedForumsFragment fragment);
     void inject(TimelineFragment fragment);
