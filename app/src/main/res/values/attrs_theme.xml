@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="ate_key" format="string" />
-    <attr name="theme_toolbar_popup_theme" format="reference" />
-    <attr name="theme_send_pm_drawable" format="reference"/>
     <declare-styleable name="CustomColorSwitchCompat">
         <attr name="toggleOnColor" format="color" />
         <attr name="toggleOffColor" format="color" />
