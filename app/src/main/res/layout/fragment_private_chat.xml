@@ -21,7 +21,8 @@
         android:minHeight="48dp"
         android:maxHeight="96dp"
         android:layout_gravity="bottom|end"
-        android:elevation="@dimen/toolbar_elevation">
+        android:elevation="@dimen/toolbar_elevation"
+        android:background="#30000000">
         <EditText
             android:id="@+id/fragment_private_chat_edittext_message"
             android:layout_width="match_parent"

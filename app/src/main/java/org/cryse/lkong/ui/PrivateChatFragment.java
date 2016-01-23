@@ -222,7 +222,9 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         } else {
             isNoMore = false;
             mCollectionAdapter.replaceWith(items);
-            mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
+            int newPostition = mCollectionAdapter.getItemCount() - 1;
+            if(newPostition > 0)
+                mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
             PrivateMessageModel lastItem = mCollectionAdapter.getItemList().get(mCollectionAdapter.getItemCount() - 1);

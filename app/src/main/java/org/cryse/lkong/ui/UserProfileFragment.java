@@ -100,6 +100,8 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
     @Bind(R.id.fragment_user_detail_cardview_introduction)
     CardView mIntroductionCardView;
+    @Bind(R.id.fragment_user_detail_cardview_else)
+    CardView mElseCardView;
 
 
     @Bind(R.id.fragment_user_detail_textview_introduction)
@@ -211,6 +213,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
     private void setColors() {
         mIntroductionCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
+        mElseCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(getActivity(), mATEKey));
     }
 
     private void setClickListeners() {
