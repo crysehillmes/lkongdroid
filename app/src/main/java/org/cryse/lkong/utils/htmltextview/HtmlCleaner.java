@@ -1,6 +1,7 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Cleaner;
@@ -91,5 +92,11 @@ public class HtmlCleaner {
 
     private static boolean elementTagNameNotEquals(Element element, String tagName) {
         return element != null && !element.tagName().equalsIgnoreCase(tagName);
+    }
+
+    public static String htmlToPlain(String html) {
+        Document document = Jsoup.parseBodyFragment(html);
+        HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+        return htmlToPlainText.getPlainText(document);
     }
 }

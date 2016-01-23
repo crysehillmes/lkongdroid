@@ -1,9 +1,16 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
@@ -22,24 +29,29 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
+
 public class UserProfileThreadsFragment extends SimpleCollectionFragment<
         ThreadModel,
         ThreadListAdapter,
         UserProfileThreadsPresenter> {
     private static final String LOG_TAG = UserProfileThreadsFragment.class.getName();
     private static final String KEY_UID = "key_args_uid";
+    private static final String KEY_USERNAME= "key_args_username";
     private static final String KEY_IS_DIGEST = "key_args_is_digest";
     private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     private long mUid;
+    private String mUserName;
     private boolean mIsDigest;
 
     @Inject
     UserProfileThreadsPresenter mPresenter;
     StringPrefs mAvatarDownloadPolicy;
 
-    public static UserProfileThreadsFragment newInstance(long uid, boolean isDigest) {
+    public static UserProfileThreadsFragment newInstance(long uid, String userName, boolean isDigest) {
         Bundle args = new Bundle();
         args.putLong(KEY_UID, uid);
+        args.putString(KEY_USERNAME, userName);
         args.putBoolean(KEY_IS_DIGEST, isDigest);
         UserProfileThreadsFragment fragment = new UserProfileThreadsFragment();
         fragment.setArguments(args);
@@ -50,15 +62,74 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
         mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         Bundle args = getArguments();
         if(args != null && args.containsKey(KEY_UID) && args.containsKey(KEY_IS_DIGEST)) {
             mUid = args.getLong(KEY_UID);
+            mUserName = args.getString(KEY_USERNAME);
             mIsDigest = args.getBoolean(KEY_IS_DIGEST);
         }
-        setHasOptionsMenu(false);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View contentView = super.onCreateView(inflater, container, savedInstanceState);
+        setUpToolbar(mToolbar);
+        return contentView;
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        getAppCompatActivity().setSupportActionBar(toolbar);
+        ActionBar actionBar = getAppCompatActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setTitle();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_USERNAME, mUserName);
+        outState.putLong(KEY_UID, mUid);
+        outState.putBoolean(KEY_IS_DIGEST, mIsDigest);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getSwipeBackActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void restoreFromState(Bundle savedInstanceState) {
+        if(savedInstanceState.containsKey(KEY_UID)
+                && savedInstanceState.containsKey(KEY_USERNAME)
+                && savedInstanceState.containsKey(KEY_IS_DIGEST)
+                ) {
+            this.mUid = savedInstanceState.getLong(KEY_UID);
+            this.mUserName = savedInstanceState.getString(KEY_USERNAME);
+            this.mIsDigest = savedInstanceState.getBoolean(KEY_IS_DIGEST);
+            setTitle();
+        }
+    }
+
+    private void setTitle() {
+        getAppCompatActivity().setTitle(mIsDigest ?
+                getString(R.string.format_digests_by, mUserName) :
+                getString(R.string.format_threads_by, mUserName)
+        );
     }
 
     @Override
@@ -78,7 +149,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_simple_collection;
+        return R.layout.fragment_simple_collection_with_toolbar;
     }
 
     @Override

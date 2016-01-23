@@ -20,21 +20,25 @@ import java.util.List;
 public class GetUserFollowRequest extends AbstractAuthedHttpRequest<List<SearchUserItem>> {
     private long mUid;
     private boolean mFollower;
-    public GetUserFollowRequest(LKAuthObject authObject, long uid, boolean follower) {
+    private long mStartSortKey;
+    public GetUserFollowRequest(LKAuthObject authObject, long uid, boolean follower, long startSortKey) {
         super(authObject);
         this.mUid = uid;
         this.mFollower = follower;
+        this.mStartSortKey = startSortKey;
     }
 
-    public GetUserFollowRequest(HttpDelegate httpDelegate, LKAuthObject authObject, long uid, boolean follower) {
+    public GetUserFollowRequest(HttpDelegate httpDelegate, LKAuthObject authObject, long uid, boolean follower, long startSortKey) {
         super(httpDelegate, authObject);
         this.mUid = uid;
         this.mFollower = follower;
+        this.mStartSortKey = startSortKey;
     }
 
     @Override
     protected Request buildRequest() throws Exception {
         String url = String.format("http://lkong.cn/user/%06d/index.php?mod=data&sars=user/%06d/%s", mUid, mUid, mFollower ? "fans" : "follow");
+        url = url + (mStartSortKey >= 0 ? "&nexttime=" + Long.toString(mStartSortKey) : "");
         return new Request.Builder()
                 .addHeader("Accept-Encoding", "gzip")
                 .url(url)
