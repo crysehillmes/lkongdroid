@@ -929,14 +929,14 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mFab.setColorNormal(accentColor);
         mFab.setColorPressed(accentColorDark);
         mFab.setColorRipple(accentColorRipple);
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_fab_action_create, null).mutate();
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
         int toolbarTextColor = Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE;
         ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
-        Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back_black, null).mutate();
-        Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward_black, null).mutate();
+        Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_backward, null).mutate();
+        Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward, null).mutate();
         ThemeUtils.setTint(backwardArrow, toolbarTextColor);
         ThemeUtils.setTint(forwardArrow, toolbarTextColor);
         ((ImageButton)mFooterPagerControl.findViewById(R.id.widget_pager_control_button_backward)).setImageDrawable(backwardArrow);

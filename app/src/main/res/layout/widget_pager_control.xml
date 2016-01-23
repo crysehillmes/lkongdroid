@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="@drawable/ic_arrow_back_black" />
+                android:src="@drawable/ic_arrow_backward" />
 
             <Button
                 android:id="@+id/widget_pager_control_button_page_indicator"
@@ -44,7 +44,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="@drawable/ic_arrow_forward_black" />
+                android:src="@drawable/ic_arrow_forward" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </org.cryse.lkong.widget.PagerControl>

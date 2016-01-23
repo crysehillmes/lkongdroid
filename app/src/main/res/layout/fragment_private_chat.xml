@@ -39,7 +39,7 @@
             android:layout_height="48dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_action_send_black"
+            android:src="@drawable/ic_action_send"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_send_post"
             android:tag="tint_text_primary"

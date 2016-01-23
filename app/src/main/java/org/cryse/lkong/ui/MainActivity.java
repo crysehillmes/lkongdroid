@@ -331,7 +331,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             mAccountHeader.addProfiles(
                     new ProfileDrawerItem()
                             .withName(getString(R.string.drawer_item_account_add))
-                            .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.drawer_account_add, getTheme()))
+                            .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drawer_account_add, getTheme()))
                             .withIdentifier(-3001)
                             .withSelectable(false)
             );

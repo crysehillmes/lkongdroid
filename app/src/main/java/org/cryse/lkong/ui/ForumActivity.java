@@ -451,7 +451,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mFab.setColorNormal(accentColor);
         mFab.setColorPressed(accentColorDark);
         mFab.setColorRipple(accentColorRipple);
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_fab_action_create, null).mutate();
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
         DrawableCompat.setTint(drawable, Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
         mFab.setImageDrawable(drawable);
     }
