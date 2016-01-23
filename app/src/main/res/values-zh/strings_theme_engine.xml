@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="primary_color">主色</string>
+    <string name="primary_color_summary">改变主色</string>
+
+    <string name="accent_color">强调颜色</string>
+    <string name="accent_color_summary">改变强调颜色</string>
+
+    <string name="primary_text_color">文本主色</string>
+    <string name="primary_text_color_summary">改变文本主色</string>
+
+    <string name="secondary_text_color">第二文本颜色</string>
+    <string name="secondary_text_color_summary">改变第二文本颜色</string>
+
+    <string name="colored_status_bar">状态栏颜色</string>
+    <string name="colored_status_bar_summary">改变状态栏颜色</string>
+
+    <string name="colored_nav_bar">虚拟键颜色</string>
+    <string name="colored_nav_bar_summary">改变虚拟键颜色</string>
+
+    <string name="light_status_bar_mode">浅色状态栏模式</string>
+    <string name="light_toolbar_mode">浅色工具栏模式</string>
+
+    <string name="ate_colors">颜色</string>
+    <string name="base_theme">基本</string>
+    <string name="dark_theme">暗色主题</string>
+    <string name="light_ui_modes">浅色 UI 模式</string>
+    <string name="dark_theme_summary">使用暗色主题</string>
+    <string name="system_ui_colors">系统 UI 颜色</string>
+    <string name="not_available_below_m">Android 6.0 Marshmallow 以下无效</string>
+    <string name="not_available_below_lollipop">Android 5.0 Lollipop 以下无效</string>
+
+    <string-array name="light_status_mode_entries">
+        <item>关闭, 状态栏图标为白色</item>
+        <item>开启, 状态栏图标为黑色</item>
+        <item>自动, 如果主色为浅色，状态栏图标将为黑色</item>
+    </string-array>
+
+    <string-array name="light_toolbar_mode_entries">
+        <item>关闭, 工具栏文字和图标为白色</item>
+        <item>开启, 工具栏文字和图标为黑色</item>
+        <item>自动, 如果主色为浅色，工具栏文字和图标将为黑色</item>
+    </string-array>
+
+    <string-array name="light_status_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>
