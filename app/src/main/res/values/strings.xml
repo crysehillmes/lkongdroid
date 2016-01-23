@@ -129,6 +129,7 @@
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
     <string name="dialog_title_rate">Rate</string>
+    <string name="dialog_title_permission_storage">This app need Storage permission to upload pictures in posts or save pictures to your phone.</string>
     <string name="dialog_title_insert_url">Insert Url</string>
     <string name="dialog_exit_new_post_title">Discard your post?</string>
     <string name="dialog_exit_confirm">Confirm</string>

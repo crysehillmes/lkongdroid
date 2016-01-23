@@ -72,6 +72,7 @@ dependencies {
     compile libDependencies.recyclerview
     compile libDependencies.cardview
 
+    compile libDependencies.easypermission
     compile libDependencies.gson
     compile libDependencies.okhttp
 

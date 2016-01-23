@@ -29,6 +29,7 @@ import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
+import org.cryse.lkong.application.AppPermissions;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
@@ -50,13 +51,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import pub.devrel.easypermissions.EasyPermissions;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivity extends AbstractActivity {
+public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks{
     private static final String LOG_TAG = MainActivity.class.getName();
     AppNavigation mNavigation = new AppNavigation();
     @Inject
@@ -107,6 +109,7 @@ public class MainActivity extends AbstractActivity {
             mIsRestorePosition = false;
         }
         initDrawer();
+        checkStoragePermissions();
     }
 
     private void initDrawer() {
@@ -438,5 +441,47 @@ public class MainActivity extends AbstractActivity {
         Bundle args = new Bundle();
         Fragment fragment = HomePageFragment.newInstance(args);
         switchContentFragment(fragment, null);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    private void checkStoragePermissions() {
+        if (EasyPermissions.hasPermissions(this, AppPermissions.PERMISSIONS)) {
+            // Already have permission, do the thing
+            // ...
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, getString(R.string.dialog_title_permission_storage),
+                    AppPermissions.RC_PERMISSION_STORAGE, AppPermissions.PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(List<String> permissions) {
+        if (AppPermissions.PERMISSIONS_SET.containsAll(permissions)) {
+            // Restarting application
+            // Schedule start after 1 second
+            /*PendingIntent pi = PendingIntent.getActivity(
+                    this,
+                    0,
+                    new Intent(this, MainActivity.class),
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            am.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pi);
+
+            // Stop now
+            finish();
+            System.exit(0);*/
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(List<String> perms) {
+        finish();
     }
 }
