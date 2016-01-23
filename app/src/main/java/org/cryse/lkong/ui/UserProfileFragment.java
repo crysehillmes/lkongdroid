@@ -20,8 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -179,7 +177,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.activity_profile, container, false);
+        View contentView = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, contentView);
         setUpToolbar(mToolbar);
         setColors();
@@ -379,12 +377,6 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         } else {
             mUserExtra0TextView.setVisibility(View.GONE);
         }
-        /*if(!TextUtils.isEmpty(mUserModelInfo.getCustomStatus())) {
-            mUserExtra1TextView.setVisibility(View.VISIBLE);
-            mUserExtra1TextView.setText(mUserModelInfo.getSigHtml());
-        } else {
-            mUserExtra1TextView.setVisibility(View.GONE);
-        }*/
         int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
         mUserFollowerCountTextView.setText(
                 getUserStatsText(mUserInfo.getFansCount(),
@@ -408,10 +400,6 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         );
         getAppCompatActivity().setTitle("");
         displayUserInfo();
-        /*Fragment fragment = mViewPagerAdapter.getItem(0);
-        if(fragment instanceof UserExtraDetailFragment) {
-            ((UserExtraDetailFragment) fragment).setUserInfo(mUserModelInfo);
-        }*/
     }
 
     @Override
@@ -500,8 +488,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         // Display Introduction Info
         if(!TextUtils.isEmpty(mUserInfo.getSigHtml())) {
             mIntroductionCardView.setVisibility(View.VISIBLE);
-            String introduction = mUserInfo.getSigHtml();
-            mIntroductionTextView.setText(introduction);
+            mIntroductionTextView.setText(mUserInfo.getSigHtml());
         } else {
             mIntroductionCardView.setVisibility(View.GONE);
         }

@@ -28,7 +28,7 @@ public class UserProfileUsersPresenter extends SimpleCollectionPresenter<SearchU
         long uid = (long) extraArgs[0];
         boolean follower = (boolean) extraArgs[1];
         setLoadingStatus(isLoadingMore, true);
-        mLoadDataSubscription = mLKongForumService.getUserFollow(authObject, uid, follower)
+        mLoadDataSubscription = mLKongForumService.getUserFollow(authObject, uid, follower, start)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

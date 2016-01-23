@@ -290,10 +290,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<SearchUserItem>> getUserFollow(LKAuthObject authObject, long uid, boolean follower) {
+    public Observable<List<SearchUserItem>> getUserFollow(LKAuthObject authObject, long uid, boolean follower, long start) {
         return Observable.create(subscriber -> {
             try {
-                GetUserFollowRequest request = new GetUserFollowRequest(authObject, uid, follower);
+                GetUserFollowRequest request = new GetUserFollowRequest(authObject, uid, follower, start);
                 List<SearchUserItem> dataSet = request.execute();
                 subscriber.onNext(dataSet);
                 subscriber.onCompleted();
