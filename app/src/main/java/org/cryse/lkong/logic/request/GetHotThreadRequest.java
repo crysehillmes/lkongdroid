@@ -14,6 +14,7 @@ import java.util.List;
 
 public class GetHotThreadRequest extends AbstractHttpRequest<List<HotThreadModel>> {
     private boolean mDigest;
+    private static final int HOT_THREAD_CACHE_TIME = 60*60*3;
     public GetHotThreadRequest(boolean digest) {
         super();
         this.mDigest = digest;
@@ -29,6 +30,7 @@ public class GetHotThreadRequest extends AbstractHttpRequest<List<HotThreadModel
         String url = String.format("http://lkong.cn/index.php?mod=ajax&action=%s", mDigest ? "digest" : "hotthread");
         return new Request.Builder()
                 .addHeader(ACCEPT_ENCODING, ACCEPT_ENCODING_GZIP)
+                .addHeader(CACHE_CONTROL, CACHE_CONTROL_MAX_AGE + HOT_THREAD_CACHE_TIME)
                 .url(url)
                 .build();
     }
