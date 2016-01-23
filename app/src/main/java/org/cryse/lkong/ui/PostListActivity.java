@@ -1215,7 +1215,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     private void initTextPaint() {
         mTextColorPrimary = Config.textColorPrimary(this, mATEKey);
         mTextColorSecondary = Config.textColorSecondary(this, mATEKey);
-        mTodayPrefix = getString(R.string.datetime_today);
+        mTodayPrefix = getString(R.string.text_datetime_today);
         mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
         mContentTextPaint.setTextSize(contentTextSize);

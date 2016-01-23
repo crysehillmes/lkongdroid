@@ -31,7 +31,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
     public BrowseHistoryAdapter(Context context, String ateKey, List<BrowseHistory> mItemList) {
         super(context, mItemList);
         this.mATEKey = ateKey;
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.text_datetime_today);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         super(parentFragment.getContext(), itemList);
         this.mATEKey = ateKey;
         this.mParentFragment = parentFragment;
-        this.mTodayPrefix = getContext().getString(R.string.datetime_today);
+        this.mTodayPrefix = getContext().getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(parentFragment.getContext());
         this.mCircleTransform = new CircleTransform(getContext());
         this.mAvatarLoadPolicy = avatarLoadPolicy;

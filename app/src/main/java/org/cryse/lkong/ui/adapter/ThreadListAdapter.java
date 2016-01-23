@@ -43,7 +43,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public ThreadListAdapter(Context context, String ateKey, List<ThreadModel> mItemList, int avatarLoadPolicy) {
         super(context, mItemList);
         this.mATEKey = ateKey;
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.text_datetime_today);
         this.mColorAccent = ThemeUtils.accentColor(context);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(mContext);

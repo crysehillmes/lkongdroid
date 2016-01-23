@@ -50,7 +50,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
     public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy, String ateKey) {
         super(context, items);
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(context);
         this.mAvatarLoadPolicy = avatarLoadPolicy;

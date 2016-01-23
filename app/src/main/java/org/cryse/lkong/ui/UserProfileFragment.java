@@ -383,22 +383,22 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         int statsTextSize = getResources().getDimensionPixelSize(R.dimen.text_size_caption);
         mUserFollowerCountTextView.setText(
                 getUserStatsText(mUserInfo.getFansCount(),
-                        getString(R.string.profile_header_followers),
+                        getString(R.string.text_profile_header_followers),
                         statsTextSize)
         );
         mUserFollowingCountTextView.setText(
                 getUserStatsText(mUserInfo.getFollowCount(),
-                        getString(R.string.profile_header_following),
+                        getString(R.string.text_profile_header_following),
                         statsTextSize)
         );
         mUserThreadCountTextView.setText(
                 getUserStatsText(mUserInfo.getThreads(),
-                        getString(R.string.profile_header_threads),
+                        getString(R.string.text_profile_header_threads),
                         statsTextSize)
         );
         mUserPostCountTextView.setText(
                 getUserStatsText(mUserInfo.getPosts(),
-                        getString(R.string.profile_header_posts),
+                        getString(R.string.text_profile_header_posts),
                         statsTextSize)
         );
         getAppCompatActivity().setTitle("");

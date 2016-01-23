@@ -32,7 +32,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     public NoticePrivateChatsCollectionAdapter(Context context, String ateKey, List<PrivateChatModel> items, int avatarLoadPolicy) {
         super(context, items);
         this.mATEKey = ateKey;
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(getContext());
         this.mAvatarLoadPolicy = avatarLoadPolicy;

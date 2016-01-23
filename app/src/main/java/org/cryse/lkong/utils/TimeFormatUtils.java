@@ -16,7 +16,6 @@
 package org.cryse.lkong.utils;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.text.TextUtils;
 
@@ -138,11 +137,11 @@ public class TimeFormatUtils {
         long nowOrd = localTime / 86400000L;
 
         if (dayOrd == nowOrd) {
-            return context.getString(R.string.day_title_today);
+            return context.getString(R.string.text_day_title_today);
         } else if (dayOrd == nowOrd - 1) {
-            return context.getString(R.string.day_title_yesterday);
+            return context.getString(R.string.text_day_title_yesterday);
         } else if (dayOrd == nowOrd + 1) {
-            return context.getString(R.string.day_title_tomorrow);
+            return context.getString(R.string.text_day_title_tomorrow);
         } else {
             return formatShortDate(context, new Date(timestamp));
         }

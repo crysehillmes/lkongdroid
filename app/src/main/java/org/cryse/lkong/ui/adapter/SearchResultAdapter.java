@@ -52,7 +52,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     public SearchResultAdapter(Context context, int avatarLoadPolicy) {
         super(context, new ArrayList<AbstractSearchResult>());
         this.mCircleTransform = new CircleTransform(context);
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
     }

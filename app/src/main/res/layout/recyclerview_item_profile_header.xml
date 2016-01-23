@@ -87,14 +87,14 @@
                 android:id="@+id/recyclerview_item_profile_header_follower_count_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_count_zero"
+                android:text="@string/text_profile_header_count_zero"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_followers"
+                android:text="@string/text_profile_header_followers"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -109,14 +109,14 @@
                 android:id="@+id/recyclerview_item_profile_header_following_count_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_count_zero"
+                android:text="@string/text_profile_header_count_zero"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_following"
+                android:text="@string/text_profile_header_following"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -132,14 +132,14 @@
                 android:id="@+id/recyclerview_item_profile_header_thread_count_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_count_zero"
+                android:text="@string/text_profile_header_count_zero"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_threads"
+                android:text="@string/text_profile_header_threads"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -155,14 +155,14 @@
                 android:id="@+id/recyclerview_item_profile_header_post_count_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_count_zero"
+                android:text="@string/text_profile_header_count_zero"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/profile_header_posts"
+                android:text="@string/text_profile_header_posts"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />
         </LinearLayout>
