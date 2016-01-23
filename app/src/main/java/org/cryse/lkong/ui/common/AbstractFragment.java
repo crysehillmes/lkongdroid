@@ -54,14 +54,14 @@ public abstract class AbstractFragment extends Fragment implements SnackbarSuppo
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ATE.apply(this, mATEKey);
-        mPrimaryColor = Config.primaryColor(getContext(), mATEKey);
-        mPrimaryDarkColor = Config.primaryColorDark(getContext(), mATEKey);
-        mAccentColor = Config.accentColor(getContext(), mATEKey);
+        mPrimaryColor = Config.primaryColor(getActivity(), mATEKey);
+        mPrimaryDarkColor = Config.primaryColorDark(getActivity(), mATEKey);
+        mAccentColor = Config.accentColor(getActivity(), mATEKey);
     }
 
     @Nullable
     protected final String getATEKey() {
-        return PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("dark_theme", false) ?
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false) ?
                 "dark_theme" : "light_theme";
     }
 

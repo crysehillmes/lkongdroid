@@ -3,11 +3,11 @@ package org.cryse.lkong.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.utils.ThemeUtils;
 
 /**
  * Created by jhernandez on 04/12/2015.
@@ -91,12 +91,12 @@ public class CustomColorSwitchCompat extends SwitchCompat {
 
         if (this.isChecked()) {
             // Checked
-            DrawableCompat.setTint(this.getThumbDrawable(), toggleOnColor);
-            DrawableCompat.setTint(this.getTrackDrawable(), bgOnColor);
+            ThemeUtils.setTint(this.getThumbDrawable(), toggleOnColor);
+            ThemeUtils.setTint(this.getTrackDrawable(), bgOnColor);
         } else {
             // Not checked
-            DrawableCompat.setTint(this.getThumbDrawable(), toggleOffColor);
-            DrawableCompat.setTint(this.getTrackDrawable(), bgOffColor);
+            ThemeUtils.setTint(this.getThumbDrawable(), toggleOffColor);
+            ThemeUtils.setTint(this.getTrackDrawable(), bgOffColor);
         }
         requestLayout();
         invalidate();

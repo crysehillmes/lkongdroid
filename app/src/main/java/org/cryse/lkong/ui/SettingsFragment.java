@@ -8,9 +8,16 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.changelog.ChangeLogUtils;
@@ -32,6 +39,7 @@ public class SettingsFragment extends PreferenceFragment {
     private OnConcisePreferenceChangedListener mOnConcisePreferenceChangedListener = null;
     AppNavigation mNavigation = new AppNavigation();
     RxEventBus mEventBus = RxEventBus.getInstance();
+    protected String mATEKey;
 
     @Inject
     UserAccountManager mUserAccountManager;
@@ -39,6 +47,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mATEKey = getATEKey();
         injectThis();
         mOnConcisePreferenceChangedListener = new OnConcisePreferenceChangedListener();
         // Load the preferences from an XML resource
@@ -51,16 +60,25 @@ public class SettingsFragment extends PreferenceFragment {
         setupThemePreference();
 
         Preference syncPrefs = findPreference("prefs_goto_account_settings");
-        syncPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-                //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
-                intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
-                startActivity(intent);
-                return true;
-            }
+        syncPrefs.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+            //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
+            startActivity(intent);
+            return true;
         });
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ATE.apply(this, mATEKey);
+    }
+
+    @Nullable
+    protected final String getATEKey() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false) ?
+                "dark_theme" : "light_theme";
     }
 
     private void injectThis() {

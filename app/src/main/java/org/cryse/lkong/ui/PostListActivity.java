@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -932,14 +931,14 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mFab.setColorRipple(accentColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_fab_action_create, null).mutate();
         int toolbarTextColor = Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE;
-        DrawableCompat.setTint(drawable, toolbarTextColor);
+        ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
         mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
         Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back_black, null).mutate();
         Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward_black, null).mutate();
-        DrawableCompat.setTint(backwardArrow, toolbarTextColor);
-        DrawableCompat.setTint(forwardArrow, toolbarTextColor);
+        ThemeUtils.setTint(backwardArrow, toolbarTextColor);
+        ThemeUtils.setTint(forwardArrow, toolbarTextColor);
         ((ImageButton)mFooterPagerControl.findViewById(R.id.widget_pager_control_button_backward)).setImageDrawable(backwardArrow);
         ((ImageButton)mFooterPagerControl.findViewById(R.id.widget_pager_control_button_forward)).setImageDrawable(forwardArrow);
     }
