@@ -231,9 +231,9 @@ public class SendPostService extends Service {
 
     private String preprocessContent(LKAuthObject authObject, String content) throws Exception{
         String unescapedContent = StringEscapeUtils.unescapeHtml4(content);
-        ContentProcessor contentProcessor = new ContentProcessor(unescapedContent);
-        contentProcessor.setUploadImageCallback(path -> {
-            UploadImageRequest request = new UploadImageRequest(authObject, path);
+        ContentProcessor contentProcessor = new ContentProcessor(this, unescapedContent);
+        contentProcessor.setUploadImageCallback((path, mime) -> {
+            UploadImageRequest request = new UploadImageRequest(authObject, path, mime);
             UploadImageResult result = request.execute();
             if(result.isSuccess()) {
                 return result.getImageUrl();

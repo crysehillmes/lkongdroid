@@ -51,8 +51,6 @@ ext {
 
             // Network
             okhttp: "com.squareup.okhttp:okhttp:$okhttpVersion",
-            okhttp_urlconnection: "com.squareup.okhttp:okhttp-urlconnection:$okhttpVersion",
-            tika: "org.apache.tika:tika-core:$tikaVersion",
 
             // Log
             timber: "com.jakewharton.timber:timber:$timberVersion",

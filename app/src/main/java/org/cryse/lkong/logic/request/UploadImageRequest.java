@@ -6,7 +6,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.apache.tika.Tika;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.model.UploadImageResult;
@@ -16,27 +15,28 @@ import java.io.File;
 
 public class UploadImageRequest extends AbstractAuthedHttpRequest<UploadImageResult> {
     private String mImagePath;
-    private final Tika mTika = new Tika();
-    public UploadImageRequest(LKAuthObject authObject, String imagePath) {
+    private String mMimeType;
+    public UploadImageRequest(LKAuthObject authObject, String imagePath, String mimeType) {
         super(authObject);
         this.mImagePath = imagePath;
+        this.mMimeType = mimeType;
     }
 
-    public UploadImageRequest(HttpDelegate httpDelegate, LKAuthObject authObject, String imagePath) {
+    public UploadImageRequest(HttpDelegate httpDelegate, LKAuthObject authObject, String imagePath, String mimeType) {
         super(httpDelegate, authObject);
         this.mImagePath = imagePath;
+        this.mMimeType = mimeType;
 
     }
 
     @Override
     protected Request buildRequest() throws Exception {
         File fileToUpload = new File(mImagePath);
-        String mimeTypeString = mTika.detect(fileToUpload);
 
         RequestBody formBody = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("file", mImagePath.substring(mImagePath.lastIndexOf("/")), RequestBody
-                        .create(MediaType.parse(mimeTypeString), fileToUpload))
+                        .create(MediaType.parse(mMimeType), fileToUpload))
                 .build();
         String url = "http://lkong.cn:1337/upload";
         return new Request.Builder()

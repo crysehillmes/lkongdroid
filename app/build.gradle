@@ -79,7 +79,6 @@ dependencies {
     compile libDependencies.rxandroid
     compile libDependencies.butterknife
 
-    compile libDependencies.tika
     compile libDependencies.timber
 
     compile(libDependencies.materialdrawer) {
