@@ -98,6 +98,10 @@ dependencies {
         transitive = true
     }
 
+    compile(libDependencies.textdrawable) {
+        transitive = true
+    }
+
     // compile fileTree(dir: 'libs', include: ['*.jar'])
     compile libDependencies.play_services_analytics
     compile libDependencies.umeng_analytics
