@@ -14,7 +14,7 @@ import java.util.List;
 
 public class GetHotThreadRequest extends AbstractHttpRequest<List<HotThreadModel>> {
     private boolean mDigest;
-    private static final int HOT_THREAD_CACHE_TIME = 60*60*3;
+    private static final int HOT_THREAD_CACHE_TIME = 60*10*10;
     public GetHotThreadRequest(boolean digest) {
         super();
         this.mDigest = digest;

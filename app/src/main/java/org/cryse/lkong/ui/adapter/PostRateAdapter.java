@@ -50,7 +50,7 @@ public class PostRateAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         PostRateViewHolder viewHolder;
         if (convertView == null) {
-            convertView = View.inflate(mContext, R.layout.listview_item_post_rate, null);
+            convertView = View.inflate(mContext, R.layout.item_post_rate, null);
             viewHolder = new PostRateViewHolder(convertView, position);
             convertView.setTag(viewHolder);
         } else {

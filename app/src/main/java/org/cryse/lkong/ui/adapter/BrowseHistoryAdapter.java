@@ -38,7 +38,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_browse_history, parent, false);
+                .inflate(R.layout.item_browse_history, parent, false);
         return new ViewHolder(v, mATEKey, mOnBrowseHistoryItemClickListener);
     }
 

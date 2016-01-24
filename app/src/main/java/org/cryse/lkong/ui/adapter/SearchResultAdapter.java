@@ -63,13 +63,13 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_POST:
-                view = inflater.inflate(R.layout.recyclerview_item_search_post, parent, false);
+                view = inflater.inflate(R.layout.item_search_post, parent, false);
                 return new SearchPostViewHolder(view, mATEKey);
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_USER:
-                view = inflater.inflate(R.layout.recyclerview_item_search_user, parent, false);
+                view = inflater.inflate(R.layout.item_search_user, parent, false);
                 return new SearchUserViewHolder(view, mATEKey);
             case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_GROUP:
-                view = inflater.inflate(R.layout.recyclerview_item_search_group, parent, false);
+                view = inflater.inflate(R.layout.item_search_group, parent, false);
                 return new SearchGroupViewHolder(view, mATEKey);
             default:
                 throw new IllegalArgumentException("Unknown viewType.");

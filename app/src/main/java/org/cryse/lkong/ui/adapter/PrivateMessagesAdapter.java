@@ -78,11 +78,11 @@ public class PrivateMessagesAdapter extends RecyclerViewBaseAdapter<PrivateMessa
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case TYPE_SEND:
-                view = inflater.inflate(R.layout.recyclerview_item_private_message_item_send, parent, false);
+                view = inflater.inflate(R.layout.item_private_message_item_send, parent, false);
                 return new PrivateMessageViewHolder(view, mATEKey);
             case TYPE_RECEIVE:
             default:
-                view = inflater.inflate(R.layout.recyclerview_item_private_message_item_receive, parent, false);
+                view = inflater.inflate(R.layout.item_private_message_item_receive, parent, false);
                 return new PrivateMessageViewHolder(view, mATEKey);
         }
     }

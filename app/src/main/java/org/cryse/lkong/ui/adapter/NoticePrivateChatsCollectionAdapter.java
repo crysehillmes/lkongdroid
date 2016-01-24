@@ -41,7 +41,7 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_private_chat, parent, false);
+                .inflate(R.layout.item_private_chat, parent, false);
         return new ViewHolder(v, mATEKey);
     }
 

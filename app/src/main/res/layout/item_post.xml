@@ -29,6 +29,7 @@
                 android:layout_gravity="left"
                 android:src="@drawable/ic_button_rate"
                 android:contentDescription="@string/button_share"
+                android:background="?selectableItemBackground"
                 android:tag="tint_text_primary"/>
 
             <TextView
@@ -50,6 +51,7 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_button_comment"
             android:contentDescription="@string/button_reply"
+            android:background="?selectableItemBackground"
             android:tag="tint_text_primary" />
 
         <ImageButton
@@ -58,6 +60,7 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_action_share"
             android:contentDescription="@string/button_share"
+            android:background="?selectableItemBackground"
             android:tag="tint_text_primary"/>
 
         <ImageButton
@@ -67,6 +70,7 @@
             android:src="@drawable/ic_button_edit"
             android:contentDescription="@string/button_edit"
             android:visibility="invisible"
+            android:background="?selectableItemBackground"
             android:tag="tint_text_primary"/>
     </org.cryse.lkong.widget.PostItemView>
 </android.support.v7.widget.CardView>

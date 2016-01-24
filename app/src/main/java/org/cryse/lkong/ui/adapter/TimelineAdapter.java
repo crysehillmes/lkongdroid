@@ -61,7 +61,7 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
     @Override
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_timeline, parent, false);
+                .inflate(R.layout.item_timeline, parent, false);
         return new ViewHolder(v, mATEKey, mOnTimelineModelItemClickListener);
     }
 
