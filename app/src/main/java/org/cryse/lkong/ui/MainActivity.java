@@ -3,6 +3,8 @@ package org.cryse.lkong.ui;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,12 +15,15 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.afollestad.appthemeengine.Config;
+import com.afollestad.appthemeengine.util.Util;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -59,6 +64,10 @@ import timber.log.Timber;
 
 public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks{
     private static final String LOG_TAG = MainActivity.class.getName();
+    private static final int ID_HOMEPAGE = 1001;
+    private static final int ID_FAVORITES = 1003;
+    private static final int ID_BROWSE_HISTORY = 1004;
+    private static final int ID_SETTINGS = 1101;
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
@@ -104,7 +113,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             mCurrentSelection = savedInstanceState.getInt("selection_item_position");
             mIsRestorePosition = true;
         } else {
-            mCurrentSelection = 1001;
+            mCurrentSelection = ID_HOMEPAGE;
             mIsRestorePosition = false;
         }
         initDrawer();
@@ -137,38 +146,52 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(
-                        isNightMode() ? R.drawable.drawer_top_image_dark : R.drawable.drawer_top_image_light
-                );
-        accountHeaderBuilder.withOnAccountHeaderListener((view, iProfile, b) -> {
-            if (iProfile.getIdentifier() == -3001) {
-                mNavigation.navigateToSignInActivity(MainActivity.this, false);
-            } else {
-                long uid = iProfile.getIdentifier();
-                if(mUserAccountManager.getCurrentUserId() == uid) {
-                    int[] startingLocation = new int[2];
-                    view.getLocationOnScreen(startingLocation);
-                    startingLocation[0] += view.getWidth() / 2;
-                    mNavigation.openActivityForUserProfile(this, startingLocation, uid);
-                } else {
-                    mUserAccountManager.setCurrentUserAccount(uid);
-                    getEventBus().sendEvent(new CurrentAccountChangedEvent());
-                }
-            }
-            return true;
-        }).withCurrentProfileHiddenInList(true);
+                .withHeaderBackground(new ColorDrawable(getAccentColor()));
+        accountHeaderBuilder
+                .withOnAccountHeaderListener((view, iProfile, b) -> {
+                    if (iProfile.getIdentifier() == -3001) {
+                        mNavigation.navigateToSignInActivity(MainActivity.this, false);
+                    } else {
+                        long uid = iProfile.getIdentifier();
+                        if (mUserAccountManager.getCurrentUserId() == uid) {
+                            int[] startingLocation = new int[2];
+                            view.getLocationOnScreen(startingLocation);
+                            startingLocation[0] += view.getWidth() / 2;
+                            mNavigation.openActivityForUserProfile(this, startingLocation, uid);
+                        } else {
+                            mUserAccountManager.setCurrentUserAccount(uid);
+                            getEventBus().sendEvent(new CurrentAccountChangedEvent());
+                        }
+                    }
+                    return true;
+                })
+                .withCurrentProfileHiddenInList(true)
+                .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
         IDrawerItem[] drawerItems = new IDrawerItem[5];
-        drawerItems[0] = new PrimaryDrawerItem().withName(R.string.drawer_item_homepage).withIcon(R.drawable.ic_drawer_timeline).withIdentifier(1001);
-        drawerItems[1] = new PrimaryDrawerItem().withName(R.string.drawer_item_favorites).withIcon(R.drawable.ic_drawer_favorites).withIdentifier(1003);
-        drawerItems[2] = new PrimaryDrawerItem().withName(R.string.drawer_item_browse_history).withIcon(R.drawable.ic_drawer_browse_history).withIdentifier(1004);
+        drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()
+                .withName(R.string.drawer_item_homepage)
+                .withIcon(R.drawable.ic_drawer_homepage)
+                .withIdentifier(ID_HOMEPAGE));
+        drawerItems[1] = applyColorToDrawerItem(new PrimaryDrawerItem()
+                .withName(R.string.drawer_item_favorites)
+                .withIcon(R.drawable.ic_drawer_favorites)
+                .withIdentifier(ID_FAVORITES));
+        drawerItems[2] = applyColorToDrawerItem(new PrimaryDrawerItem()
+                .withName(R.string.drawer_item_browse_history)
+                .withIcon(R.drawable.ic_drawer_browse_history)
+                .withIdentifier(ID_BROWSE_HISTORY));
         drawerItems[3] = new DividerDrawerItem();
-        drawerItems[4] = new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIdentifier(1101).withSelectable(false);
+        drawerItems[4] = applyColorToDrawerItem(new SecondaryDrawerItem()
+                .withName(R.string.drawer_item_settings)
+                .withIdentifier(ID_SETTINGS)
+                .withSelectable(false));
         //Now create your drawer and pass the AccountHeader.Result
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
                 .withStatusBarColor(getPrimaryDarkColor())
+                .withSliderBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey))
                 .addDrawerItems(
                         drawerItems
                 )
@@ -204,13 +227,25 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 })
                 .build();
         addAccountProfile();
-        if(mCurrentSelection == 1001 && !mIsRestorePosition) {
-            mNaviagtionDrawer.setSelection(1001, false);
+        if(mCurrentSelection == ID_HOMEPAGE && !mIsRestorePosition) {
+            mNaviagtionDrawer.setSelection(ID_HOMEPAGE, false);
             navigateToHomePageFragment();
             // mNavigation.navigateToHomePageFragment();
         } else if(mIsRestorePosition) {
             mNaviagtionDrawer.setSelection(mCurrentSelection, false);
         }
+    }
+
+    private BaseDrawerItem applyColorToDrawerItem(BaseDrawerItem drawerItem) {
+        int normalTextColor = Config.navigationViewNormalText(this, mATEKey, isNightMode());
+        int selectedTextColor = Config.navigationViewSelectedText(this, mATEKey, isNightMode());
+        drawerItem.withIconColor(normalTextColor);
+        drawerItem.withSelectedIconColor(selectedTextColor);
+        drawerItem.withIconTintingEnabled(true);
+        drawerItem.withTextColor(normalTextColor);
+        drawerItem.withSelectedTextColor(selectedTextColor);
+        drawerItem.withSelectedColor(Config.navigationViewSelectedBg(this, mATEKey, isNightMode()));
+        return drawerItem;
     }
 
     @Override
@@ -242,16 +277,16 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
         switch (drawerItem.getIdentifier()) {
-            case 1001:
+            case ID_HOMEPAGE:
                 navigateToHomePageFragment();
                 break;
-            case 1003:
+            case ID_FAVORITES:
                 navigateToFavoritesFragment(null);
                 break;
-            case 1004:
+            case ID_BROWSE_HISTORY:
                 navigateToBrowseHistoryFragment(null);
                 break;
-            case 1101:
+            case ID_SETTINGS:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
                 break;
             default:

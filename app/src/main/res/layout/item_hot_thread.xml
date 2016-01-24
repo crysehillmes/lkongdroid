@@ -5,7 +5,8 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    android:background="?selectableItemBackground">
     <ImageView
         android:id="@+id/item_hot_thread_imageview_rank"
         android:layout_width="40dp"
@@ -19,7 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="56dp"
         android:layout_marginStart="56dp"
-        android:background="?selectableItemBackground"
         android:tag="text_primary"
         android:textSize="@dimen/text_size_subhead" />
 </RelativeLayout>

@@ -284,10 +284,6 @@
         <item>24 小时</item>
     </string-array>
     <string name="tb_munion_tip_download_prefix">正在下载:</string>
-    <string name="umeng_common_icon">找不到这一楼啊</string>
-    <string name="header_not_created">Header 创建失败</string>
-    <string name="title_null_or_empty">标题不能为空</string>
-    <string name="custom_header_not_created"></string>
-    <string name="drawer_close"></string>
+    <string name="umeng_common_icon"> </string>
 
 </resources>
