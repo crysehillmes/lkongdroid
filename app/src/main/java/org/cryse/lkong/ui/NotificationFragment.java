@@ -21,7 +21,6 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
@@ -215,8 +214,5 @@ public class NotificationFragment extends InActivityFragment {
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if (event instanceof ThemeColorChangedEvent) {
-            mTabLayout.setBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryColor());
-        }
     }
 }

@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="ate_key" format="string" />
-    <declare-styleable name="CustomColorSwitchCompat">
-        <attr name="toggleOnColor" format="color" />
-        <attr name="toggleOffColor" format="color" />
-        <attr name="bgOnColor" format="color" />
-        <attr name="bgOffColor" format="color" />
-    </declare-styleable>
 </resources>

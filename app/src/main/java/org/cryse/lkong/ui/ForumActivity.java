@@ -11,7 +11,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -32,7 +31,6 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
 import org.cryse.lkong.model.converter.ModelConverter;
@@ -45,7 +43,6 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumView;
-import org.cryse.lkong.widget.CustomColorSwitchCompat;
 import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
@@ -87,8 +84,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
 
     View mHeaderView;
     Spinner mListTypeSpinner;
-    MenuItem mPinForumMenuItem;
-    CustomColorSwitchCompat mPinForumSwitch;
+    MenuItem mFollowForumMenuItem;
     MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
 
@@ -284,15 +280,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_forum, menu);
         mChangeThemeMenuItem = menu.findItem(R.id.action_change_theme);
-        mPinForumMenuItem = menu.findItem(R.id.action_forum_pin_to_home);
-        if(mPinForumMenuItem != null) {
-            mPinForumSwitch = (CustomColorSwitchCompat) mPinForumMenuItem.getActionView().findViewById(android.R.id.checkbox);
-            mPinForumSwitch.setToggleOnColor(getAccentColor());
-            mPinForumSwitch.setToggleOffColor(ThemeUtils.makeColorDarken(getAccentColor(), 0.5f));
-            mPinForumSwitch.setBgOffColor(Color.TRANSPARENT);
-            mPinForumSwitch.setBgOnColor(Color.TRANSPARENT);
-            mPinForumSwitch.setTextColor(Util.isColorLight(getPrimaryColor()) ? Color.BLACK : Color.WHITE);
-        }
+        mFollowForumMenuItem = menu.findItem(R.id.action_forum_follow);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -304,25 +292,14 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mIsForumPinned != null && mPinForumSwitch != null) {
-            mPinForumMenuItem.setVisible(true);
-            mPinForumSwitch.setVisibility(View.VISIBLE);
+        if(mIsForumPinned != null && mFollowForumMenuItem != null) {
+            mFollowForumMenuItem.setVisible(true);
             if(mIsForumPinned) {
-                /*mPinForumMenuItem.setIcon(R.drawable.ic_action_unpin_forum);
-                mPinForumMenuItem.setTitle(R.string.action_unpin_from_home);*/
-                mPinForumSwitch.setText(R.string.action_forum_followed);
+                mFollowForumMenuItem.setTitle(R.string.action_forum_followed);
             }
             else {
-                /*mPinForumMenuItem.setIcon(R.drawable.ic_action_pin_forum);
-                mPinForumMenuItem.setTitle(R.string.action_pin_to_home);*/
-                mPinForumSwitch.setText(R.string.action_forum_not_followed);
+                mFollowForumMenuItem.setTitle(R.string.action_follow_forum);
             }
-            mPinForumSwitch.setOnCheckedChangeListener(null);
-            mPinForumSwitch.setChecked(mIsForumPinned);
-            mPinForumSwitch.setOnCheckedChangeListener(mOnPinForumCheckedChangeListener);
-        } else {
-            mPinForumMenuItem.setVisible(false);
-            mPinForumSwitch.setVisibility(View.INVISIBLE);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -336,7 +313,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
             case R.id.action_change_theme:
                 toggleNightMode();
                 return true;
-            case R.id.action_forum_pin_to_home:
+            case R.id.action_forum_follow:
 
                 return false;
         }

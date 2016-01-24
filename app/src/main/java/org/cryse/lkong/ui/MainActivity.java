@@ -36,7 +36,6 @@ import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
@@ -293,11 +292,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if (event instanceof ThemeColorChangedEvent) {
-            mNaviagtionDrawer.setStatusBarColor(((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
-            mNaviagtionDrawer.getContent().invalidate();
-            // setDrawerSelectedItemColor(((ThemeColorChangedEvent) event).getNewPrimaryColorResId());
-        } else if(event instanceof NewAccountEvent) {
+        if(event instanceof NewAccountEvent) {
             addAccountProfile();
         } else if(event instanceof AccountRemovedEvent) {
             if(!mUserAccountManager.isSignedIn()) {
