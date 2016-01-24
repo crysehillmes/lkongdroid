@@ -131,8 +131,7 @@ public class ThemeSettingsActivity extends AbstractActivity
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     // Marks both theme configs as changed so MainActivity restarts itself on return
-                    Config.markChanged(getActivity(), "light_theme");
-                    Config.markChanged(getActivity(), "dark_theme");
+                    Config.markChanged(getActivity(), "light_theme", "dark_theme");
                     // The dark_theme preference value gets saved by Android in the default PreferenceManager.
                     // It's used in getATEKey() of both the Activities.
                     getActivity().recreate();

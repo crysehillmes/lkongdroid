@@ -40,18 +40,22 @@
     </style>
 
     <style name="AppTheme.NoTranslucent">
+        <item name="ate_key">light_theme</item>
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="AppTheme.Translucent">
+        <item name="ate_key">light_theme</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="AppThemeDark.NoTranslucent">
+        <item name="ate_key">dark_theme</item>
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="AppThemeDark.Translucent">
+        <item name="ate_key">dark_theme</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

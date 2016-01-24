@@ -117,8 +117,7 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
 
     public void toggleNightMode() {
         mIsNightMode.set(!mIsNightMode.get());
-        Config.markChanged(this, "light_theme");
-        Config.markChanged(this, "dark_theme");
+        Config.markChanged(this, "light_theme", "dark_theme");
         recreate();
     }
 
