@@ -47,6 +47,7 @@ import org.cryse.lkong.widget.FloatingActionButtonEx;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
+import org.cryse.widget.recyclerview.Bookends;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     MenuItem mFollowForumMenuItem;
     MenuItem mChangeThemeMenuItem;
     ThreadListAdapter mCollectionAdapter;
+    Bookends<ThreadListAdapter> mWrapperAdapter;
 
     List<ThreadModel> mItemList = new ArrayList<ThreadModel>();
 
@@ -133,7 +135,8 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mThreadCollectionView.getRecyclerView().setItemAnimator(new DefaultItemAnimator());
         mThreadCollectionView.setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new ThreadListAdapter(this, mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
-        mThreadCollectionView.setAdapter(mCollectionAdapter);
+        mWrapperAdapter = new Bookends<>(mCollectionAdapter);
+        mThreadCollectionView.setAdapter(mWrapperAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
@@ -147,8 +150,8 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mCollectionAdapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                int itemIndex = position - mWrapperAdapter.getHeaderCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
                     ThreadModel model = mCollectionAdapter.getItem(itemIndex);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
@@ -159,8 +162,8 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
 
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                int itemIndex = adapterPosition - mWrapperAdapter.getHeaderCount();
+                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
                     ThreadModel item = mCollectionAdapter.getItem(itemIndex);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
@@ -204,7 +207,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         RecyclerView.LayoutParams headerLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mHeaderView.setLayoutParams(headerLP);
         ((CardView)mHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
-        mCollectionAdapter.addHeaderView(mHeaderView);
+        mWrapperAdapter.addHeader(mHeaderView);
     }
 
     @Override
@@ -377,8 +380,8 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
                 loadMore(mCurrentListPageNumber);
             }*/
         }
-        if(mCollectionAdapter.getItemCount() - mCollectionAdapter.getHeaderViewCount() > 0 ) {
-            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1 - mCollectionAdapter.getHeaderViewCount());
+        if(mCollectionAdapter.getItemCount() > 0 ) {
+            ThreadModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
             mLastItemSortKey = -1;

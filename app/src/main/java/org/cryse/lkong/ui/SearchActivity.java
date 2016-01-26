@@ -89,10 +89,9 @@ public class SearchActivity extends AbstractSwipeBackActivity implements SearchF
             }
         });
         mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
-            int headerCount = mSearchResultAdapter.getHeaderViewCount();
             switch (mSearchResultAdapter.getResultType()) {
                 case SearchDataSet.TYPE_POST:
-                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position);
                     String idString = postResult.getId();
                     if(idString.startsWith("thread_"))
                         idString = idString.substring(7);
@@ -100,14 +99,14 @@ public class SearchActivity extends AbstractSwipeBackActivity implements SearchF
                         mNavigation.openActivityForPostListByThreadId(this, Long.valueOf(idString));
                     break;
                 case SearchDataSet.TYPE_USER:
-                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
                     mNavigation.openActivityForUserProfile(this, startingLocation, userResult.getUserId());
                     break;
                 case SearchDataSet.TYPE_GROUP:
-                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position);
                     mNavigation.openActivityForForumByForumId(this, groupResult.getForumId(), groupResult.getGroupName().toString(), groupResult.getGroupDescription().toString());
                     break;
             }

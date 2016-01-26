@@ -17,13 +17,14 @@ import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter<PrivateChatModel> {
+public class NoticePrivateChatsCollectionAdapter extends SimpleRecyclerViewAdapter<PrivateChatModel> {
     private String mATEKey;
     private CircleTransform mCircleTransform;
     private final String mTodayPrefix;
@@ -32,14 +33,14 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     public NoticePrivateChatsCollectionAdapter(Context context, String ateKey, List<PrivateChatModel> items, int avatarLoadPolicy) {
         super(context, items);
         this.mATEKey = ateKey;
-        this.mTodayPrefix = getString(R.string.text_datetime_today);
+        this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
-        this.mCircleTransform = new CircleTransform(getContext());
+        this.mCircleTransform = new CircleTransform(mContext);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_private_chat, parent, false);
         return new ViewHolder(v, mATEKey);
@@ -48,28 +49,24 @@ public class NoticePrivateChatsCollectionAdapter extends RecyclerViewBaseAdapter
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof PrivateChatModel) {
-                PrivateChatModel model = (PrivateChatModel)item;
 
-                viewHolder.mChatMessageTextView.setText(model.getMessage());
-                viewHolder.mUserNameTextView.setText(model.getTargetUserName());
-                viewHolder.mDatelineTextView.setText(TimeFormatUtils.formatDateDividByToday(
-                        model.getDateline(),
-                        mTodayPrefix,
-                        getContext().getResources().getConfiguration().locale));
-                ImageLoader.loadAvatar(
-                        getContext(),
-                        viewHolder.mAvatarImageView,
-                        model.getTargetUserAvatar(),
-                        mAvatarSize,
-                        mCircleTransform,
-                        mAvatarLoadPolicy
-                );
-            }
-        }
+        ViewHolder viewHolder = (ViewHolder) holder;
+        PrivateChatModel model = getItem(position);
+
+        viewHolder.mChatMessageTextView.setText(model.getMessage());
+        viewHolder.mUserNameTextView.setText(model.getTargetUserName());
+        viewHolder.mDatelineTextView.setText(TimeFormatUtils.formatDateDividByToday(
+                model.getDateline(),
+                mTodayPrefix,
+                mContext.getResources().getConfiguration().locale));
+        ImageLoader.loadAvatar(
+                mContext,
+                viewHolder.mAvatarImageView,
+                model.getTargetUserAvatar(),
+                mAvatarSize,
+                mCircleTransform,
+                mAvatarLoadPolicy
+        );
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

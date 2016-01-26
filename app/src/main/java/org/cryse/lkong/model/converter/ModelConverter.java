@@ -42,6 +42,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
@@ -213,6 +214,10 @@ public class ModelConverter {
         return itemList;
     }
 
+    private static final String SMALL_EMOJI_TEXT = "~bq(\\d+)~";
+    private static final String SMALL_EMOJI_IMG = "<img src=\"http://img.lkong.cn/bq/em$1.gif\" class=\"smallbq\">";
+
+
     public static List<TimelineModel> toTimelineModel(LKTimelineData timelineData) {
         List<TimelineModel> timelineModels = new ArrayList<>(timelineData.getData().size());
         for(LKTimelineItem item : timelineData.getData()) {
@@ -234,7 +239,7 @@ public class ModelConverter {
                 model.setThreadAuthor(item.getT_author());
                 model.setThreadAuthorId(item.getT_authorid());
             }
-            model.setMessage(item.getMessage());
+            model.setMessage(item.getMessage().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
             model.setSubject(item.getSubject());
             model.setSortKey(item.getSortkey());
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
@@ -258,7 +263,7 @@ public class ModelConverter {
                             nextTargetContentSibling = nextTargetContentSibling.nextSibling();
                         }
                     }
-                    replyQuote.setPosterMessage(targetContentBuilder.toString());
+                    replyQuote.setPosterMessage(targetContentBuilder.toString().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
                 }
                 Elements divElements = document.select("div");
                 if(divElements.size() > 0) {

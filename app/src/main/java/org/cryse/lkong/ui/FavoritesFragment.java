@@ -332,9 +332,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                if (position >= 0 && position < mCollectionAdapter.getItemCount()) {
+                    ThreadModel model = mCollectionAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -344,9 +343,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel item = mCollectionAdapter.getItem(itemIndex);
+                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    ThreadModel item = mCollectionAdapter.getItem(adapterPosition);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
                     mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
@@ -363,8 +361,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        if(position >= 0 && position < mCollectionAdapter.getItemCount()) {
             ThreadModel item = mCollectionAdapter.getItem(position);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);

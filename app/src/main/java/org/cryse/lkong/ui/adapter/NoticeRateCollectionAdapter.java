@@ -13,15 +13,15 @@ import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.NoticeRateModel;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class NoticeRateCollectionAdapter extends RecyclerViewBaseAdapter<NoticeRateModel> {
+public class NoticeRateCollectionAdapter extends SimpleRecyclerViewAdapter<NoticeRateModel> {
     private String mATEKey;
     public NoticeRateCollectionAdapter(Context context, String ateKey, List<NoticeRateModel> items) {
         super(context, items);
@@ -29,7 +29,7 @@ public class NoticeRateCollectionAdapter extends RecyclerViewBaseAdapter<NoticeR
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notice_rate, parent, false);
         return new ViewHolder(v, mATEKey);
@@ -38,25 +38,20 @@ public class NoticeRateCollectionAdapter extends RecyclerViewBaseAdapter<NoticeR
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof NoticeRateModel) {
-                NoticeRateModel noticeRateModel = (NoticeRateModel)item;
+        ViewHolder viewHolder = (ViewHolder) holder;
+        NoticeRateModel noticeRateModel = getItem(position);
 
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-                String prefix = getString(R.string.format_note_rate_log_prefix);
-                spannableStringBuilder.append(prefix);
-                spannableStringBuilder.append(noticeRateModel.getMessage());
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        String prefix = mContext.getString(R.string.format_note_rate_log_prefix);
+        spannableStringBuilder.append(prefix);
+        spannableStringBuilder.append(noticeRateModel.getMessage());
 
-                String middle = getString(R.string.format_note_rate_log_middle, noticeRateModel.getUserName());
-                spannableStringBuilder.append(middle);
-                String suffix = getString(R.string.format_note_rate_log_suffix, noticeRateModel.getExtCredits(), noticeRateModel.getScore());
-                spannableStringBuilder.append(suffix);
-                spannableStringBuilder.append('\n').append(noticeRateModel.getReason());
-                viewHolder.mNoticeMessageTextView.setText(spannableStringBuilder);
-            }
-        }
+        String middle = mContext.getString(R.string.format_note_rate_log_middle, noticeRateModel.getUserName());
+        spannableStringBuilder.append(middle);
+        String suffix = mContext.getString(R.string.format_note_rate_log_suffix, noticeRateModel.getExtCredits(), noticeRateModel.getScore());
+        spannableStringBuilder.append(suffix);
+        spannableStringBuilder.append('\n').append(noticeRateModel.getReason());
+        viewHolder.mNoticeMessageTextView.setText(spannableStringBuilder);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

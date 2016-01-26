@@ -108,8 +108,8 @@ public class HotThreadFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        int itemIndex = position;
+        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
             HotThreadModel item = mCollectionAdapter.getItem(position);
             mNavigation.openActivityForPostListByThreadId(getActivity(), item.tid);
         }

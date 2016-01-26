@@ -13,13 +13,14 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum>{
+public class FollowedForumsAdapter extends SimpleRecyclerViewAdapter<FollowedForum> {
     private Fragment mParentFragment;
     public FollowedForumsAdapter(Fragment parentFragment, List<FollowedForum> mItemList) {
         super(parentFragment.getContext(), mItemList);
@@ -27,7 +28,7 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_forum, parent, false);
         return new ViewHolder(v);
@@ -36,22 +37,18 @@ public class FollowedForumsAdapter extends RecyclerViewBaseAdapter<FollowedForum
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof FollowedForum) {
-                FollowedForum forumModel = (FollowedForum)item;
+        ViewHolder viewHolder = (ViewHolder) holder;
+        FollowedForum forumModel = getItem(position);
 
-                viewHolder.mForumTitleTextView.setText(forumModel.getForumName());
+        viewHolder.mForumTitleTextView.setText(forumModel.getForumName());
                 /*viewHolder.mForumSecondaryTextView.setText(getString(R.string.format_forum_item_threads_todayposts, forumModel.getThreads(), forumModel.getTodayPosts()));*/
-                Glide
-                        .with(mParentFragment)
-                        .load(forumModel.getForumIcon())
-                        .placeholder(R.drawable.placeholder_loading)
-                        .error(R.drawable.placeholder_error)
-                        .into(viewHolder.mForumIconImageView);
-            }
-        }
+        Glide
+                .with(mParentFragment)
+                .load(forumModel.getForumIcon())
+                .placeholder(R.drawable.placeholder_loading)
+                .error(R.drawable.placeholder_error)
+                .into(viewHolder.mForumIconImageView);
+
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

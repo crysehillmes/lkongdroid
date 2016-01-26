@@ -222,10 +222,10 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
                 mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            PrivateMessageModel lastItem = mCollectionAdapter.getItemList().get(mCollectionAdapter.getItemCount() - 1);
+            PrivateMessageModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mCurrentTimeSortKey = lastItem.getSortKey();
             mCurrentTimeSortKey = mCurrentTimeSortKey < 0 ? -mCurrentTimeSortKey : mCurrentTimeSortKey;
-            PrivateMessageModel firstItem = mCollectionAdapter.getItemList().get(0);
+            PrivateMessageModel firstItem = mCollectionAdapter.getItem(0);
             mNextTimeSortKey = firstItem.getSortKey();
             mNextTimeSortKey = mNextTimeSortKey < 0 ? -mNextTimeSortKey : mNextTimeSortKey;
         } else {

@@ -22,16 +22,15 @@ import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
-    public static final String THREAD_PICASSO_TAG = "picasso_thread_list_adapter";
+public class ThreadListAdapter extends SimpleRecyclerViewAdapter<ThreadModel> {
     private String mATEKey;
     private final String mTodayPrefix;
     private int mColorAccent;
@@ -43,7 +42,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     public ThreadListAdapter(Context context, String ateKey, List<ThreadModel> mItemList, int avatarLoadPolicy) {
         super(context, mItemList);
         this.mATEKey = ateKey;
-        this.mTodayPrefix = getString(R.string.text_datetime_today);
+        this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
         this.mColorAccent = ThemeUtils.accentColor(context);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(mContext);
@@ -51,8 +50,7 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_thread, parent, false);
         return new ViewHolder(v, mATEKey, mOnThreadItemClickListener);
@@ -61,38 +59,17 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         //super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof ThreadModel) {
-                ThreadModel threadModel = (ThreadModel)item;
-                bindThreadModel(getContext(),
-                        mTodayPrefix,
-                        THREAD_PICASSO_TAG,
-                        mAvatarSize,
-                        mColorAccent,
-                        mCircleTransform,
-                        viewHolder,
-                        threadModel,
-                        mAvatarLoadPolicy);
-            }
-        }
+        ViewHolder viewHolder = (ViewHolder) holder;
+        ThreadModel threadModel = getItem(position);
+        bindThreadModel(viewHolder, threadModel);
     }
 
-    public static void bindThreadModel(Context context,
-                                       String todayPrefix,
-                                       String imageTaskTag,
-                                       int avatarSize,
-                                       int colorAccent,
-                                       CircleTransform circleTransform,
-                                       ViewHolder viewHolder,
-                                       ThreadModel threadModel,
-                                       int avatarLoadPolicy) {
+    public void bindThreadModel(ViewHolder viewHolder, ThreadModel threadModel) {
         SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
         if(threadModel.isDigest()) {
-            String digestIndicator = context.getString(R.string.indicator_thread_digest);
+            String digestIndicator = mContext.getString(R.string.indicator_thread_digest);
             spannableTitle.append(digestIndicator);
-            spannableTitle.setSpan(new ForegroundColorSpan(colorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            spannableTitle.setSpan(new ForegroundColorSpan(mColorAccent), 0, digestIndicator.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         spannableTitle.append(threadModel.getSubject());
         viewHolder.mThreadTitleTextView.setText(spannableTitle);
@@ -100,15 +77,15 @@ public class ThreadListAdapter extends RecyclerViewBaseAdapter<ThreadModel> {
         viewHolder.mNotice1TextView.setText(Integer.toString(threadModel.getReplyCount()));
         viewHolder.mNotice2TextView.setText(TimeFormatUtils.formatDateDividByToday(
                 threadModel.getDateline(),
-                todayPrefix,
-                context.getResources().getConfiguration().locale));
+                mTodayPrefix,
+                mContext.getResources().getConfiguration().locale));
         ImageLoader.loadAvatar(
-                context,
+                mContext,
                 viewHolder.mThreadIconImageView,
                 threadModel.getUserIcon(),
-                avatarSize,
-                circleTransform,
-                avatarLoadPolicy
+                mAvatarSize,
+                mCircleTransform,
+                mAvatarLoadPolicy
         );
     }
 

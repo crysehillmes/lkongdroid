@@ -20,15 +20,15 @@ import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchResult> {
+public class SearchResultAdapter extends SimpleRecyclerViewAdapter<AbstractSearchResult> {
     private String mATEKey;
     private int mResultType = 0;
     private CircleTransform mCircleTransform;
@@ -49,26 +49,27 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         }
     }
 
-    public SearchResultAdapter(Context context, int avatarLoadPolicy) {
+    public SearchResultAdapter(Context context, String ateKey, int avatarLoadPolicy) {
         super(context, new ArrayList<AbstractSearchResult>());
         this.mCircleTransform = new CircleTransform(context);
-        this.mTodayPrefix = getString(R.string.text_datetime_today);
+        this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
+        this.mATEKey = ateKey;
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
-            case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_POST:
+            case SearchDataSet.TYPE_POST:
                 view = inflater.inflate(R.layout.item_search_post, parent, false);
                 return new SearchPostViewHolder(view, mATEKey);
-            case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_USER:
+            case SearchDataSet.TYPE_USER:
                 view = inflater.inflate(R.layout.item_search_user, parent, false);
                 return new SearchUserViewHolder(view, mATEKey);
-            case ITEM_TYPE_ITEM_START + SearchDataSet.TYPE_GROUP:
+            case SearchDataSet.TYPE_GROUP:
                 view = inflater.inflate(R.layout.item_search_group, parent, false);
                 return new SearchGroupViewHolder(view, mATEKey);
             default:
@@ -79,19 +80,17 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        Object item = getObjectItem(position);
-        if(item instanceof AbstractSearchResult) {
-            switch (mResultType) {
-                case SearchDataSet.TYPE_POST:
-                    bindPostResult((SearchPostViewHolder) holder, position, (SearchPostItem) item);
-                    break;
-                case SearchDataSet.TYPE_USER:
-                    bindUserResult((SearchUserViewHolder) holder, position, (SearchUserItem) item);
-                    break;
-                case SearchDataSet.TYPE_GROUP:
-                    bindGroupResult((SearchGroupViewHolder) holder, position, (SearchGroupItem) item);
-                    break;
-            }
+        AbstractSearchResult item = getItem(position);
+        switch (mResultType) {
+            case SearchDataSet.TYPE_POST:
+                bindPostResult((SearchPostViewHolder) holder, position, (SearchPostItem) item);
+                break;
+            case SearchDataSet.TYPE_USER:
+                bindUserResult((SearchUserViewHolder) holder, position, (SearchUserItem) item);
+                break;
+            case SearchDataSet.TYPE_GROUP:
+                bindGroupResult((SearchGroupViewHolder) holder, position, (SearchGroupItem) item);
+                break;
         }
     }
 
@@ -100,7 +99,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         viewHolder.secondaryTextView.setText(TimeFormatUtils.formatDateDividByToday(
                 item.getDateline(),
                 mTodayPrefix,
-                getContext().getResources().getConfiguration().locale
+                mContext.getResources().getConfiguration().locale
         ));
         viewHolder.replyCountTextView.setText(Integer.toString(item.getReplyCount()));
     }
@@ -109,7 +108,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
         viewHolder.nameTextView.setText(item.getUserName());
         viewHolder.signTextView.setText(item.getSignHtml());
         ImageLoader.loadAvatar(
-                getContext(),
+                mContext,
                 viewHolder.avatarImageView,
                 item.getAvatarUrl(),
                 mAvatarSize,
@@ -121,7 +120,7 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     private void bindGroupResult(SearchGroupViewHolder viewHolder, int position, SearchGroupItem item) {
         viewHolder.nameTextView.setText(item.getGroupName());
         viewHolder.descriptionTextView.setText(item.getGroupDescription());
-        Glide.with(getContext()).load(item.getIconUrl())
+        Glide.with(mContext).load(item.getIconUrl())
                 .placeholder(R.drawable.placeholder_loading)
                 .error(R.drawable.placeholder_error)
                 .centerCrop()
@@ -129,8 +128,8 @@ public class SearchResultAdapter extends RecyclerViewBaseAdapter<AbstractSearchR
     }
 
     @Override
-    public int onGetItemViewItemType(int position) {
-        return ITEM_TYPE_ITEM_START + mResultType;
+    public int getItemViewType(int position) {
+        return mResultType;
     }
 
     public int getResultType() {

@@ -14,22 +14,16 @@ import com.amulyakhare.textdrawable.TextDrawable;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.HotThreadModel;
-import org.cryse.lkong.model.SearchUserItem;
-import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
-import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.ThemeUtils;
-import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class HotThreadAdapter extends RecyclerViewBaseAdapter<HotThreadModel> {
+public class HotThreadAdapter extends SimpleRecyclerViewAdapter<HotThreadModel> {
     private String mATEKey;
     private int mAccentColor;
     private int mAccentTextColor;
@@ -42,8 +36,7 @@ public class HotThreadAdapter extends RecyclerViewBaseAdapter<HotThreadModel> {
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_hot_thread, parent, false);
         return new ViewHolder(v, mATEKey);
@@ -52,21 +45,16 @@ public class HotThreadAdapter extends RecyclerViewBaseAdapter<HotThreadModel> {
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof HotThreadModel) {
-                HotThreadModel hotThreadModel = (HotThreadModel)item;
-                viewHolder.titleTextView.setText(hotThreadModel.subject);
-                TextDrawable drawable = TextDrawable.builder(getContext())
-                        .beginConfig()
-                        .textColor(mAccentTextColor)
-                        .endConfig()
-                        // use buildRect(String, int) for literal color value
-                        .buildRound(Integer.toString(position + 1), mAccentColor);
-                viewHolder.iconTextView.setImageDrawable(drawable);
-            }
-        }
+        ViewHolder viewHolder = (ViewHolder) holder;
+        HotThreadModel hotThreadModel = getItem(position);
+        viewHolder.titleTextView.setText(hotThreadModel.subject);
+        TextDrawable drawable = TextDrawable.builder(mContext)
+                .beginConfig()
+                .textColor(mAccentTextColor)
+                .endConfig()
+                // use buildRect(String, int) for literal color value
+                .buildRound(Integer.toString(position + 1), mAccentColor);
+        viewHolder.iconTextView.setImageDrawable(drawable);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

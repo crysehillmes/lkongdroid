@@ -102,8 +102,8 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        int itemIndex = position;
+        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
             ForumModel item = mCollectionAdapter.getItem(position);
             mNavigation.openActivityForForumByForumId(getActivity(), item.getFid(), item.getName(), item.getDescription());
         }

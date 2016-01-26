@@ -10,6 +10,7 @@
         <changelogtext>改进：可以查看帖子中 @ 用户的资料了</changelogtext>
         <changelogtext>改进：调整了用户资料界面</changelogtext>
         <changelogtext>改进：其他一些内容</changelogtext>
+        <changelogtext>修复：信息流表情尺寸，以及转义字符的问题</changelogtext>
     </changelogversion>
     <changelogversion
         changeDate="2015年10月31日"
