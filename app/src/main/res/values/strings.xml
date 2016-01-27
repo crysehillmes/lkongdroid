@@ -229,12 +229,12 @@
 
     <!-- About -->
     <string name="settings_about_activity_title">About</string>
-    <string name="settings_category_author_title">About</string>
+    <string name="settings_category_author_title">About author</string>
     <string name="settings_item_author_name_value">Cryse Hillmes</string>
     <string name="settings_item_author_name_title">Author</string>
     <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
     <string name="settings_item_email_address_title">Author Email</string>
-    <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
+    <string name="settings_item_author_blog_site_value">https://blog.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_theme_color_title">Theme</string>
     <string name="settings_item_theme_color_summary">Choose your theme</string>
@@ -316,6 +316,10 @@
         <item>12 hours</item>
         <item>24 hours</item>
     </string-array>
+
+    <string name="donation_title">Donate</string>
+    <string name="donation_positive">Launch Alipay</string>
+    <string name="donation_content">I spend a lot of time on this app, if you want to buy me a coffee, you could donate to this Alipay account: tyk5555@hotmail.com</string>
 
     <string-array name="check_notice_duration_value_arrays">
         <item>900</item>

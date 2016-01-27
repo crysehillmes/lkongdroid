@@ -81,8 +81,8 @@ public class NoticePrivateChatsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        int itemIndex = position;
+        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
             PrivateChatModel model = mCollectionAdapter.getItem(itemIndex);
             mNavigation.openActivityForPrivateMessage(
                     getActivity(),

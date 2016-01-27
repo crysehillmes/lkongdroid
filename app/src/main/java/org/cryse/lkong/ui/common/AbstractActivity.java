@@ -33,6 +33,7 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
     private Subscription mEventBusSubscription;
     private boolean mIsDestroyed;
     private int mPrimaryColor;
+    private int mTextPrimaryColor;
     private int mPrimaryDarkColor;
     private int mAccentColor;
     protected String mATEKey;
@@ -76,6 +77,7 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
         );
         mPrimaryColor = Config.primaryColor(this, mATEKey);
         mPrimaryDarkColor = Config.primaryColorDark(this, mATEKey);
+        mTextPrimaryColor = Config.textColorPrimary(this, mATEKey);
         mAccentColor = Config.accentColor(this, mATEKey);
     }
 

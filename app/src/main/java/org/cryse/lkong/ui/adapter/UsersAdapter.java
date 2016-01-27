@@ -17,13 +17,14 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class UsersAdapter extends RecyclerViewBaseAdapter<SearchUserItem> {
+public class UsersAdapter extends SimpleRecyclerViewAdapter<SearchUserItem> {
     private String mATEKey;
     private final int mAvatarSize;
     private int mAvatarLoadPolicy;
@@ -39,8 +40,7 @@ public class UsersAdapter extends RecyclerViewBaseAdapter<SearchUserItem> {
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_search_user, parent, false);
         return new ViewHolder(v, mATEKey, mOnUserItemClickListener);
@@ -48,24 +48,18 @@ public class UsersAdapter extends RecyclerViewBaseAdapter<SearchUserItem> {
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        //super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof SearchUserItem) {
-                SearchUserItem userItem = (SearchUserItem)item;
-                viewHolder.nameTextView.setText(userItem.getUserName());
-                viewHolder.signTextView.setText(userItem.getSignHtml());
-                ImageLoader.loadAvatar(
-                        getContext(),
-                        viewHolder.avatarImageView,
-                        userItem.getAvatarUrl(),
-                        mAvatarSize,
-                        mCircleTransform,
-                        mAvatarLoadPolicy
-                );
-            }
-        }
+        ViewHolder viewHolder = (ViewHolder) holder;
+        SearchUserItem userItem = getItem(position);
+        viewHolder.nameTextView.setText(userItem.getUserName());
+        viewHolder.signTextView.setText(userItem.getSignHtml());
+        ImageLoader.loadAvatar(
+                mContext,
+                viewHolder.avatarImageView,
+                userItem.getAvatarUrl(),
+                mAvatarSize,
+                mCircleTransform,
+                mAvatarLoadPolicy
+        );
     }
 
     public void setOnUserItemClickListener(OnUserItemClickListener listener) {

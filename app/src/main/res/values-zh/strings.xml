@@ -214,7 +214,7 @@
     <string name="settings_item_post_extra_tail_text_default">来自龙的天空 Android 客户端</string>
     <!-- About -->
     <string name="settings_about_activity_title">关于</string>
-    <string name="settings_category_author_title">关于</string>
+    <string name="settings_category_author_title">关于作者</string>
     <string name="settings_item_author_name_value">Cryse Hillmes</string>
     <string name="settings_item_author_name_title">作者</string>
     <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
@@ -283,11 +283,9 @@
         <item>12 小时</item>
         <item>24 小时</item>
     </string-array>
-    <string name="tb_munion_tip_download_prefix">正在下载:</string>
-    <string name="umeng_common_icon">找不到这一楼啊</string>
-    <string name="header_not_created">Header 创建失败</string>
-    <string name="title_null_or_empty">标题不能为空</string>
-    <string name="custom_header_not_created"></string>
-    <string name="drawer_close"></string>
+
+    <string name="donation_title">捐赠</string>
+    <string name="donation_positive">打开支付宝</string>
+    <string name="donation_content">这个应用花费了我不少心血，如果您想支持一下我的话，可以通过向这个支付宝账户：tyk5555@hotmail.com 转账来进行捐赠</string>
 
 </resources>

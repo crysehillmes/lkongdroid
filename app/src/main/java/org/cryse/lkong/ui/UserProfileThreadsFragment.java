@@ -6,7 +6,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,8 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-
 public class UserProfileThreadsFragment extends SimpleCollectionFragment<
         ThreadModel,
         ThreadListAdapter,
@@ -39,7 +36,6 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
     private static final String KEY_UID = "key_args_uid";
     private static final String KEY_USERNAME= "key_args_username";
     private static final String KEY_IS_DIGEST = "key_args_is_digest";
-    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     private long mUid;
     private String mUserName;
     private boolean mIsDigest;
@@ -163,9 +159,8 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                if (adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    ThreadModel model = mCollectionAdapter.getItem(adapterPosition);
                     String idString = model.getId().substring(7);
                     long tid = Long.parseLong(idString);
                     mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
@@ -174,9 +169,8 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
 
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                if (position >= 0 && position < mCollectionAdapter.getItemCount()) {
+                    ThreadModel model = mCollectionAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -215,7 +209,7 @@ public class UserProfileThreadsFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(!getThemedActivity().isActivityDestroyed())
+                    if(getThemedActivity() != null && !getThemedActivity().isActivityDestroyed())
                         Glide.with(getActivity()).resumeRequests();
                 } else {
                     Glide.with(getActivity()).pauseRequests();

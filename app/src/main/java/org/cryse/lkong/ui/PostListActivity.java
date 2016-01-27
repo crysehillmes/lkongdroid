@@ -52,7 +52,6 @@ import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.EditPostDoneEvent;
 import org.cryse.lkong.event.NewPostDoneEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.PostDisplayCache;
 import org.cryse.lkong.model.PostModel;
@@ -520,8 +519,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                     }
                 }
 
-            } else if(event instanceof ThemeColorChangedEvent) {
-                setColorToViews(((ThemeColorChangedEvent) event).getNewPrimaryColor(), ((ThemeColorChangedEvent) event).getNewPrimaryDarkColor());
             } else if(event instanceof EditPostDoneEvent) {
                 // refreshCurrentPage();
                 getPresenter().loadThreadInfo(mUserAccountManager.getAuthObject(), mThreadId);

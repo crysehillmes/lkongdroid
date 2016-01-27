@@ -15,15 +15,15 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel> {
+public class NoticeCollectionAdapter extends SimpleRecyclerViewAdapter<NoticeModel> {
     private String mATEKey;
     public NoticeCollectionAdapter(Context context, String ateKey, List<NoticeModel> items) {
         super(context, items);
@@ -31,7 +31,7 @@ public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notice, parent, false);
         return new ViewHolder(v, mATEKey);
@@ -40,16 +40,11 @@ public class NoticeCollectionAdapter extends RecyclerViewBaseAdapter<NoticeModel
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof NoticeModel) {
-                NoticeModel noticeModel = (NoticeModel)item;
+        ViewHolder viewHolder = (ViewHolder) holder;
+        NoticeModel noticeModel = getItem(position);
 
-                Spanned spannedText = HtmlTextUtils.htmlToSpanned(noticeModel.getNoticeNote(), null, new HtmlTagHandler());
-                viewHolder.mNoticeMessageTextView.setText(spannedText);
-            }
-        }
+        Spanned spannedText = HtmlTextUtils.htmlToSpanned(noticeModel.getNoticeNote(), null, new HtmlTagHandler());
+        viewHolder.mNoticeMessageTextView.setText(spannedText);
     }
 
     public static class ViewHolder extends RecyclerViewHolder {

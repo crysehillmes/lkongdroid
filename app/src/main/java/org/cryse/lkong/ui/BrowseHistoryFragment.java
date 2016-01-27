@@ -177,9 +177,8 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
         adapter.setOnBrowseHistoryItemClickListener(new BrowseHistoryAdapter.OnBrowseHistoryItemClickListener() {
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    BrowseHistory item = mCollectionAdapter.getItem(itemIndex);
+                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    BrowseHistory item = mCollectionAdapter.getItem(adapterPosition);
                     long tid = item.getThreadId();
                     mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
                 }
@@ -195,8 +194,7 @@ public class BrowseHistoryFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        if(position >= 0 && position < mCollectionAdapter.getItemCount()) {
             BrowseHistory item = mCollectionAdapter.getItem(position);
             long tid = item.getThreadId();
             mNavigation.openActivityForPostListByThreadId(getActivity(), tid);

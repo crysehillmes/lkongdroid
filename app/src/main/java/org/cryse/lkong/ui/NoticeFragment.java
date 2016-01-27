@@ -77,9 +77,8 @@ public class NoticeFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-            NoticeModel noticeModel = mCollectionAdapter.getItem(itemIndex);
+        if(position >= 0 && position < mCollectionAdapter.getItemCount()) {
+            NoticeModel noticeModel = mCollectionAdapter.getItem(position);
             if(noticeModel.getThreadId() > 0) {
                 Intent intent = new Intent(getActivity(), PostListActivity.class);
                 intent.putExtra(DataContract.BUNDLE_THREAD_ID, noticeModel.getThreadId());

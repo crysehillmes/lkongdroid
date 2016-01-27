@@ -24,7 +24,6 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.RequestPointerType;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.SendNewPrivateMessageResult;
@@ -203,10 +202,6 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if(event instanceof ThemeColorChangedEvent) {
-            int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
-            mToolbar.setBackgroundColor(newPrimaryColor);
-        }
     }
 
     @Override
@@ -227,10 +222,10 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
                 mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            PrivateMessageModel lastItem = mCollectionAdapter.getItemList().get(mCollectionAdapter.getItemCount() - 1);
+            PrivateMessageModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mCurrentTimeSortKey = lastItem.getSortKey();
             mCurrentTimeSortKey = mCurrentTimeSortKey < 0 ? -mCurrentTimeSortKey : mCurrentTimeSortKey;
-            PrivateMessageModel firstItem = mCollectionAdapter.getItemList().get(0);
+            PrivateMessageModel firstItem = mCollectionAdapter.getItem(0);
             mNextTimeSortKey = firstItem.getSortKey();
             mNextTimeSortKey = mNextTimeSortKey < 0 ? -mNextTimeSortKey : mNextTimeSortKey;
         } else {

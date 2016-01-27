@@ -109,10 +109,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ThreadModel>> getForumThread(long fid, long start, int listType) {
+    public Observable<List<ThreadModel>> getForumThread(LKAuthObject authObject, long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                GetThreadListRequest request = new GetThreadListRequest(fid, start, listType);
+                GetThreadListRequest request = new GetThreadListRequest(authObject, fid, start, listType);
                 List<ThreadModel> forumModelList = request.execute();
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();

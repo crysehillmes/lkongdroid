@@ -79,8 +79,8 @@ public class MentionsFragment extends SimpleCollectionFragment<
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+                int itemIndex = position;
+                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
                     TimelineModel model = mCollectionAdapter.getItem(itemIndex);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
@@ -91,9 +91,8 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemTimelineClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
@@ -128,7 +127,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(!getThemedActivity().isActivityDestroyed())
+                    if(getThemedActivity() != null && !getThemedActivity().isActivityDestroyed())
                         Glide.with(getActivity()).resumeRequests();
                 } else {
                     Glide.with(getActivity()).pauseRequests();

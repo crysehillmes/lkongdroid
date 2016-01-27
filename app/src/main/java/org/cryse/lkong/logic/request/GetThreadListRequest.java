@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.LKongWebConstants;
 import org.cryse.lkong.logic.ThreadListType;
@@ -15,19 +16,20 @@ import org.cryse.lkong.utils.GsonUtils;
 import java.util.Collections;
 import java.util.List;
 
-public class GetThreadListRequest extends AbstractHttpRequest<List<ThreadModel>> {
+public class GetThreadListRequest extends AbstractAuthedHttpRequest<List<ThreadModel>> {
     private long mForumId;
     private long mStartSortKey;
     private int mListType;
 
-    public GetThreadListRequest(long forumId, long startSortKey, int listType) {
+    public GetThreadListRequest(LKAuthObject authObject, long forumId, long startSortKey, int listType) {
+        super(authObject);
         this.mForumId = forumId;
         this.mStartSortKey = startSortKey;
         this.mListType = listType;
     }
 
-    public GetThreadListRequest(HttpDelegate httpDelegate, long forumId, long startSortKey, int listType) {
-        super(httpDelegate);
+    public GetThreadListRequest(HttpDelegate httpDelegate, LKAuthObject authObject, long forumId, long startSortKey, int listType) {
+        super(httpDelegate, authObject);
         this.mForumId = forumId;
         this.mStartSortKey = startSortKey;
         this.mListType = listType;

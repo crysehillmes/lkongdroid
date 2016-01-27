@@ -57,6 +57,7 @@ public abstract class AbstractFragment extends Fragment implements SnackbarSuppo
         mPrimaryColor = Config.primaryColor(getActivity(), mATEKey);
         mPrimaryDarkColor = Config.primaryColorDark(getActivity(), mATEKey);
         mAccentColor = Config.accentColor(getActivity(), mATEKey);
+        getAppCompatActivity().invalidateOptionsMenu();
     }
 
     @Nullable
