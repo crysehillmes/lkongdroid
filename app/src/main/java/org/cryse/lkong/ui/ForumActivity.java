@@ -138,10 +138,10 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mWrapperAdapter = new Bookends<>(mCollectionAdapter);
         mThreadCollectionView.setAdapter(mWrapperAdapter);
 
-        mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mForumId, mCurrentListType, false));
+        mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false));
         mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
             if (!isNoMore.get() && !isLoadingMore.get() && mLastItemSortKey != -1) {
-                getPresenter().loadThreadList(mForumId, mLastItemSortKey, mCurrentListType, true);
+                getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mLastItemSortKey, mCurrentListType, true);
             } else {
                 mThreadCollectionView.setLoadingMore(false);
                 mThreadCollectionView.hideMoreProgress();
@@ -242,7 +242,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
             getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
-            getPresenter().loadThreadList(mForumId, mCurrentListType, false);
+            getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false);
         }
         mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -250,7 +250,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
                 int currentListType = mCurrentListType;
                 mCurrentListType = position;
                 if(currentListType != mCurrentListType) {
-                    getPresenter().loadThreadList(mForumId, mCurrentListType, false);
+                    getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false);
                 }
             }
 
