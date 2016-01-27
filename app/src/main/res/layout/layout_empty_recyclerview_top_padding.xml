@@ -4,6 +4,6 @@
     android:layout_height="?actionBarSize"
     android:gravity="center"
     android:textSize="@dimen/text_size_title"
-    android:textColor="?theme_text_color_primary">
+    android:tag="text_primary">
 
 </TextView>

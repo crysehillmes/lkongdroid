@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recyclerview_item_timeline_cardview_root_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/default_card_radius"
+    app:cardElevation="@dimen/default_card_elevation"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/recyclerview_item_timeline_imageview_author_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="16dp"/>
+
+        <TextView
+            android:id="@+id/recyclerview_item_timeline_textview_author_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_marginRight="72dp"
+            android:layout_marginTop="16dp"
+            android:text="placeholder"
+            android:textSize="@dimen/text_size_subhead"
+            android:tag="text_primary"/>
+
+        <TextView
+            android:id="@+id/recyclerview_item_timeline_textview_dateline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_timeline_textview_author_name"
+            android:layout_marginLeft="72dp"
+            android:layout_marginRight="72dp"
+            android:text="placeholder"
+            android:textSize="@dimen/text_size_body1"
+            android:tag="text_primary"/>
+
+        <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
+            android:id="@+id/recyclerview_item_timeline_textview_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="72dp"
+            android:lineSpacingMultiplier="1.3"
+            android:text="placeholder"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_size_subhead"
+            android:tag="text_primary"/>
+
+        <RelativeLayout
+            android:id="@+id/secondary_message_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_timeline_textview_message"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:alpha="0.5"
+                android:tag="bg_text_secondary" />
+
+            <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
+                android:id="@+id/recyclerview_item_timeline_secondary_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="17dp"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.3"
+                android:maxLines="1"
+                android:text="placeholder"
+                android:textSize="@dimen/text_size_subhead"
+                android:tag="text_secondary"/>
+
+            <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
+                android:id="@+id/recyclerview_item_timeline_third_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recyclerview_item_timeline_secondary_message"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="1dp"
+                android:lineSpacingMultiplier="1.3"
+                android:text="placeholder"
+                android:maxLines="5"
+                android:textSize="@dimen/text_size_subhead"
+                android:tag="text_primary" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

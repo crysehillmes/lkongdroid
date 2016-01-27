@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recyclerview_item_private_chat_relative_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground">
+    <ImageView
+        android:id="@+id/recyclerview_item_private_chat_imageview_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="72dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+
+        <TextView
+            android:id="@+id/recyclerview_item_private_chat_textview_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/recyclerview_item_private_chat_textview_dateline"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="placeholder"
+            android:textSize="@dimen/text_size_subhead"
+            android:tag="text_primary" />
+        <TextView
+            android:id="@+id/recyclerview_item_private_chat_textview_dateline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="placeholder"
+            android:gravity="end"
+            android:textSize="@dimen/text_size_caption"
+            android:tag="text_secondary"/>
+        <TextView
+            android:id="@+id/recyclerview_item_private_chat_textview_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_private_chat_textview_username"
+            android:text="placeholder"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_size_body1"
+            android:tag="text_secondary"/>
+        </RelativeLayout>
+</RelativeLayout>

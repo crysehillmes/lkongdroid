@@ -29,7 +29,6 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.utils.htmltextview.HtmlCleaner;
 import org.jsoup.Jsoup;
-import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -43,6 +42,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 public class ModelConverter {
     public static UserInfoModel toUserInfoModel(LKUserInfo lkUserInfo) {
@@ -64,9 +64,7 @@ public class ModelConverter {
         userInfoModel.setRegDate(lkUserInfo.getRegdate());
         userInfoModel.setSmartMessage(lkUserInfo.getSmartmessage());
         if(!TextUtils.isEmpty(lkUserInfo.getSightml())) {
-            Document document = Jsoup.parseBodyFragment(lkUserInfo.getSightml());
-            HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
-            userInfoModel.setSigHtml(htmlToPlainText.getPlainText(document));
+            userInfoModel.setSigHtml(HtmlCleaner.htmlToPlain(lkUserInfo.getSightml()));
         }
         userInfoModel.setActivePoints(lkUserInfo.getExtcredits1());
         userInfoModel.setDragonMoney(lkUserInfo.getExtcredits2());
@@ -94,9 +92,7 @@ public class ModelConverter {
                 threadModel.setFid(item.getFid());
                 threadModel.setId(item.getId());
                 threadModel.setReplyCount(item.getReplynum());
-                Document document = Jsoup.parseBodyFragment(item.getSubject());
-                HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
-                threadModel.setSubject(htmlToPlainText.getPlainText(document));
+                threadModel.setSubject(HtmlCleaner.htmlToPlain(item.getSubject()));
                 threadModel.setSortKeyTime(new Date(item.getSortkey() * 1000l));
                 if(checkNextTimeSortKey && lkForumThreadList.getNexttime() == item.getSortkey())
                     nextSortKeyItem = threadModel;
@@ -218,6 +214,10 @@ public class ModelConverter {
         return itemList;
     }
 
+    private static final String SMALL_EMOJI_TEXT = "~bq(\\d+)~";
+    private static final String SMALL_EMOJI_IMG = "<img src=\"http://img.lkong.cn/bq/em$1.gif\" class=\"smallbq\">";
+
+
     public static List<TimelineModel> toTimelineModel(LKTimelineData timelineData) {
         List<TimelineModel> timelineModels = new ArrayList<>(timelineData.getData().size());
         for(LKTimelineItem item : timelineData.getData()) {
@@ -239,7 +239,7 @@ public class ModelConverter {
                 model.setThreadAuthor(item.getT_author());
                 model.setThreadAuthorId(item.getT_authorid());
             }
-            model.setMessage(item.getMessage());
+            model.setMessage(item.getMessage().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
             model.setSubject(item.getSubject());
             model.setSortKey(item.getSortkey());
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
@@ -263,7 +263,7 @@ public class ModelConverter {
                             nextTargetContentSibling = nextTargetContentSibling.nextSibling();
                         }
                     }
-                    replyQuote.setPosterMessage(targetContentBuilder.toString());
+                    replyQuote.setPosterMessage(targetContentBuilder.toString().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
                 }
                 Elements divElements = document.select("div");
                 if(divElements.size() > 0) {

@@ -23,9 +23,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.RequestPointerType;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.SendNewPrivateMessageResult;
@@ -36,7 +34,9 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.PrivateChatView;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -54,9 +54,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     PrivateMessagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.fragment_private_chat_ptrrecyclerview_messages)
@@ -90,6 +88,8 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         Bundle args = getArguments();
         mTargetUserId = args.getLong(DataContract.BUNDLE_TARGET_USER_ID);
         mTargetUserName = args.getString(DataContract.BUNDLE_TARGET_USER_NAME);
@@ -115,7 +115,7 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     }
 
     private void setUpRecyclerView() {
-        mCollectionAdapter = new PrivateMessagesAdapter(this, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        mCollectionAdapter = new PrivateMessagesAdapter(this, mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mRecyclerView.setMode(PullToRefreshBase.Mode.BOTH);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);
@@ -202,10 +202,6 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if(event instanceof ThemeColorChangedEvent) {
-            int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
-            mToolbar.setBackgroundColor(newPrimaryColor);
-        }
     }
 
     @Override
@@ -221,13 +217,15 @@ public class PrivateChatFragment extends AbstractFragment implements PrivateChat
         } else {
             isNoMore = false;
             mCollectionAdapter.replaceWith(items);
-            mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
+            int newPostition = mCollectionAdapter.getItemCount() - 1;
+            if(newPostition > 0)
+                mRecyclerView.getRefreshableView().smoothScrollToPosition(mCollectionAdapter.getItemCount() - 1);
         }
         if(mCollectionAdapter.getItemCount() > 0) {
-            PrivateMessageModel lastItem = mCollectionAdapter.getItemList().get(mCollectionAdapter.getItemCount() - 1);
+            PrivateMessageModel lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mCurrentTimeSortKey = lastItem.getSortKey();
             mCurrentTimeSortKey = mCurrentTimeSortKey < 0 ? -mCurrentTimeSortKey : mCurrentTimeSortKey;
-            PrivateMessageModel firstItem = mCollectionAdapter.getItemList().get(0);
+            PrivateMessageModel firstItem = mCollectionAdapter.getItem(0);
             mNextTimeSortKey = firstItem.getSortKey();
             mNextTimeSortKey = mNextTimeSortKey < 0 ? -mNextTimeSortKey : mNextTimeSortKey;
         } else {

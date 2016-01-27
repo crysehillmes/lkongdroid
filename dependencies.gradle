@@ -1,24 +1,20 @@
 ext {
     junitVersion = '4.12'
     supportLibraryVersion = '23.1.1'
+    multidexVersion='1.0.0'
     gsonVersion = '2.4'
     rxVersion = '1.1.0'
-    realmVersion = '0.87.0'
     butterknifeVersion = '7.0.1'
-    oneDriveSdkVersion = '1.0.2'
-    msaAuthVersion = '0.8.4'
     materialDrawerVersion = '4.6.1'
     materialDialogVersion = '0.8.5.3'
     easyPermissionVersion = '0.1.0'
     okhttpVersion = '2.5.0'
-    dropboxVersion = '2.0-beta-4'
-    commonsioVersion = '2.4'
     commonslang3Version = '3.4'
     tikaVersion = '1.10'
     timberVersion = '3.1.0'
     playServiceVersion = '8.3.0'
-    umengAnalyticsVersion = '5.5.3'
-    retroLambdaVersion = '2.0.6'
+    umengAnalyticsVersion = '5.6.4'
+    retroLambdaVersion = '2.1.0'
     daggerVersion = '2.0.1'
     jsr250ApiVersion = '1.0'
     glideVersion = '3.7.0-SNAPSHOT'
@@ -29,6 +25,8 @@ ext {
     crashlyticsVersion = '2.5.1'
     persistentsearchviewVersion = '1.0.3'
     pulltorefreshVersion = '3.2.3'
+    themeEngineVersion = '0.7.7'
+    textdrawableVersion = 'c32bc48d86'
 
     libDependencies = [
             // Test
@@ -40,6 +38,7 @@ ext {
             cardview: "com.android.support:cardview-v7:$supportLibraryVersion",
             recyclerview: "com.android.support:recyclerview-v7:$supportLibraryVersion",
             design: "com.android.support:design:$supportLibraryVersion",
+            multidex: "com.android.support:multidex:$multidexVersion",
 
             // Permissions
             easypermission: "pub.devrel:easypermissions:$easyPermissionVersion",
@@ -53,30 +52,19 @@ ext {
 
             // Network
             okhttp: "com.squareup.okhttp:okhttp:$okhttpVersion",
-            okhttp_urlconnection: "com.squareup.okhttp:okhttp-urlconnection:$okhttpVersion",
-            tika: "org.apache.tika:tika-core:$tikaVersion",
 
             // Log
             timber: "com.jakewharton.timber:timber:$timberVersion",
 
-            // Database
-            realm: "io.realm:realm-android:$realmVersion",
-
-            // IO
-            commons_io: "commons-io:commons-io:$commonsioVersion",
-            commons_lang3: "org.apache.commons:commons-lang3:$commonslang3Version",
-
             // Injection
             butterknife: "com.jakewharton:butterknife:$butterknifeVersion",
-
-            // Cloud Drive dependencies
-            onedrive: "com.onedrive.sdk:onedrive-sdk-android:$oneDriveSdkVersion",
-            msa_auth: "com.microsoft.services.msa:msa-auth:$msaAuthVersion",
-            dropbox: "com.dropbox.core:dropbox-core-sdk:$dropboxVersion",
 
             // UI Elements
             materialdrawer: "com.mikepenz:materialdrawer:$materialDrawerVersion@aar",
             materialdialog: "com.github.afollestad.material-dialogs:core:$materialDialogVersion@aar",
+            materialdialog_commons: "com.github.afollestad.material-dialogs:commons:$materialDialogVersion@aar",
+            theme_engine: "com.github.afollestad:app-theme-engine:$themeEngineVersion@aar",
+            textdrawable: "com.github.afollestad:TextDrawable:$textdrawableVersion",
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])

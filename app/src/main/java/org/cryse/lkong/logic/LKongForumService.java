@@ -12,6 +12,7 @@ import org.cryse.lkong.logic.request.FollowRequest;
 import org.cryse.lkong.logic.request.ForumListRequest;
 import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
 import org.cryse.lkong.logic.request.GetFavoritesRequest;
+import org.cryse.lkong.logic.request.GetHotThreadRequest;
 import org.cryse.lkong.logic.request.GetNoticeRateLogRequest;
 import org.cryse.lkong.logic.request.GetNoticeRequest;
 import org.cryse.lkong.logic.request.GetPrivateChatListRequest;
@@ -20,6 +21,7 @@ import org.cryse.lkong.logic.request.GetThreadInfoRequest;
 import org.cryse.lkong.logic.request.GetThreadListRequest;
 import org.cryse.lkong.logic.request.GetThreadPostListRequest;
 import org.cryse.lkong.logic.request.GetTimelineRequest;
+import org.cryse.lkong.logic.request.GetUserFollowRequest;
 import org.cryse.lkong.logic.request.GetUserInfoRequest;
 import org.cryse.lkong.logic.request.GetUserThreadsRequest;
 import org.cryse.lkong.logic.request.GetUserTimelineRequest;
@@ -31,6 +33,7 @@ import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.DataItemLocationModel;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
+import org.cryse.lkong.model.HotThreadModel;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.NoticeModel;
 import org.cryse.lkong.model.NoticeRateModel;
@@ -39,6 +42,7 @@ import org.cryse.lkong.model.PrivateChatModel;
 import org.cryse.lkong.model.PrivateMessageModel;
 import org.cryse.lkong.model.PunchResult;
 import org.cryse.lkong.model.SearchDataSet;
+import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.model.SendNewPrivateMessageResult;
 import org.cryse.lkong.model.ThreadInfoModel;
 import org.cryse.lkong.model.ThreadModel;
@@ -105,10 +109,10 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ThreadModel>> getForumThread(long fid, long start, int listType) {
+    public Observable<List<ThreadModel>> getForumThread(LKAuthObject authObject, long fid, long start, int listType) {
         return Observable.create(subscriber -> {
             try {
-                GetThreadListRequest request = new GetThreadListRequest(fid, start, listType);
+                GetThreadListRequest request = new GetThreadListRequest(authObject, fid, start, listType);
                 List<ThreadModel> forumModelList = request.execute();
                 subscriber.onNext(forumModelList);
                 subscriber.onCompleted();
@@ -288,6 +292,32 @@ public class LKongForumService {
         });
     }
 
+    public Observable<List<HotThreadModel>> getHotThread(boolean digest) {
+        return Observable.create(subscriber -> {
+            try {
+                GetHotThreadRequest request = new GetHotThreadRequest(digest);
+                List<HotThreadModel> hotThreadModels = request.execute();
+                subscriber.onNext(hotThreadModels);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public Observable<List<SearchUserItem>> getUserFollow(LKAuthObject authObject, long uid, boolean follower, long start) {
+        return Observable.create(subscriber -> {
+            try {
+                GetUserFollowRequest request = new GetUserFollowRequest(authObject, uid, follower, start);
+                List<SearchUserItem> dataSet = request.execute();
+                subscriber.onNext(dataSet);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
     public Observable<PunchResult> punch(LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
@@ -450,15 +480,17 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Void> saveBrowseHistory(long uid,
-                                              long threadId,
-                                              String threadTitle,
-                                              @Nullable Long forumId,
-                                              @Nullable String forumTitle,
-                                              @Nullable Long postId,
-                                              long authorId,
-                                              String authorName,
-                                              long lastReadTime) {
+    public Observable<Void> saveBrowseHistory(
+            long uid,
+            long threadId,
+            String threadTitle,
+            @Nullable Long forumId,
+            @Nullable String forumTitle,
+            @Nullable Long postId,
+            long authorId,
+            String authorName,
+            long lastReadTime
+    ) {
         return Observable.create(subscriber -> {
             try {
                 mLKongDatabase.saveBrowseHistory(

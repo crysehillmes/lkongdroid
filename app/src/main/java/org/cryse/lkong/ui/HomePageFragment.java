@@ -7,7 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +18,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -28,16 +32,16 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 
+import com.afollestad.appthemeengine.util.Util;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
-import org.cryse.lkong.application.qualifier.PrefsForumsFirst;
 import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NoticeCountEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.model.NoticeCountModel;
 import org.cryse.lkong.model.PunchResult;
@@ -50,7 +54,9 @@ import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
-import org.cryse.utils.preference.BooleanPreference;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
 import org.cryse.widget.persistentsearch.PersistentSearchView;
 import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
@@ -75,9 +81,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     HomePagePresenter mPresenter;
     @Inject
     UserAccountManager mUserAccountManager;
-    @Inject
-    @PrefsForumsFirst
-    BooleanPreference mForumsFirst;
+    BooleanPrefs mForumsFirst;
 
     @Bind(R.id.searchview)
     PersistentSearchView mSearchView;
@@ -109,6 +113,10 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mForumsFirst = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST,
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_FIRST_VALUE
+        );
         setHasOptionsMenu(true);
     }
 
@@ -125,12 +133,42 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         mToolbar.setBackgroundColor(getPrimaryColor());
         if (mViewPager != null) {
             setupViewPager(mViewPager);
-            //mTabLayout.setupWithViewPager(mViewPager);
-            mTabLayout.setBackgroundColor(getPrimaryColor());
         }
         mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                AppCompatActivity activity = getAppCompatActivity();
+                activity.setTitle(mViewPager.getAdapter().getPageTitle(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        int toolbarTextColor = Util.isColorLight(getPrimaryColor()) ? Color.BLACK : Color.WHITE;
+        mTabLayout.setSelectedTabIndicatorColor(toolbarTextColor);
+        Adapter adapter = (Adapter) mViewPager.getAdapter();
+        for(int i = 0; i < mTabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            if(tab != null) {
+                tab.setIcon(adapter.getIconResId(i));
+                tab.setText("");
+            }
+        }
         setUpSearchView();
         return contentView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -304,14 +342,16 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getChildFragmentManager());
         if(mForumsFirst.get()) {
-            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
-            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
-            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list), R.drawable.ic_forums);
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums), R.drawable.ic_stared);
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline), R.drawable.ic_timeline);
         } else {
-            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline));
-            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums));
-            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list));
+            adapter.addFragment(TimelineFragment.newInstance(null), getString(R.string.drawer_item_timeline), R.drawable.ic_timeline);
+            adapter.addFragment(FollowedForumsFragment.newInstance(null), getString(R.string.drawer_item_followed_forums), R.drawable.ic_stared);
+            adapter.addFragment(ForumsFragment.newInstance(null), getString(R.string.drawer_item_forum_list), R.drawable.ic_forums);
         }
+        adapter.addFragment(HotThreadFragment.newInstance(false), getString(R.string.drawer_item_hot_thread), R.drawable.ic_whatshot);
+        adapter.addFragment(HotThreadFragment.newInstance(true), getString(R.string.drawer_item_digest_thread), R.drawable.ic_digest);
         viewPager.setAdapter(adapter);
     }
 
@@ -369,7 +409,7 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
-                    getThemedActivity().setNightMode(!isNightMode());
+                    toggleNightMode();
                 }
                 return true;
             case android.R.id.home:
@@ -418,9 +458,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         super.onEvent(event);
         if(event instanceof NoticeCountEvent) {
             mPresenter.checkNoticeCountFromDatabase(mUserAccountManager.getCurrentUserId());
-        } else if(event instanceof ThemeColorChangedEvent) {
-            int newPrimaryColor = ((ThemeColorChangedEvent) event).getNewPrimaryColor();
-            if(mTabLayout != null) mTabLayout.setBackgroundColor(newPrimaryColor);
         } else if (event instanceof CurrentAccountChangedEvent) {
             mCurrentUserPunchResult = null;
             getThemedActivity().invalidateOptionsMenu();
@@ -520,14 +557,16 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
     static class Adapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
+        private final List<Integer> mFragmentIcons = new ArrayList<>();
 
         public Adapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(Fragment fragment, String title, @DrawableRes int icon) {
             mFragments.add(fragment);
             mFragmentTitles.add(title);
+            mFragmentIcons.add(icon);
         }
 
         @Override
@@ -543,6 +582,10 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitles.get(position);
+        }
+
+        public int getIconResId(int position) {
+            return mFragmentIcons.get(position);
         }
     }
 

@@ -15,7 +15,7 @@ public class AnalyticsUtils {
     private static Tracker sTracker;
 
     public static void init(Context context, String appKey) {
-        AnalyticsConfig.setAppkey(appKey);
+        AnalyticsConfig.setAppkey(context, appKey);
         MobclickAgent.openActivityDurationTrack(false);
         AnalyticsConfig.enableEncrypt(true);
         if (sTracker == null) {
@@ -45,8 +45,8 @@ public class AnalyticsUtils {
         if(args.length > 0) {
             String name = (String)args[0];
             MobclickAgent.onResume(context);
-            sTracker.setScreenName("FragmentActivity: " + name);
-            sTracker.send(new HitBuilders.ScreenViewBuilder().build());
+            /*sTracker.setScreenName("FragmentActivity: " + name);
+            sTracker.send(new HitBuilders.ScreenViewBuilder().build());*/
         }
     }
 

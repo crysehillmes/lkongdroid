@@ -3,6 +3,7 @@ package org.cryse.lkong.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +22,7 @@ import org.cryse.lkong.model.SearchPostItem;
 import org.cryse.lkong.model.SearchUserItem;
 import org.cryse.lkong.presenter.SearchPresenter;
 import org.cryse.lkong.ui.adapter.SearchResultAdapter;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.UIUtils;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SearchActivity extends AbstractThemeableActivity implements SearchForumView {
+public class SearchActivity extends AbstractSwipeBackActivity implements SearchForumView {
     private static final String LOG_TAG = SearchActivity.class.getName();
     AppNavigation mNavigation = new AppNavigation();
     SearchView mSearchView = null;
@@ -66,6 +67,14 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
         initSearchBox();
     }
 
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     private void initSearchBox() {
         UIUtils.InsetsValue insetsValue = UIUtils.getInsets(this, mSearchResultRecyclerView, false, false, true, getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height));
         mSearchResultRecyclerView.setPadding(insetsValue.getLeft(), insetsValue.getTop(), insetsValue.getRight(), insetsValue.getBottom());
@@ -80,10 +89,9 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
             }
         });
         mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
-            int headerCount = mSearchResultAdapter.getHeaderViewCount();
             switch (mSearchResultAdapter.getResultType()) {
                 case SearchDataSet.TYPE_POST:
-                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position);
                     String idString = postResult.getId();
                     if(idString.startsWith("thread_"))
                         idString = idString.substring(7);
@@ -91,14 +99,14 @@ public class SearchActivity extends AbstractThemeableActivity implements SearchF
                         mNavigation.openActivityForPostListByThreadId(this, Long.valueOf(idString));
                     break;
                 case SearchDataSet.TYPE_USER:
-                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
                     mNavigation.openActivityForUserProfile(this, startingLocation, userResult.getUserId());
                     break;
                 case SearchDataSet.TYPE_GROUP:
-                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position);
                     mNavigation.openActivityForForumByForumId(this, groupResult.getForumId(), groupResult.getGroupName().toString(), groupResult.getGroupDescription().toString());
                     break;
             }

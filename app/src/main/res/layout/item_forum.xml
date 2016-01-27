@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground">
+
+    <org.cryse.widget.FixedAspectRatioImageView
+        android:id="@+id/recyclerview_item_forum_imageview_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:foreground="?selectableItemBackground"
+        android:scaleType="fitXY"
+        app:far_fixed_orientation="horizontal"
+        app:far_height_weight="1"
+        app:far_width_weight="1" />
+
+    <TextView
+        android:id="@+id/recyclerview_item_forum_textview_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recyclerview_item_forum_imageview_icon"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:tag="text_primary"
+        android:text="placeholder"
+        android:textSize="@dimen/text_size_subhead"
+        android:textStyle="bold" />
+</RelativeLayout>

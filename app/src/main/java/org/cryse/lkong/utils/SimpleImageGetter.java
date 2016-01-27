@@ -1,6 +1,8 @@
 package org.cryse.lkong.utils;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.res.ResourcesCompat;
@@ -10,12 +12,11 @@ import android.util.Log;
 import org.cryse.lkong.R;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SimpleImageGetter implements ImageGetter {
     Context mContext;
     int mEmoticonSize  = 0;
-    int mMaxImageWidth = 0;
-    int mMaxImageHeight = 0;
     int mPlaceHolderResource  = 0;
     int mErrorResource = 0;
     int mImageDownloadPolicy = 0;
@@ -23,12 +24,6 @@ public class SimpleImageGetter implements ImageGetter {
     public SimpleImageGetter(Context context, int downloadPolicy) {
         this.mContext = context;
         this.mImageDownloadPolicy = downloadPolicy;
-    }
-
-    public SimpleImageGetter setMaxImageSize(int maxImageWidth, int maxImageHeight) {
-        this.mMaxImageWidth = maxImageWidth;
-        this.mMaxImageHeight = maxImageHeight;
-        return this;
     }
 
     public SimpleImageGetter setEmoticonSize(int emoticonSize) {
@@ -49,36 +44,46 @@ public class SimpleImageGetter implements ImageGetter {
     private static final String EMOJI_PREFIX = "http://img.lkong.cn/bq/";
     private static final String EMOJI_PATH_WITH_SLASH = "emoji/";
     public Drawable getDrawable(String source) {
-        if(source == null) {
-            return mContext.getResources().getDrawable(mPlaceHolderResource);
-        }
-        if(source.startsWith(EMOJI_PREFIX)) {
-            String emojiFileName = source.substring(EMOJI_PREFIX.length());
+
+
+        Drawable drawable = null;
+        if (source != null && source.startsWith(EMOJI_PREFIX)) {
             try {
-                Drawable emojiDrawable = Drawable.createFromStream(mContext.getAssets().open(EMOJI_PATH_WITH_SLASH + emojiFileName + ".png"), null);
-                emojiDrawable.setBounds(0, 0, mEmoticonSize == 0 ? emojiDrawable.getIntrinsicWidth() : mEmoticonSize,
-                        mEmoticonSize == 0 ? emojiDrawable.getIntrinsicHeight() : mEmoticonSize);
-                return emojiDrawable;
-            } catch (IOException e) {
-                Log.d("UrlImageGetter", "getDrawable() from assets failed.", e);
-                Drawable emojiPlaceholder = ResourcesCompat.getDrawable(
-                        mContext.getResources(),
-                        R.drawable.placeholder_error,
-                        null
-                );
-                emojiPlaceholder.setBounds(0, 0, mEmoticonSize == 0 ? emojiPlaceholder.getIntrinsicWidth() : mEmoticonSize,
-                        mEmoticonSize == 0 ? emojiPlaceholder.getIntrinsicHeight() : mEmoticonSize);
-                return emojiPlaceholder;
+                String emojiFileName = source.substring(EMOJI_PREFIX.length());
+                String assetsPath = /*"file:///android_asset/" + */EMOJI_PATH_WITH_SLASH + emojiFileName + ".png";
+                drawable = getDrawableFromAssets(mContext, assetsPath);
+                int height = mEmoticonSize;
+                int width = height * drawable.getIntrinsicWidth() / drawable.getIntrinsicHeight();
+                int top = (mEmoticonSize / 2 - height) / 2;
+                drawable.setBounds(0, top, width, top + height);
+
+            } catch (Exception e) {
+                // swallow
             }
-        } else {
-            Drawable placeHolderDrawable = ResourcesCompat.getDrawable(
-                    mContext.getResources(),
-                    R.drawable.placeholder_loading,
-                    null
-            );
-            placeHolderDrawable.setBounds(0, 0, mMaxImageWidth == 0 ? placeHolderDrawable.getIntrinsicWidth() : mMaxImageWidth,
-                    mMaxImageHeight == 0 ? placeHolderDrawable.getIntrinsicHeight() : mMaxImageHeight);
-            return placeHolderDrawable;
         }
+        if(drawable == null) {
+            drawable = new ColorDrawable(Color.TRANSPARENT);
+        }
+        return drawable;
+    }
+
+    public static Drawable getDrawableFromAssets(Context context, String url){
+        Drawable drawable = null;
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(url);
+            drawable = Drawable.createFromStream(inputStream, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return drawable;
     }
 }

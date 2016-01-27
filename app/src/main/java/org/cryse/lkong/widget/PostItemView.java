@@ -2,7 +2,6 @@ package org.cryse.lkong.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,9 +11,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.NoCopySpan;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -26,19 +22,19 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostDisplayCache;
+import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.gesture.Pointer;
 import org.cryse.lkong.utils.htmltextview.AsyncDrawableType;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.preference.BooleanPreference;
-import org.cryse.utils.preference.PreferenceConstant;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.utils.preference.Prefs;
 
 import java.util.ArrayList;
 
@@ -94,7 +90,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
         mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mOrdinalPaint.setTextSize(getResources().getDimension(R.dimen.text_size_caption));
-        mOrdinalPaint.setColor(ColorUtils.getColorFromAttr(getContext(), R.attr.theme_text_color_secondary));
+        mOrdinalPaint.setColor(ThemeUtils.textColorSecondary(getContext()));
         mOrdinalFontMetrics = mOrdinalPaint.getFontMetrics();
         initTouchHandler();
     }
@@ -196,14 +192,13 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
 
     public void setPostDisplayCache(PostDisplayCache postDisplayCache) {
         mPostDisplayCache = postDisplayCache;
-        for(int i = 0; i < postDisplayCache.getEmoticonSpans().size(); i++) {
+        /*for(int i = 0; i < postDisplayCache.getEmoticonSpans().size(); i++) {
             PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getEmoticonSpans().get(i);
             pendingImageSpan.loadImage(this);
-        }
+        }*/
         if(mShowImages) {
             post(() -> {
-                BooleanPreference isNightMode = new BooleanPreference(
-                        PreferenceManager.getDefaultSharedPreferences(getContext()),
+                BooleanPrefs isNightMode = Prefs.getBooleanPrefs(
                         PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE,
                         PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE
                 );
@@ -494,8 +489,8 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     public interface OnSpanClickListener {
-        public boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl);
-        public boolean onUrlSpanClick(long postId, URLSpan span, String target);
+        boolean onImageSpanClick(long postId, ClickableImageSpan span, ArrayList<String> urls, String initUrl);
+        boolean onUrlSpanClick(long postId, URLSpan span, String target);
     }
 
     public interface OnTextLongPressedListener {

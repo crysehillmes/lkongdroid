@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.widget.HTML5WebView;
 
@@ -31,7 +31,7 @@ import java.lang.ref.WeakReference;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class InAppBrowserActivity extends AbstractThemeableActivity {
+public class InAppBrowserActivity extends AbstractSwipeBackActivity {
     private static final String LOG_TAG = InAppBrowserActivity.class.getName();
     //public AppSettings settings;
     public String url;
@@ -56,13 +56,11 @@ public class InAppBrowserActivity extends AbstractThemeableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_app_browser);
         ButterKnife.bind(this);
-        setStatusBarColor();
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mToolbar.setBackgroundColor(getThemeEngine().getPrimaryColor());
         mBrowserView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
         url = getIntent().getStringExtra("url");

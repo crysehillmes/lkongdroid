@@ -20,6 +20,7 @@ import org.cryse.lkong.R;
 import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,34 +106,29 @@ public class EmoticonDialog extends DialogFragment {
         show(context.getFragmentManager(), "EMOTICON_SELECTOR");
     }
 
-    public static class EmoticonAdapter extends RecyclerViewBaseAdapter<String> {
+    public static class EmoticonAdapter extends SimpleRecyclerViewAdapter<String> {
         public EmoticonAdapter(Context context, List<String> mItemList) {
             super(context, mItemList);
         }
 
         @Override
-        public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recyclerview_item_emoticon, parent, false);
+                    .inflate(R.layout.item_emoticon, parent, false);
             return new ViewHolder(v);
         }
 
         @Override
         public void onBindViewHolder(RecyclerViewHolder holder, int position) {
             super.onBindViewHolder(holder, position);
-            if(holder instanceof ViewHolder) {
-                ViewHolder viewHolder = (ViewHolder)holder;
-                Object item = getObjectItem(position);
-                if(item instanceof String) {
-                    String emoticonPath = (String)item;
-                    try {
-                        Drawable d = Drawable.createFromStream(getContext().getAssets().open("emoji/" + emoticonPath), null);
-                        viewHolder.mEmoticonImageView.setImageDrawable(d);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        viewHolder.mEmoticonImageView.setImageResource(R.drawable.placeholder_error);
-                    }
-                }
+            ViewHolder viewHolder = (ViewHolder) holder;
+            String emoticonPath = getItem(position);
+            try {
+                Drawable d = Drawable.createFromStream(mContext.getAssets().open("emoji/" + emoticonPath), null);
+                viewHolder.mEmoticonImageView.setImageDrawable(d);
+            } catch (IOException e) {
+                e.printStackTrace();
+                viewHolder.mEmoticonImageView.setImageResource(R.drawable.placeholder_error);
             }
         }
 

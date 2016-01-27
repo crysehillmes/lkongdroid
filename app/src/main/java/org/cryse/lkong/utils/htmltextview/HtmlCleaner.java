@@ -1,6 +1,7 @@
 package org.cryse.lkong.utils.htmltextview;
 
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Cleaner;
@@ -54,6 +55,14 @@ public class HtmlCleaner {
                 break;
             }
         }*/
+        for (Element aAt: fixedDoc.select("a")) {
+            if(aAt.hasText() && (aAt.children() == null || (aAt.children() != null && aAt.children().size() == 0))) {
+                String content = aAt.html().trim();
+                if(content.startsWith("@")) {
+                    aAt.attr("href", "lkong://lkonguser_" + content.substring(1));
+                }
+            }
+        }
         for (Element pInLi: fixedDoc.select("p")) {
                 pInLi.after("<br>");
             pInLi.unwrap();
@@ -83,5 +92,11 @@ public class HtmlCleaner {
 
     private static boolean elementTagNameNotEquals(Element element, String tagName) {
         return element != null && !element.tagName().equalsIgnoreCase(tagName);
+    }
+
+    public static String htmlToPlain(String html) {
+        Document document = Jsoup.parseBodyFragment(html);
+        HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+        return htmlToPlainText.getPlainText(document);
     }
 }

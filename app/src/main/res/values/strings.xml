@@ -38,6 +38,8 @@
 
     <string name="drawer_item_notification">Notification</string>
     <string name="drawer_item_forum_list">Forums</string>
+    <string name="drawer_item_hot_thread">Hot</string>
+    <string name="drawer_item_digest_thread">Digest</string>
     <string name="drawer_item_favorites">Favorites</string>
     <string name="drawer_item_browse_history">Browse History</string>
     <string name="drawer_item_timeline">Timeline</string>
@@ -49,6 +51,7 @@
     <string name="drawer_item_private_messages">PM</string>
     <string name="drawer_item_settings">Settings</string>
     <string name="drawer_item_account_add">Add account</string>
+    <string name="drawer_item_theme_settings">Theme Settings</string>
     <string name="hint_account_email">Your Email</string>
     <string name="hint_account_password">Password</string>
     <string name="hint_title">Title</string>
@@ -80,18 +83,30 @@
     <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
     <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; Replies</string>
     <string name="format_punchday_count">Punched %1$d days</string>
+    <string name="format_digests_by">Digests by %1$s</string>
+    <string name="format_all_activities_of">All activities of %1$s</string>
+    <string name="format_followers_of">Followers of %1$s</string>
+    <string name="format_following_of">%1$s is following</string>
+    <string name="format_threads_by">Threads by %1$s</string>
+    <string name="format_time_just_now">just now</string>
+    <string name="format_time_a_minute_ago">a minute ago</string>
+    <string name="format_time_n_minutes_ago">&#160;minutes ago</string>
+    <string name="format_time_an_hour_ago">an hour ago</string>
+    <string name="format_time_n_hours_ago">&#160;hours ago</string>
+    <string name="format_time_yesterday">yesterday</string>
+    <string name="format_time_n_days_ago">&#160;days ago</string>
+    <string name="format_time_date">MMM dd, yyyy</string>
+    <string name="format_time_time">HH:mm</string>
+    <string name="format_notice_mentions">%1$d Mentions</string>
+    <string name="format_notice_notice">%1$d Notices</string>
+    <string name="format_notice_private_message">%1$d PM</string>
+    <string name="format_notice_rate">%1$d Rates</string>
+    <string name="format_notice_all_count">You Have %1$d New Notices</string>
+    <string name="format_share_title">[ %1$s ]</string>
+    <string name="format_post_tail_prefix">&#160;——&#160;</string>
 
     <string name="format_post_list_page_indicator_detail">Page %1$d (%2$d - %3$d)</string>
     <string name="format_post_header_detail_count">%1$d Views · %2$d Replies</string>
-    <string name="format_active_points">Active Points: %1$d</string>
-    <string name="format_dragon_money">Dragon Money: %1$d</string>
-    <string name="format_dragon_crystal">Dragon Crystal: %1$d</string>
-    <string name="format_current_continuous_punch_days">Current Continuous Punch Days: %1$d</string>
-    <string name="format_total_punch_days">Total Punch Days: %1$d</string>
-    <string name="format_longest_continuous_punch_days">Longest Continuous Punch Days: %1$d</string>
-    <string name="format_last_punch_time">Last Punch Time: %1$s</string>
-    <string name="format_registration_time">Registration Time: %1$s</string>
-
 
     <string name="toast_success_save_image_as">Image saved to: /sdcard/Pictures/%1$s/%2$s</string>
     <string name="toast_failure_signin">Sign in failed, please check your email, password and network connection.</string>
@@ -116,25 +131,47 @@
     <string name="toast_sign_in_failed">Sign in failed, please check your network connection.</string>
     <string name="toast_error_universal_try_again">Something is wrong, please try again.</string>
     <string name="text_punching">Punching…</string>
+    <string name="text_last_punch_time">Last Punch</string>
+    <string name="text_current_continuous_punch_days">Current Continuous Punch Days</string>
+    <string name="text_longest_continuous_punch_days">Longest Continuous Punch Days</string>
+    <string name="text_total_punch_days">Total Punch Days</string>
     <string name="text_loading">Loading…</string>
     <string name="text_search_thread">Search Thread:&#160;</string>
     <string name="text_search_people">Search People:&#160;</string>
     <string name="text_search_forum">Search Forum:&#160;</string>
 
-    <string name="datetime_today">Today</string>
+    <string name="text_load_prev_page">Load previous page</string>
+    <string name="text_load_next_page">Load next page</string>
+    <string name="text_new_version_changes">New Version Changes</string>
+
+    <string name="text_dragon_money">Dragon Money</string>
+    <string name="text_dragon_crystal">Dragon Crystal</string>
+    <string name="text_active_points">Active Points</string>
+    <string name="text_user_introduction_title">Introduction</string>
+    <string name="text_user_wealth_title">Wealth</string>
+    <string name="text_user_punch_info_title">Punch</string>
+    <string name="text_user_registration_time_title">Registration</string>
+    <string name="text_share_from">(Share from LKongDroid)</string>
+    <string name="text_share_post_title">Share Post</string>
+    <string name="text_share_thread_title">Share Thread</string>
+
+    <string name="text_datetime_today">Today</string>
     <string name="dialog_post_list_choose_page">Jump to</string>
     <string name="dialog_new_post_sending">Sending…</string>
     <string name="dialog_choose_emoticon_title">Choose emoticon:</string>
     <string name="dialog_choose_color_title">Choose theme color:</string>
     <string name="dialog_signing_in">Signing in…</string>
     <string name="dialog_title_rate">Rate</string>
+    <string name="dialog_title_permission_storage">This app need Storage permission to upload pictures in posts or save pictures to your phone.</string>
     <string name="dialog_title_insert_url">Insert Url</string>
+    <string name="dialog_title_sending_private_message">Sending messages…</string>
+    <string name="dialog_title_error">Error</string>
+    <string name="dialog_title_copy_content">Copy Content</string>
     <string name="dialog_exit_new_post_title">Discard your post?</string>
     <string name="dialog_exit_confirm">Confirm</string>
     <string name="dialog_exit_cancel">Cancel</string>
     <string name="dialog_exit_discard">Discard</string>
-    <string name="dialog_title_copy_content">Copy Content</string>
-    <string name="dialog_title_sending_private_message">Sending messages…</string>
+    <string name="dialog_content_cannot_get_user_profile">Cannot get user profile.</string>
     <string name="dialog_content_please_wait">Please wait a moment</string>
 
     <string name="button_sign_up">Sign Up</string>
@@ -143,6 +180,10 @@
     <string name="button_share">Share</string>
     <string name="button_rate">Rate</string>
     <string name="button_edit">Edit</string>
+    <string name="button_punch">Punch</string>
+    <string name="button_punch_complete">Punch Done</string>
+    <string name="button_punch_error">Punch Error</string>
+    <string name="button_punched">Punch Day: %1$d</string>
 
     <string name="card_title_sign_in">Sign In</string>
 
@@ -184,20 +225,19 @@
     <string name="settings_item_avatar_download_policy_title">Avatar download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
     <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post</string>
-    <string name="format_post_tail_prefix">&#160;——&#160;</string>
     <string name="settings_item_post_extra_tail_text_default">Post By LKongDroid App</string>
 
     <!-- About -->
     <string name="settings_about_activity_title">About</string>
-    <string name="settings_category_author_title">About</string>
+    <string name="settings_category_author_title">About author</string>
     <string name="settings_item_author_name_value">Cryse Hillmes</string>
     <string name="settings_item_author_name_title">Author</string>
     <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
     <string name="settings_item_email_address_title">Author Email</string>
-    <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
+    <string name="settings_item_author_blog_site_value">https://blog.cryse.org</string>
     <string name="settings_item_author_blog_site">Website</string>
     <string name="settings_item_theme_color_title">Theme</string>
-    <string name="settings_item_theme_color_summary">Choose your theme color</string>
+    <string name="settings_item_theme_color_summary">Choose your theme</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">Changelog of recent versions</string>
     <string name="settings_item_feedback_value">Any suggestion and feedback is acceptable</string>
@@ -232,22 +272,6 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-    <string name="button_punch">Punch</string>
-    <string name="button_punch_complete">Punch Done</string>
-    <string name="button_punch_error">Punch Error</string>
-    <string name="button_punched">Punch Day: %1$d</string>
-
-    <string name="text_load_prev_page">Load previous page</string>
-    <string name="text_load_next_page">Load next page</string>
-    <string name="text_new_version_changes">New Version Changes</string>
-
-    <string name="text_dragon_money">Dragon Money</string>
-    <string name="text_dragon_crystal">Dragon Crystal</string>
-    <string name="text_active_points">Active Points</string>
-    <string name="text_user_introduction_title">Introduction</string>
-    <string name="text_user_wealth_title">Wealth</string>
-    <string name="text_user_punch_info_title">Punch</string>
-    <string name="text_user_registration_time_title">Registration</string>
 
     <string-array name="readview_font_size_entries">
         <item>10</item>
@@ -261,41 +285,25 @@
         <item>26</item>
     </string-array>
 
-    <string name="profile_header_followers">Followers</string>
-    <string name="profile_header_following">Following</string>
-    <string name="profile_header_threads">Threads</string>
-    <string name="profile_header_posts">Posts</string>
-    <string name="profile_header_count_zero">0</string>
+    <string name="text_profile_header_followers">Followers</string>
+    <string name="text_profile_header_following">Following</string>
+    <string name="text_profile_header_threads">Threads</string>
+    <string name="text_profile_header_posts">Posts</string>
+    <string name="text_profile_header_count_zero">0</string>
     <string-array name="string_array_user_profile_tabs">
         <item>About</item>
         <item>All</item>
         <item>Threads</item>
         <item>Digests</item>
+        <item>Followers</item>
+        <item>Following</item>
     </string-array>
-    <string name="day_title_today">Today</string>
-    <string name="day_title_tomorrow">Tomorrow</string>
-    <string name="day_title_yesterday">Yesterday</string>
-    <string name="format_time_just_now">just now</string>
-    <string name="format_time_a_minute_ago">a minute ago</string>
-    <string name="format_time_n_minutes_ago">&#160;minutes ago</string>
-    <string name="format_time_an_hour_ago">an hour ago</string>
-    <string name="format_time_n_hours_ago">&#160;hours ago</string>
-    <string name="format_time_yesterday">yesterday</string>
-    <string name="format_time_n_days_ago">&#160;days ago</string>
-    <string name="format_time_date">MMM dd, yyyy</string>
-    <string name="format_time_time">HH:mm</string>
-    <string name="format_notice_mentions">%1$d Mentions</string>
-    <string name="format_notice_notice">%1$d Notices</string>
-    <string name="format_notice_private_message">%1$d PM</string>
-    <string name="format_notice_rate">%1$d Rates</string>
-    <string name="format_notice_all_count">You Have %1$d New Notices</string>
+    <string name="text_day_title_today">Today</string>
+    <string name="text_day_title_tomorrow">Tomorrow</string>
+    <string name="text_day_title_yesterday">Yesterday</string>
 
     <string name="provider_checknotice_label">Auto Check New Notice</string>
     <string name="provider_follow_status_label">Auto Sync Follow Status</string>
-    <string name="format_share_title">[ %1$s ]</string>
-    <string name="text_share_from">(Share from LKongDroid)</string>
-    <string name="text_share_post_title">Share Post</string>
-    <string name="text_share_thread_title">Share Thread</string>
 
     <string-array name="check_notice_duration_arrays">
         <item>15 mins</item>
@@ -308,6 +316,10 @@
         <item>12 hours</item>
         <item>24 hours</item>
     </string-array>
+
+    <string name="donation_title">Donate</string>
+    <string name="donation_positive">Launch Alipay</string>
+    <string name="donation_content">I spend a lot of time on this app, if you want to buy me a coffee, you could donate to this Alipay account: tyk5555@hotmail.com</string>
 
     <string-array name="check_notice_duration_value_arrays">
         <item>900</item>

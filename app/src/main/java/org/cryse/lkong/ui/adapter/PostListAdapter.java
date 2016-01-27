@@ -1,12 +1,16 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
@@ -27,6 +31,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
     private OnItemButtonClickListener mOnItemButtonClickListener;
     private PostItemView.OnSpanClickListener mOnSpanClickListener;
+    private String mATEKey;
     private long mUserId;
     private int mImageDownloadPolicy;
     private int mAvatarDownloadPolicy;
@@ -34,8 +39,9 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     private final int mAvatarSize;
     private boolean mShouldShowImages;
 
-    public PostListAdapter(Context context, List<PostModel> mItemList, long userId, int imageDownloadPolicy, int avatarDownloadPolicy) {
+    public PostListAdapter(Context context, String ateKey, List<PostModel> mItemList, long userId, int imageDownloadPolicy, int avatarDownloadPolicy) {
         super(context, mItemList);
+        mATEKey = ateKey;
         mUserId = userId;
         mImageDownloadPolicy = imageDownloadPolicy;
         mAvatarDownloadPolicy = avatarDownloadPolicy;
@@ -64,8 +70,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_post, parent, false);
-        return new ViewHolder(v, mOnItemButtonClickListener, mOnSpanClickListener);
+                .inflate(R.layout.item_post, parent, false);
+        return new ViewHolder(v, mATEKey, mOnItemButtonClickListener, mOnSpanClickListener);
     }
 
     @Override
@@ -123,6 +129,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
+        @Bind(R.id.recyclerview_item_post_cardview_root_container)
+        CardView mRootCardView;
         @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
         @Bind(R.id.recyclerview_item_post_imageview_avatar)
@@ -139,7 +147,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
         ImageButton mReplyButton;
 
         OnItemButtonClickListener mOnItemButtonClickListener;
-        public ViewHolder(View itemView, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
+        public ViewHolder(View itemView, String ateKey, OnItemButtonClickListener onItemReplyClickListener, PostItemView.OnSpanClickListener mOnSpanClickListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mOnItemButtonClickListener = onItemReplyClickListener;
@@ -182,6 +190,8 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
                     mOnItemButtonClickListener.onPostTextLongClick(view, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
+            mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
         }
     }
 

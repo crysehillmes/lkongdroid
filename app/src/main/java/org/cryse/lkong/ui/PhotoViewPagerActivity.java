@@ -12,7 +12,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,10 +31,9 @@ import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import org.apache.tika.Tika;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.SubscriptionUtils;
@@ -40,6 +41,7 @@ import org.cryse.lkong.utils.file.FileCopier;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
 import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
+import org.cryse.utils.MimeHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PhotoViewPagerActivity extends AbstractThemeableActivity {
+public class PhotoViewPagerActivity extends AbstractSwipeBackActivity {
     private static final String LOG_TAG = PhotoViewPagerActivity.class.getName();
 
     private List<String> mPhotoUrls = new ArrayList<String>();
@@ -72,7 +74,6 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         injectThis();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewpager);
-        setIsOverrideToolbarColor(false);
         ButterKnife.bind(this);
         setUpToolbar(mToolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -123,6 +124,14 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
         });
         mViewPager.setCurrentItem(initPosition);
         setTitle(mPagerAdapter.getPageTitle(initPosition));
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -216,7 +225,6 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
     public static class ImageFragment extends Fragment {
         private static final String ARGS_IMAGE_URL = "IMAGE_URL";
         private static final String SUB_CACHE_DIR = "img-origin-cache";
-        static Tika tika = new Tika();
         private Subscription mLoadImageSubscription;
         private String mImageUrl;
         @Bind(R.id.viewpager_item_progressbar)
@@ -308,8 +316,8 @@ public class PhotoViewPagerActivity extends AbstractThemeableActivity {
                             result -> {
                                 try {
 
-                                    String mimeTypeString = tika.detect(result);
-                                    if (mimeTypeString.toLowerCase().contains("gif")) {
+                                    String mimeTypeString = MimeHelper.getMimeType(getActivity(), Uri.fromFile(result));
+                                    if (!TextUtils.isEmpty(mimeTypeString) && mimeTypeString.toLowerCase().contains("gif")) {
                                         mPhotoView.setVisibility(View.GONE);
                                         mSecondaryPhotoView.setVisibility(View.VISIBLE);
                                         Glide

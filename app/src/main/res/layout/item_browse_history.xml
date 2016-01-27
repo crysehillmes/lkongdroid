@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recyclerview_item_browse_history_relative_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:id="@+id/recyclerview_item_browse_history_textview_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="placeholder"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textSize="@dimen/text_size_subhead"
+            android:tag="text_primary"/>
+
+        <TextView
+            android:id="@+id/recyclerview_item_browse_history_textview_secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recyclerview_item_browse_history_textview_title"
+            android:layout_toLeftOf="@+id/recyclerview_item_browse_history_textview_time"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="placeholder"
+            android:textSize="@dimen/text_size_body1"
+            android:tag="text_secondary"/>
+        <TextView
+            android:id="@+id/recyclerview_item_browse_history_textview_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@+id/recyclerview_item_browse_history_textview_secondary"
+            android:text="placeholder"
+            android:gravity="end"
+            android:textSize="@dimen/text_size_caption"
+            android:tag="text_secondary"/>
+        </RelativeLayout>
+</RelativeLayout>

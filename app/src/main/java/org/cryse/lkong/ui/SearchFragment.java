@@ -13,7 +13,6 @@ import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.SearchDataSet;
 import org.cryse.lkong.model.SearchGroupItem;
 import org.cryse.lkong.model.SearchPostItem;
@@ -25,7 +24,9 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.view.SearchForumView;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,9 +46,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     @Inject
     UserAccountManager mUserAccountManager;
 
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
@@ -73,7 +72,8 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         // UIUtils.setInsets(this, mCollectionView, false, false, true, Build.VERSION.SDK_INT < 21);
         Bundle args = getArguments();
         if (args != null) {
@@ -96,7 +96,7 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     }
 
     private void initRecyclerView() {
-        mSearchResultAdapter = new SearchResultAdapter(getContext(), Integer.valueOf(mAvatarDownloadPolicy.get()));
+        mSearchResultAdapter = new SearchResultAdapter(getContext(), mATEKey, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
         mSearchResultRecyclerView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
@@ -108,10 +108,9 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
             }
         });
         mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
-            int headerCount = mSearchResultAdapter.getHeaderViewCount();
             switch (mSearchResultAdapter.getResultType()) {
                 case SearchDataSet.TYPE_POST:
-                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchPostItem postResult = (SearchPostItem) mSearchResultAdapter.getItem(position);
                     String idString = postResult.getId();
                     if (idString.startsWith("thread_"))
                         idString = idString.substring(7);
@@ -119,14 +118,14 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
                         mNavigation.openActivityForPostListByThreadId(getContext(), Long.valueOf(idString));
                     break;
                 case SearchDataSet.TYPE_USER:
-                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchUserItem userResult = (SearchUserItem) mSearchResultAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
                     mNavigation.openActivityForUserProfile(getActivity(), startingLocation, userResult.getUserId());
                     break;
                 case SearchDataSet.TYPE_GROUP:
-                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position - headerCount);
+                    SearchGroupItem groupResult = (SearchGroupItem) mSearchResultAdapter.getItem(position);
                     mNavigation.openActivityForForumByForumId(getContext(), groupResult.getForumId(), groupResult.getGroupName().toString(), groupResult.getGroupDescription().toString());
                     break;
             }

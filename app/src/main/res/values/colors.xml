@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">@color/md_green_500</color>
-    <color name="theme_navigation_drawer_bg_light">@color/nliveo_white</color>
-    <color name="theme_navigation_drawer_bg_dark">#222222</color>
+    <color name="colorPrimaryLightDefault">#2196F3</color>
+    <color name="colorAccentLightDefault">#4CAF50</color>
+
+    <color name="colorPrimaryDarkDefault">#37474F</color>
+    <color name="colorAccentDarkDefault">#2196F3</color>
 
     <color name="gray">#666666</color>
     <color name="transparent_tint">#88000000</color>

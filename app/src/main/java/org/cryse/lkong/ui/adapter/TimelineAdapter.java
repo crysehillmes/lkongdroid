@@ -2,6 +2,7 @@ package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -16,20 +17,22 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.ui.listener.OnItemProfileAreaClickListener;
 import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.ImageLoader;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
 import java.util.List;
@@ -37,130 +40,163 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
+public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
     private static final String LOG_TAG = TimelineAdapter.class.getName();
+    private static final int TYPE_THREAD = 0;
+    private static final int TYPE_REPLY = 1;
     private final String mTodayPrefix;
     private final int mAvatarSize;
     private CircleTransform mCircleTransform;
+    private SimpleImageGetter mImageGetter;
     private int mAvatarLoadPolicy;
+    private int mTextColorSecondary;
+    private String mATEKey;
     private OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-    public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy) {
+
+    public TimelineAdapter(Context context, List<TimelineModel> items, int avatarLoadPolicy, String ateKey) {
         super(context, items);
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
         this.mCircleTransform = new CircleTransform(context);
         this.mAvatarLoadPolicy = avatarLoadPolicy;
+        this.mATEKey = ateKey;
+        this.mTextColorSecondary = Config.textColorPrimary(context, mATEKey);
+
+        this.mImageGetter = new SimpleImageGetter(mContext, ImageLoader.IMAGE_LOAD_ALWAYS)
+                .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(mContext, R.dimen.text_size_body1)*2)
+                .setPlaceHolder(R.drawable.placeholder_loading)
+                .setError(R.drawable.placeholder_error);
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_timeline, parent, false);
-        return new ViewHolder(v, mOnTimelineModelItemClickListener);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = null;
+        switch (viewType) {
+            case TYPE_REPLY:
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_timeline, parent, false);
+                break;
+            case TYPE_THREAD:
+            default:
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_timeline_thread, parent, false);
+                break;
+        }
+        return new ViewHolder(view, mATEKey, mOnTimelineModelItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        //super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof TimelineModel) {
-                TimelineModel timelineModel = (TimelineModel)item;
-                bindTimelineItem(
-                        getContext(),
-                        mTodayPrefix,
-                        mAvatarSize,
-                        mCircleTransform,
-                        viewHolder,
-                        timelineModel,
-                        mAvatarLoadPolicy
-                );
-            }
+        ViewHolder viewHolder = (ViewHolder)holder;
+        TimelineModel item = getItem(position);
+        if(item.isQuote() || !item.isThread()) {
+            bindReplyItem(viewHolder, item);
+        } else if(item.isThread()) {
+            bindThreadItem(viewHolder, item);
+        } else {
+            bindThreadItem(viewHolder, item);
         }
     }
 
-    public static void bindTimelineItem(
-            Context context,
-            String todayPrefix,
-            int avatarSize,
-            CircleTransform circleTransform,
-            ViewHolder viewHolder,
-            TimelineModel timelineModel,
-            int avatarLoadPolicy) {
+    @Override
+    public int getItemViewType(int position) {
+        TimelineModel item = getItem(position);
+        if(item.isQuote() || !item.isThread()) {
+            return TYPE_REPLY;
+        } else if(item.isThread()) {
+            return TYPE_THREAD;
+        } else {
+            return TYPE_THREAD;
+        }
+    }
 
+    public void bindThreadItem(ViewHolder holder, TimelineModel item) {
+        // 用户发布主题
         SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
         String mainContent;
-        if(timelineModel.isQuote()) {
-            // 回复某一条回复
-            viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
+        String createInfo = mContext.getString(R.string.format_timeline_create_thread, item.getSubject());
+        mainPrefixSpannable.append(createInfo);
+        mainPrefixSpannable.setSpan(new ForegroundColorSpan(mTextColorSecondary),
+                0,
+                createInfo.length(),
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        mainPrefixSpannable.setSpan(new StyleSpan(Typeface.BOLD),
+                0,
+                createInfo.length(),
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        mainPrefixSpannable.append('\n');
+        mainContent = item.getMessage();
 
-            SpannableStringBuilder spanText = new SpannableStringBuilder();
-            String secondaryText = context.getString(R.string.format_timeline_reply_to_reply, timelineModel.getReplyQuote().getPosterName(), timelineModel.getSubject());
-            spanText.append(secondaryText);
-            if(!TextUtils.isEmpty(timelineModel.getReplyQuote().getPosterName())) {
-                int nameStart = secondaryText.indexOf(timelineModel.getReplyQuote().getPosterName());
-                int nameEnd = nameStart + timelineModel.getReplyQuote().getPosterName().length();
-                spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }
-            viewHolder.mSecondaryMessageTextView.setText(spanText);
-
-            viewHolder.mThirdMessageTextView.setText(timelineModel.getReplyQuote().getPosterMessage());
-            mainContent = timelineModel.getReplyQuote().getMessage();
-        } else if(!timelineModel.isThread()) {
-            // 回复某一主题
-            viewHolder.mSecondaryContainer.setVisibility(View.VISIBLE);
-            SpannableStringBuilder spanText = new SpannableStringBuilder();
-            String secondaryText = context.getString(R.string.format_timeline_reply_to_thread, timelineModel.getThreadAuthor());
-            spanText.append(secondaryText);
-            if(!TextUtils.isEmpty(timelineModel.getThreadAuthor())) {
-                int nameStart = secondaryText.indexOf(timelineModel.getThreadAuthor());
-                int nameEnd = nameStart + timelineModel.getThreadAuthor().length();
-                spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            }
-            viewHolder.mSecondaryMessageTextView.setText(spanText);
-            viewHolder.mThirdMessageTextView.setText(timelineModel.getSubject());
-            mainContent = timelineModel.getMessage();
-        } else if(timelineModel.isThread()) {
-            // 用户自己发布主题
-            viewHolder.mSecondaryContainer.setVisibility(View.GONE);
-            String createInfo = context.getString(R.string.format_timeline_create_thread, timelineModel.getSubject());
-            mainPrefixSpannable.append(createInfo);
-            mainPrefixSpannable.setSpan(new ForegroundColorSpan(ColorUtils.getColorFromAttr(context, R.attr.theme_text_color_secondary)),
-                    0,
-                    createInfo.length(),
-                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            mainPrefixSpannable.setSpan(new StyleSpan(Typeface.BOLD),
-                    0,
-                    createInfo.length(),
-                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            mainPrefixSpannable.append('\n');
-            mainContent = timelineModel.getMessage();
-        } else {
-            // 其他
-            viewHolder.mSecondaryContainer.setVisibility(View.GONE);
-            mainContent = timelineModel.getMessage();
-        }
-
-        SimpleImageGetter imageGetter = new SimpleImageGetter(context, ImageLoader.IMAGE_LOAD_ALWAYS)
-                .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(context, R.dimen.text_size_body1))
-                .setPlaceHolder(R.drawable.placeholder_loading)
-                .setError(R.drawable.placeholder_error);
-        Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, imageGetter, new HtmlTagHandler());
+        Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, mImageGetter, new HtmlTagHandler());
         SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
         mainSpannable.append(mainPrefixSpannable).append(spannedText);
-        viewHolder.mMessageTextView.setText(mainSpannable);
+        holder.mMessageTextView.setText(mainSpannable);
 
-        viewHolder.mAuthorTextView.setText(timelineModel.getUserName());
-        viewHolder.mDatelineTextView.setText(DateFormatUtils.formatFullDateDividByToday(timelineModel.getDateline(), todayPrefix, context.getResources().getConfiguration().locale));
+        holder.mAuthorTextView.setText(item.getUserName());
+        holder.mDatelineTextView.setText(TimeFormatUtils.formatFullDateDividByToday(item.getDateline(), mTodayPrefix, mContext.getResources().getConfiguration().locale));
         ImageLoader.loadAvatar(
-                context,
-                viewHolder.mAuthorAvatarImageView,
-                ModelConverter.uidToAvatarUrl(timelineModel.getUserId()),
-                avatarSize,
-                circleTransform,
-                ImageLoader.IMAGE_LOAD_AVATAR_ALWAYS
+                mContext,
+                holder.mAuthorAvatarImageView,
+                ModelConverter.uidToAvatarUrl(item.getUserId()),
+                mAvatarSize,
+                mCircleTransform,
+                mAvatarLoadPolicy
         );
+    }
+
+    public void bindReplyItem(ViewHolder holder, TimelineModel item) {
+        // 用户发布主题
+        if(holder.mSecondaryContainer != null && holder.mSecondaryMessageTextView != null && holder.mThirdMessageTextView != null) {
+            SpannableStringBuilder mainPrefixSpannable = new SpannableStringBuilder();
+            String mainContent;
+            if(item.isQuote()) {
+                // 回复某一条回复
+                holder.mSecondaryContainer.setVisibility(View.VISIBLE);
+
+                SpannableStringBuilder spanText = new SpannableStringBuilder();
+                String secondaryText = mContext.getString(R.string.format_timeline_reply_to_reply, item.getReplyQuote().getPosterName(), item.getSubject());
+                spanText.append(secondaryText);
+                if(!TextUtils.isEmpty(item.getReplyQuote().getPosterName())) {
+                    int nameStart = secondaryText.indexOf(item.getReplyQuote().getPosterName());
+                    int nameEnd = nameStart + item.getReplyQuote().getPosterName().length();
+                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                holder.mSecondaryMessageTextView.setText(spanText);
+
+                holder.mThirdMessageTextView.setText(HtmlTextUtils.htmlToSpanned(item.getReplyQuote().getPosterMessage(), mImageGetter, new HtmlTagHandler()));
+                mainContent = item.getReplyQuote().getMessage();
+            } else { // else if(!item.isThread()) {
+                // 回复某一主题
+                holder.mSecondaryContainer.setVisibility(View.VISIBLE);
+                SpannableStringBuilder spanText = new SpannableStringBuilder();
+                String secondaryText = mContext.getString(R.string.format_timeline_reply_to_thread, item.getThreadAuthor());
+                spanText.append(secondaryText);
+                if(!TextUtils.isEmpty(item.getThreadAuthor())) {
+                    int nameStart = secondaryText.indexOf(item.getThreadAuthor());
+                    int nameEnd = nameStart + item.getThreadAuthor().length();
+                    spanText.setSpan(new StyleSpan(Typeface.BOLD), nameStart, nameEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+                holder.mSecondaryMessageTextView.setText(spanText);
+                holder.mThirdMessageTextView.setText(item.getSubject());
+                mainContent = item.getMessage();
+            }
+
+            Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, mImageGetter, new HtmlTagHandler());
+            SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
+            mainSpannable.append(mainPrefixSpannable).append(spannedText);
+            holder.mMessageTextView.setText(mainSpannable);
+
+            holder.mAuthorTextView.setText(item.getUserName());
+            holder.mDatelineTextView.setText(TimeFormatUtils.formatFullDateDividByToday(item.getDateline(), mTodayPrefix, mContext.getResources().getConfiguration().locale));
+            ImageLoader.loadAvatar(
+                    mContext,
+                    holder.mAuthorAvatarImageView,
+                    ModelConverter.uidToAvatarUrl(item.getUserId()),
+                    mAvatarSize,
+                    mCircleTransform,
+                    mAvatarLoadPolicy
+            );
+        }
     }
 
     public static class ViewHolder extends RecyclerViewHolder {
@@ -177,16 +213,19 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
         ImageView mAuthorAvatarImageView;
 
 
+        @Nullable
         @Bind(R.id.secondary_message_container)
         RelativeLayout mSecondaryContainer;
+        @Nullable
         @Bind(R.id.recyclerview_item_timeline_secondary_message)
         TextView mSecondaryMessageTextView;
+        @Nullable
         @Bind(R.id.recyclerview_item_timeline_third_message)
         TextView mThirdMessageTextView;
 
 
         OnTimelineModelItemClickListener mOnTimelineModelItemClickListener;
-        public ViewHolder(View v, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
+        public ViewHolder(View v, String ateKey, OnTimelineModelItemClickListener onTimelineModelItemClickListener) {
             super(v);
             ButterKnife.bind(this, v);
             mOnTimelineModelItemClickListener = onTimelineModelItemClickListener;
@@ -200,6 +239,8 @@ public class TimelineAdapter extends RecyclerViewBaseAdapter<TimelineModel> {
                     mOnTimelineModelItemClickListener.onItemTimelineClick(v1, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
+            mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(v.getContext(), ateKey));
         }
     }
 

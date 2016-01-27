@@ -45,7 +45,7 @@ public abstract class InActivityFragment extends AbstractFragment {
         switch(item.getItemId()) {
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
-                    getThemedActivity().setNightMode(!isNightMode());
+                    toggleNightMode();
                 }
                 return true;
             case R.id.action_open_notification:

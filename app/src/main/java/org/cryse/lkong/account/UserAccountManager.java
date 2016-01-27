@@ -10,14 +10,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.cryse.lkong.application.qualifier.ApplicationContext;
-import org.cryse.lkong.application.qualifier.PrefsDefaultAccountUid;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.ui.MainActivity;
-import org.cryse.utils.preference.LongPreference;
+import org.cryse.utils.preference.LongPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,9 +41,7 @@ public class UserAccountManager {
     @ApplicationContext
     Context mContext;
 
-    @Inject
-    @PrefsDefaultAccountUid
-    LongPreference mDefaultAccountUid;
+    LongPrefs mDefaultAccountUid;
 
     @Inject
     AccountManager mAccountManager;
@@ -50,6 +49,10 @@ public class UserAccountManager {
     private static final String mLKongAccountType = "org.cryse.lkong";
 
     public UserAccountManager() {
+        mDefaultAccountUid = Prefs.getLongPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID,
+                PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID_VALUE
+        );
     }
 
     public void init() {

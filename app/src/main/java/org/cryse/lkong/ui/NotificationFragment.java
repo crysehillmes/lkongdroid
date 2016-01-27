@@ -21,12 +21,10 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.common.InActivityFragment;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.DataContract;
-import org.cryse.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,6 @@ import butterknife.Bind;
 
 public class NotificationFragment extends InActivityFragment {
     private static final String LOG_TAG = NotificationFragment.class.getName();
-    int mColorAccent;
     @Inject
     UserAccountManager mUserAccountManager;
     @Bind(R.id.toolbar)
@@ -65,7 +62,6 @@ public class NotificationFragment extends InActivityFragment {
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
-        mColorAccent = ColorUtils.getColorFromAttr(getActivity(), R.attr.colorAccent);
         Bundle args = getArguments();
         if(args != null && args.containsKey(DataContract.BUNDLE_USER_ID)) {
             long userId = args.getLong(DataContract.BUNDLE_USER_ID);
@@ -79,7 +75,7 @@ public class NotificationFragment extends InActivityFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_notification_page, null);
         ButterKnife.bind(this, contentView);
-        mTabLayout.setBackgroundColor(getThemedActivity().getThemeEngine().getPrimaryColor());
+        mTabLayout.setBackgroundColor(getPrimaryColor());
         return contentView;
     }
 
@@ -136,14 +132,14 @@ public class NotificationFragment extends InActivityFragment {
             @Override
             public void onPageScrollStateChanged(int state) {
                 if (mViewPager.getCurrentItem() == 0) {
-                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity) getActivity();
+                    AbstractSwipeBackActivity containerActivity = (AbstractSwipeBackActivity) getActivity();
                     DisplayMetrics displaymetrics = new DisplayMetrics();
                     containerActivity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                     int width = displaymetrics.widthPixels;
                     containerActivity.getSwipeBackLayout().setEnableGesture(true);
                     containerActivity.getSwipeBackLayout().setEdgeSize(width);
                 } else {
-                    AbstractThemeableActivity containerActivity = (AbstractThemeableActivity) getActivity();
+                    AbstractSwipeBackActivity containerActivity = (AbstractSwipeBackActivity) getActivity();
                     containerActivity.getSwipeBackLayout().setEnableGesture(false);
                     containerActivity.getSwipeBackLayout().setEdgeSize(0);
                 }
@@ -161,7 +157,7 @@ public class NotificationFragment extends InActivityFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                getThemedActivity().closeActivityWithTransition();
+                getSwipeBackActivity().closeActivityWithTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -218,8 +214,5 @@ public class NotificationFragment extends InActivityFragment {
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
-        if (event instanceof ThemeColorChangedEvent) {
-            mTabLayout.setBackgroundColor(((ThemeColorChangedEvent) event).getNewPrimaryColor());
-        }
     }
 }

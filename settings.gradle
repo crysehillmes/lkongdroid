@@ -1,1 +1,1 @@
-include ':app', ':widgets', ':utils', ':changelog'
+include ':app', ':widgets', ':changelog'

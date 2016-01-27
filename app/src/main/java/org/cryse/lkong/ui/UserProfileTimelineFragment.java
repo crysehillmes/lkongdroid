@@ -1,21 +1,28 @@
 package org.cryse.lkong.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.presenter.UserProfileTimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
 
@@ -27,18 +34,19 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
         UserProfileTimelinePresenter> {
     private static final String LOG_TAG = UserProfileTimelineFragment.class.getName();
     private static final String KEY_UID = "key_args_uid";
+    private static final String KEY_USERNAME= "key_args_username";
     private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     private long mUid;
+    private String mUserName;
 
     @Inject
     UserProfileTimelinePresenter mPresenter;
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
-    public static UserProfileTimelineFragment newInstance(long uid) {
+    public static UserProfileTimelineFragment newInstance(long uid, String userName) {
         Bundle args = new Bundle();
         args.putLong(KEY_UID, uid);
+        args.putString(KEY_USERNAME, userName);
         UserProfileTimelineFragment fragment = new UserProfileTimelineFragment();
         fragment.setArguments(args);
         return fragment;
@@ -48,10 +56,59 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         if(getArguments() != null && getArguments().containsKey(KEY_UID)) {
             mUid = getArguments().getLong(KEY_UID);
+            mUserName = getArguments().getString(KEY_USERNAME);
         }
-        setHasOptionsMenu(false);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View contentView = super.onCreateView(inflater, container, savedInstanceState);
+        setUpToolbar(mToolbar);
+        return contentView;
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        getAppCompatActivity().setSupportActionBar(toolbar);
+        ActionBar actionBar = getAppCompatActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setTitle();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getSwipeBackActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void restoreFromState(Bundle savedInstanceState) {
+        if(savedInstanceState.containsKey(KEY_UID)
+                && savedInstanceState.containsKey(KEY_USERNAME)
+                ) {
+            this.mUid = savedInstanceState.getLong(KEY_UID);
+            this.mUserName = savedInstanceState.getString(KEY_USERNAME);
+            setTitle();
+        }
+    }
+
+    private void setTitle() {
+        getAppCompatActivity().setTitle(getString(R.string.format_all_activities_of, mUserName));
     }
 
     @Override
@@ -71,7 +128,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_simple_collection;
+        return R.layout.fragment_simple_collection_with_toolbar;
     }
 
     @Override
@@ -81,13 +138,17 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        TimelineAdapter adapter = new TimelineAdapter(
+                getActivity(),
+                mItemList,
+                Integer.valueOf(mAvatarDownloadPolicy.get()),
+                mATEKey
+        );
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                if (position >= 0 && position < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -97,9 +158,8 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemTimelineClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                if (adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
@@ -134,7 +194,7 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(!getThemedActivity().isActivityDestroyed())
+                    if(getThemedActivity() != null && !getThemedActivity().isActivityDestroyed())
                         Glide.with(getActivity()).resumeRequests();
                 } else {
                     Glide.with(getActivity()).pauseRequests();

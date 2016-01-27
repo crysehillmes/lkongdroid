@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 
@@ -24,7 +25,7 @@
         android:name=".application.LKongApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/LKongDroidTheme.Light"
+        android:theme="@style/AppTheme"
         android:installLocation="internalOnly">
         <activity
             android:name=".ui.MainActivity"
@@ -51,32 +52,36 @@
         </activity>
         <activity
             android:name=".ui.ForumActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PostListActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.NewPostActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.NewThreadActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.SettingsActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
+        <activity
+            android:name=".ui.ThemeSettingsActivity"
+            android:label="@string/drawer_item_theme_settings"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ui.NotificationActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PrivateChatActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PhotoViewPagerActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"/>
+            android:theme="@style/AppThemeDark.Translucent"/>
         <activity
             android:name=".ui.SearchActivity"
             android:label=""
-            android:theme="@style/LKongDroidTheme.Light.Translucent">
+            android:theme="@style/AppTheme.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -86,15 +91,15 @@
         </activity>
         <activity
             android:name=".ui.UserProfileActivity"
-            android:theme="@style/LKongDroidTheme.Light.Translucent"
+            android:theme="@style/AppTheme.Translucent"
             android:label=""/>
         <activity
             android:name=".ui.InAppBrowserActivity"
             android:label=""
-            android:theme="@style/LKongDroidTheme.Light.Translucent" />
+            android:theme="@style/AppTheme.Translucent" />
         <activity
             android:name=".account.LKongAuthenticatorActivity"
-            android:theme="@style/LKongDroidTheme.Light.NoTranslucent"/>
+            android:theme="@style/AppTheme.NoTranslucent"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".account.LKongAuthenticateService">
             <intent-filter>

@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="?theme_arrow_backward_drawable" />
+                android:src="@drawable/ic_arrow_backward" />
 
             <Button
                 android:id="@+id/widget_pager_control_button_page_indicator"
@@ -36,7 +36,7 @@
                 android:layout_weight="3"
                 android:background="?selectableItemBackground"
                 android:text="1 / 1"
-                android:textColor="@color/text_color_primary_dark" />
+                android:tag="text_accent_color_dependent"/>
 
             <ImageButton
                 android:id="@+id/widget_pager_control_button_forward"
@@ -44,7 +44,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="?theme_arrow_forward_drawable" />
+                android:src="@drawable/ic_arrow_forward" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </org.cryse.lkong.widget.PagerControl>

@@ -2,6 +2,7 @@ package org.cryse.lkong.application;
 
 import android.app.Application;
 import android.content.Context;
+/*import android.support.multidex.MultiDex;*/
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -20,8 +21,8 @@ import org.cryse.lkong.application.component.SimpleActivityComponent;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
-import org.cryse.lkong.application.modules.PreferenceModule;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.utils.preference.Prefs;
 
 import javax.inject.Singleton;
 
@@ -37,10 +38,17 @@ public class LKongApplication extends Application {
     private SendServiceComponet mSendServiceComponet;
     private UserAccountManager mUserAccountManager;
 
+    /*@Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }*/
+
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(new CrashReportingTree());
+        Prefs.with(this).useDefault().init();
         AnalyticsUtils.init(this, getString(R.string.UMENG_APPKEY_VALUE));
         Fabric.with(this, new Crashlytics());
         if(BuildConfig.InAppUpdate) {
@@ -58,19 +66,16 @@ public class LKongApplication extends Application {
         simpleActivityComponent = DaggerSimpleActivityComponent
                 .builder()
                 .contextModule(new ContextModule(this))
-                .preferenceModule(new PreferenceModule(this))
                 .build();
         mLKongPresenterComponent = DaggerLKongPresenterComponent
                 .builder()
                 .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
-                .preferenceModule(new PreferenceModule(this))
                 .build();
         mUserAccountComponent = DaggerUserAccountComponent
                 .builder()
                 .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
-                .preferenceModule(new PreferenceModule(this))
                 .build();
         mSendServiceComponet = DaggerSendServiceComponet
                 .builder()

@@ -25,7 +25,8 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
+
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import butterknife.Bind;
 
 public abstract class SimpleCollectionFragment<
         ItemType extends SimpleCollectionItem,
-        AdapterType extends RecyclerViewBaseAdapter<ItemType>,
+        AdapterType extends SimpleRecyclerViewAdapter<ItemType>,
         PresenterType extends BasePresenter>
         extends AbstractFragment
         implements SimpleCollectionView<ItemType> {
@@ -85,7 +86,7 @@ public abstract class SimpleCollectionFragment<
         mCollectionView.getRecyclerView().setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
-        mCollectionView.setAdapter(mCollectionAdapter);
+        mCollectionView.setAdapter(mCollectionAdapter.adapter());
         initHeaderView();
         if(getRefreshListener() != null)
             mCollectionView.setRefreshListener(getRefreshListener());
@@ -118,6 +119,10 @@ public abstract class SimpleCollectionFragment<
                     loadInitialData();
             }
         }
+    }
+
+    public void restoreFromState(Bundle savedInstanceState) {
+
     }
 
     public void loadInitialData() {

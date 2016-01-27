@@ -1,65 +1,58 @@
 package org.cryse.lkong.ui.adapter;
 
 import android.content.Context;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.ATE;
+
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.ui.listener.OnItemThreadClickListener;
-import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.utils.ColorUtils;
-import org.cryse.utils.DateFormatUtils;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
+import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory> {
+public class BrowseHistoryAdapter extends SimpleRecyclerViewAdapter<BrowseHistory> {
+    private String mATEKey;
     private final String mTodayPrefix;
 
     OnBrowseHistoryItemClickListener mOnBrowseHistoryItemClickListener;
 
-    public BrowseHistoryAdapter(Context context, List<BrowseHistory> mItemList) {
+    public BrowseHistoryAdapter(Context context, String ateKey, List<BrowseHistory> mItemList) {
         super(context, mItemList);
-        this.mTodayPrefix = getString(R.string.datetime_today);
+        this.mATEKey = ateKey;
+        this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recyclerview_item_browse_history, parent, false);
-        return new ViewHolder(v, mOnBrowseHistoryItemClickListener);
+                .inflate(R.layout.item_browse_history, parent, false);
+        return new ViewHolder(v, mATEKey, mOnBrowseHistoryItemClickListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-        //super.onBindViewHolder(holder, position);
-        if(holder instanceof ViewHolder) {
-            ViewHolder viewHolder = (ViewHolder)holder;
-            Object item = getObjectItem(position);
-            if(item instanceof BrowseHistory) {
-                BrowseHistory historyItem = (BrowseHistory)item;
+        ViewHolder viewHolder = (ViewHolder) holder;
+        BrowseHistory historyItem = getItem(position);
 
-                SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
-                viewHolder.mTitleTextView.setText(historyItem.getThreadTitle());
-                viewHolder.mSecondaryTextView.setText(historyItem.getThreadAuthorName());
-                viewHolder.mSecondaryTextView.setText(historyItem.getForumTitle() + " - " + historyItem.getThreadAuthorName());
-                viewHolder.mTimeTextView.setText(DateFormatUtils.formatDateDividByToday(
-                        historyItem.getLastReadTimeDate(),
-                        mTodayPrefix,
-                        getContext().getResources().getConfiguration().locale));
-            }
-        }
+        //SpannableStringBuilder spannableTitle = new SpannableStringBuilder();
+        viewHolder.mTitleTextView.setText(historyItem.getThreadTitle());
+        // viewHolder.mSecondaryTextView.setText(historyItem.getThreadAuthorName());
+        viewHolder.mSecondaryTextView.setText(historyItem.getForumTitle() + " - " + historyItem.getThreadAuthorName());
+        viewHolder.mTimeTextView.setText(TimeFormatUtils.formatDateDividByToday(
+                historyItem.getLastReadTimeDate(),
+                mTodayPrefix,
+                mContext.getResources().getConfiguration().locale));
     }
 
     public void setOnBrowseHistoryItemClickListener(OnBrowseHistoryItemClickListener listener) {
@@ -79,7 +72,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
         public TextView mTimeTextView;
 
         OnBrowseHistoryItemClickListener mOnThreadItemClickListener;
-        public ViewHolder(View v, OnBrowseHistoryItemClickListener listener) {
+        public ViewHolder(View v, String ateKey, OnBrowseHistoryItemClickListener listener) {
             super(v);
             ButterKnife.bind(this, v);
             mOnThreadItemClickListener = listener;
@@ -88,6 +81,7 @@ public class BrowseHistoryAdapter extends RecyclerViewBaseAdapter<BrowseHistory>
                     mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
+            ATE.apply(itemView, ateKey);
         }
     }
 

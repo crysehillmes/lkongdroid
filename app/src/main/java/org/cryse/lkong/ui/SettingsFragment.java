@@ -4,29 +4,34 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.RxEventBus;
-import org.cryse.lkong.event.ThemeColorChangedEvent;
 import org.cryse.lkong.sync.SyncUtils;
-import org.cryse.lkong.ui.common.AbstractThemeableActivity;
-import org.cryse.lkong.ui.dialog.ColorChooserDialog;
+import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
-import org.cryse.lkong.utils.ThemeEngine;
-import org.cryse.utils.preference.IntegerPreference;
-import org.cryse.utils.preference.PreferenceConstant;
+import org.cryse.lkong.application.PreferenceConstant;
 
 import javax.inject.Inject;
 
@@ -37,6 +42,7 @@ public class SettingsFragment extends PreferenceFragment {
     private OnConcisePreferenceChangedListener mOnConcisePreferenceChangedListener = null;
     AppNavigation mNavigation = new AppNavigation();
     RxEventBus mEventBus = RxEventBus.getInstance();
+    protected String mATEKey;
 
     @Inject
     UserAccountManager mUserAccountManager;
@@ -44,28 +50,39 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mATEKey = getATEKey();
         injectThis();
         mOnConcisePreferenceChangedListener = new OnConcisePreferenceChangedListener();
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_settings);
 
-        setUpThemeColorPreference();
         setImagePolicySummary();
         setAvatarPolicySummary();
         setupVersionPrefs();
         setupFeedbackPreference();
+        setupThemePreference();
+        setupDonationPreference();
 
         Preference syncPrefs = findPreference("prefs_goto_account_settings");
-        syncPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-                //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
-                intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
-                startActivity(intent);
-                return true;
-            }
+        syncPrefs.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+            //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
+            startActivity(intent);
+            return true;
         });
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ATE.apply(this, mATEKey);
+    }
+
+    @Nullable
+    protected final String getATEKey() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false) ?
+                "dark_theme" : "light_theme";
     }
 
     private void injectThis() {
@@ -89,13 +106,8 @@ public class SettingsFragment extends PreferenceFragment {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            AbstractThemeableActivity parentActivity = (AbstractThemeableActivity) getActivity();
+            AbstractSwipeBackActivity parentActivity = (AbstractSwipeBackActivity) getActivity();
             switch (key) {
-                case PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE:
-                    if (parentActivity != null) {
-                        parentActivity.reloadTheme();
-                    }
-                    break;
                 case PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY:
                     setImagePolicySummary();
                     break;
@@ -184,7 +196,6 @@ public class SettingsFragment extends PreferenceFragment {
 
             new MaterialDialog.Builder(getActivity())
                     .title(R.string.settings_item_change_log_title)
-                    .theme(((AbstractThemeableActivity) getActivity()).isNightMode() ? Theme.DARK : Theme.LIGHT)
                     .content(reader.toSpannable())
                     .show();
             return true;
@@ -199,20 +210,27 @@ public class SettingsFragment extends PreferenceFragment {
         });
     }
 
-    private void setUpThemeColorPreference() {
-        Preference themeColorPreference = findPreference("prefs_theme_color");
-        IntegerPreference themeColorPrefsValue = new IntegerPreference(getPreferenceManager().getSharedPreferences(), PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR, PreferenceConstant.SHARED_PREFERENCE_THEME_COLOR_VALUE);
+    private void setupThemePreference() {
+        Preference themePreference = findPreference("prefs_theme");
+        themePreference.setOnPreferenceClickListener(preference -> {
+            startActivity(new Intent(getActivity(), ThemeSettingsActivity.class));
+            return true;
+        });
+    }
 
-        themeColorPreference.setOnPreferenceClickListener(preference -> {
-            new ColorChooserDialog().show(getActivity(), themeColorPrefsValue.get(), (index, color, darker) -> {
-                themeColorPrefsValue.set(index);
-                ThemeEngine themeEngine = ((AbstractThemeableActivity) getActivity()).getThemeEngine();
-                mEventBus.sendEvent(new ThemeColorChangedEvent(
-                        themeEngine.getPrimaryColor(),
-                        themeEngine.getPrimaryDarkColor(),
-                        themeEngine.getPrimaryColorResId(),
-                        themeEngine.getPrimaryDarkColorResId()));
-            });
+    private void setupDonationPreference() {
+        Preference donatePreference = findPreference("prefs_about_donate");
+        donatePreference.setOnPreferenceClickListener(preference -> {
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.donation_title)
+                    .content(R.string.donation_content)
+                    .positiveText(R.string.donation_positive)
+                    .onPositive((dialog, which) -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.alipay.com"));
+                        startActivity(browserIntent);
+                        dialog.dismiss();
+                    })
+                    .show();
             return true;
         });
     }

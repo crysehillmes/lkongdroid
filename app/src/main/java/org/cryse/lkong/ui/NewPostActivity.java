@@ -19,7 +19,7 @@ import org.cryse.lkong.model.NewPostResult;
 import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.utils.EmptyImageGetter;
 import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
-import org.cryse.lkong.utils.htmltextview.EmoticonImageSpan;
+import org.cryse.lkong.utils.htmltextview.EmojiSpan;
 import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
 import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
@@ -64,8 +64,8 @@ public class NewPostActivity extends AbstractPostActivity {
                 Log.d("Span Class", spanObj.getClass().getName());
                 if (spanObj instanceof ClickableImageSpan) {
                     ((ClickableImageSpan) spanObj).loadImage(imageSpanContainer);
-                } else if (spanObj instanceof EmoticonImageSpan) {
-                    ((EmoticonImageSpan) spanObj).loadImage(imageSpanContainer);
+                } else if (spanObj instanceof EmojiSpan) {
+                    //((EmojiSpan) spanObj).loadImage(imageSpanContainer);
                 }
             }
         }

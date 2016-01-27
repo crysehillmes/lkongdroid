@@ -21,9 +21,8 @@
         android:minHeight="48dp"
         android:maxHeight="96dp"
         android:layout_gravity="bottom|end"
-        android:background="?theme_card_bg_color"
         android:elevation="@dimen/toolbar_elevation"
-        >
+        android:background="#30000000">
         <EditText
             android:id="@+id/fragment_private_chat_edittext_message"
             android:layout_width="match_parent"
@@ -40,9 +39,10 @@
             android:layout_height="48dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:src="?theme_send_pm_drawable"
+            android:src="@drawable/ic_action_send"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_send_post"
+            android:tag="tint_text_primary"
             />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

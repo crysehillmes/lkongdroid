@@ -5,24 +5,25 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsUseInAppBrowser;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.LKongUrlDispatcher;
-import org.cryse.utils.preference.BooleanPreference;
-
-import javax.inject.Inject;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
 
 public class UrlSchemaDispatcherActivity extends Activity {
     AppNavigation mNavigation = new AppNavigation();
 
-    @Inject
-    @PrefsUseInAppBrowser
-    BooleanPreference mUseInAppBrowser;
+    BooleanPrefs mUseInAppBrowser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         injectThis();
+        mUseInAppBrowser = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER,
+                PreferenceConstant.SHARED_PREFERENCE_USE_IN_APP_BROWSER_VALUE
+        );
         Uri data = getIntent().getData();
         String url = data.toString();
         LKongUrlDispatcher dispatcher = new LKongUrlDispatcher(mUrlCallback);
@@ -35,6 +36,11 @@ public class UrlSchemaDispatcherActivity extends Activity {
     }
 
     private LKongUrlDispatcher.UrlCallback mUrlCallback = new LKongUrlDispatcher.UrlCallback() {
+        @Override
+        public void onUserByName(String username) {
+            // Do nothing here, links only use internal.
+        }
+
         @Override
         public void onThreadByPostId(long postId) {
             mNavigation.openActivityForPostListByPostId(UrlSchemaDispatcherActivity.this, postId);

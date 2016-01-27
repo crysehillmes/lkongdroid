@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_forum_pin_to_home"
+    <item android:id="@+id/action_forum_follow"
         android:title=""
-        app:showAsAction="ifRoom|withText"
-        app:actionLayout="@layout/layout_toolbar_switch"/>
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_change_theme" android:title="@string/action_dark_theme" app:showAsAction="never" />
 </menu>

@@ -116,6 +116,8 @@ public class SearchDataSet {
                 item.setCustomStatus(htmlToCharSequence(jsonObject.getString("customstatus")));
             if(jsonObject.has("uid"))
                 item.setAvatarUrl(ModelConverter.uidToAvatarUrl(item.getUserId()));
+            if(jsonObject.has("sortkey"))
+                item.setSortKey(jsonObject.getLong("sortkey"));
             searchResultItems.add(item);
         }
     }

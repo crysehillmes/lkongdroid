@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
 import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -40,7 +39,9 @@ import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.animation.LayerEnablingAnimatorListener;
 import org.cryse.lkong.view.FavoritesView;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 import org.cryse.widget.persistentsearch.DefaultVoiceRecognizerDelegate;
 import org.cryse.widget.persistentsearch.PersistentSearchView;
 import org.cryse.widget.persistentsearch.VoiceRecognitionDelegate;
@@ -63,9 +64,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     @Inject
     FavoritesPresenter mPresenter;
 
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     @Bind(R.id.searchview)
     PersistentSearchView mSearchView;
@@ -90,6 +89,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
         setHasOptionsMenu(true);
     }
 
@@ -150,7 +151,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
                 return true;
             case R.id.action_change_theme:
                 if(isNightMode() != null) {
-                    getThemedActivity().setNightMode(!isNightMode());
+                    toggleNightMode();
                 }
                 return true;
             case android.R.id.home:
@@ -327,13 +328,12 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected ThreadListAdapter createAdapter(List<ThreadModel> itemList) {
-        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        ThreadListAdapter adapter = new ThreadListAdapter(getActivity(), mATEKey, mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
         adapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel model = mCollectionAdapter.getItem(itemIndex);
+                if (position >= 0 && position < mCollectionAdapter.getItemCount()) {
+                    ThreadModel model = mCollectionAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -343,9 +343,8 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemThreadClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    ThreadModel item = mCollectionAdapter.getItem(itemIndex);
+                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    ThreadModel item = mCollectionAdapter.getItem(adapterPosition);
                     String idString = item.getId().substring(7);
                     long tid = Long.parseLong(idString);
                     mNavigation.openActivityForPostListByThreadId(getActivity(), tid);
@@ -362,8 +361,7 @@ public class FavoritesFragment extends SimpleCollectionFragment<
 
     @Override
     protected void onItemClick(View view, int position, long id) {
-        int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-        if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
+        if(position >= 0 && position < mCollectionAdapter.getItemCount()) {
             ThreadModel item = mCollectionAdapter.getItem(position);
             String idString = item.getId().substring(7);
             long tid = Long.parseLong(idString);

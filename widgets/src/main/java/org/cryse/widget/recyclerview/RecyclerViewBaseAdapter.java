@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<RecyclerViewHolder> {
+public abstract class RecyclerViewBaseAdapter<ItemType> extends RecyclerView.Adapter<RecyclerViewHolder> implements RecyclerViewAdapter<ItemType>  {
     protected Context mContext;
-    protected HeaderFooterList<S> mObjectList;
+    protected HeaderFooterList<ItemType> mObjectList;
     protected RecyclerViewOnItemClickListener mOnItemClickListener;
     protected RecyclerViewOnItemLongClickListener mOnItemLongClickListener;
 
@@ -21,19 +21,21 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
     public static final int ITEM_TYPE_ITEM_START = 800;
     public static final int TYPE_OFFSET = 100;
 
-    public RecyclerViewBaseAdapter(Context context, List<S> items) {
+    public RecyclerViewBaseAdapter(Context context, List<ItemType> items) {
         this.mContext = context;
-        this.mObjectList = new HeaderFooterList<S>(items);
+        this.mObjectList = new HeaderFooterList<ItemType>(items);
     }
 
-    public void addAll(Collection<S> items) {
+    @Override
+    public void addAll(Collection<ItemType> items) {
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         int currentItemCount = mObjectList.getItemCount();
         mObjectList.getItemList().addAll(items);
         notifyItemRangeInserted(currentHeaderCount + currentItemCount, items.size());
     }
 
-    public void addAll(int position, Collection<S> items) {
+    @Override
+    public void addAll(int position, Collection<ItemType> items) {
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         int currentItemCount = mObjectList.getItemCount();
         if(position > currentItemCount)
@@ -70,14 +72,16 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         // return super.getItemViewType(position);
     }
 
-    public void add(S item) {
+    @Override
+    public void add(ItemType item) {
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         int currentItemCount = mObjectList.getItemCount();
         mObjectList.getItemList().add(item);
         notifyItemInserted(currentHeaderCount + currentItemCount);
     }
 
-    public void add(int position, S item) {
+    @Override
+    public void add(int position, ItemType item) {
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         int currentItemCount = mObjectList.getItemCount();
         if(position > currentItemCount)
@@ -87,6 +91,7 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         notifyItemInserted(currentHeaderCount + position);
     }
 
+    @Override
     public void remove(int position){
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         if(position >= 0 && position < mObjectList.getItemCount()) {
@@ -107,11 +112,12 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         }
     }
 
-    public void replaceWith(Collection<S> items) {
+    @Override
+    public void replaceWith(Collection<ItemType> items) {
         replaceWith(items, false);
     }
 
-    public void replaceWith(Collection<S> items, boolean cleanToReplace) {
+    public void replaceWith(Collection<ItemType> items, boolean cleanToReplace) {
         if(cleanToReplace) {
             clear();
             addAll(items);
@@ -163,6 +169,7 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         notifyItemRemoved(removePosition);
     }
 
+    @Override
     public void clear() {
         int currentHeaderCount = mObjectList.getHeaderViewCount();
         int itemCount = mObjectList.getItemList().size();
@@ -192,7 +199,8 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         return mObjectList.get(position);
     }
 
-    public S getItem(int position) {
+    @Override
+    public ItemType getItem(int position) {
         return mObjectList.getItemList().get(position);
     }
 
@@ -208,16 +216,17 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         return mContext;
     }
 
-    public List<S> getItemList() {
+    public List<ItemType> getItemList() {
         return mObjectList.getItemList();
     }
 
-    public ArrayList<S> getItemArrayList() {
-        List<S> itemList = mObjectList.getItemList();
+    @Override
+    public ArrayList<ItemType> getItemArrayList() {
+        List<ItemType> itemList = mObjectList.getItemList();
         if(itemList instanceof ArrayList)
-            return (ArrayList<S>)itemList;
+            return (ArrayList<ItemType>)itemList;
         else {
-            ArrayList<S> arrayList = new ArrayList<S>(itemList.size());
+            ArrayList<ItemType> arrayList = new ArrayList<ItemType>(itemList.size());
             arrayList.addAll(itemList);
             return arrayList;
         }
@@ -262,13 +271,18 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
         }
     }
 
+    public RecyclerView.Adapter adapter() {
+        return this;
+    }
 
     public int onGetHeaderViewItemType(int position) {
         return ITEM_TYPE_HEADER_START + position;
     }
+
     public int onGetFooterViewItemType(int position) {
         return ITEM_TYPE_FOOTER_START + position - mObjectList.getHeaderViewCount() - mObjectList.getItemCount();
     }
+
     public int onGetItemViewItemType(int position) {
         return ITEM_TYPE_ITEM_START;
     }
@@ -276,9 +290,11 @@ public abstract class RecyclerViewBaseAdapter<S> extends RecyclerView.Adapter<Re
     public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
         return new HeaderViewHolder(mObjectList.getHeaderViewList().get(viewType - ITEM_TYPE_HEADER_START));
     }
+
     public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
         return new FooterViewHolder(mObjectList.getFooterViewList().get(viewType - ITEM_TYPE_FOOTER_START));
     }
+
     public abstract RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType);
 
     public static class HeaderViewHolder extends RecyclerViewHolder {

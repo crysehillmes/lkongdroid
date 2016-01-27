@@ -8,8 +8,6 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.application.qualifier.PrefsAvatarDownloadPolicy;
-import org.cryse.lkong.application.qualifier.PrefsTimelineOnlyShowThread;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.model.TimelineModel;
@@ -18,8 +16,10 @@ import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.utils.preference.BooleanPreference;
-import org.cryse.utils.preference.StringPreference;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
 
@@ -36,13 +36,9 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Inject
     TimelinePresenter mPresenter;
 
-    @Inject
-    @PrefsTimelineOnlyShowThread
-    BooleanPreference mTimelineOnlyThread;
+    BooleanPrefs mTimelineOnlyThread;
 
-    @Inject
-    @PrefsAvatarDownloadPolicy
-    StringPreference mAvatarDownloadPolicy;
+    StringPrefs mAvatarDownloadPolicy;
 
     public static TimelineFragment newInstance(Bundle args) {
         TimelineFragment fragment = new TimelineFragment();
@@ -55,6 +51,10 @@ public class TimelineFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
+                PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
+        mTimelineOnlyThread = Prefs.getBooleanPrefs(PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD,
+                PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE);
         setHasOptionsMenu(false);
     }
 
@@ -85,13 +85,17 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
     @Override
     protected TimelineAdapter createAdapter(List<TimelineModel> itemList) {
-        TimelineAdapter adapter = new TimelineAdapter(getActivity(), mItemList, Integer.valueOf(mAvatarDownloadPolicy.get()));
+        TimelineAdapter adapter = new TimelineAdapter(
+                getActivity(),
+                mItemList,
+                Integer.valueOf(mAvatarDownloadPolicy.get()),
+                mATEKey
+        );
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
-            public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+            public void onProfileAreaClick(View view, int adapterPosition, long uid) {
+                if (adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -101,9 +105,9 @@ public class TimelineFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemTimelineClick(View view, int adapterPosition) {
-                int itemIndex = adapterPosition - mCollectionAdapter.getHeaderViewCount();
-                if (itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemList().size()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                int itemIndex = adapterPosition;
+                if (adapterPosition >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
             }
@@ -142,7 +146,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(!getThemedActivity().isActivityDestroyed())
+                    if(getThemedActivity() != null && !getThemedActivity().isActivityDestroyed())
                         Glide.with(getActivity()).resumeRequests();
                 } else {
                     Glide.with(getActivity()).pauseRequests();

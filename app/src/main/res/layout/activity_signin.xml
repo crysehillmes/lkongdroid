@@ -12,7 +12,6 @@
         android:layout_margin="16dp"
         android:layout_gravity="center"
         app:cardElevation="6dp"
-        app:cardBackgroundColor="?theme_card_bg_color"
         >
 
         <RelativeLayout
@@ -47,7 +46,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:nextFocusDown="@+id/edit_password"
-                    android:singleLine="true" />
+                    android:singleLine="true"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -64,7 +63,7 @@
                     android:hint="@string/hint_account_password"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
-                    android:singleLine="true" />
+                    android:singleLine="true"/>
 
             </android.support.design.widget.TextInputLayout>
             <TextView
@@ -83,7 +82,7 @@
         android:id="@+id/fab_sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_sign_in"
+        android:src="@drawable/ic_chevron_right_black"
         app:layout_anchor="@id/activity_sign_in_cardview"
         app:layout_anchorGravity="bottom|center"
         app:fabSize="mini"

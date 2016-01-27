@@ -1,271 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">龙的天空</string>
-    <string name="hint_account_email">注册邮箱</string>
-    <string name="hint_account_password">密码</string>
-    <string name="action_dark_theme">夜间模式</string>
-    <string name="action_insert_emoji">插入表情</string>
-    <string name="action_insert_image">插入图片</string>
-    <string name="hint_title">标题</string>
-    <string name="hint_content">内容</string>
-    <string name="action_light_theme">日间模式</string>
-    <string name="action_send_post">发送</string>
+    <string name="account_type">org.cryse.lkong</string>
+    <string name="activity_title_post_list">查看主题</string>
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
     <string name="action_settings">设置</string>
+    <string name="action_dark_theme">夜间模式</string>
+    <string name="action_light_theme">日间模式</string>
+    <string name="action_thread_goto_floor">跳转楼层</string>
     <string name="action_thread_add_favorite">收藏</string>
     <string name="action_thread_remove_favorite">移除收藏</string>
+    <string name="action_insert_image">插入图片</string>
+    <string name="action_insert_emoji">插入表情</string>
+    <string name="action_send_post">发送</string>
+    <string name="action_open_notification">消息与通知</string>
+    <string name="action_open_search">搜索</string>
+    <string name="action_clear_browse_history">清除浏览记录</string>
+    <string name="action_punch">签到</string>
     <string name="action_follow_forum">关注</string>
     <string name="action_unfollow_forum">取消关注</string>
     <string name="action_forum_followed">已关注</string>
     <string name="action_forum_not_followed">未关注</string>
+    <string name="action_refresh">刷新</string>
+    <string name="action_open_in_browser">在浏览器中打开</string>
     <string name="action_sign_out">退出账号</string>
+    <string name="action_user_profile">查看个人资料</string>
+    <string name="action_user_profile_follow">关注</string>
+    <string name="action_user_profile_unfollow">取消关注</string>
+    <string name="action_user_profile_pm">私信</string>
     <string name="action_share">分享</string>
     <string name="action_save_image">保存图片</string>
-    <string name="activity_title_post_list">查看主题</string>
-    <string name="button_rate">评分</string>
-    <string name="button_reply">回复</string>
-    <string name="button_share">分享</string>
-    <string name="datetime_today">今天</string>
-    <string name="dialog_choose_emoticon_title">选择表情：</string>
-    <string name="dialog_new_post_sending">正在发送…</string>
-    <string name="dialog_post_list_choose_page">跳转至</string>
-    <string name="drawer_item_favorites">我的收藏</string>
-    <string name="drawer_item_browse_history">浏览历史</string>
     <string name="drawer_item_notification">消息通知</string>
     <string name="drawer_item_forum_list">板块列表</string>
-    <string name="drawer_item_settings">设置</string>
+    <string name="drawer_item_hot_thread">Hot</string>
+    <string name="drawer_item_digest_thread">Digest</string>
+    <string name="drawer_item_favorites">我的收藏</string>
+    <string name="drawer_item_browse_history">浏览历史</string>
     <string name="drawer_item_timeline">信息流</string>
     <string name="drawer_item_followed_forums">关注板块</string>
     <string name="drawer_item_homepage">个人主页</string>
+    <string name="drawer_item_mentions">提及我的</string>
+    <string name="drawer_item_notice">通知</string>
+    <string name="drawer_item_notice_rate">评分</string>
     <string name="drawer_item_private_messages">私信</string>
+    <string name="drawer_item_settings">设置</string>
+    <string name="drawer_item_account_add">添加账户</string>
+    <string name="drawer_item_theme_settings">主题设置</string>
+    <string name="hint_account_email">注册邮箱</string>
+    <string name="hint_account_password">密码</string>
+    <string name="hint_title">标题</string>
+    <string name="hint_content">内容</string>
+    <string name="hint_goto_floor">楼层号</string>
+    <string name="hint_rate_reason">评分理由</string>
+    <string name="hint_rate_score">数值</string>
+    <string name="hint_url_name">链接文本</string>
+    <string name="hint_url_value">链接地址</string>
+    <string name="hint_search_label">搜索</string>
+    <string name="hint_search_hint">搜索位面，主题或用户</string>
     <string name="format_account_threads_posts_summary">主题数: %1$d \t\t 回复数: %2$d</string>
-    <string name="toast_failure_new_post">发送失败，请重试。</string>
-    <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
-    <string name="toast_failure_get_user_info">获取用户信息失败。</string>
-    <string name="toast_failure_get_forum_list">刷新板块列表失败。</string>
-    <string name="placeholder_thread_title">加载中…</string>
-    <string name="navigation_drawer_open">打开导航抽屉</string>
-    <string name="navigation_drawer_close">关闭导航抽屉</string>
-    <string name="format_timeline_reply_to_thread">\@%1$s 发表新主题:</string>
-    <string name="format_timeline_reply_to_reply">\@%1$s 回复了 %2$s</string>
-    <string name="format_timeline_create_thread">发表新主题：%1$s</string>
-    <string name="format_post_reply_title">回复: %1$s</string>
-    <string name="format_post_ordinal">%1$d 楼</string>
-    <string name="format_post_list_page_indicator_detail">%1$d 页 (%2$d - %3$d)</string>
-    <string name="format_post_list_page_indicator">%1$d / %2$d</string>
     <string name="format_forum_item_summary">主题 %1$s · 今日 %2$s</string>
     <string name="format_unit_kilo">千</string>
     <string name="format_unit_ten_kilo">万</string>
     <string name="format_forum_item_todayposts">今日：%1$d</string>
     <string name="format_forum_item_threads_count">主题： %1$d</string>
-    <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
-    <string name="drawer_item_mentions">提及我的</string>
-    <string name="drawer_item_notice">通知</string>
+    <string name="format_post_ordinal">%1$d 楼</string>
+    <string name="format_post_list_page_indicator">%1$d / %2$d</string>
+    <string name="format_post_reply_title">回复: %1$s</string>
+    <string name="format_timeline_reply_to_reply">\@%1$s 回复了 %2$s</string>
+    <string name="format_timeline_create_thread">发表新主题：%1$s</string>
+    <string name="format_timeline_reply_to_thread">\@%1$s 发表新主题:</string>
+    <string name="format_note_rate_log_prefix">你的帖子&#160;</string>
+    <string name="format_note_rate_log_middle">&#160;被 %1$s 评分：&#160;</string>
+    <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
+    <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; 回复</string>
+    <string name="format_punchday_count">已签到 %1$d 天</string>
+    <string name="format_digests_by">$1%s 的精华帖</string>
+    <string name="format_all_activities_of">%1$s 的动态</string>
+    <string name="format_followers_of">%1$s 的粉丝</string>
+    <string name="format_following_of">%1$s 关注了</string>
+
+    <string name="format_threads_by">%1$s 的主题</string>
+
+    <string name="format_time_just_now">刚刚</string>
+    <string name="format_time_a_minute_ago">1 分钟前</string>
+    <string name="format_time_n_minutes_ago">&#160;分钟前</string>
+    <string name="format_time_an_hour_ago">1 小时前</string>
+
+    <string name="format_time_n_hours_ago">&#160;小时前</string>
+    <string name="format_time_yesterday">昨天</string>
+
+    <string name="format_time_n_days_ago">&#160;天前</string>
+    <string name="format_time_date">yyyy年M月d日</string>
+    <string name="format_time_time">HH:mm</string>
+    <string name="format_notice_mentions">%1$d 个新提及</string>
+    <string name="format_notice_notice">%1$d 条新通知</string>
+    <string name="format_notice_private_message">%1$d 条新私信</string>
+    <string name="format_notice_rate">%1$d 个新评分</string>
+    <string name="format_notice_all_count">你有 %1$d 条新消息</string>
+    <string name="format_share_title">【%1$s】</string>
+    <string name="format_post_tail_prefix">&#160;──&#160;</string>
+    <string name="format_post_list_page_indicator_detail">%1$d 页 (%2$d - %3$d)</string>
+    <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>
+    <string name="toast_success_save_image_as">图片已保存至: /sdcard/Pictures/%1$s/%2$s</string>
+    <string name="toast_failure_signin">登录失败，请检查您的用户名和密码</string>
+    <string name="toast_failure_get_user_info">获取用户信息失败。</string>
+    <string name="toast_failure_get_forum_list">刷新板块列表失败。</string>
+    <string name="toast_failure_rate_post">评分失败</string>
+    <string name="toast_failure_save_image_as">图片保存失败</string>
+    <string name="toast_failure_new_post">发送失败，请重试。</string>
     <string name="toast_double_tap_to_exit">再按一次返回键退出</string>
-    <string name="notification_content_network_error">网络错误</string>
-    <string name="notification_title_sending_post">正在发送回复…</string>
-    <string name="notification_title_sending_post_failed">回复发送失败</string>
-    <string name="notification_title_sending_post_successfully">回复发送成功</string>
-    <string name="notification_title_sending_thread_failed">发表主题失败</string>
-    <string name="notification_title_sending_thread_successfully">发表主题成功</string>
-    <string name="toast_error_content_empty">内容不能为空。</string>
     <string name="toast_error_title_empty">标题不能为空</string>
-    <string name="button_sign_in">登录</string>
-    <string name="button_sign_up">注册</string>
+
+
+    <string name="toast_error_content_empty">内容不能为空。</string>
+
+    <string name="toast_error_invalid_floor">没有这一楼啊</string>
+
+    <string name="toast_error_rate_self">你不能为自己评分</string>
+    <string name="toast_error_rate_score_empty">评分数值不能为0</string>
+    <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
+    <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
+    <string name="toast_error_open_origin_image">图片加载失败</string>
+    <string name="toast_error_open_thread_failed">加载主题失败</string>
+    <string name="toast_sign_in_success">登录成功</string>
     <string name="toast_sign_in_failed">登录失败，请检查您的网络连接</string>
+    <string name="toast_error_universal_try_again">遇到了错误，请重试</string>
+    <string name="text_punching">正在签到…</string>
+    <string name="text_last_punch_time">最后签到</string>
+    <string name="text_current_continuous_punch_days">当前连续签到</string>
+    <string name="text_longest_continuous_punch_days">最长连续签到</string>
+    <string name="text_total_punch_days">总签到天数</string>
+    <string name="text_loading">加载中…</string>
+    <string name="text_search_thread">搜索帖子:&#160;</string>
+
+    <string name="text_search_people">搜索用户:&#160;</string>
+    <string name="text_search_forum">搜索板块:&#160;</string>
+    <string name="text_load_prev_page">加载上一页</string>
+    <string name="text_load_next_page">加载下一页</string>
+    <string name="text_new_version_changes">新版改动</string>
+    <string name="text_dragon_money">龙币</string>
+    <string name="text_dragon_crystal">龙晶</string>
+    <string name="text_active_points">活跃</string>
+    <string name="text_user_introduction_title">个人简介</string>
+    <string name="text_user_wealth_title">财富</string>
+    <string name="text_user_punch_info_title">签到情况</string>
+    <string name="text_user_registration_time_title">注册时间</string>
+    <string name="text_share_from">（分享自龙的天空 Android）</string>
+    <string name="text_share_post_title">分享回复</string>
+    <string name="text_share_thread_title">分享回复主题</string>
+    <string name="text_datetime_today">今天</string>
+    <string name="dialog_post_list_choose_page">跳转至</string>
+    <string name="dialog_new_post_sending">正在发送…</string>
+    <string name="dialog_choose_emoticon_title">选择表情：</string>
+    <string name="dialog_choose_color_title">选择主题：</string>
+    <string name="dialog_signing_in">正在登录…</string>
+    <string name="dialog_title_rate">评分</string>
+    <string name="dialog_title_permission_storage">需要存储权限以支持上传或者保存图片</string>
+    <string name="dialog_title_insert_url">插入链接</string>
+    <string name="dialog_title_sending_private_message">正在发送消息…</string>
+    <string name="dialog_title_error">错误</string>
+    <string name="dialog_title_copy_content">复制内容</string>
+
+    <string name="dialog_exit_new_post_title">要舍弃这条信息吗？</string>
+    <string name="dialog_exit_confirm">确认</string>
+    <string name="dialog_exit_cancel">取消</string>
+    <string name="dialog_exit_discard">舍弃</string>
+    <string name="dialog_content_cannot_get_user_profile">无法获得用户资料</string>
+    <string name="dialog_content_please_wait">请稍等片刻</string>
+    <string name="button_sign_up">注册</string>
+    <string name="button_sign_in">登录</string>
+    <string name="button_reply">回复</string>
+    <string name="button_share">分享</string>
+    <string name="button_rate">评分</string>
+    <string name="button_edit">编辑</string>
+    <string name="button_punch">签到</string>
+    <string name="button_punch_complete">签到完成</string>
+    <string name="button_punch_error">签到失败</string>
+    <string name="button_punched">已签到 %1$d 天</string>
+    <string name="card_title_sign_in">登陆龙的天空</string>
     <string name="input_error_email">请输入您的注册邮箱</string>
     <string name="input_error_password">请输入您的密码</string>
-    <string name="toast_sign_in_success">登录成功</string>
-    <string name="dialog_signing_in">正在登录…</string>
-    <string name="indicator_thread_digest">[精]&#160;</string>
+    <string name="placeholder_thread_title">加载中…</string>
 
+    <string name="indicator_thread_author">&#160;&#160;[龙珠]</string>
+    <string name="indicator_thread_digest">[精]&#160;</string>
+    <string name="notification_title_sending_post">正在发送回复…</string>
+    <string name="notification_title_sending_post_successfully">回复发送成功</string>
+    <string name="notification_title_sending_post_failed">回复发送失败</string>
+    <string name="notification_title_sending_thread_successfully">发表主题成功</string>
+    <string name="notification_title_sending_thread_failed">发表主题失败</string>
+    <string name="notification_content_network_error">网络错误</string>
     <string-array name="thread_list_type_arrays">
         <item>默认排序</item>
         <item>精华</item>
         <item>按主题发布时间排序</item>
     </string-array>
-
     <!-- Settings section -->
     <string name="settings_category_dispaly_title">显示</string>
     <string name="settings_item_is_night_mode_title">夜间模式</string>
     <string name="settings_item_is_night_mode_summary">夜间使用较低的亮度，减少双眼的疲劳</string>
-
     <string name="settings_category_other_title">其他</string>
+    <string name="settings_category_forum_title">论坛设置</string>
+    <string name="settings_category_notification">消息通知</string>
     <string name="settings_item_about_title">关于</string>
-
+    <string name="settings_item_font_size_title">文字大小</string>
+    <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小</string>
+    <string name="settings_item_font_size_dialog_title">字体大小</string>
     <string name="settings_item_image_download_policy_title">图片加载策略</string>
     <string name="settings_item_avatar_download_policy_title">头像加载策略</string>
+    <string name="settings_item_post_extra_tail_text_title">小尾巴</string>
+    <string name="settings_item_post_extra_tail_text_summary">设置你的小尾巴内容</string>
+    <string name="settings_item_post_extra_tail_text_default">来自龙的天空 Android 客户端</string>
     <!-- About -->
     <string name="settings_about_activity_title">关于</string>
-    <string name="settings_category_author_title">关于</string>
+    <string name="settings_category_author_title">关于作者</string>
     <string name="settings_item_author_name_value">Cryse Hillmes</string>
     <string name="settings_item_author_name_title">作者</string>
     <string name="settings_item_email_address_value">tyk5555@hotmail.com</string>
     <string name="settings_item_email_address_title">作者邮箱</string>
     <string name="settings_item_author_blog_site_value">http://www.cryse.org</string>
     <string name="settings_item_author_blog_site">作者网站</string>
+    <string name="settings_item_theme_color_title">主题</string>
+    <string name="settings_item_theme_color_summary">选择你喜欢的主题</string>
     <string name="settings_item_change_log_title">Changelog</string>
     <string name="settings_item_change_log_summary">最近各个版本的改进</string>
+
     <string name="settings_item_feedback_value">有关界面、功能改进的建议，或者错误报告都可以</string>
     <string name="settings_item_feedback_title">建议与反馈</string>
     <string name="settings_item_version">版本</string>
-    <string name="settings_item_post_extra_tail_text_summary">设置你的小尾巴内容</string>
-    <string name="settings_item_post_extra_tail_text_title">小尾巴</string>
-    <string name="format_post_tail_prefix">&#160;──&#160;</string>
-    <string name="settings_item_post_extra_tail_text_default">来自龙的天空 Android 客户端</string>
-    <string name="settings_category_forum_title">论坛设置</string>
-
-
-    <string-array name="image_download_policy_arrays">
-        <item>总是加载</item>
-        <item>永不加载</item>
-        <item>仅 WiFi 加载</item>
-    </string-array>
-
-    <string-array name="image_download_policy_values_arrays">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string name="button_punch">签到</string>
-    <string name="button_punch_complete">签到完成</string>
-    <string name="button_punch_error">签到失败</string>
-    <string name="button_punched">已签到 %1$d 天</string>
-    <string name="format_note_rate_log_middle">&#160;被 %1$s 评分：&#160;</string>
-    <string name="format_note_rate_log_prefix">你的帖子&#160;</string>
-    <string name="format_note_rate_log_suffix">&#160;%1$s %2$s</string>
-    <string name="drawer_item_notice_rate">评分</string>
-    <string name="tb_munion_tip_download_prefix">正在下载:</string>
-    <string name="action_open_notification">消息与通知</string>
-    <string name="action_thread_goto_floor">跳转楼层</string>
-    <string name="umeng_common_icon">找不到这一楼啊</string>
-    <string name="action_user_profile">查看个人资料</string>
-    <string name="action_user_profile_follow">关注</string>
-    <string name="action_user_profile_unfollow">取消关注</string>
-    <string name="action_user_profile_pm">私信</string>
-
-    <string name="text_load_prev_page">加载上一页</string>
-    <string name="text_load_next_page">加载下一页</string>
-    <string name="dialog_choose_color_title">选择主题：</string>
-    <string name="toast_error_invalid_floor">没有这一楼啊</string>
-    <string name="settings_item_theme_color_summary">选择你喜欢的主题颜色</string>
-    <string name="settings_item_theme_color_title">主题</string>
-    <string name="custom_header_not_created"></string>
-    <string name="hint_goto_floor">楼层号</string>
-    <string name="hint_rate_reason">评分理由</string>
-    <string name="hint_rate_score">数值</string>
-    <string name="hint_url_name">链接文本</string>
-    <string name="hint_url_value">链接地址</string>
-    <string name="header_not_created">Header 创建失败</string>
-    <string name="dialog_title_rate">评分</string>
-    <string name="dialog_title_insert_url">插入链接</string>
-    <string name="drawer_close"></string>
-    <string name="toast_success_save_image_as">图片已保存至: /sdcard/Pictures/%1$s/%2$s</string>
-    <string name="toast_error_rate_self">你不能为自己评分</string>
-    <string name="toast_failure_rate_post">评分失败</string>
-    <string name="toast_failure_save_image_as">图片保存失败</string>
-    <string name="toast_error_rate_score_empty">评分数值不能为0</string>
-    <string name="toast_error_url_empty">链接名称或者地址不能为空</string>
-    <string name="toast_error_link_to_current_thread">链接指向的就是这个帖子~</string>
-    <string name="settings_item_font_size_dialog_title">字体大小</string>
-    <string name="settings_item_font_size_summary">设置浏览论坛时的字体大小</string>
+    <string name="settings_category_navigation">导航</string>
     <string name="settings_item_use_in_app_browser_title">使用应用内浏览器</string>
     <string name="settings_item_use_in_app_browser_summary">使用应用内浏览器而不是跳转到浏览器应用</string>
-
-    <string name="settings_item_font_size_title">文字大小</string>
-    <string name="button_edit">编辑</string>
-    <string name="toast_error_open_origin_image">图片加载失败</string>
-    <string name="drawer_item_account_add">添加账户</string>
-    <string name="action_open_search">搜索</string>
-    <string name="action_clear_browse_history">清除浏览记录</string>
-    <string name="format_search_post_result_reply_count">%1$s \t\t\t %2$d&#160; 回复</string>
-    <string name="hint_search_label">搜索</string>
-    <string name="hint_search_hint">搜索位面，主题或用户</string>
-    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
     <string name="settings_item_use_forums_first_title">首页显示板块列表</string>
+    <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
     <string name="settings_item_timeline_only_thread_title">信息流只显示主题</string>
     <string name="settings_item_timeline_only_thread_summary">信息流（时间线）只显示主题</string>
-    <string name="settings_category_navigation">导航</string>
     <string name="settings_item_scroll_by_volume_key_title">音量控制键滚动</string>
     <string name="settings_item_scroll_by_volume_key_summary">在帖子页面中通过音量键控制滚动</string>
-    <string name="profile_header_followers">粉丝</string>
-    <string name="profile_header_following">关注</string>
-    <string name="profile_header_posts">回复</string>
-    <string name="profile_header_threads">主题</string>
-
-    <string-array name="string_array_user_profile_tabs">
-        <item>简介</item>
-        <item>全部</item>
-        <item>主题</item>
-        <item>精华</item>
-    </string-array>
-    <string name="format_punchday_count">已签到 %1$d 天</string>
-    <string name="format_post_header_detail_count">%1$d 查看 · %2$d 回复</string>
-    <string name="dialog_exit_new_post_title">要舍弃这条信息吗？</string>
-    <string name="dialog_exit_confirm">确认</string>
-    <string name="dialog_exit_discard">舍弃</string>
-    <string name="dialog_exit_cancel">取消</string>
-    <string name="dialog_title_copy_content">复制内容</string>
-    <string name="card_title_sign_in">登陆龙的天空</string>
-    <string name="action_punch">签到</string>
-    <string name="action_open_in_browser">在浏览器中打开</string>
-    <string name="text_loading">加载中…</string>
-    <string name="text_punching">正在签到…</string>
-    <string name="title_null_or_empty">标题不能为空</string>
-    <string name="text_new_version_changes">新版改动</string>
-    <string name="action_refresh">刷新</string>
-    <string name="text_dragon_money">龙币</string>
-    <string name="text_dragon_crystal">龙晶</string>
-    <string name="text_active_points">活跃</string>
-    <string name="format_active_points">活跃：%1$d</string>
-    <string name="format_dragon_money">龙币：%1$d</string>
-    <string name="format_dragon_crystal">龙晶：%1$d</string>
-    <string name="format_current_continuous_punch_days">连续签到: %1$d 天</string>
-    <string name="format_total_punch_days">总签到天数: %1$d 天</string>
-    <string name="format_longest_continuous_punch_days">最长连续签到: %1$d 天</string>
-    <string name="format_last_punch_time">最后签到: %1$s </string>
-    <string name="format_registration_time">注册时间: %1$s</string>
-    <string name="text_user_introduction_title">个人简介</string>
-    <string name="text_user_wealth_title">财富</string>
-    <string name="text_user_punch_info_title">签到情况</string>
-    <string name="text_user_registration_time_title">注册时间</string>
-    <string name="dialog_title_sending_private_message">正在发送消息…</string>
-    <string name="dialog_content_please_wait">请稍等片刻</string>
-    <string name="day_title_today">今天</string>
-    <string name="day_title_tomorrow">明天</string>
-    <string name="day_title_yesterday">昨天</string>
-    <string name="format_time_just_now">刚刚</string>
-    <string name="format_time_a_minute_ago">1 分钟前</string>
-    <string name="format_time_n_minutes_ago">&#160;分钟前</string>
-    <string name="format_time_an_hour_ago">1 小时前</string>
-    <string name="format_time_n_hours_ago">&#160;小时前</string>
-    <string name="format_time_yesterday">昨天</string>
-    <string name="format_time_n_days_ago">&#160;天前</string>
-    <string name="format_time_date">yyyy年M月d日</string>
-    <string name="format_time_time">HH:mm</string>
-    <string name="provider_checknotice_label">自动检查新消息</string>
-    <string name="provider_follow_status_label">自动同步关注状态</string>
-
-    <string name="format_notice_mentions">%1$d 个新提及</string>
-    <string name="format_notice_notice">%1$d 条新通知</string>
-    <string name="format_notice_private_message">%1$d 条新私信</string>
-    <string name="format_notice_rate">%1$d 个新评分</string>
-    <string name="format_notice_all_count">你有 %1$d 条新消息</string>
-    <string name="text_search_thread">搜索帖子:&#160;</string>
-    <string name="text_search_people">搜索用户:&#160;</string>
-    <string name="text_search_forum">搜索板块:&#160;</string>
-    <string name="settings_category_notification">消息通知</string>
     <string name="settings_item_enable_background_notification_title">开启消息通知</string>
     <string name="settings_item_enable_background_notification_summary">开启后可以在通知栏收到新消息提醒</string>
     <string name="settings_item_check_notification_duration_title">检查周期</string>
     <string name="settings_item_check_notification_duration_summary">设置检查新消息的周期</string>
     <string name="settings_item_account_settings_title">账户设置</string>
     <string name="settings_item_account_settings_summany">管理你的账户</string>
-    <string name="format_share_title">【%1$s】</string>
-    <string name="text_share_from">（分享自龙的天空 Android）</string>
-    <string name="text_share_post_title">分享回复</string>
-    <string name="text_share_thread_title">分享回复主题</string>
-    <string name="toast_error_open_thread_failed">加载主题失败</string>
+    <string-array name="image_download_policy_arrays">
+        <item>总是加载</item>
+        <item>永不加载</item>
+        <item>仅 WiFi 加载</item>
+    </string-array>
+    <string-array name="image_download_policy_values_arrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string name="text_profile_header_followers">粉丝</string>
+    <string name="text_profile_header_following">关注</string>
+    <string name="text_profile_header_threads">主题</string>
+    <string name="text_profile_header_posts">回复</string>
+    <string name="text_profile_header_count_zero">0</string>
+    <string-array name="string_array_user_profile_tabs">
+        <item>简介</item>
+        <item>全部</item>
+        <item>主题</item>
+        <item>精华</item>
+        <item>粉丝</item>
+        <item>关注</item>
+    </string-array>
+    <string name="text_day_title_today">今天</string>
+    <string name="text_day_title_tomorrow">明天</string>
+    <string name="text_day_title_yesterday">昨天</string>
+    <string name="provider_checknotice_label">自动检查新消息</string>
+    <string name="provider_follow_status_label">自动同步关注状态</string>
     <string-array name="check_notice_duration_arrays">
         <item>15 分钟</item>
         <item>30 分钟</item>
@@ -277,5 +283,9 @@
         <item>12 小时</item>
         <item>24 小时</item>
     </string-array>
+
+    <string name="donation_title">捐赠</string>
+    <string name="donation_positive">打开支付宝</string>
+    <string name="donation_content">这个应用花费了我不少心血，如果您想支持一下我的话，可以通过向这个支付宝账户：tyk5555@hotmail.com 转账来进行捐赠</string>
 
 </resources>

@@ -24,14 +24,14 @@ public class ForumPresenter implements BasePresenter<ForumView> {
         this.mLKongForumService = forumService;
     }
 
-    public void loadThreadList(long fid, int listType, boolean loadingMore) {
-        loadThreadList(fid, -1, listType, loadingMore);
+    public void loadThreadList(LKAuthObject authObject, long fid, int listType, boolean loadingMore) {
+        loadThreadList(authObject, fid, -1, listType, loadingMore);
     }
 
-    public void loadThreadList(long fid, long start, int listType, boolean loadingMore) {
+    public void loadThreadList(LKAuthObject authObject, long fid, long start, int listType, boolean loadingMore) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadThreadListSubscription);
         setLoadingStatus(loadingMore, true);
-        mLoadThreadListSubscription = mLKongForumService.getForumThread(fid, start, listType)
+        mLoadThreadListSubscription = mLKongForumService.getForumThread(authObject, fid, start, listType)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
