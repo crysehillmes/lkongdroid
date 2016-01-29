@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -21,7 +20,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostDisplayCache;
@@ -33,24 +31,23 @@ import org.cryse.lkong.utils.htmltextview.ClickableImageSpan;
 import org.cryse.lkong.utils.htmltextview.ImageSpanContainer;
 import org.cryse.lkong.utils.htmltextview.PendingImageSpan;
 import org.cryse.lkong.application.PreferenceConstant;
-import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.utils.preference.Prefs;
 
 import java.util.ArrayList;
 
-public class PostItemView extends ViewGroup implements ImageSpanContainer {
+public class PostItemView extends View implements ImageSpanContainer {
     private long mPostId;
+    private boolean mIsNightMode = false;
     private String mIdentityTag = null;
-    private Object mPicassoTag = null;
-    private Handler mHandler;
     private CharSequence mOrdinalText = null;
     private TextPaint mOrdinalPaint = null;
     Paint.FontMetrics mOrdinalFontMetrics = null;
-    private int px_margin_16 = 0;
-    private int px_margin_72 = 0;
-    private int px_width_40 = 0;
-    private int px_height_68 = 0;
-    private int px_margin_8 = 0;
+    private static int px_margin_16 = 0;
+    private static int px_margin_72 = 0;
+    private static int px_width_40 = 0;
+    private static int px_height_68 = 0;
+    private static int px_margin_8 = 0;
+
 
     private OnSpanClickListener mOnSpanClickListener;
     private OnTextLongPressedListener mOnTextLongPressedListener;
@@ -78,15 +75,22 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
     }
 
     private void init() {
-        setWillNotDraw(false);
         setLayerType(LAYER_TYPE_NONE, null);
         setDrawingCacheEnabled(false);
-        px_margin_16 = UIUtils.dp2px(getContext(), 16f);
-        px_margin_72 = UIUtils.dp2px(getContext(), 72f);
-        px_width_40 = UIUtils.dp2px(getContext(), 40f);
-        px_height_68 = UIUtils.dp2px(getContext(), 68f);
-        px_margin_8 = UIUtils.dp2px(getContext(), 8f);
-        mHandler = new Handler();
+
+        if(isInEditMode()) return;
+        mIsNightMode = Prefs.getBoolean(
+                PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE,
+                PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE
+        );
+
+        if(px_width_40 == 0) {
+            px_margin_16 = UIUtils.dp2px(getContext(), 16f);
+            px_margin_72 = UIUtils.dp2px(getContext(), 72f);
+            px_width_40 = UIUtils.dp2px(getContext(), 40f);
+            px_height_68 = UIUtils.dp2px(getContext(), 68f);
+            px_margin_8 = UIUtils.dp2px(getContext(), 8f);
+        }
 
         mOrdinalPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mOrdinalPaint.setTextSize(getResources().getDimension(R.dimen.text_size_caption));
@@ -100,19 +104,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         final int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         final int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        int childHeight = px_height_68 - px_margin_16 * 2;
-        int childLeft = this.getPaddingLeft();
-        int childRight = widthSize - this.getPaddingRight();
-        int childWidth = childRight - childLeft;
-
-        int childCount = getChildCount();
-        for (int i = 0; i < childCount; ++i) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() != GONE) {
-                measureChild(child, MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.AT_MOST),
-                        MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
-            }
-        }
         int height = getDesiredHeight();
         if(!isInEditMode() && mPostDisplayCache.getTextLayout() != null) {
             height = height + mPostDisplayCache.getTextLayout().getHeight();
@@ -120,37 +111,12 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         setMeasuredDimension(widthSize, height);
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        final int count = getChildCount();
-        int startTop = px_margin_72 + (isInEditMode() ? 0 : (mPostDisplayCache.getTextLayout() == null ? 0 : mPostDisplayCache.getTextLayout().getHeight()));
-        int startMarginRight = px_margin_16;
-        for (int i = 0; i < count; i++) {
-            View child = getChildAt(i);
-            if (child.getVisibility() != GONE) {
-                if(i == 0) {
-                    child.layout(px_margin_16, px_margin_16, px_margin_16 + px_width_40, px_margin_16 + px_width_40);
-                } else if(i == 1) {
-                    int left = px_margin_16;
-                    int top = startTop + px_margin_16;
-                    int right = left + child.getMeasuredWidth();
-                    int bottom = top + child.getMeasuredHeight();
-                    child.layout(left, top, right, bottom);
-                } else {
-                    int left = r - l - (startMarginRight + child.getMeasuredWidth());
-                    int top = startTop + px_margin_16;
-                    int right = left + child.getMeasuredWidth();
-                    int bottom = top + child.getMeasuredHeight();
-                    startMarginRight = startMarginRight + child.getMeasuredWidth() + px_margin_16;
-                    child.layout(left, top, right, bottom);
-                }
-            }
-        }
-    }
-
     private Rect mOrdinalBounds = new Rect();
+    private Rect mClipBounds = new Rect();
+
     @Override
     protected void onDraw(Canvas canvas) {
+        canvas.getClipBounds(mClipBounds);
         int canvasWidth = canvas.getWidth();
         if(isInEditMode()) return;
         if(mPostDisplayCache.getAuthorLayout() != null) {
@@ -196,19 +162,16 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
             PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getEmoticonSpans().get(i);
             pendingImageSpan.loadImage(this);
         }*/
+        requestLayout();
         if(mShowImages) {
             post(() -> {
-                BooleanPrefs isNightMode = Prefs.getBooleanPrefs(
-                        PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE,
-                        PreferenceConstant.SHARED_PREFERENCE_IS_NIGHT_MODE_VALUE
-                );
                 int viewImageMaxWidth = getMeasuredWidth() - px_margin_16 * 2;
-                for(int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
+                for (int i = mPostDisplayCache.getUrlSpanCount(); i < mPostDisplayCache.getImportantSpans().size(); i++) {
                     PendingImageSpan pendingImageSpan = (PendingImageSpan) mPostDisplayCache.getImportantSpans().get(i);
                     pendingImageSpan.loadImage(
                             this,
                             viewImageMaxWidth,
-                            isNightMode.get() ? Color.argb(255, 15, 15, 15) : Color.argb(255, 229, 229, 229)
+                            mIsNightMode ? Color.argb(255, 15, 15, 15) : Color.argb(255, 229, 229, 229)
                     );
                 }
             });
@@ -457,14 +420,6 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
         this.mOnTextLongPressedListener = listener;
     }
 
-    public Object getPicassoTag() {
-        return mPicassoTag;
-    }
-
-    public void setPicassoTag(Object picassoTag) {
-        this.mPicassoTag = picassoTag;
-    }
-
     @Override
     public void notifyImageSpanLoaded(Object identityTag, Drawable drawable, AsyncDrawableType type) {
         if(mIdentityTag != null && mIdentityTag.equals(identityTag)) {
@@ -483,7 +438,7 @@ public class PostItemView extends ViewGroup implements ImageSpanContainer {
                     }
                     mInvalidateRunnable = null;
                 };
-                mHandler.postDelayed(mInvalidateRunnable, 1000);
+                postDelayed(mInvalidateRunnable, 1000);
             }
         }
     }

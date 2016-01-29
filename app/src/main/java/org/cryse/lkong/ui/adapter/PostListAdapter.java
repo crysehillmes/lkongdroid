@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.ViewTarget;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
@@ -84,7 +87,6 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
 
             viewHolder.mPostItemView.setPostId(postModel.getPid());
             viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
-            viewHolder.mPostItemView.setPicassoTag(POST_PICASSO_TAG);
             viewHolder.mPostItemView.setShowImages(mShouldShowImages);
             viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
             viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
