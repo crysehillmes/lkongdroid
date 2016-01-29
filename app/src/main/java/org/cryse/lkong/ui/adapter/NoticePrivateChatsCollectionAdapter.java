@@ -15,7 +15,6 @@ import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 

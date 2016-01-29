@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class SimpleRecyclerViewAdapter<ItemType> extends RecyclerView.Adapter<RecyclerViewHolder> implements RecyclerViewAdapter<ItemType> {
+    public static final int DEFAULT_ITEM_CAPACITY = 20;
     protected Context mContext;
     protected List<ItemType> mItemList;
     protected RecyclerViewOnItemClickListener mOnItemClickListener;
@@ -16,7 +17,7 @@ public abstract class SimpleRecyclerViewAdapter<ItemType> extends RecyclerView.A
 
     public SimpleRecyclerViewAdapter(Context context, List<ItemType> items) {
         this.mContext = context;
-        this.mItemList = new ArrayList<>(items);
+        this.mItemList = items;
     }
 
     public void addAll(Collection<ItemType> items) {
@@ -41,6 +42,15 @@ public abstract class SimpleRecyclerViewAdapter<ItemType> extends RecyclerView.A
         if(position >= 0 && position < mItemList.size()) {
             mItemList.remove(position);
             notifyItemRemoved(position);
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    public void rangeRemove(int start, int end) {
+        if(end > start && start >= 0 && end <= getItemCount()) {
+            mItemList.subList(start, end).clear();
+            notifyItemRangeRemoved(start, end - start);
         } else {
             throw new IndexOutOfBoundsException();
         }

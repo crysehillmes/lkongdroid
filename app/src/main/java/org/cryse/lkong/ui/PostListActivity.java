@@ -83,6 +83,7 @@ import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
+import org.cryse.widget.recyclerview.Bookends;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -139,6 +140,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
+    private Bookends<PostListAdapter> mWrapperAdapter;
 
     List<PostModel> mItemList = new ArrayList<PostModel>();
 
@@ -220,7 +222,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 Integer.valueOf(mImageDownloadPolicy.get()),
                 Integer.valueOf(mAvatarDownloadPolicy.get())
         );
-        mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
+        mWrapperAdapter = new Bookends<>(mCollectionAdapter);
+        mPostCollectionView.getRefreshableView().setAdapter(mWrapperAdapter);
 
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
@@ -232,7 +235,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         ATE.apply(mThreadIntroHeaderView, mATEKey);
         ((CardView)mThreadIntroHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
 
-        mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
+        mWrapperAdapter.addHeader(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mToolbarQuickReturn = new QuickReturnUtils(mToolbar, QuickReturnUtils.ANIMATE_DIRECTION_UP);
@@ -279,7 +282,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mCollectionAdapter.setOnItemButtonClickListener(new PostListAdapter.OnItemButtonClickListener() {
             @Override
             public void onPostTextLongClick(View view, int position) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                int itemIndex = position - mWrapperAdapter.getHeaderCount();
+                PostModel postItem = mCollectionAdapter.getItem(itemIndex);
                 if(postItem != null) {
                     MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
                             .title(R.string.dialog_title_copy_content)
@@ -291,7 +295,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onRateClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> openRateDialog(postModel));
@@ -300,7 +304,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onRateTextClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> openRateLogDialog(postModel));
@@ -309,7 +313,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onShareClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> sendSharePostIntent(postModel));
@@ -319,7 +323,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             @Override
             public void onReplyClick(View view, int position) {
                 if (mUserAccountManager.isSignedIn()) {
-                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                     mNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
                 } else {
                     mNavigation.navigateToSignInActivity(PostListActivity.this, false);
@@ -329,7 +333,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             @Override
             public void onEditClick(View view, int position) {
                 if (mUserAccountManager.isSignedIn()) {
-                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                     String content;
                     if(postItem.getMessage().contains("</blockquote>")) {
                         int indexOfQuota = postItem.getMessage().indexOf("</blockquote>");
@@ -350,7 +354,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onProfileImageClick(View view, int position) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                 int[] startingLocation = new int[2];
                 view.getLocationOnScreen(startingLocation);
                 startingLocation[0] += view.getWidth() / 2;
@@ -808,13 +812,13 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     @Override
     public void onRatePostComplete(PostModel.PostRate postRate) {
         long pid = postRate.getPid();
-        List<PostModel> itemList = mCollectionAdapter.getItemList();
+        List<PostModel> itemList = mCollectionAdapter.getItemArrayList();
         for (int i = 0; i < itemList.size(); i++) {
             PostModel postModel = itemList.get(i);
             if(postModel.getPid() == pid) {
                 postModel.getRateLog().add(0, postRate);
                 postModel.setRateScore(postModel.getRateScore() + postRate.getScore());
-                mCollectionAdapter.notifyItemChanged(i + mCollectionAdapter.getHeaderViewCount());
+                mCollectionAdapter.notifyItemChanged(i + mWrapperAdapter.getHeaderCount());
             }
         }
     }
@@ -908,13 +912,13 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     }
 
     private void scrollToOrdinal(int targetOrdinal) {
-        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
+        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mWrapperAdapter.getHeaderCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
     }
 
     private void scrollToPosition(int position) {
-        position = position + mCollectionAdapter.getHeaderViewCount();
+        position = position + mWrapperAdapter.getHeaderCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
     }

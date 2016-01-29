@@ -11,9 +11,6 @@ import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.ViewTarget;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
@@ -21,15 +18,15 @@ import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.widget.PostItemView;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
+import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
+public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
     private static final String LOG_TAG = PostListAdapter.class.getName();
     public static final String POST_PICASSO_TAG = "picasso_post_list_adapter";
     private OnItemButtonClickListener mOnItemButtonClickListener;
@@ -70,8 +67,7 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     }
 
     @Override
-    public RecyclerViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
+    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_post, parent, false);
         return new ViewHolder(v, mATEKey, mOnItemButtonClickListener, mOnSpanClickListener);
@@ -80,45 +76,42 @@ public class PostListAdapter extends RecyclerViewBaseAdapter<PostModel> {
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        int headerCount = getHeaderViewCount();
-        if (position >= headerCount && position < headerCount + mObjectList.getItemCount()) {
-            ViewHolder viewHolder = (ViewHolder) holder;
-            PostModel postModel = getItem(position - headerCount);
+        ViewHolder viewHolder = (ViewHolder) holder;
+        PostModel postModel = getItem(position);
 
-            viewHolder.mPostItemView.setPostId(postModel.getPid());
-            viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
-            viewHolder.mPostItemView.setShowImages(mShouldShowImages);
-            viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
-            viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
+        viewHolder.mPostItemView.setPostId(postModel.getPid());
+        viewHolder.mPostItemView.setIdentityTag(Long.toString(postModel.getPid()));
+        viewHolder.mPostItemView.setShowImages(mShouldShowImages);
+        viewHolder.mPostItemView.setPostDisplayCache(postModel.getPostDisplayCache());
+        viewHolder.mPostItemView.setOrdinal(Integer.toString(postModel.getOrdinal()));
 
-            if (postModel.getRateScore() != 0) {
-                viewHolder.mRateTextView.setVisibility(View.VISIBLE);
-                viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
-            } else {
-                viewHolder.mRateTextView.setVisibility(View.INVISIBLE);
-                viewHolder.mRateTextView.setText("");
-            }
-
-            if (postModel.getAuthorId() == mUserId) {
-                viewHolder.mEditButton.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-            }
-
-            if (postModel.getAuthorId() == mUserId) {
-                viewHolder.mEditButton.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.mEditButton.setVisibility(View.INVISIBLE);
-            }
-            ImageLoader.loadAvatar(
-                    getContext(),
-                    viewHolder.mAvatarImageView,
-                    postModel.getAuthorAvatar(),
-                    mAvatarSize,
-                    mCircleTransform,
-                    mAvatarDownloadPolicy
-            );
+        if (postModel.getRateScore() != 0) {
+            viewHolder.mRateTextView.setVisibility(View.VISIBLE);
+            viewHolder.mRateTextView.setText("+ " + postModel.getRateScore());
+        } else {
+            viewHolder.mRateTextView.setVisibility(View.INVISIBLE);
+            viewHolder.mRateTextView.setText("");
         }
+
+        if (postModel.getAuthorId() == mUserId) {
+            viewHolder.mEditButton.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.mEditButton.setVisibility(View.INVISIBLE);
+        }
+
+        if (postModel.getAuthorId() == mUserId) {
+            viewHolder.mEditButton.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.mEditButton.setVisibility(View.INVISIBLE);
+        }
+        ImageLoader.loadAvatar(
+                mContext,
+                viewHolder.mAvatarImageView,
+                postModel.getAuthorAvatar(),
+                mAvatarSize,
+                mCircleTransform,
+                mAvatarDownloadPolicy
+        );
 
     }
 
