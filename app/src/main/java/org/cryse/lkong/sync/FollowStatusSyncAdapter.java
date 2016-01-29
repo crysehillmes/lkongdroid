@@ -90,7 +90,6 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
             String url = "http://lkong.cn";
             Request request = new Request.Builder()
                     .addHeader("Accept-Encoding", "gzip")
-                    .addHeader("Cache-Control", "max-age=30")
                     .url(url)
                     .build();
 

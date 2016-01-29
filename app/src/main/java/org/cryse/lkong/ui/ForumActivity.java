@@ -96,7 +96,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     private String mForumName = "";
     private String mForumDescription = "";
     private int mCurrentListType = ThreadListType.TYPE_SORT_BY_REPLY;
-    private Boolean mIsForumPinned;
+    private Boolean mIsForumFollowed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +179,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
                 mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getPrimaryColor(), getPrimaryDarkColor());
+        setColorToViews();
 
         mThreadCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -231,7 +231,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
             ArrayList<ThreadModel> list = savedInstanceState.getParcelableArrayList(DataContract.BUNDLE_CONTENT_LIST_STORE);
             mCollectionAdapter.addAll(list);
             if(savedInstanceState.containsKey(FORUM_PINNED_KEY))
-                mIsForumPinned = savedInstanceState.getBoolean(FORUM_PINNED_KEY);
+                mIsForumFollowed = savedInstanceState.getBoolean(FORUM_PINNED_KEY);
             mForumId = savedInstanceState.getLong(DataContract.BUNDLE_FORUM_ID);
             mForumName = savedInstanceState.getString(DataContract.BUNDLE_FORUM_NAME);
             mForumDescription = savedInstanceState.getString(DataContract.BUNDLE_FORUM_DESCRIPTION);
@@ -269,8 +269,8 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(mIsForumPinned != null)
-            outState.putBoolean(FORUM_PINNED_KEY, mIsForumPinned);
+        if(mIsForumFollowed != null)
+            outState.putBoolean(FORUM_PINNED_KEY, mIsForumFollowed);
         outState.putLong(DataContract.BUNDLE_FORUM_ID, mForumId);
         outState.putString(DataContract.BUNDLE_FORUM_NAME, mForumName);
         outState.putString(DataContract.BUNDLE_FORUM_DESCRIPTION, mForumDescription);
@@ -295,12 +295,11 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mIsForumPinned != null && mFollowForumMenuItem != null) {
+        if(mIsForumFollowed != null && mFollowForumMenuItem != null) {
             mFollowForumMenuItem.setVisible(true);
-            if(mIsForumPinned) {
+            if(mIsForumFollowed) {
                 mFollowForumMenuItem.setTitle(R.string.action_forum_followed);
-            }
-            else {
+            } else {
                 mFollowForumMenuItem.setTitle(R.string.action_follow_forum);
             }
         }
@@ -317,8 +316,11 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
                 toggleNightMode();
                 return true;
             case R.id.action_forum_follow:
-
-                return false;
+                if (mIsForumFollowed)
+                    unpinForum();
+                else
+                    pinForum();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -390,7 +392,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
 
     @Override
     public void checkPinnedStatusDone(boolean isPinned) {
-        mIsForumPinned = isPinned;
+        mIsForumFollowed = isPinned;
         invalidateOptionsMenu();
     }
 
@@ -424,7 +426,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         return mPresenter;
     }
 
-    private void setColorToViews(int primaryColor, int primaryDarkColor) {
+    private void setColorToViews() {
         int accentColor = getAccentColor();
         int accentColorDark = ThemeUtils.makeColorDarken(accentColor, 0.8f);
         int accentColorRipple = ThemeUtils.makeColorDarken(accentColor, 0.9f);
@@ -449,11 +451,4 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         getPresenter().unpinForum(
                 mUserAccountManager.getAuthObject(), mForumId);
     }
-
-    private CompoundButton.OnCheckedChangeListener mOnPinForumCheckedChangeListener = (buttonView, isChecked) -> {
-        if (isChecked)
-            pinForum();
-        else
-            unpinForum();
-    };
 }
