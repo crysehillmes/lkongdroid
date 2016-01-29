@@ -82,6 +82,8 @@ dependencies {
 
     compile libDependencies.timber
 
+    compile libDependencies.finestwebview
+
     compile(libDependencies.materialdrawer) {
         transitive = true
     }

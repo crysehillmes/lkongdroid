@@ -5,18 +5,23 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Browser;
+import android.support.design.widget.AppBarLayout;
+
+import com.afollestad.appthemeengine.Config;
+import com.afollestad.appthemeengine.util.Util;
+import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.AccountConst;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.ui.ForumActivity;
-import org.cryse.lkong.ui.InAppBrowserActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NotificationActivity;
@@ -26,6 +31,7 @@ import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
+import org.cryse.lkong.utils.ThemeUtils;
 
 public class AppNavigation {
     public AppNavigation() {
@@ -144,9 +150,29 @@ public class AppNavigation {
 
     public void openUrl(Activity context, String url, boolean inAppBrowser) {
         if(inAppBrowser) {
-            Intent intent = new Intent(context, InAppBrowserActivity.class);
+            String ateKey = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dark_theme", false) ?
+                    "dark_theme" : "light_theme";
+            int statusBarColor = Config.primaryColorDark(context, ateKey);
+            int primaryColor = Config.primaryColor(context, ateKey);
+            int accentColor = Config.primaryColor(context, ateKey);
+            int iconColor = Util.isColorLight(primaryColor) ? Color.BLACK : Color.WHITE;
+            int iconColorPressed = ThemeUtils.makeColorDarken(iconColor, 0.8f);
+            int iconColorDisabled = ThemeUtils.makeColorDarken(iconColor, 0.6f);
+            FinestWebView.Builder builder = new FinestWebView.Builder(context);
+            builder
+                    .statusBarColor(statusBarColor)
+                    .toolbarColor(primaryColor)
+                    .toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS)
+                    .iconDefaultColor(iconColor)
+                    .iconDisabledColor(iconColorDisabled)
+                    .iconPressedColor(iconColorPressed)
+                    .titleColor(iconColor)
+                    .urlColor(iconColorPressed)
+                    .progressBarColor(accentColor)
+                    .show(url);
+            /*Intent intent = new Intent(context, InAppBrowserActivity.class);
             intent.putExtra("url", url);
-            context.startActivity(intent);
+            context.startActivity(intent);*/
         } else {
             Uri uri = Uri.parse(url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);

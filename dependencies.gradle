@@ -27,6 +27,7 @@ ext {
     pulltorefreshVersion = '3.2.3'
     themeEngineVersion = '0.7.7'
     textdrawableVersion = 'c32bc48d86'
+    finestwebviewVersion = '1.1.6'
 
     libDependencies = [
             // Test
@@ -65,6 +66,7 @@ ext {
             materialdialog_commons: "com.github.afollestad.material-dialogs:commons:$materialDialogVersion@aar",
             theme_engine: "com.github.afollestad:app-theme-engine:$themeEngineVersion@aar",
             textdrawable: "com.github.afollestad:TextDrawable:$textdrawableVersion",
+            finestwebview: "com.thefinestartist:finestwebview:$finestwebviewVersion",
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])
