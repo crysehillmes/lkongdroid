@@ -21,6 +21,8 @@ import com.squareup.okhttp.Response;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.broadcast.BroadcastConstants;
+import org.cryse.lkong.data.LKongDatabase2;
+import org.cryse.lkong.data.model.CachedForum;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumColumns;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumContentValues;
 import org.cryse.lkong.data.provider.followedforum.FollowedForumCursor;
@@ -138,40 +140,28 @@ public class FollowStatusSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void syncFollowedForumStatus(LKAuthObject authObject, String authority, long[] fids, ContentProviderClient provider) throws Exception {
         int fidCount = fids.length;
+        LKongDatabase2 database = new LKongDatabase2(getContext());
+        List<ForumModel> forums = new ArrayList<>(fids.length);
         for (int i = 0; i < fidCount; i++) {
             long fid = fids[i];
             if(fid == -1) continue;
             // 查找数据库表中是否已经有这一项，如果有的话则只调整 sortorder。
+
             FollowedForumSelection selection = new FollowedForumSelection();
             selection.userId(authObject.getUserId()).and().forumId(fid);
-            // 判断列表中是不是有这一项，如果有的话移除
-            Cursor cursor = provider.query(FollowedForumColumns.contentUri(authority), null, selection.sel(), selection.args(), selection.order());
-            FollowedForumContentValues forumValues = new FollowedForumContentValues();
-            if(cursor.getCount() == 1) {
-                cursor.moveToFirst();
-                FollowedForumCursor forumCursor = new FollowedForumCursor(cursor);
-                forumValues.putUserId(authObject.getUserId());
-                forumValues.putForumId(forumCursor.getForumId());
-                forumValues.putForumName(forumCursor.getForumName());
-                forumValues.putForumIcon(forumCursor.getForumIcon());
-                forumValues.putForumSortValue(i);
+            ForumModel model = database.getCachedForum(CachedForum.TYPE_FOLLOWED, fid, authObject.getUserId());
+            if(model != null) {
+                // 判断列表中是不是有这一项，如果有的话移除
+                model.setSortByDateline(i);
             } else {
                 // 数据库中没有相关的记录，完全从网络获取
                 GetForumInfoRequest request = new GetForumInfoRequest(authObject, fid);
-                ForumModel forumModel = request.execute();
-
-                forumValues.putUserId(authObject.getUserId());
-                forumValues.putForumId(forumModel.getFid());
-                forumValues.putForumName(forumModel.getName());
-                forumValues.putForumIcon(forumModel.getIcon());
-                forumValues.putForumSortValue(i);
+                model = request.execute();
             }
-            cursor.close();
-            provider.insert(FollowedForumColumns.contentUri(authority), forumValues.values());
+            forums.add(model);
         }
-        FollowedForumSelection deleteSelection = new FollowedForumSelection();
-        deleteSelection.forumIdNot(fids).and().userId(authObject.getUserId());
-        provider.delete(FollowedForumColumns.contentUri(authority), deleteSelection.sel(), deleteSelection.args());
+        database.cacheForums(CachedForum.TYPE_FOLLOWED, authObject.getUserId(), forums);
+        database.destroy();
         getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
     }
 

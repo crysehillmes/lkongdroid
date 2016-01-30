@@ -28,6 +28,7 @@ ext {
     themeEngineVersion = '0.7.7'
     textdrawableVersion = 'c32bc48d86'
     finestwebviewVersion = '1.1.6'
+    realmVersion = '0.87.0'
 
     libDependencies = [
             // Test
@@ -53,6 +54,9 @@ ext {
 
             // Network
             okhttp: "com.squareup.okhttp:okhttp:$okhttpVersion",
+
+            // Database
+            realm: "io.realm:realm-android:$realmVersion",
 
             // Log
             timber: "com.jakewharton.timber:timber:$timberVersion",

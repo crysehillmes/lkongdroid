@@ -17,10 +17,12 @@ import org.cryse.lkong.broadcast.BroadcastConstants;
 import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.FollowedForumsPresenter;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 
@@ -32,8 +34,8 @@ import javax.inject.Inject;
 
 
 public class FollowedForumsFragment extends SimpleCollectionFragment<
-        FollowedForum,
-        FollowedForumsAdapter,
+        ForumModel,
+        ForumListAdapter,
         FollowedForumsPresenter> {
     private static final String LOG_TAG = FollowedForumsFragment.class.getName();
 
@@ -95,8 +97,8 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
-        return new FollowedForumsAdapter(this, mItemList);
+    protected ForumListAdapter createAdapter(List<ForumModel> itemList) {
+        return new ForumListAdapter(this, mATEKey, mItemList);
     }
 
     @Override
@@ -108,8 +110,8 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position;
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
-            FollowedForum item = mCollectionAdapter.getItem(position);
-            mNavigation.openActivityForForumByForumId(getActivity(), item.getForumId(), item.getForumName(), "");
+            ForumModel item = mCollectionAdapter.getItem(position);
+            mNavigation.openActivityForForumByForumId(getActivity(), item.getFid(), item.getName(), "");
         }
     }
 

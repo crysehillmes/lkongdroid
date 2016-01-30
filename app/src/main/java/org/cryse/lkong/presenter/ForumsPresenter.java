@@ -36,6 +36,7 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel, Forum
                             Timber.d("ForumsPresenter::loadData() onNext().", LOG_TAG);
                             if (mView != null) {
                                 mView.showSimpleData(result, isLoadingMore);
+                                setLoadingStatus(isLoadingMore, false);
                             }
                         },
                         error -> {
@@ -44,7 +45,6 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel, Forum
                         },
                         () -> {
                             Timber.d("ForumsPresenter::loadData() onComplete().", LOG_TAG);
-                            setLoadingStatus(isLoadingMore, false);
                         }
                 );
     }

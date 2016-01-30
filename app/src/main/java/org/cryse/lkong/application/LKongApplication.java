@@ -21,6 +21,7 @@ import org.cryse.lkong.application.component.SimpleActivityComponent;
 import org.cryse.lkong.application.component.UserAccountComponent;
 import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
+import org.cryse.lkong.data.LKongDatabase2;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.utils.preference.Prefs;
 
@@ -58,6 +59,7 @@ public class LKongApplication extends Application {
         mUserAccountManager = new UserAccountManager();
         NetworkPolicyManager.checkNetworkState(this);
         initComponents();
+        LKongDatabase2.init(this);
         userAccountComponent().inject(mUserAccountManager);
         mUserAccountManager.init();
     }
