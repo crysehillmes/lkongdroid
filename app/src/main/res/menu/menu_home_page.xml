@@ -6,5 +6,6 @@
     <item android:id="@+id/action_punch" android:icon="@drawable/ic_action_punch" android:title="@string/action_punch" app:showAsAction="ifRoom" />
     <item android:id="@+id/action_change_theme" android:title="@string/action_dark_theme" app:showAsAction="never" />
     <item android:id="@+id/action_sign_out" android:title="@string/action_sign_out" app:showAsAction="never" />
+    <item android:id="@+id/action_donate" android:title="@string/donation_title" app:showAsAction="never" />
 
 </menu>

@@ -52,6 +52,7 @@ import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.ui.search.SuggestionsBuilder;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.animation.LayerEnablingAnimatorListener;
+import org.cryse.lkong.utils.DonateUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.view.HomePageView;
 import org.cryse.utils.preference.BooleanPrefs;
@@ -438,6 +439,9 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
                 return true;
             case R.id.action_sign_out:
                 signOut();
+                return true;
+            case R.id.action_donate:
+                DonateUtils.showDonateDialog(getActivity());
                 return true;
         }
         return super.onOptionsItemSelected(item);
