@@ -2,13 +2,11 @@
     <style name="FrameworkRoot.Light" parent="MaterialDrawerTheme.Light.DarkToolbar" />
     <style name="FrameworkRoot.Dark" parent="MaterialDrawerTheme" />
 
-    <style name="TextAppearance.LKongDroid.FloatLabel.Light" parent="android:TextAppearance.Small">
-        <item name="android:textColor">?colorAccent</item>
-        <item name="android:textSize">12sp</item>
-    </style>
-    <style name="TextAppearance.LKongDroid.FloatLabel.Dark" parent="android:TextAppearance.Small">
-        <item name="android:textColor">?colorAccent</item>
-        <item name="android:textSize">12sp</item>
+    <style name="SwipeBackLayout">
+        <item name="edge_size">50dip</item>
+        <item name="shadow_left">@drawable/shadow_left</item>
+        <item name="shadow_right">@drawable/shadow_right</item>
+        <item name="shadow_bottom">@drawable/shadow_bottom</item>
     </style>
 
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light">
