@@ -25,9 +25,9 @@ public class FollowedForumsPresenter extends SimpleCollectionPresenter<ForumMode
 
     }
 
-    public void loadPinnedForums(long uid) {
+    public void loadFollowedForums(LKAuthObject authObject) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
-        mLoadDataSubscription = mLKongForumService.loadUserFollowedForums(uid)
+        mLoadDataSubscription = mLKongForumService.loadUserFollowedForums(authObject)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

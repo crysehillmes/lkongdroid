@@ -28,7 +28,7 @@ public class ForumsPresenter extends SimpleCollectionPresenter<ForumModel, Forum
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
         SubscriptionUtils.checkAndUnsubscribe(mLoadDataSubscription);
         setLoadingStatus(isLoadingMore, true);
-        mLoadDataSubscription = mLKongForumService.getForumList((Boolean) extraArgs[0])
+        mLoadDataSubscription = mLKongForumService.getForumList(authObject, (Boolean) extraArgs[0])
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

@@ -1,12 +1,14 @@
 package org.cryse.lkong.logic;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.format.DateUtils;
 
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabase2;
 import org.cryse.lkong.data.model.CachedForum;
 import org.cryse.lkong.data.model.FollowedForum;
+import org.cryse.lkong.data.model.ForumRecord;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.request.AddOrRemoveFavoriteRequest;
@@ -53,6 +55,7 @@ import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.account.LKAuthObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -92,20 +95,28 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumModel>> getForumList(boolean updateFromWeb) {
+    public Observable<List<ForumModel>> getForumList(LKAuthObject authObject, boolean updateFromWeb) {
         return Observable.create(subscriber -> {
             try {
+                List<ForumModel> cachedForums = new ArrayList<ForumModel>();
                 LKongDatabase2 database = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                List<ForumModel> cachedForums = database.getCachedForums(CachedForum.TYPE_MAIN, 0);
+                Pair<List<ForumModel>, List<Long>> resultPair = database.getCachedForums(LKongConst.MAIN_FORUM_IDS);
+                cachedForums.addAll(resultPair.first);
                 if (cachedForums.size() > 0) {
                     subscriber.onNext(cachedForums);
                 }
                 if(updateFromWeb || cachedForums.size() == 0) {
-                    ForumListRequest request = new ForumListRequest();
-                    List<ForumModel> forumModelList = request.execute();
-                    if (forumModelList != null)
-                        database.cacheForums(CachedForum.TYPE_MAIN, 0, forumModelList);
-                    subscriber.onNext(forumModelList);
+                    // ForumListRequest request = new ForumListRequest();
+                    // List<ForumModel> forumModelList = request.execute();
+                    // if (forumModelList != null)
+                    //     database.cacheForums(CachedForum.TYPE_MAIN, 0, forumModelList);
+                    List<ForumModel> updatedForums = new ArrayList<>();
+                    for(long fid : LKongConst.MAIN_FORUM_IDS) {
+                        GetForumInfoRequest request = new GetForumInfoRequest(authObject, fid);
+                        updatedForums.add(request.execute());
+                    }
+                    database.cacheForums(updatedForums);
+                    subscriber.onNext(updatedForums);
                 }
                 database.destroy();
                 subscriber.onCompleted();
@@ -349,17 +360,8 @@ public class LKongForumService {
     public Observable<Boolean> followForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
         return Observable.create(subscriber -> {
             try {
-                /*mLKongDatabase.followForum(new FollowedForum(
-                        authObject.getUserId(),
-                        fid,
-                        forumName,
-                        forumIcon,
-                        new Date().getTime()
-                ));*/
-                GetForumInfoRequest infoRequest = new GetForumInfoRequest(authObject, fid);
-                ForumModel model = infoRequest.execute();
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                database2.cacheForum(CachedForum.TYPE_FOLLOWED, authObject.getUserId(), model);
+                database2.addFollowedForum(authObject.getUserId(), fid);
                 database2.destroy();
                 FollowRequest followRequest = new FollowRequest(authObject, FollowResult.ACTION_FOLLOW, FollowResult.TYPE_FORUM, fid);
                 FollowResult result = followRequest.execute();
@@ -375,7 +377,7 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                database2.removeCachedForum(CachedForum.TYPE_FOLLOWED, fid);
+                database2.removeFollowedForum(authObject.getUserId(), fid);
                 database2.destroy();
                 FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_FORUM, fid);
                 FollowResult result = request.execute();
@@ -391,7 +393,7 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                boolean isForumPinned = database2.getCachedForum(CachedForum.TYPE_FOLLOWED, fid, uid) != null;
+                boolean isForumPinned = database2.getFollowedForum(uid, fid) != null;
                 database2.destroy();
                 subscriber.onNext(isForumPinned);
                 subscriber.onCompleted();
@@ -401,13 +403,29 @@ public class LKongForumService {
         });
     }
 
-    public Observable<List<ForumModel>> loadUserFollowedForums(long uid) {
+    public Observable<List<ForumModel>> loadUserFollowedForums(LKAuthObject authObject) {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                List<ForumModel> result = database2.getCachedForums(CachedForum.TYPE_FOLLOWED, uid);
+                List<ForumRecord> followedForums = database2.getFollowedForums(authObject.getUserId());
+                List<ForumModel> results = new ArrayList<>();
+                if(followedForums != null && followedForums.size() > 0) {
+                    long[] fids = new long[followedForums.size()];
+                    for (int i = 0; i < followedForums.size(); i++) {
+                        ForumRecord record = followedForums.get(i);
+                        fids[i] = record.getForumid();
+                    }
+                    Pair<List<ForumModel>, List<Long>> resultPair = database2.getCachedForums(fids);
+                    results.addAll(resultPair.first);
+                    for(Long id : resultPair.second) {
+                        GetForumInfoRequest request = new GetForumInfoRequest(authObject, id);
+                        ForumModel model = request.execute();
+                        database2.cacheForum(model);
+                        results.add(model);
+                    }
+                }
                 database2.destroy();
-                subscriber.onNext(result);
+                subscriber.onNext(results);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);

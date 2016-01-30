@@ -7,9 +7,8 @@ public class CachedForum extends RealmObject {
     public static final int TYPE_MAIN = 0;
     public static final int TYPE_FOLLOWED = 1;
 
+    @PrimaryKey
     private long id;
-    private long uid;
-    private int type;
     private String name;
     private String icon;
     private String description;
@@ -19,6 +18,7 @@ public class CachedForum extends RealmObject {
     private int todayPosts;
     private int fansNum;
     private String blackboard;
+    private long lastUpdate;
 
     public long getId() {
         return id;
@@ -26,22 +26,6 @@ public class CachedForum extends RealmObject {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getUid() {
-        return uid;
-    }
-
-    public void setUid(long uid) {
-        this.uid = uid;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getName() {
@@ -114,5 +98,13 @@ public class CachedForum extends RealmObject {
 
     public void setBlackboard(String blackboard) {
         this.blackboard = blackboard;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

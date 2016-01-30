@@ -1,12 +1,15 @@
 package org.cryse.lkong.data;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 
 import org.cryse.lkong.data.model.CachedForum;
+import org.cryse.lkong.data.model.ForumRecord;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -42,12 +45,10 @@ public class LKongDatabase2 {
         return mContext;
     }
 
-    public void cacheForum(int type, long uid, ForumModel forum) {
+    public void cacheForum(ForumModel forum) {
         mRealm.beginTransaction();
         CachedForum cachedForum = new CachedForum();
         cachedForum.setId(forum.getFid());
-        cachedForum.setUid(uid);
-        cachedForum.setType(type);
         cachedForum.setName(forum.getName());
         cachedForum.setIcon(forum.getIcon());
         cachedForum.setDescription(forum.getDescription());
@@ -57,17 +58,16 @@ public class LKongDatabase2 {
         cachedForum.setSortByDateline(forum.getSortByDateline());
         cachedForum.setThreads(forum.getThreads());
         cachedForum.setTodayPosts(forum.getTodayPosts());
+        cachedForum.setLastUpdate(new Date().getTime());
         mRealm.copyToRealmOrUpdate(cachedForum);
         mRealm.commitTransaction();
     }
 
-    public void cacheForums(int type, long uid, List<ForumModel> forums) {
+    public void cacheForums(List<ForumModel> forums) {
         mRealm.beginTransaction();
         for(ForumModel forum : forums) {
             CachedForum cachedForum = new CachedForum();
             cachedForum.setId(forum.getFid());
-            cachedForum.setUid(uid);
-            cachedForum.setType(type);
             cachedForum.setName(forum.getName());
             cachedForum.setIcon(forum.getIcon());
             cachedForum.setDescription(forum.getDescription());
@@ -77,16 +77,15 @@ public class LKongDatabase2 {
             cachedForum.setSortByDateline(forum.getSortByDateline());
             cachedForum.setThreads(forum.getThreads());
             cachedForum.setTodayPosts(forum.getTodayPosts());
+            cachedForum.setLastUpdate(new Date().getTime());
             mRealm.copyToRealmOrUpdate(cachedForum);
         }
         mRealm.commitTransaction();
     }
 
-    public ForumModel getCachedForum(int type, long id, long uid) {
+    public ForumModel getCachedForum(long id) {
         RealmQuery<CachedForum> query = mRealm.where(CachedForum.class);
         query.equalTo("id", id);
-        query.equalTo("type", type);
-        query.equalTo("uid", uid);
         RealmResults<CachedForum> results = query.findAll();
         if(results.size() > 0) {
             CachedForum cached = results.get(0);
@@ -107,44 +106,115 @@ public class LKongDatabase2 {
         }
     }
 
-    public List<ForumModel> getCachedForums(int type, long uid) {
+    public Pair<List<ForumModel>, List<Long>> getCachedForums(long[] ids) {
+        List<ForumModel> results = new ArrayList<>();
+        List<Long> notexists = new ArrayList<>();
+        for(Long id : ids) {
+            RealmQuery<CachedForum> query = mRealm.where(CachedForum.class);
+            query.equalTo("id", id);
+            CachedForum result = query.findFirst();
+            if(result != null)
+                results.add(cachedToModel(result));
+            else
+                notexists.add(id);
+        }
+        return Pair.create(results, notexists);
+    }
 
+    public List<ForumModel> getCachedForums() {
         RealmQuery<CachedForum> query = mRealm.where(CachedForum.class);
-        query.equalTo("type", type);
-        query.equalTo("uid", uid);
         RealmResults<CachedForum> realmResults =  query.findAll();
         List<ForumModel> results = new ArrayList<>(realmResults.size());
         for(CachedForum cached : realmResults) {
-            ForumModel forumModel = new ForumModel();
-            forumModel.setFid(cached.getId());
-            forumModel.setName(cached.getName());
-            forumModel.setIcon(ModelConverter.fidToForumIconUrl(cached.getId()));
-            forumModel.setDescription(cached.getDescription());
-            forumModel.setBlackboard(cached.getBlackboard());
-            forumModel.setFansNum(cached.getFansNum());
-            forumModel.setStatus(cached.getStatus());
-            forumModel.setSortByDateline(cached.getSortByDateline());
-            forumModel.setThreads(cached.getThreads());
-            forumModel.setTodayPosts(cached.getTodayPosts());
-            results.add(forumModel);
+            results.add(cachedToModel(cached));
         }
         return results;
     }
 
-    public void removeCachedForum(int type, long id) {
+    public void removeCachedForum(long id) {
         // obtain the results of a query
         RealmQuery<CachedForum> query = mRealm.where(CachedForum.class);
         query.equalTo("id", id);
-        query.equalTo("type", type);
         RealmResults<CachedForum> results = query.findAll();
         mRealm.beginTransaction();
         results.removeLast();
         mRealm.commitTransaction();
     }
 
+    public void addFollowedForum(long uid, long fid) {
+        addFollowedForum(uid, fid, getMaxForumRecordOrdinal());
+    }
+
+    public void addFollowedForum(long uid, long fid, int ordinal) {
+        mRealm.beginTransaction();
+        ForumRecord forumRecord = new ForumRecord();
+        forumRecord.setKey(String.format("%d|%d", uid, fid));
+        forumRecord.setUserid(uid);
+        forumRecord.setForumid(fid);
+        forumRecord.setOrdinal(ordinal);
+        mRealm.copyToRealmOrUpdate(forumRecord);
+        mRealm.commitTransaction();
+    }
+
+    public int getMaxForumRecordOrdinal() {
+        int maxId;
+        if(mRealm.where(ForumRecord.class).max("ordinal") == null) {
+            maxId = 0;
+        } else {
+            maxId = mRealm.where(ForumRecord.class).max("ordinal").intValue() + 1;
+        }
+        return maxId;
+    }
+
+    public void removeFollowedForum(long uid, long fid) {
+        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
+        query.equalTo("userid", uid);
+        query.equalTo("forumid", fid);
+        RealmResults<ForumRecord> results = query.findAll();
+        mRealm.beginTransaction();
+        results.removeLast();
+        mRealm.commitTransaction();
+    }
+
+    public ForumRecord getFollowedForum(long uid, long fid) {
+        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
+        query.equalTo("userid", uid);
+        query.equalTo("forumid", fid);
+        ForumRecord record = query.findFirst();
+        if(record != null)
+            return mRealm.copyFromRealm(record);
+        else
+            return null;
+    }
+
+    public List<ForumRecord> getFollowedForums(long uid) {
+        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
+        query.equalTo("userid", uid);
+        RealmResults<ForumRecord> records = query.findAll();
+        if(records != null && records.size() > 0)
+            return mRealm.copyFromRealm(records);
+        else
+            return null;
+    }
+
     public void destroy() {
         if(mRealm != null && !mRealm.isClosed()) {
             mRealm.close();
         }
+    }
+
+    private static ForumModel cachedToModel(CachedForum cached) {
+        ForumModel forumModel = new ForumModel();
+        forumModel.setFid(cached.getId());
+        forumModel.setName(cached.getName());
+        forumModel.setIcon(ModelConverter.fidToForumIconUrl(cached.getId()));
+        forumModel.setDescription(cached.getDescription());
+        forumModel.setBlackboard(cached.getBlackboard());
+        forumModel.setFansNum(cached.getFansNum());
+        forumModel.setStatus(cached.getStatus());
+        forumModel.setSortByDateline(cached.getSortByDateline());
+        forumModel.setThreads(cached.getThreads());
+        forumModel.setTodayPosts(cached.getTodayPosts());
+        return forumModel;
     }
 }

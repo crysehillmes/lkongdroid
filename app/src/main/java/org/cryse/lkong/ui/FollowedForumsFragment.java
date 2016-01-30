@@ -103,7 +103,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+        getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
-            getPresenter().loadPinnedForums(mUserAccountManager.getAuthObject().getUserId());
+            getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
             Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
             if(account != null)
                 SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
@@ -140,7 +140,7 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     }
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
-        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_column_count));
+        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_detail_column_count));
     }
 
     @Override
