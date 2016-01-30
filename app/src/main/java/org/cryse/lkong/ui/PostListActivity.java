@@ -29,7 +29,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -930,7 +929,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     }
 
     private void setColorToViews() {
-        Log.e("gagagag", String.format("%b", mPrimaryColorInPostControl.get()));
         int postControlColor = mPrimaryColorInPostControl.get() ? getPrimaryColor() : getAccentColor();
         int postControlColorDark = ThemeUtils.makeColorDarken(postControlColor, 0.8f);
         int postControlColorRipple = ThemeUtils.makeColorDarken(postControlColor, 0.9f);

@@ -332,4 +332,19 @@
         <item>43200</item>
         <item>86400</item>
     </string-array>
+
+    <string name="settings_item_screen_rotation_title">Screen Rotation</string>
+    <string name="settings_item_screen_rotation_summary">Configure app screen rotation here</string>
+
+    <string-array name="custom_rotation_title_arrays">
+        <item>Follow System Settings</item>
+        <item>Portrait</item>
+        <item>Landscape</item>
+    </string-array>
+
+    <string-array name="custom_rotation_value_arrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

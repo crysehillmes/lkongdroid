@@ -36,4 +36,7 @@ public class PreferenceConstant {
     public static final boolean SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE = false;
     public static final String SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL = "theme_primary_color_in_post_control";
     public static final boolean SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE = false;
+    public static final String SHARED_PREFERENCE_SCREEN_ROTATION = "prefs_screen_rotation";
+    public static final String SHARED_PREFERENCE_SCREEN_ROTATION_VALUE = "0";
+
 }
