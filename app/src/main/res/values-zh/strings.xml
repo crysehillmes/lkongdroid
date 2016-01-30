@@ -29,6 +29,8 @@
     <string name="action_user_profile_follow">关注</string>
     <string name="action_user_profile_unfollow">取消关注</string>
     <string name="action_user_profile_pm">私信</string>
+    <string name="action_user_profile_block">加入黑名单</string>
+    <string name="action_user_profile_unblock">移出黑名单</string>
     <string name="action_share">分享</string>
     <string name="action_save_image">保存图片</string>
     <string name="drawer_item_notification">消息通知</string>

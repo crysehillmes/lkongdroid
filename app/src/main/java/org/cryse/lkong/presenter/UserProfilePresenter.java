@@ -17,6 +17,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
     Subscription mUserProfileSubscription;
     Subscription mGetUserFollowStatusSubscription;
     Subscription mFollowUserSubscription;
+    Subscription mBlockUserSubscription;
     UserProfileView mView;
     @Inject
     public UserProfilePresenter(LKongForumService forumService) {
@@ -55,6 +56,26 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         result -> {
                             if(mView != null)
                                 mView.onCheckFollowStatusComplete(result);
+                        },
+                        error -> {
+                            if(mView != null) {
+                                Timber.e(error, "UserProfilePresenter::isUserFollowed() onError().", LOG_TAG);
+                            }
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void isUserBlocked(long uid, long targetUid) {
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
+        mBlockUserSubscription = mLKongForumService.isUserBlocked(uid, targetUid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onCheckBlockStatusComplete(false);
                         },
                         error -> {
                             if(mView != null) {
@@ -106,6 +127,26 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
+    public void blockUser(LKAuthObject authObject, long targetUid, boolean block) {
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
+        mBlockUserSubscription = mLKongForumService.blockUser(authObject, targetUid, block)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onCheckBlockStatusComplete(result);
+                        },
+                        error -> {
+                            if(mView != null) {
+                                Timber.e(error, "UserProfilePresenter::blockUser() onError().", LOG_TAG);
+                            }
+                        },
+                        () -> {
+                        }
+                );
+    }
+
     public void setLoadingStatus(boolean isLoading) {
         if(mView == null) return;
         mView.setLoading(isLoading);
@@ -126,5 +167,6 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
         SubscriptionUtils.checkAndUnsubscribe(mUserProfileSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mGetUserFollowStatusSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
     }
 }

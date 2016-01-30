@@ -33,6 +33,8 @@
     <string name="action_user_profile_follow">Follow</string>
     <string name="action_user_profile_unfollow">Unfollow</string>
     <string name="action_user_profile_pm">PM</string>
+    <string name="action_user_profile_block">Block</string>
+    <string name="action_user_profile_unblock">Unblock</string>
     <string name="action_share">Share</string>
     <string name="action_save_image">Save Image</string>
 

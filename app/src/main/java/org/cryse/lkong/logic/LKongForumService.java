@@ -489,6 +489,31 @@ public class LKongForumService {
         });
     }
 
+    public Observable<Boolean> blockUser(LKAuthObject authObject, long targetUserId, boolean follow) {
+        return Observable.create(subscriber -> {
+            try {
+                FollowRequest request = new FollowRequest(authObject, follow ? FollowResult.ACTION_FOLLOW : FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_BLACKLIST, targetUserId);
+                FollowResult result = request.execute();
+                subscriber.onNext(follow ? result != null && result.isOk() : false);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public Observable<Boolean> isUserBlocked(long uid, long targetUserId) {
+        return Observable.create(subscriber -> {
+            try {
+                boolean isBlocked = mLKongDatabase.isUserFollowed(uid, targetUserId);
+                subscriber.onNext(false);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
     public Observable<List<PrivateMessageModel>> loadPrivateMessages(LKAuthObject authObject, long targetUserId, long startSortKey, int pointerType) {
         return Observable.create(subscriber -> {
             try {

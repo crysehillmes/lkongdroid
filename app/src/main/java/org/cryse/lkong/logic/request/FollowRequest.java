@@ -40,6 +40,9 @@ public class FollowRequest extends AbstractAuthedHttpRequest<FollowResult> {
             case FollowResult.TYPE_USER:
                 followid = "uid-" + Long.toString(mId);
                 break;
+            case FollowResult.TYPE_BLACKLIST:
+                followid = "black-" + Long.toString(mId);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown follow type.");
         }

@@ -9,4 +9,8 @@
         android:id="@+id/action_user_profile_pm"
         android:title="@string/action_user_profile_pm"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_user_profile_block"
+        android:title="@string/action_user_profile_block"
+        app:showAsAction="never" />
 </menu>
