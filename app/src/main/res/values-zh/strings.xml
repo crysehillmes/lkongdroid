@@ -109,7 +109,7 @@
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_failure_save_image_as">图片保存失败</string>
     <string name="toast_failure_new_post">发送失败，请重试。</string>
-    <string name="toast_double_tap_to_exit">再按一次返回键退出</string>
+    <string name="toast_double_tap_to_exit">再次点击返回键退出</string>
     <string name="toast_error_title_empty">标题不能为空</string>
 
 

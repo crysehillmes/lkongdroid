@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.util.Util;
@@ -52,6 +53,7 @@ import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -81,6 +83,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
+    AtomicBoolean mDoubleBackToExitPressedOnce = new AtomicBoolean(false);
     List<UserAccount> mUserAccountList;
     /**
      * Used to post delay navigation action to improve UX
@@ -380,7 +383,15 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             return;
         }
         if (!getSupportFragmentManager().popBackStackImmediate()) {
-            finish();
+            if (mDoubleBackToExitPressedOnce.get()) {
+                super.onBackPressed();
+                return;
+            } else {
+                mDoubleBackToExitPressedOnce.set(true);
+                Toast.makeText(this, R.string.toast_double_tap_to_exit, Toast.LENGTH_SHORT).show();
+
+                mHandler.postDelayed(() -> mDoubleBackToExitPressedOnce.set(false), 2000);
+            }
         }
     }
 

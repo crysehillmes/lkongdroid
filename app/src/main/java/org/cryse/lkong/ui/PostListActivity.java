@@ -580,19 +580,22 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
-        else if(mItemList.size() > 0 && mIsFavorite != null) {
-            mFavoriteMenuItem.setVisible(true);
-            if(mIsFavorite) {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+        if(mFavoriteMenuItem != null) {
+            if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null)
+                mFavoriteMenuItem.setVisible(false);
+            else if(mItemList.size() > 0 && mIsFavorite != null) {
+                mFavoriteMenuItem.setVisible(true);
+                if(mIsFavorite) {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+                }
+                else {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
+                }
+            } else if(mIsFavorite == null) {
+                mFavoriteMenuItem.setVisible(false);
             }
-            else {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
-            }
-        } else if(mIsFavorite == null) {
-            mFavoriteMenuItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
