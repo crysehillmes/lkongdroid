@@ -21,10 +21,14 @@
     <string name="light_status_bar_mode">Light Status Bar Mode</string>
     <string name="light_toolbar_mode">Light Toolbar Mode</string>
 
+    <string name="theme_post_control_bar_color_title">Primary Color in Post Control Bar</string>
+    <string name="theme_post_control_bar_color_summary">Use Primary Color in post bottom control bar.</string>
+
     <string name="ate_colors">ATE Colors</string>
     <string name="base_theme">Base Theme</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="light_ui_modes">Light UI Modes</string>
+    <string name="theme_other_settings">Others</string>
     <string name="dark_theme_summary">Apply a dark theme throughout the app</string>
     <string name="system_ui_colors">System UI Colors</string>
     <string name="not_available_below_m">Not available below 6.0 Marshmallow.</string>

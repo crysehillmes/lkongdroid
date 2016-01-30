@@ -34,4 +34,6 @@ public class PreferenceConstant {
     public static final String SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE = "1800";
     public static final String SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD = "prefs_timeline_only_thread";
     public static final boolean SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE = false;
+    public static final String SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL = "theme_primary_color_in_post_control";
+    public static final boolean SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE = false;
 }
