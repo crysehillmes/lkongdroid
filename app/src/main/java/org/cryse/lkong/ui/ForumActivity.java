@@ -241,7 +241,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
+            getPresenter().isForumFollowed(mUserAccountManager.getAuthObject(), mForumId);
             getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false);
         }
         mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -316,10 +316,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
                 toggleNightMode();
                 return true;
             case R.id.action_forum_follow:
-                if (mIsForumFollowed)
-                    unpinForum();
-                else
-                    pinForum();
+                getPresenter().followForum(mUserAccountManager.getAuthObject(), mForumId, !mIsForumFollowed);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -343,7 +340,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     @Override
     protected void onResume() {
         super.onResume();
-        getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
+        getPresenter().isForumFollowed(mUserAccountManager.getAuthObject(), mForumId);
     }
 
     @Override
@@ -436,19 +433,5 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
         DrawableCompat.setTint(drawable, Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
         mFab.setImageDrawable(drawable);
-    }
-
-    private void pinForum() {
-        getPresenter().pinForum(
-                mUserAccountManager.getAuthObject(),
-                mForumId,
-                mForumName,
-                ModelConverter.fidToForumIconUrl(mForumId)
-        );
-    }
-
-    private void unpinForum() {
-        getPresenter().unpinForum(
-                mUserAccountManager.getAuthObject(), mForumId);
     }
 }

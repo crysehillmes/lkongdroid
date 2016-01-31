@@ -134,6 +134,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
 
     MenuItem mFollowUserMenuItem;
+    MenuItem mBlockUserMenuItem;
     MenuItem mPMMenuItem;
 
     private long mUid;
@@ -144,6 +145,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
     private String mUserAvatarUrl;
     private UserInfoModel mUserInfo;
     private Boolean mIsUserFollowed = null;
+    private Boolean mIsUserBlocked = null;
 
     public static UserProfileFragment newInstance(Bundle args) {
         UserProfileFragment fragment = new UserProfileFragment();
@@ -258,6 +260,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         setAvatar();
         getPresenter().getUserProfile(mUserAccountManager.getAuthObject(), mUid, mUid == mUserAccountManager.getCurrentUserId());
         checkFollowStatus();
+        checkBlockStatus();
     }
 
     @Override
@@ -274,6 +277,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_user_profile, menu);
         mFollowUserMenuItem = menu.findItem(R.id.action_user_profile_follow);
+        mBlockUserMenuItem = menu.findItem(R.id.action_user_profile_block);
         mPMMenuItem = menu.findItem(R.id.action_user_profile_pm);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -300,6 +304,22 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
                 }
             }
         }
+        if(mBlockUserMenuItem != null) {
+            if(isSelf) {
+                mBlockUserMenuItem.setVisible(false);
+            } else {
+                if(mIsUserBlocked !=null) {
+                    mBlockUserMenuItem.setVisible(true);
+                    if(mIsUserBlocked) {
+                        mBlockUserMenuItem.setTitle(R.string.action_user_profile_unblock);
+                    } else {
+                        mBlockUserMenuItem.setTitle(R.string.action_user_profile_block);
+                    }
+                } else {
+                    mBlockUserMenuItem.setVisible(false);
+                }
+            }
+        }
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -310,10 +330,10 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
                 getSwipeBackActivity().closeActivityWithTransition();
                 return true;
             case R.id.action_user_profile_follow:
-                if(mIsUserFollowed)
-                    getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
-                else
-                    getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+                getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid, !mIsUserFollowed);
+                return true;
+            case R.id.action_user_profile_block:
+                getPresenter().blockUser(mUserAccountManager.getAuthObject(), mUid, !mIsUserBlocked);
                 return true;
             case R.id.action_user_profile_pm:
                 startPrivateChat();
@@ -408,6 +428,12 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
     @Override
     public void onCheckFollowStatusComplete(boolean isFollowed) {
         mIsUserFollowed = isFollowed;
+        getAppCompatActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onCheckBlockStatusComplete(boolean isBlocked) {
+        mIsUserBlocked = isBlocked;
         getAppCompatActivity().invalidateOptionsMenu();
     }
 
@@ -522,7 +548,13 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
     private void checkFollowStatus() {
         if(mUserAccountManager.getCurrentUserId() != mUid) {
-            getPresenter().isUserFollowed(mUserAccountManager.getCurrentUserId(), mUid);
+            getPresenter().isUserFollowed(mUserAccountManager.getAuthObject(), mUid);
+        }
+    }
+
+    private void checkBlockStatus() {
+        if(mUserAccountManager.getCurrentUserId() != mUid) {
+            getPresenter().isUserBlocked(mUserAccountManager.getAuthObject(), mUid);
         }
     }
 }

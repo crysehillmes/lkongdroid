@@ -25,11 +25,6 @@ public interface LKongDatabase {
     void removeNoticeCount(long uid);
     NoticeCountModel loadNoticeCount(long uid);
 
-    void followUser(long uid, long targetUid);
-    void unfollowUser(long uid, long targetUid);
-    boolean isUserFollowed(long uid, long targetUid);
-    void removeAllFollowedUser(long uid);
-
     void saveBrowseHistory(long uid,
                            long threadId,
                            String threadTitle,

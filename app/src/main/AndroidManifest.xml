@@ -110,16 +110,6 @@
                 android:resource="@xml/account_authenticator" />
         </service>
         <service
-            android:name=".service.FollowStatusSyncService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter_follow_status" />
-        </service>
-        <service
             android:name=".service.CheckNoticeSyncService"
             android:exported="true">
             <intent-filter>
@@ -132,11 +122,6 @@
         <provider
             android:name="org.cryse.lkong.data.provider.LKongContentProvider"
             android:authorities="org.cryse.lkong.data.provider"
-            android:exported="false" />
-        <provider
-            android:name="org.cryse.lkong.data.provider.FollowStatusContentProvider"
-            android:authorities="org.cryse.lkong.data.provider.followstatus"
-            android:label="@string/provider_follow_status_label"
             android:exported="false" />
         <provider
             android:name="org.cryse.lkong.data.provider.CheckNoticeContentProvider"

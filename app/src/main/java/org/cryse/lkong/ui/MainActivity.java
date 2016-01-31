@@ -262,13 +262,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         super.onPostResume();
         Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
         // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
-        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
-        SyncUtils.setPeriodicSync(
-                account,
-                SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS,
-                false,
-                SyncUtils.SYNC_FREQUENCE_HALF_HOUR
-        );
         SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
         SyncUtils.setPeriodicSync(
                 account,

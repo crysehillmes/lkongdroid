@@ -17,6 +17,7 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
     Subscription mUserProfileSubscription;
     Subscription mGetUserFollowStatusSubscription;
     Subscription mFollowUserSubscription;
+    Subscription mBlockUserSubscription;
     UserProfileView mView;
     @Inject
     public UserProfilePresenter(LKongForumService forumService) {
@@ -46,9 +47,9 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void isUserFollowed(long uid, long targetUid) {
+    public void isUserFollowed(LKAuthObject authObject, long targetUid) {
         SubscriptionUtils.checkAndUnsubscribe(mGetUserFollowStatusSubscription);
-        mGetUserFollowStatusSubscription = mLKongForumService.isUserFollowed(uid, targetUid)
+        mGetUserFollowStatusSubscription = mLKongForumService.isUserFollowed(authObject, targetUid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -66,9 +67,29 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void followUser(LKAuthObject authObject, long targetUid) {
+    public void isUserBlocked(LKAuthObject authObject, long targetUid) {
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
+        mBlockUserSubscription = mLKongForumService.isUserBlocked(authObject, targetUid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if(mView != null)
+                                mView.onCheckBlockStatusComplete(result);
+                        },
+                        error -> {
+                            if(mView != null) {
+                                Timber.e(error, "UserProfilePresenter::isUserFollowed() onError().", LOG_TAG);
+                            }
+                        },
+                        () -> {
+                        }
+                );
+    }
+
+    public void followUser(LKAuthObject authObject, long targetUid, boolean follow) {
         SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
-        mFollowUserSubscription = mLKongForumService.followUser(authObject, targetUid)
+        mFollowUserSubscription = mLKongForumService.followUser(authObject, targetUid, follow)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -86,19 +107,19 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void unfollowUser(LKAuthObject authObject, long targetUid) {
-        SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
-        mFollowUserSubscription = mLKongForumService.unfollowUser(authObject, targetUid)
+    public void blockUser(LKAuthObject authObject, long targetUid, boolean block) {
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
+        mBlockUserSubscription = mLKongForumService.blockUser(authObject, targetUid, block)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             if(mView != null)
-                                mView.onCheckFollowStatusComplete(result);
+                                mView.onCheckBlockStatusComplete(result);
                         },
                         error -> {
                             if(mView != null) {
-                                Timber.e(error, "UserProfilePresenter::unfollowUser() onError().", LOG_TAG);
+                                Timber.e(error, "UserProfilePresenter::blockUser() onError().", LOG_TAG);
                             }
                         },
                         () -> {
@@ -126,5 +147,6 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
         SubscriptionUtils.checkAndUnsubscribe(mUserProfileSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mGetUserFollowStatusSubscription);
         SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
+        SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
     }
 }

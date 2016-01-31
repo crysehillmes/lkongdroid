@@ -62,7 +62,7 @@ public class SettingsFragment extends PreferenceFragment {
         syncPrefs.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
             //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
-            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS});
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE});
             startActivity(intent);
             return true;
         });
