@@ -117,6 +117,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     StringPrefs mReadFontSizePref;
     BooleanPrefs mUseInAppBrowser;
     BooleanPrefs mScrollByVolumeKey;
+    BooleanPrefs mPrimaryColorInPostControl;
 
 
     @Bind(R.id.toolbar)
@@ -180,6 +181,10 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mScrollByVolumeKey = Prefs.getBooleanPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY,
                 PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY_VALUE
+        );
+        mPrimaryColorInPostControl = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL,
+                PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE
         );
         setUpToolbar(mToolbar);
         setupPageControlListener();
@@ -397,7 +402,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getPrimaryColor(), getPrimaryDarkColor());
+        setColorToViews();
     }
 
     private void setupPageControlListener() {
@@ -575,19 +580,22 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
-        else if(mItemList.size() > 0 && mIsFavorite != null) {
-            mFavoriteMenuItem.setVisible(true);
-            if(mIsFavorite) {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+        if(mFavoriteMenuItem != null) {
+            if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null)
+                mFavoriteMenuItem.setVisible(false);
+            else if(mItemList.size() > 0 && mIsFavorite != null) {
+                mFavoriteMenuItem.setVisible(true);
+                if(mIsFavorite) {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+                }
+                else {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
+                }
+            } else if(mIsFavorite == null) {
+                mFavoriteMenuItem.setVisible(false);
             }
-            else {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
-            }
-        } else if(mIsFavorite == null) {
-            mFavoriteMenuItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -923,19 +931,19 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
     }
 
-    private void setColorToViews(int primaryColor, int primaryDarkColor) {
-        int accentColor = getAccentColor();
-        int accentColorDark = ThemeUtils.makeColorDarken(accentColor, 0.8f);
-        int accentColorRipple = ThemeUtils.makeColorDarken(accentColor, 0.9f);
-        mFab.setColorNormal(accentColor);
-        mFab.setColorPressed(accentColorDark);
-        mFab.setColorRipple(accentColorRipple);
+    private void setColorToViews() {
+        int postControlColor = mPrimaryColorInPostControl.get() ? getPrimaryColor() : getAccentColor();
+        int postControlColorDark = ThemeUtils.makeColorDarken(postControlColor, 0.8f);
+        int postControlColorRipple = ThemeUtils.makeColorDarken(postControlColor, 0.9f);
+        mFab.setColorNormal(postControlColor);
+        mFab.setColorPressed(postControlColorDark);
+        mFab.setColorRipple(postControlColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        int toolbarTextColor = Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE;
+        int toolbarTextColor = Util.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
         ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
-        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
+        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(postControlColor);
         Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_backward, null).mutate();
         Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward, null).mutate();
         ThemeUtils.setTint(backwardArrow, toolbarTextColor);

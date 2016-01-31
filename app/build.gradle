@@ -63,9 +63,6 @@ android {
 }
 
 dependencies {
-    compile project(':widgets')
-    compile project(':changelog')
-
     // compile libDependencies.multidex
     compile libDependencies.support_v13
     compile libDependencies.design
@@ -105,6 +102,10 @@ dependencies {
 
     compile(libDependencies.textdrawable) {
         transitive = true
+    }
+
+    compile (libDependencies.pulltorefresh) {
+        exclude module: 'support-v4'
     }
 
     // compile fileTree(dir: 'libs', include: ['*.jar'])

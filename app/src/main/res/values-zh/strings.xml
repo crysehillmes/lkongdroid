@@ -109,7 +109,7 @@
     <string name="toast_failure_rate_post">评分失败</string>
     <string name="toast_failure_save_image_as">图片保存失败</string>
     <string name="toast_failure_new_post">发送失败，请重试。</string>
-    <string name="toast_double_tap_to_exit">再按一次返回键退出</string>
+    <string name="toast_double_tap_to_exit">再次点击返回键退出</string>
     <string name="toast_error_title_empty">标题不能为空</string>
 
 
@@ -288,4 +288,18 @@
     <string name="donation_positive">打开支付宝</string>
     <string name="donation_content">这个应用花费了我不少心血，如果您想支持一下我的话，可以通过向这个支付宝账户：tyk5555@hotmail.com 转账来进行捐赠</string>
 
+    <string name="settings_item_screen_rotation_title">屏幕旋转</string>
+    <string name="settings_item_screen_rotation_summary">在这里调整屏幕旋转设置</string>
+
+    <string-array name="custom_rotation_title_arrays">
+        <item>跟随系统设置</item>
+        <item>竖屏</item>
+        <item>横屏</item>
+    </string-array>
+
+    <string-array name="custom_rotation_value_arrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
