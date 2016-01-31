@@ -50,28 +50,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 );
     }
 
-    public void unpinForum(LKAuthObject authObject, long fid) {
+    public void followForum(LKAuthObject authObject, long fid, boolean follow) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.unfollowForum(authObject, fid)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            if (mView != null) {
-                                mView.checkPinnedStatusDone(false);
-                            }
-                        },
-                        error -> {
-                            Timber.e(error, "ForumPresenter::isForumPinned() onError().", LOG_TAG);
-                        },
-                        () -> {
-                        }
-                );
-    }
-
-    public void pinForum(LKAuthObject authObject, long fid, String forumName, String forumIcon) {
-        SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.followForum(authObject, fid, forumName, forumIcon)
+        mCheckPinnedSubscription = mLKongForumService.followForum(authObject, fid, follow)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

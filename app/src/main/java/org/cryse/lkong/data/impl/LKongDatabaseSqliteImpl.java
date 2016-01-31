@@ -111,42 +111,6 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     @Override
-    public void followUser(long uid, long targetUid) {
-        FollowedUserContentValues contentValues = new FollowedUserContentValues();
-        contentValues.putUserId(uid).putTargetUserId(targetUid);
-        contentValues.insert(mContentResolver);
-    }
-
-    @Override
-    public void unfollowUser(long uid, long targetUid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid).and().targetUserId(targetUid);
-        selection.delete(mContentResolver);
-    }
-
-    @Override
-    public boolean isUserFollowed(long uid, long targetUid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid).and().targetUserId(targetUid);
-        Cursor cursor = selection.query(mContentResolver);
-        boolean returnValue;
-        if(cursor.getCount() > 0) {
-            returnValue = true;
-        } else {
-            returnValue = false;
-        }
-        cursor.close();
-        return returnValue;
-    }
-
-    @Override
-    public void removeAllFollowedUser(long uid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid);
-        selection.delete(mContentResolver);
-    }
-
-    @Override
     public void saveBrowseHistory(long uid,
                                   long threadId,
                                   String threadTitle,

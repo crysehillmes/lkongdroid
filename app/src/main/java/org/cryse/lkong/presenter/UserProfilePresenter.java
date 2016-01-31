@@ -87,9 +87,9 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void followUser(LKAuthObject authObject, long targetUid) {
+    public void followUser(LKAuthObject authObject, long targetUid, boolean follow) {
         SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
-        mFollowUserSubscription = mLKongForumService.followUser(authObject, targetUid)
+        mFollowUserSubscription = mLKongForumService.followUser(authObject, targetUid, follow)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -100,26 +100,6 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                         error -> {
                             if(mView != null) {
                                 Timber.e(error, "UserProfilePresenter::followUser() onError().", LOG_TAG);
-                            }
-                        },
-                        () -> {
-                        }
-                );
-    }
-
-    public void unfollowUser(LKAuthObject authObject, long targetUid) {
-        SubscriptionUtils.checkAndUnsubscribe(mFollowUserSubscription);
-        mFollowUserSubscription = mLKongForumService.unfollowUser(authObject, targetUid)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            if(mView != null)
-                                mView.onCheckFollowStatusComplete(result);
-                        },
-                        error -> {
-                            if(mView != null) {
-                                Timber.e(error, "UserProfilePresenter::unfollowUser() onError().", LOG_TAG);
                             }
                         },
                         () -> {

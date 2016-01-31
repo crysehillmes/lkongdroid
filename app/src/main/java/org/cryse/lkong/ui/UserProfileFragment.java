@@ -330,10 +330,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
                 getSwipeBackActivity().closeActivityWithTransition();
                 return true;
             case R.id.action_user_profile_follow:
-                if(mIsUserFollowed)
-                    getPresenter().unfollowUser(mUserAccountManager.getAuthObject(), mUid);
-                else
-                    getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid);
+                getPresenter().followUser(mUserAccountManager.getAuthObject(), mUid, !mIsUserFollowed);
                 return true;
             case R.id.action_user_profile_block:
                 getPresenter().blockUser(mUserAccountManager.getAuthObject(), mUid, !mIsUserBlocked);
