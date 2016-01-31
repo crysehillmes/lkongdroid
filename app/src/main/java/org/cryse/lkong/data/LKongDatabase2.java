@@ -11,6 +11,7 @@ import org.cryse.lkong.model.converter.ModelConverter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -113,10 +114,16 @@ public class LKongDatabase2 {
             RealmQuery<CachedForum> query = mRealm.where(CachedForum.class);
             query.equalTo("id", id);
             CachedForum result = query.findFirst();
-            if(result != null)
-                results.add(cachedToModel(result));
-            else
+            if(result != null) {
+                long timeDiff = new Date().getTime() - result.getLastUpdate();
+                long minusDiff = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
+                if(minusDiff < 10)
+                    results.add(cachedToModel(result));
+                else
+                    notexists.add(id);
+            } else {
                 notexists.add(id);
+            }
         }
         return Pair.create(results, notexists);
     }

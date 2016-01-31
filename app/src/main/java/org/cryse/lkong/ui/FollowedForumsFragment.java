@@ -127,11 +127,6 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected OnMoreListener getOnMoreListener() {
-        return null;
-    }
-
-    @Override
     protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
         return null;
     }

@@ -100,12 +100,8 @@ public class LKongForumService {
             try {
                 List<ForumModel> cachedForums = new ArrayList<ForumModel>();
                 database = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                Pair<List<ForumModel>, List<Long>> resultPair = database.getCachedForums(LKongConst.MAIN_FORUM_IDS);
-                cachedForums.addAll(resultPair.first);
-                if (cachedForums.size() > 0) {
-                    subscriber.onNext(cachedForums);
-                }
-                if(updateFromWeb || cachedForums.size() == 0) {
+
+                if(updateFromWeb) {
                     // ForumListRequest request = new ForumListRequest();
                     // List<ForumModel> forumModelList = request.execute();
                     // if (forumModelList != null)
@@ -117,6 +113,16 @@ public class LKongForumService {
                     }
                     database.cacheForums(updatedForums);
                     subscriber.onNext(updatedForums);
+                } else {
+                    Pair<List<ForumModel>, List<Long>> resultPair = database.getCachedForums(LKongConst.MAIN_FORUM_IDS);
+                    cachedForums.addAll(resultPair.first);
+                    for(Long id : resultPair.second) {
+                        GetForumInfoRequest request = new GetForumInfoRequest(authObject, id);
+                        ForumModel model = request.execute();
+                        database.cacheForum(model);
+                        cachedForums.add(model);
+                    }
+                    subscriber.onNext(cachedForums);
                 }
                 subscriber.onCompleted();
             } catch (Exception e) {
