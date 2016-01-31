@@ -28,6 +28,7 @@ import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
@@ -47,6 +48,7 @@ import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
@@ -71,6 +73,8 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     private static final int ID_BROWSE_HISTORY = 1004;
     private static final int ID_FEEDBACK = 1101;
     private static final int ID_SETTINGS = 1102;
+    private static final int ID_ADD_ACCOUNT = -3001;
+    private static final int ID_MANAGE_ACCOUNT = -3002;
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
@@ -153,8 +157,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withHeaderBackground(new ColorDrawable(getAccentColor()));
         accountHeaderBuilder
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
-                    if (iProfile.getIdentifier() == -3001) {
+                    if (iProfile.getIdentifier() == ID_ADD_ACCOUNT) {
                         mNavigation.navigateToSignInActivity(MainActivity.this, false);
+                    } else if(iProfile.getIdentifier() == ID_MANAGE_ACCOUNT) {
+                        mNavigation.navigateToManageAccount(this);
                     } else {
                         long uid = iProfile.getIdentifier();
                         if (mUserAccountManager.getCurrentUserId() == uid) {
@@ -167,7 +173,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                             getEventBus().sendEvent(new CurrentAccountChangedEvent());
                         }
                     }
-                    return true;
+                    return false;
                 })
                 .withCurrentProfileHiddenInList(true)
                 .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
@@ -252,6 +258,15 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         drawerItem.withIconTintingEnabled(true);
         drawerItem.withTextColor(normalTextColor);
         drawerItem.withSelectedTextColor(selectedTextColor);
+        drawerItem.withSelectedColor(Config.navigationViewSelectedBg(this, mATEKey, isNightMode()));
+        return drawerItem;
+    }
+
+    private ProfileSettingDrawerItem applyColorToDrawerItem(ProfileSettingDrawerItem drawerItem) {
+        int normalTextColor = Config.navigationViewNormalText(this, mATEKey, isNightMode());
+        drawerItem.withIconColor(normalTextColor);
+        drawerItem.withIconTinted(true);
+        drawerItem.withTextColor(normalTextColor);
         drawerItem.withSelectedColor(Config.navigationViewSelectedBg(this, mATEKey, isNightMode()));
         return drawerItem;
     }
@@ -362,12 +377,19 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                         .withIdentifier((int) entity.getUserId());
                 mAccountHeader.addProfiles(profileDrawerItem);
             }
+            ProfileSettingDrawerItem addAccountDrawerItem = new ProfileSettingDrawerItem()
+                    .withName(getString(R.string.drawer_item_account_add))
+                    .withIcon(R.drawable.ic_drawer_account_add)
+                    .withIdentifier(ID_ADD_ACCOUNT)
+                    .withSelectable(false);
+            ProfileSettingDrawerItem accountManageDrawerItem = new ProfileSettingDrawerItem()
+                    .withName(getString(R.string.drawer_item_manage_account))
+                    .withIcon(R.drawable.ic_drawer_settings)
+                    .withIdentifier(ID_MANAGE_ACCOUNT)
+                    .withSelectable(false);
             mAccountHeader.addProfiles(
-                    new ProfileDrawerItem()
-                            .withName(getString(R.string.drawer_item_account_add))
-                            .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drawer_account_add, getTheme()))
-                            .withIdentifier(-3001)
-                            .withSelectable(false)
+                    applyColorToDrawerItem(addAccountDrawerItem),
+                    applyColorToDrawerItem(accountManageDrawerItem)
             );
         } catch (NeedSignInException ex) {
             mNavigation.navigateToSignInActivity(this, true);

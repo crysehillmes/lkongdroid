@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Browser;
+import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 
 import com.afollestad.appthemeengine.Config;
@@ -21,6 +22,7 @@ import com.thefinestartist.finestwebview.FinestWebView;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.AccountConst;
 import org.cryse.lkong.model.TimelineModel;
+import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.ForumActivity;
 import org.cryse.lkong.ui.NewPostActivity;
 import org.cryse.lkong.ui.NewThreadActivity;
@@ -179,6 +181,13 @@ public class AppNavigation {
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
             context.startActivity(intent);
         }
+    }
+
+    public void navigateToManageAccount(Activity activity) {
+        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+        //intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[] {"org.cryse.lkong"});
+        intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[] {SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE});
+        activity.startActivity(intent);
     }
 
     private void addNewAccount(Activity activity, String accountType, String authTokenType) {
