@@ -551,13 +551,13 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
 
     private void checkFollowStatus() {
         if(mUserAccountManager.getCurrentUserId() != mUid) {
-            getPresenter().isUserFollowed(mUserAccountManager.getCurrentUserId(), mUid);
+            getPresenter().isUserFollowed(mUserAccountManager.getAuthObject(), mUid);
         }
     }
 
     private void checkBlockStatus() {
         if(mUserAccountManager.getCurrentUserId() != mUid) {
-            getPresenter().isUserBlocked(mUserAccountManager.getCurrentUserId(), mUid);
+            getPresenter().isUserBlocked(mUserAccountManager.getAuthObject(), mUid);
         }
     }
 }

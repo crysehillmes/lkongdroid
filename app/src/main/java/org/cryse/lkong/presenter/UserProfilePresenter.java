@@ -47,9 +47,9 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void isUserFollowed(long uid, long targetUid) {
+    public void isUserFollowed(LKAuthObject authObject, long targetUid) {
         SubscriptionUtils.checkAndUnsubscribe(mGetUserFollowStatusSubscription);
-        mGetUserFollowStatusSubscription = mLKongForumService.isUserFollowed(uid, targetUid)
+        mGetUserFollowStatusSubscription = mLKongForumService.isUserFollowed(authObject, targetUid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -67,15 +67,15 @@ public class UserProfilePresenter implements BasePresenter<UserProfileView> {
                 );
     }
 
-    public void isUserBlocked(long uid, long targetUid) {
+    public void isUserBlocked(LKAuthObject authObject, long targetUid) {
         SubscriptionUtils.checkAndUnsubscribe(mBlockUserSubscription);
-        mBlockUserSubscription = mLKongForumService.isUserBlocked(uid, targetUid)
+        mBlockUserSubscription = mLKongForumService.isUserBlocked(authObject, targetUid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
                             if(mView != null)
-                                mView.onCheckBlockStatusComplete(false);
+                                mView.onCheckBlockStatusComplete(result);
                         },
                         error -> {
                             if(mView != null) {

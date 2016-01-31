@@ -241,7 +241,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         } else {
             mThreadCollectionView.getSwipeToRefresh().measure(1,1);
             mThreadCollectionView.getSwipeToRefresh().setRefreshing(true);
-            getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
+            getPresenter().isForumFollowed(mUserAccountManager.getAuthObject(), mForumId);
             getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false);
         }
         mListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -343,7 +343,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     @Override
     protected void onResume() {
         super.onResume();
-        getPresenter().isForumPinned(mUserAccountManager.getCurrentUserId(), mForumId);
+        getPresenter().isForumFollowed(mUserAccountManager.getAuthObject(), mForumId);
     }
 
     @Override

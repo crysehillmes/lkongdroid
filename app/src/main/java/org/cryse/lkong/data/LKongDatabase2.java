@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v4.util.Pair;
 
 import org.cryse.lkong.data.model.CachedForum;
-import org.cryse.lkong.data.model.ForumRecord;
+import org.cryse.lkong.data.model.FollowRecord;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.converter.ModelConverter;
 
@@ -141,16 +141,17 @@ public class LKongDatabase2 {
         mRealm.commitTransaction();
     }
 
-    public void addFollowedForum(long uid, long fid) {
-        addFollowedForum(uid, fid, getMaxForumRecordOrdinal());
+    public void addFollowRecord(int type, long userId, long targetId) {
+        addFollowRecord(type, userId, targetId, getMaxForumRecordOrdinal());
     }
 
-    public void addFollowedForum(long uid, long fid, int ordinal) {
+    public void addFollowRecord(int type, long userId, long targetId, int ordinal) {
         mRealm.beginTransaction();
-        ForumRecord forumRecord = new ForumRecord();
-        forumRecord.setKey(String.format("%d|%d", uid, fid));
-        forumRecord.setUserid(uid);
-        forumRecord.setForumid(fid);
+        FollowRecord forumRecord = new FollowRecord();
+        forumRecord.setKey(String.format("%d|%d|%d", type, userId, targetId));
+        forumRecord.setType(type);
+        forumRecord.setTargetId(targetId);
+        forumRecord.setUserid(userId);
         forumRecord.setOrdinal(ordinal);
         mRealm.copyToRealmOrUpdate(forumRecord);
         mRealm.commitTransaction();
@@ -158,39 +159,52 @@ public class LKongDatabase2 {
 
     public int getMaxForumRecordOrdinal() {
         int maxId;
-        if(mRealm.where(ForumRecord.class).max("ordinal") == null) {
+        if(mRealm.where(FollowRecord.class).max("ordinal") == null) {
             maxId = 0;
         } else {
-            maxId = mRealm.where(ForumRecord.class).max("ordinal").intValue() + 1;
+            maxId = mRealm.where(FollowRecord.class).max("ordinal").intValue() + 1;
         }
         return maxId;
     }
 
-    public void removeFollowedForum(long uid, long fid) {
-        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
-        query.equalTo("userid", uid);
-        query.equalTo("forumid", fid);
-        RealmResults<ForumRecord> results = query.findAll();
+    public void removeFollowRecord(int type, long userId, long targetId) {
+        RealmQuery<FollowRecord> query = mRealm.where(FollowRecord.class);
+        query.equalTo("type", type);
+        query.equalTo("userid", userId);
+        query.equalTo("targetId", targetId);
+        RealmResults<FollowRecord> results = query.findAll();
         mRealm.beginTransaction();
         results.removeLast();
         mRealm.commitTransaction();
     }
 
-    public ForumRecord getFollowedForum(long uid, long fid) {
-        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
-        query.equalTo("userid", uid);
-        query.equalTo("forumid", fid);
-        ForumRecord record = query.findFirst();
+    public void removeAllFollowRecord(int type, long userId) {
+        RealmQuery<FollowRecord> query = mRealm.where(FollowRecord.class);
+        query.equalTo("type", type);
+        query.equalTo("userid", userId);
+        RealmResults<FollowRecord> results = query.findAll();
+        mRealm.beginTransaction();
+        results.removeLast();
+        mRealm.commitTransaction();
+    }
+
+    public FollowRecord getFollowRecord(int type, long userId, long targetId) {
+        RealmQuery<FollowRecord> query = mRealm.where(FollowRecord.class);
+        query.equalTo("type", type);
+        query.equalTo("userid", userId);
+        query.equalTo("targetId", targetId);
+        FollowRecord record = query.findFirst();
         if(record != null)
             return mRealm.copyFromRealm(record);
         else
             return null;
     }
 
-    public List<ForumRecord> getFollowedForums(long uid) {
-        RealmQuery<ForumRecord> query = mRealm.where(ForumRecord.class);
-        query.equalTo("userid", uid);
-        RealmResults<ForumRecord> records = query.findAll();
+    public List<FollowRecord> getFollowRecords(int type, long userId) {
+        RealmQuery<FollowRecord> query = mRealm.where(FollowRecord.class);
+        query.equalTo("type", type);
+        query.equalTo("userid", userId);
+        RealmResults<FollowRecord> records = query.findAll();
         if(records != null && records.size() > 0)
             return mRealm.copyFromRealm(records);
         else

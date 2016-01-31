@@ -6,16 +6,14 @@ import android.text.format.DateUtils;
 
 import org.cryse.lkong.data.LKongDatabase;
 import org.cryse.lkong.data.LKongDatabase2;
-import org.cryse.lkong.data.model.CachedForum;
-import org.cryse.lkong.data.model.FollowedForum;
-import org.cryse.lkong.data.model.ForumRecord;
+import org.cryse.lkong.data.model.FollowRecord;
 import org.cryse.lkong.event.FavoritesChangedEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.request.AddOrRemoveFavoriteRequest;
 import org.cryse.lkong.logic.request.FollowRequest;
-import org.cryse.lkong.logic.request.ForumListRequest;
 import org.cryse.lkong.logic.request.GetDataItemLocationRequest;
 import org.cryse.lkong.logic.request.GetFavoritesRequest;
+import org.cryse.lkong.logic.request.GetFollowInfoRequest;
 import org.cryse.lkong.logic.request.GetForumInfoRequest;
 import org.cryse.lkong.logic.request.GetHotThreadRequest;
 import org.cryse.lkong.logic.request.GetNoticeRateLogRequest;
@@ -36,6 +34,7 @@ import org.cryse.lkong.logic.request.SearchRequest;
 import org.cryse.lkong.logic.request.SendNewPrivateMessageRequest;
 import org.cryse.lkong.model.BrowseHistory;
 import org.cryse.lkong.model.DataItemLocationModel;
+import org.cryse.lkong.model.FollowInfo;
 import org.cryse.lkong.model.FollowResult;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.model.HotThreadModel;
@@ -361,7 +360,7 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                database2.addFollowedForum(authObject.getUserId(), fid);
+                database2.addFollowRecord(FollowRecord.TYPE_FORUM, authObject.getUserId(), fid);
                 database2.destroy();
                 FollowRequest followRequest = new FollowRequest(authObject, FollowResult.ACTION_FOLLOW, FollowResult.TYPE_FORUM, fid);
                 FollowResult result = followRequest.execute();
@@ -377,7 +376,7 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                database2.removeFollowedForum(authObject.getUserId(), fid);
+                database2.removeFollowRecord(FollowRecord.TYPE_FORUM, authObject.getUserId(), fid);
                 database2.destroy();
                 FollowRequest request = new FollowRequest(authObject, FollowResult.ACTION_UNFOLLOW, FollowResult.TYPE_FORUM, fid);
                 FollowResult result = request.execute();
@@ -389,13 +388,14 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> isForumFollowed(long uid, long fid) {
+    public Observable<Boolean> isForumFollowed(LKAuthObject authObject, long fid) {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                boolean isForumPinned = database2.getFollowedForum(uid, fid) != null;
+                updateFollowInfo(authObject, database2);
+                boolean isForumFollowed = database2.getFollowRecord(FollowRecord.TYPE_FORUM, authObject.getUserId(), fid) != null;
                 database2.destroy();
-                subscriber.onNext(isForumPinned);
+                subscriber.onNext(isForumFollowed);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);
@@ -407,13 +407,14 @@ public class LKongForumService {
         return Observable.create(subscriber -> {
             try {
                 LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
-                List<ForumRecord> followedForums = database2.getFollowedForums(authObject.getUserId());
+                updateFollowInfo(authObject, database2);
+                List<FollowRecord> followedForums = database2.getFollowRecords(FollowRecord.TYPE_FORUM, authObject.getUserId());
                 List<ForumModel> results = new ArrayList<>();
                 if(followedForums != null && followedForums.size() > 0) {
                     long[] fids = new long[followedForums.size()];
                     for (int i = 0; i < followedForums.size(); i++) {
-                        ForumRecord record = followedForums.get(i);
-                        fids[i] = record.getForumid();
+                        FollowRecord record = followedForums.get(i);
+                        fids[i] = record.getTargetId();
                     }
                     Pair<List<ForumModel>, List<Long>> resultPair = database2.getCachedForums(fids);
                     results.addAll(resultPair.first);
@@ -477,10 +478,12 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> isUserFollowed(long uid, long targetUserId) {
+    public Observable<Boolean> isUserFollowed(LKAuthObject authObject, long targetUserId) {
         return Observable.create(subscriber -> {
             try {
-                boolean isFollowed = mLKongDatabase.isUserFollowed(uid, targetUserId);
+                LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
+                updateFollowInfo(authObject, database2);
+                boolean isFollowed = database2.getFollowRecord(FollowRecord.TYPE_USER, authObject.getUserId(), targetUserId) != null;
                 subscriber.onNext(isFollowed);
                 subscriber.onCompleted();
             } catch (Exception ex) {
@@ -502,11 +505,13 @@ public class LKongForumService {
         });
     }
 
-    public Observable<Boolean> isUserBlocked(long uid, long targetUserId) {
+    public Observable<Boolean> isUserBlocked(LKAuthObject authObject, long targetUserId) {
         return Observable.create(subscriber -> {
             try {
-                boolean isBlocked = mLKongDatabase.isUserFollowed(uid, targetUserId);
-                subscriber.onNext(false);
+                LKongDatabase2 database2 = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
+                updateFollowInfo(authObject, database2);
+                boolean isBlocked = database2.getFollowRecord(FollowRecord.TYPE_BLACKLIST, authObject.getUserId(), targetUserId) != null;
+                subscriber.onNext(isBlocked);
                 subscriber.onCompleted();
             } catch (Exception ex) {
                 subscriber.onError(ex);
@@ -594,5 +599,48 @@ public class LKongForumService {
                 subscriber.onError(ex);
             }
         });
+    }
+
+    public Observable<Void> updateFollowInfo(LKAuthObject authObject) {
+        return Observable.create(subscriber -> {
+            try {
+                LKongDatabase2 database = new LKongDatabase2(LKongDatabase2.getInstance().getContext());
+                updateFollowInfo(authObject, database);
+                database.destroy();
+                // getContext().sendBroadcast(new Intent(BroadcastConstants.BROADCAST_SYNC_FOLLOWED_FORUMS_DONE));
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            } catch (Exception ex) {
+                subscriber.onError(ex);
+            }
+        });
+    }
+
+    public void updateFollowInfo(LKAuthObject authObject, LKongDatabase2 database) throws Exception{
+        GetFollowInfoRequest request = new GetFollowInfoRequest(authObject);
+        FollowInfo followInfo = request.execute();
+
+        if(followInfo != null && followInfo.followedForumIds != null) {
+            updateFollowRecord(database, FollowRecord.TYPE_FORUM, authObject.getUserId(), followInfo.followedForumIds);
+        }
+        if(followInfo != null && followInfo.followedThreadIds != null) {
+            updateFollowRecord(database, FollowRecord.TYPE_THREAD, authObject.getUserId(), followInfo.followedThreadIds);
+        }
+        if(followInfo != null && followInfo.followedUserIds != null) {
+            updateFollowRecord(database, FollowRecord.TYPE_USER, authObject.getUserId(), followInfo.followedUserIds);
+        }
+        if(followInfo != null && followInfo.blacklistUserIds != null) {
+            updateFollowRecord(database, FollowRecord.TYPE_BLACKLIST, authObject.getUserId(), followInfo.blacklistUserIds);
+        }
+    }
+
+    private void updateFollowRecord(LKongDatabase2 database, int followType, long userId, long[] targetIds) {
+        int count = targetIds.length;
+        database.removeAllFollowRecord(followType, userId);
+        for (int i = 0; i < count; i++) {
+            long targetId = targetIds[i];
+            if(targetId == -1) continue;
+            database.addFollowRecord(followType, userId, targetId);
+        }
     }
 }

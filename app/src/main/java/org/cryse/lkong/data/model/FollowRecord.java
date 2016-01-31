@@ -3,11 +3,17 @@ package org.cryse.lkong.data.model;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class ForumRecord extends RealmObject {
+public class FollowRecord extends RealmObject {
+    public static final int TYPE_FORUM = 0;
+    public static final int TYPE_THREAD = 1;
+    public static final int TYPE_USER = 2;
+    public static final int TYPE_BLACKLIST = 3;
+
     @PrimaryKey
     private String key;
+    private int type;
     private int ordinal;
-    private long forumid;
+    private long targetId;
     private long userid;
 
     public String getKey() {
@@ -18,6 +24,14 @@ public class ForumRecord extends RealmObject {
         this.key = key;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     public int getOrdinal() {
         return ordinal;
     }
@@ -26,12 +40,12 @@ public class ForumRecord extends RealmObject {
         this.ordinal = ordinal;
     }
 
-    public long getForumid() {
-        return forumid;
+    public long getTargetId() {
+        return targetId;
     }
 
-    public void setForumid(long forumid) {
-        this.forumid = forumid;
+    public void setTargetId(long targetId) {
+        this.targetId = targetId;
     }
 
     public long getUserid() {

@@ -121,8 +121,8 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
         if (event instanceof CurrentAccountChangedEvent) {
             getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
             Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
-            if(account != null)
-                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
+            /*if(account != null)
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);*/
         }
     }
 

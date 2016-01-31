@@ -88,9 +88,9 @@ public class ForumPresenter implements BasePresenter<ForumView> {
                 );
     }
 
-    public void isForumPinned(long uid, long fid) {
+    public void isForumFollowed(LKAuthObject authObject, long fid) {
         SubscriptionUtils.checkAndUnsubscribe(mCheckPinnedSubscription);
-        mCheckPinnedSubscription = mLKongForumService.isForumFollowed(uid, fid)
+        mCheckPinnedSubscription = mLKongForumService.isForumFollowed(authObject, fid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
