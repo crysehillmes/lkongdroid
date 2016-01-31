@@ -11,17 +11,17 @@
     app:contentPadding="0dp"
     tools:layout_height="120dp">
 
+    <org.cryse.lkong.widget.PostItemView
+        android:id="@+id/recyclerview_item_post_view_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <ImageView
         android:id="@+id/recyclerview_item_post_imageview_avatar"
         android:layout_width="@dimen/size_avatar_default"
         android:layout_height="@dimen/size_avatar_default"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"/>
-
-    <org.cryse.lkong.widget.PostItemView
-        android:id="@+id/recyclerview_item_post_view_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
     <ImageButton
         android:id="@+id/recyclerview_item_post_button_rate"
