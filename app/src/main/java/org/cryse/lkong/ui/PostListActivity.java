@@ -850,10 +850,10 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if(layoutManager instanceof GridLayoutManager) {
             GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
-            return (gridLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+            return (gridLayoutManager.findLastCompletelyVisibleItemPosition() == (mWrapperAdapter.getItemCount() - 1));
         } else if(layoutManager instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
-            return (linearLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+            return (linearLayoutManager.findLastCompletelyVisibleItemPosition() == (mWrapperAdapter.getItemCount() - 1));
         } else {
             throw new IllegalStateException();
         }

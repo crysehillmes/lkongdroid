@@ -69,7 +69,8 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     private static final int ID_HOMEPAGE = 1001;
     private static final int ID_FAVORITES = 1003;
     private static final int ID_BROWSE_HISTORY = 1004;
-    private static final int ID_SETTINGS = 1101;
+    private static final int ID_FEEDBACK = 1101;
+    private static final int ID_SETTINGS = 1102;
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
@@ -171,7 +172,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withCurrentProfileHiddenInList(true)
                 .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem[] drawerItems = new IDrawerItem[5];
+        IDrawerItem[] drawerItems = new IDrawerItem[6];
         drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()
                 .withName(R.string.drawer_item_homepage)
                 .withIcon(R.drawable.ic_drawer_homepage)
@@ -186,6 +187,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withIdentifier(ID_BROWSE_HISTORY));
         drawerItems[3] = new DividerDrawerItem();
         drawerItems[4] = applyColorToDrawerItem(new SecondaryDrawerItem()
+                .withName(R.string.settings_item_feedback_title)
+                .withIdentifier(ID_FEEDBACK)
+                .withSelectable(false));
+        drawerItems[5] = applyColorToDrawerItem(new SecondaryDrawerItem()
                 .withName(R.string.drawer_item_settings)
                 .withIdentifier(ID_SETTINGS)
                 .withSelectable(false));
@@ -281,6 +286,9 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 break;
             case ID_BROWSE_HISTORY:
                 navigateToBrowseHistoryFragment(null);
+                break;
+            case ID_FEEDBACK:
+                mNavigation.openActivityForPostListByThreadId(this, 1153838l);
                 break;
             case ID_SETTINGS:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);

@@ -1,12 +1,10 @@
 package org.cryse.lkong.ui;
 
-import android.accounts.Account;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,19 +12,14 @@ import android.view.View;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.broadcast.BroadcastConstants;
-import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.FollowedForumsPresenter;
-import org.cryse.lkong.sync.SyncUtils;
-import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
-
-import com.malinskiy.superrecyclerview.OnMoreListener;
 
 import java.util.List;
 
@@ -120,19 +113,16 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
             getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
-            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
-            /*if(account != null)
+            /*Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            if(account != null)
                 SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);*/
         }
     }
 
-    @Override
-    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
-        return null;
-    }
     protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
         return null;
     }
+
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
         return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_detail_column_count));
