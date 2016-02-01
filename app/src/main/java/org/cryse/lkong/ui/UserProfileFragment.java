@@ -486,6 +486,7 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
                         if(!TextUtils.isEmpty(locationString)) {
                             subscriber.onNext(Long.valueOf(locationString.substring(5)));
                             subscriber.onCompleted();
+                            return;
                         }
                     }
                     subscriber.onError(new Exception("Could not get user id"));
