@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2016年2月1日"
+        versionCode="907"
+        versionName="0.9.7">
+        <changelogtext>新功能：拉黑用户</changelogtext>
+        <changelogtext>改进：应用内浏览器</changelogtext>
+        <changelogtext>改进：设置中控制屏幕旋转</changelogtext>
+        <changelogtext>修复：无法关注板块的问题</changelogtext>
+        <changelogtext>修复：其他一些错误</changelogtext>
+    </changelogversion>
+    <changelogversion
         changeDate="2016年1月24日"
         versionCode="906"
         versionName="0.9.6">
