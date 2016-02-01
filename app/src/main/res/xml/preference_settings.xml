@@ -12,6 +12,14 @@
             android:key="prefs_theme"
             android:title="@string/settings_item_theme_color_title"
             android:summary="@string/settings_item_theme_color_summary"/>
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            android:key="prefs_screen_rotation"
+            android:defaultValue="0"
+            android:dialogTitle="@string/settings_item_screen_rotation_title"
+            android:entries="@array/custom_rotation_title_arrays"
+            android:entryValues="@array/custom_rotation_value_arrays"
+            android:title="@string/settings_item_screen_rotation_title"
+            android:summary="@string/settings_item_screen_rotation_summary"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_notification">
         <CheckBoxPreference

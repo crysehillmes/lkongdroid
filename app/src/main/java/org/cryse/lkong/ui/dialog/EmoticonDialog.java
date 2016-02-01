@@ -17,7 +17,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.RecyclerViewOnItemClickListener;
 import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;

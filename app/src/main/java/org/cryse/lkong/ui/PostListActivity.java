@@ -83,6 +83,7 @@ import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
+import org.cryse.widget.recyclerview.Bookends;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -116,6 +117,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     StringPrefs mReadFontSizePref;
     BooleanPrefs mUseInAppBrowser;
     BooleanPrefs mScrollByVolumeKey;
+    BooleanPrefs mPrimaryColorInPostControl;
 
 
     @Bind(R.id.toolbar)
@@ -139,6 +141,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     private PagerControl.OnPagerControlListener mOnPagerControlListener;
 
     private PostListAdapter mCollectionAdapter;
+    private Bookends<PostListAdapter> mWrapperAdapter;
 
     List<PostModel> mItemList = new ArrayList<PostModel>();
 
@@ -178,6 +181,10 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mScrollByVolumeKey = Prefs.getBooleanPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY,
                 PreferenceConstant.SHARED_PREFERENCE_SCROLL_BY_VOLUME_KEY_VALUE
+        );
+        mPrimaryColorInPostControl = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL,
+                PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE
         );
         setUpToolbar(mToolbar);
         setupPageControlListener();
@@ -220,7 +227,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 Integer.valueOf(mImageDownloadPolicy.get()),
                 Integer.valueOf(mAvatarDownloadPolicy.get())
         );
-        mPostCollectionView.getRefreshableView().setAdapter(mCollectionAdapter);
+        mWrapperAdapter = new Bookends<>(mCollectionAdapter);
+        mPostCollectionView.getRefreshableView().setAdapter(mWrapperAdapter);
 
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
@@ -232,7 +240,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         ATE.apply(mThreadIntroHeaderView, mATEKey);
         ((CardView)mThreadIntroHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
 
-        mCollectionAdapter.addHeaderView(mThreadIntroHeaderView);
+        mWrapperAdapter.addHeader(mThreadIntroHeaderView);
 
         mFooterPagerControl.setOnPagerControlListener(mOnPagerControlListener);
         mToolbarQuickReturn = new QuickReturnUtils(mToolbar, QuickReturnUtils.ANIMATE_DIRECTION_UP);
@@ -279,7 +287,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mCollectionAdapter.setOnItemButtonClickListener(new PostListAdapter.OnItemButtonClickListener() {
             @Override
             public void onPostTextLongClick(View view, int position) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                int itemIndex = position - mWrapperAdapter.getHeaderCount();
+                PostModel postItem = mCollectionAdapter.getItem(itemIndex);
                 if(postItem != null) {
                     MaterialDialog materialDialog = new MaterialDialog.Builder(PostListActivity.this)
                             .title(R.string.dialog_title_copy_content)
@@ -291,7 +300,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onRateClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> openRateDialog(postModel));
@@ -300,7 +309,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onRateTextClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> openRateLogDialog(postModel));
@@ -309,7 +318,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onShareClick(View view, int position) {
-                int itemPosition = position - mCollectionAdapter.getHeaderViewCount();
+                int itemPosition = position - mWrapperAdapter.getHeaderCount();
                 if(itemPosition >= 0 && itemPosition < mCollectionAdapter.getItemCount()) {
                     PostModel postModel = mCollectionAdapter.getItem(itemPosition);
                     view.post(() -> sendSharePostIntent(postModel));
@@ -319,7 +328,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             @Override
             public void onReplyClick(View view, int position) {
                 if (mUserAccountManager.isSignedIn()) {
-                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                     mNavigation.openActivityForReplyToPost(PostListActivity.this, mThreadId, postItem.getAuthor().getUserName(), postItem.getPid());
                 } else {
                     mNavigation.navigateToSignInActivity(PostListActivity.this, false);
@@ -329,7 +338,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             @Override
             public void onEditClick(View view, int position) {
                 if (mUserAccountManager.isSignedIn()) {
-                    PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                    PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                     String content;
                     if(postItem.getMessage().contains("</blockquote>")) {
                         int indexOfQuota = postItem.getMessage().indexOf("</blockquote>");
@@ -350,7 +359,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
             @Override
             public void onProfileImageClick(View view, int position) {
-                PostModel postItem = mCollectionAdapter.getItem(position - mCollectionAdapter.getHeaderViewCount());
+                PostModel postItem = mCollectionAdapter.getItem(position - mWrapperAdapter.getHeaderCount());
                 int[] startingLocation = new int[2];
                 view.getLocationOnScreen(startingLocation);
                 startingLocation[0] += view.getWidth() / 2;
@@ -393,7 +402,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
                 mNavigation.navigateToSignInActivity(this, false);
             }
         });
-        setColorToViews(getPrimaryColor(), getPrimaryDarkColor());
+        setColorToViews();
     }
 
     private void setupPageControlListener() {
@@ -571,19 +580,22 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
             else
                 mChangeThemeMenuItem.setTitle(R.string.action_dark_theme);
         }
-        if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null) mFavoriteMenuItem.setVisible(false);
-        else if(mItemList.size() > 0 && mIsFavorite != null) {
-            mFavoriteMenuItem.setVisible(true);
-            if(mIsFavorite) {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+        if(mFavoriteMenuItem != null) {
+            if(mItemList.size() == 0 || mUserAccountManager.getAuthObject() == null)
+                mFavoriteMenuItem.setVisible(false);
+            else if(mItemList.size() > 0 && mIsFavorite != null) {
+                mFavoriteMenuItem.setVisible(true);
+                if(mIsFavorite) {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_remove_favorite);
+                }
+                else {
+                    mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
+                    mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
+                }
+            } else if(mIsFavorite == null) {
+                mFavoriteMenuItem.setVisible(false);
             }
-            else {
-                mFavoriteMenuItem.setIcon(R.drawable.ic_action_favorite_outline);
-                mFavoriteMenuItem.setTitle(R.string.action_thread_add_favorite);
-            }
-        } else if(mIsFavorite == null) {
-            mFavoriteMenuItem.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -808,13 +820,13 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     @Override
     public void onRatePostComplete(PostModel.PostRate postRate) {
         long pid = postRate.getPid();
-        List<PostModel> itemList = mCollectionAdapter.getItemList();
+        List<PostModel> itemList = mCollectionAdapter.getItemArrayList();
         for (int i = 0; i < itemList.size(); i++) {
             PostModel postModel = itemList.get(i);
             if(postModel.getPid() == pid) {
                 postModel.getRateLog().add(0, postRate);
                 postModel.setRateScore(postModel.getRateScore() + postRate.getScore());
-                mCollectionAdapter.notifyItemChanged(i + mCollectionAdapter.getHeaderViewCount());
+                mCollectionAdapter.notifyItemChanged(i + mWrapperAdapter.getHeaderCount());
             }
         }
     }
@@ -838,10 +850,10 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if(layoutManager instanceof GridLayoutManager) {
             GridLayoutManager gridLayoutManager = (GridLayoutManager)layoutManager;
-            return (gridLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+            return (gridLayoutManager.findLastCompletelyVisibleItemPosition() == (mWrapperAdapter.getItemCount() - 1));
         } else if(layoutManager instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
-            return (linearLayoutManager.findLastCompletelyVisibleItemPosition() == (mCollectionAdapter.getItemCount() - 1));
+            return (linearLayoutManager.findLastCompletelyVisibleItemPosition() == (mWrapperAdapter.getItemCount() - 1));
         } else {
             throw new IllegalStateException();
         }
@@ -908,30 +920,30 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     }
 
     private void scrollToOrdinal(int targetOrdinal) {
-        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mCollectionAdapter.getHeaderViewCount();
+        int position = targetOrdinal - (mCurrentPage - 1) * 20 + mWrapperAdapter.getHeaderCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position - 1 > 0 ? position - 1 : position, UIUtils.calculateActionBarSize(this));
     }
 
     private void scrollToPosition(int position) {
-        position = position + mCollectionAdapter.getHeaderViewCount();
+        position = position + mWrapperAdapter.getHeaderCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager)mPostCollectionView.getRefreshableView().getLayoutManager();
         layoutManager.scrollToPositionWithOffset(position, UIUtils.calculateActionBarSize(this));
     }
 
-    private void setColorToViews(int primaryColor, int primaryDarkColor) {
-        int accentColor = getAccentColor();
-        int accentColorDark = ThemeUtils.makeColorDarken(accentColor, 0.8f);
-        int accentColorRipple = ThemeUtils.makeColorDarken(accentColor, 0.9f);
-        mFab.setColorNormal(accentColor);
-        mFab.setColorPressed(accentColorDark);
-        mFab.setColorRipple(accentColorRipple);
+    private void setColorToViews() {
+        int postControlColor = mPrimaryColorInPostControl.get() ? getPrimaryColor() : getAccentColor();
+        int postControlColorDark = ThemeUtils.makeColorDarken(postControlColor, 0.8f);
+        int postControlColorRipple = ThemeUtils.makeColorDarken(postControlColor, 0.9f);
+        mFab.setColorNormal(postControlColor);
+        mFab.setColorPressed(postControlColorDark);
+        mFab.setColorRipple(postControlColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        int toolbarTextColor = Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE;
+        int toolbarTextColor = Util.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
         ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
-        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(accentColor);
+        mFooterPagerControl.findViewById(R.id.widget_pager_control_container).setBackgroundColor(postControlColor);
         Drawable backwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_backward, null).mutate();
         Drawable forwardArrow = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_forward, null).mutate();
         ThemeUtils.setTint(backwardArrow, toolbarTextColor);

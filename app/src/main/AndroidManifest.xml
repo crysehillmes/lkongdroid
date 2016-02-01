@@ -94,9 +94,10 @@
             android:theme="@style/AppTheme.Translucent"
             android:label=""/>
         <activity
-            android:name=".ui.InAppBrowserActivity"
-            android:label=""
-            android:theme="@style/AppTheme.Translucent" />
+            android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensor"
+            android:theme="@style/FinestWebViewTheme.Light" />
         <activity
             android:name=".account.LKongAuthenticatorActivity"
             android:theme="@style/AppTheme.NoTranslucent"/>
@@ -107,16 +108,6 @@
             </intent-filter>
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/account_authenticator" />
-        </service>
-        <service
-            android:name=".service.FollowStatusSyncService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter_follow_status" />
         </service>
         <service
             android:name=".service.CheckNoticeSyncService"
@@ -131,11 +122,6 @@
         <provider
             android:name="org.cryse.lkong.data.provider.LKongContentProvider"
             android:authorities="org.cryse.lkong.data.provider"
-            android:exported="false" />
-        <provider
-            android:name="org.cryse.lkong.data.provider.FollowStatusContentProvider"
-            android:authorities="org.cryse.lkong.data.provider.followstatus"
-            android:label="@string/provider_follow_status_label"
             android:exported="false" />
         <provider
             android:name="org.cryse.lkong.data.provider.CheckNoticeContentProvider"

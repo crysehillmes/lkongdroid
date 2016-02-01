@@ -1,12 +1,10 @@
 package org.cryse.lkong.ui;
 
-import android.accounts.Account;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,17 +12,14 @@ import android.view.View;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.broadcast.BroadcastConstants;
-import org.cryse.lkong.data.model.FollowedForum;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
+import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.FollowedForumsPresenter;
-import org.cryse.lkong.sync.SyncUtils;
-import org.cryse.lkong.ui.adapter.FollowedForumsAdapter;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.adapter.ForumListAdapter;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
-
-import com.malinskiy.superrecyclerview.OnMoreListener;
 
 import java.util.List;
 
@@ -32,8 +27,8 @@ import javax.inject.Inject;
 
 
 public class FollowedForumsFragment extends SimpleCollectionFragment<
-        FollowedForum,
-        FollowedForumsAdapter,
+        ForumModel,
+        ForumListAdapter,
         FollowedForumsPresenter> {
     private static final String LOG_TAG = FollowedForumsFragment.class.getName();
 
@@ -95,21 +90,21 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected FollowedForumsAdapter createAdapter(List<FollowedForum> itemList) {
-        return new FollowedForumsAdapter(this, mItemList);
+    protected ForumListAdapter createAdapter(List<ForumModel> itemList) {
+        return new ForumListAdapter(this, mATEKey, mItemList);
     }
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadPinnedForums(mUserAccountManager.getCurrentUserId());
+        getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
     }
 
     @Override
     protected void onItemClick(View view, int position, long id) {
         int itemIndex = position;
         if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
-            FollowedForum item = mCollectionAdapter.getItem(position);
-            mNavigation.openActivityForForumByForumId(getActivity(), item.getForumId(), item.getForumName(), "");
+            ForumModel item = mCollectionAdapter.getItem(position);
+            mNavigation.openActivityForForumByForumId(getActivity(), item.getFid(), item.getName(), "");
         }
     }
 
@@ -117,28 +112,20 @@ public class FollowedForumsFragment extends SimpleCollectionFragment<
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
         if (event instanceof CurrentAccountChangedEvent) {
-            getPresenter().loadPinnedForums(mUserAccountManager.getAuthObject().getUserId());
-            Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
+            getPresenter().loadFollowedForums(mUserAccountManager.getAuthObject());
+            /*Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
             if(account != null)
-                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
+                SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);*/
         }
     }
 
-    @Override
-    protected OnMoreListener getOnMoreListener() {
+    protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
         return null;
     }
 
     @Override
-    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
-        return null;
-    }
-    protected RecyclerView.ItemAnimator getRecyclerViewItemAnimator() {
-        return null;
-    }
-    @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
-        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_column_count));
+        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_detail_column_count));
     }
 
     @Override

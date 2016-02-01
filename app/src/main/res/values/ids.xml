@@ -2,4 +2,6 @@
 <resources>
     <item type="id" name="simple_collection_recyclerview" />
     <item type="id" name="drawable_callback_tag" />
+    <item name="ptr_recyclerview" type="id"/>
+    <item name="recyclerview_swipe" type="id"/>
 </resources>

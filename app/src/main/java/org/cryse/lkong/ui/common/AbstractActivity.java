@@ -1,6 +1,7 @@
 package org.cryse.lkong.ui.common;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
+import org.cryse.utils.preference.StringPrefs;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -38,6 +40,7 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
     private int mAccentColor;
     protected String mATEKey;
     protected BooleanPrefs mIsNightMode;
+    protected StringPrefs mScreenRotation;
     RxEventBus mEventBus = RxEventBus.getInstance();
 
     @Override
@@ -67,6 +70,14 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
         }
         mATEKey = getATEKey();
         super.onCreate(savedInstanceState);
+
+        mScreenRotation = Prefs.getStringPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_SCREEN_ROTATION,
+                PreferenceConstant.SHARED_PREFERENCE_SCREEN_ROTATION_VALUE
+        );
+        checkRotation();
+
+
         mEventBusSubscription = mEventBus.toObservable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,10 +99,31 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
                 "dark_theme" : "light_theme";
     }
 
+    protected void checkRotation() {
+        switch (mScreenRotation.get()) {
+            default:
+            case "0":
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+                break;
+            case "1":
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                break;
+            case "2":
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                break;
+        }
+    }
+
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mSnackbarRootView =  findViewById(android.R.id.content);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkRotation();
     }
 
     @Override

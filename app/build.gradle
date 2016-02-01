@@ -58,13 +58,11 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 }
 
 dependencies {
-    compile project(':widgets')
-    compile project(':changelog')
-
     // compile libDependencies.multidex
     compile libDependencies.support_v13
     compile libDependencies.design
@@ -81,6 +79,10 @@ dependencies {
     compile libDependencies.butterknife
 
     compile libDependencies.timber
+
+    compile libDependencies.realm
+
+  compile libDependencies.finestwebview
 
     compile(libDependencies.materialdrawer) {
         transitive = true
@@ -100,6 +102,10 @@ dependencies {
 
     compile(libDependencies.textdrawable) {
         transitive = true
+    }
+
+    compile (libDependencies.pulltorefresh) {
+        exclude module: 'support-v4'
     }
 
     // compile fileTree(dir: 'libs', include: ['*.jar'])

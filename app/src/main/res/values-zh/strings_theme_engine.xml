@@ -21,10 +21,14 @@
     <string name="light_status_bar_mode">浅色状态栏模式</string>
     <string name="light_toolbar_mode">浅色工具栏模式</string>
 
+    <string name="theme_post_control_bar_color_title">帖子底栏使用主色</string>
+    <string name="theme_post_control_bar_color_summary">在帖子底部的控制栏中使用主色作为背景颜色，否则使用强调色</string>
+
     <string name="ate_colors">颜色</string>
     <string name="base_theme">基本</string>
     <string name="dark_theme">暗色主题</string>
     <string name="light_ui_modes">浅色 UI 模式</string>
+    <string name="theme_other_settings">其他</string>
     <string name="dark_theme_summary">使用暗色主题</string>
     <string name="system_ui_colors">系统 UI 颜色</string>
     <string name="not_available_below_m">Android 6.0 Marshmallow 以下无效</string>

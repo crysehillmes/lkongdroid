@@ -61,86 +61,6 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
     }
 
     @Override
-    public void cacheForumList(List<ForumModel> forumModels) throws Exception {
-        String json = mGson.toJson(forumModels, new TypeToken<List<ForumModel>>() {
-        }.getType());
-        CacheObjectContentValues values = new CacheObjectContentValues();
-        values.putCacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).putCacheValue(json);
-        values.insert(mContentResolver);
-    }
-
-    @Override
-    public List<ForumModel> getCachedForumList() throws Exception {
-        String json = getCachedValue(CacheConstants.CACHE_KEY_FORUM_LIST);
-        if(!TextUtils.isEmpty(json)) {
-            return mGson.fromJson(json, new TypeToken<List<ForumModel>>() {}.getType());
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void removeCachedForumList() throws Exception {
-        CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        cacheSelection.cacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).delete(mContentResolver);
-    }
-
-    @Override
-    public boolean isCachedForumList() throws Exception {
-        CacheObjectSelection cacheSelection = new CacheObjectSelection();
-        CacheObjectCursor cursor = cacheSelection.cacheKey(CacheConstants.CACHE_KEY_FORUM_LIST).query(mContentResolver);
-        boolean exist = cursor.getCount() > 0;
-        cursor.close();
-        return exist;
-    }
-
-    @Override
-    public void followForum(FollowedForumModel model) throws Exception {
-        FollowedForumContentValues values = new FollowedForumContentValues();
-        values.putUserId(model.getUserId())
-                .putForumId(model.getForumId())
-                .putForumName(model.getForumName())
-                .putForumIcon(model.getForumIcon())
-                .putForumSortValue(model.getForumSortValue());
-        values.insert(mContentResolver);
-    }
-
-    @Override
-    public void unfollowForum(long uid, long fid) throws Exception {
-        FollowedForumSelection followedForumSelection = new FollowedForumSelection();
-        followedForumSelection.userId(uid).and().forumId(fid).delete(mContentResolver);
-    }
-
-    @Override
-    public void unfollowForums(long uid) throws Exception {
-        FollowedForumSelection followedForumSelection = new FollowedForumSelection();
-        followedForumSelection.userId(uid).delete(mContentResolver);
-    }
-
-    @Override
-    public boolean isForumFollowed(long uid, long fid) throws Exception {
-        FollowedForumSelection forumSelection = new FollowedForumSelection();
-        FollowedForumCursor cursor = forumSelection.userId(uid).and().forumId(fid).query(mContentResolver);
-        boolean exist = cursor.getCount() > 0;
-        cursor.close();
-        return exist;
-    }
-
-    @Override
-    public List<FollowedForum> loadAllFollowedForumsForUser(long uid) throws Exception {
-        FollowedForumSelection forumSelection = new FollowedForumSelection();
-        forumSelection.userId(uid);
-        FollowedForumCursor cursor = forumSelection.query(mContentResolver);
-        List<FollowedForum> result = new ArrayList<>(cursor.getCount());
-        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            // The Cursor is now set to the right position
-            result.add(new FollowedForum(cursor));
-        }
-        cursor.close();
-        return result;
-    }
-
-    @Override
     public void cachePunchResult(PunchResult punchResult) {
         String json = mGson.toJson(punchResult, PunchResult.class);
         CacheObjectContentValues values = new CacheObjectContentValues();
@@ -188,42 +108,6 @@ public class LKongDatabaseSqliteImpl implements LKongDatabase {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void followUser(long uid, long targetUid) {
-        FollowedUserContentValues contentValues = new FollowedUserContentValues();
-        contentValues.putUserId(uid).putTargetUserId(targetUid);
-        contentValues.insert(mContentResolver);
-    }
-
-    @Override
-    public void unfollowUser(long uid, long targetUid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid).and().targetUserId(targetUid);
-        selection.delete(mContentResolver);
-    }
-
-    @Override
-    public boolean isUserFollowed(long uid, long targetUid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid).and().targetUserId(targetUid);
-        Cursor cursor = selection.query(mContentResolver);
-        boolean returnValue;
-        if(cursor.getCount() > 0) {
-            returnValue = true;
-        } else {
-            returnValue = false;
-        }
-        cursor.close();
-        return returnValue;
-    }
-
-    @Override
-    public void removeAllFollowedUser(long uid) {
-        FollowedUserSelection selection = new FollowedUserSelection();
-        selection.userId(uid);
-        selection.delete(mContentResolver);
     }
 
     @Override

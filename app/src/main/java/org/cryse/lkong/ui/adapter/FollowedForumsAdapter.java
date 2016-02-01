@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.data.model.FollowedForum;
-import org.cryse.widget.recyclerview.RecyclerViewBaseAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 

@@ -6,10 +6,12 @@ public class FollowResult {
     public static final int TYPE_FORUM = 111;
     public static final int TYPE_THREAD = 112;
     public static final int TYPE_USER = 113;
+    public static final int TYPE_BLACKLIST = 114;
 
     private int action;
     private int type;
     private long id;
+    private boolean ok;
 
     public int getAction() {
         return action;
@@ -33,5 +35,13 @@ public class FollowResult {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+    public void setOk(boolean ok) {
+        this.ok = ok;
     }
 }

@@ -11,9 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.util.Util;
@@ -27,6 +27,7 @@ import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
@@ -52,6 +53,7 @@ import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -67,7 +69,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     private static final int ID_HOMEPAGE = 1001;
     private static final int ID_FAVORITES = 1003;
     private static final int ID_BROWSE_HISTORY = 1004;
-    private static final int ID_SETTINGS = 1101;
+    private static final int ID_FEEDBACK = 1101;
+    private static final int ID_SETTINGS = 1102;
+    private static final int ID_ADD_ACCOUNT = -3001;
+    private static final int ID_MANAGE_ACCOUNT = -3002;
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
@@ -81,6 +86,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     int mCurrentSelection = 0;
     boolean mIsRestorePosition = false;
+    AtomicBoolean mDoubleBackToExitPressedOnce = new AtomicBoolean(false);
     List<UserAccount> mUserAccountList;
     /**
      * Used to post delay navigation action to improve UX
@@ -149,8 +155,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withHeaderBackground(new ColorDrawable(getAccentColor()));
         accountHeaderBuilder
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
-                    if (iProfile.getIdentifier() == -3001) {
+                    if (iProfile.getIdentifier() == ID_ADD_ACCOUNT) {
                         mNavigation.navigateToSignInActivity(MainActivity.this, false);
+                    } else if(iProfile.getIdentifier() == ID_MANAGE_ACCOUNT) {
+                        mNavigation.navigateToManageAccount(this);
                     } else {
                         long uid = iProfile.getIdentifier();
                         if (mUserAccountManager.getCurrentUserId() == uid) {
@@ -163,12 +171,13 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                             getEventBus().sendEvent(new CurrentAccountChangedEvent());
                         }
                     }
-                    return true;
+                    mNaviagtionDrawer.closeDrawer();
+                    return false;
                 })
                 .withCurrentProfileHiddenInList(true)
                 .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem[] drawerItems = new IDrawerItem[5];
+        IDrawerItem[] drawerItems = new IDrawerItem[6];
         drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()
                 .withName(R.string.drawer_item_homepage)
                 .withIcon(R.drawable.ic_drawer_homepage)
@@ -183,6 +192,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withIdentifier(ID_BROWSE_HISTORY));
         drawerItems[3] = new DividerDrawerItem();
         drawerItems[4] = applyColorToDrawerItem(new SecondaryDrawerItem()
+                .withName(R.string.settings_item_feedback_title)
+                .withIdentifier(ID_FEEDBACK)
+                .withSelectable(false));
+        drawerItems[5] = applyColorToDrawerItem(new SecondaryDrawerItem()
                 .withName(R.string.drawer_item_settings)
                 .withIdentifier(ID_SETTINGS)
                 .withSelectable(false));
@@ -248,6 +261,15 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         return drawerItem;
     }
 
+    private ProfileSettingDrawerItem applyColorToDrawerItem(ProfileSettingDrawerItem drawerItem) {
+        int normalTextColor = Config.navigationViewNormalText(this, mATEKey, isNightMode());
+        drawerItem.withIconColor(normalTextColor);
+        drawerItem.withIconTinted(true);
+        drawerItem.withTextColor(normalTextColor);
+        drawerItem.withSelectedColor(Config.navigationViewSelectedBg(this, mATEKey, isNightMode()));
+        return drawerItem;
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -259,13 +281,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         super.onPostResume();
         Account account = mUserAccountManager.getCurrentUserAccount().getAccount();
         // SyncUtils.setPeriodicSync(account, SyncUtils.SYNC_AUTHORITY, true, SyncUtils.SYNC_FREQUENCE);
-        SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS);
-        SyncUtils.setPeriodicSync(
-                account,
-                SyncUtils.SYNC_AUTHORITY_FOLLOW_STATUS,
-                false,
-                SyncUtils.SYNC_FREQUENCE_HALF_HOUR
-        );
         SyncUtils.manualSync(account, SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE);
         SyncUtils.setPeriodicSync(
                 account,
@@ -285,6 +300,9 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 break;
             case ID_BROWSE_HISTORY:
                 navigateToBrowseHistoryFragment(null);
+                break;
+            case ID_FEEDBACK:
+                mNavigation.openActivityForPostListByThreadId(this, 1153838l);
                 break;
             case ID_SETTINGS:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
@@ -358,12 +376,19 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                         .withIdentifier((int) entity.getUserId());
                 mAccountHeader.addProfiles(profileDrawerItem);
             }
+            ProfileSettingDrawerItem addAccountDrawerItem = new ProfileSettingDrawerItem()
+                    .withName(getString(R.string.drawer_item_account_add))
+                    .withIcon(R.drawable.ic_drawer_account_add)
+                    .withIdentifier(ID_ADD_ACCOUNT)
+                    .withSelectable(false);
+            ProfileSettingDrawerItem accountManageDrawerItem = new ProfileSettingDrawerItem()
+                    .withName(getString(R.string.drawer_item_manage_account))
+                    .withIcon(R.drawable.ic_drawer_settings)
+                    .withIdentifier(ID_MANAGE_ACCOUNT)
+                    .withSelectable(false);
             mAccountHeader.addProfiles(
-                    new ProfileDrawerItem()
-                            .withName(getString(R.string.drawer_item_account_add))
-                            .withIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drawer_account_add, getTheme()))
-                            .withIdentifier(-3001)
-                            .withSelectable(false)
+                    applyColorToDrawerItem(addAccountDrawerItem),
+                    applyColorToDrawerItem(accountManageDrawerItem)
             );
         } catch (NeedSignInException ex) {
             mNavigation.navigateToSignInActivity(this, true);
@@ -380,7 +405,15 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             return;
         }
         if (!getSupportFragmentManager().popBackStackImmediate()) {
-            finish();
+            if (mDoubleBackToExitPressedOnce.get()) {
+                super.onBackPressed();
+                return;
+            } else {
+                mDoubleBackToExitPressedOnce.set(true);
+                Toast.makeText(this, R.string.toast_double_tap_to_exit, Toast.LENGTH_SHORT).show();
+
+                mHandler.postDelayed(() -> mDoubleBackToExitPressedOnce.set(false), 2000);
+            }
         }
     }
 

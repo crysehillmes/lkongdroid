@@ -23,7 +23,10 @@ import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.afollestad.materialdialogs.prefs.MaterialListPreference;
 
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.lkong.ui.common.AbstractActivity;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.utils.preference.Prefs;
 
 /**
  * @author Aidan Follestad (afollestad)
@@ -204,6 +207,19 @@ public class ThemeSettingsActivity extends AbstractActivity
                 navBarPref.setEnabled(false);
                 navBarPref.setSummary(R.string.not_available_below_lollipop);
             }
+            final ATESwitchPreference primaryColorInPostControlPref = (ATESwitchPreference) findPreference("theme_primary_color_in_post_control");
+            BooleanPrefs primaryColorInPostControl = Prefs.getBooleanPrefs(
+                            PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL,
+                            PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE
+                    );
+            primaryColorInPostControlPref.setChecked(primaryColorInPostControl.get());
+            primaryColorInPostControlPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        primaryColorInPostControl.set((Boolean) newValue);
+                        return true;
+                    }
+                });
         }
     }
 
