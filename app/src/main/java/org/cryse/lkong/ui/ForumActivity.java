@@ -23,7 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.bumptech.glide.Glide;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
@@ -431,7 +431,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mFab.setColorPressed(accentColorDark);
         mFab.setColorRipple(accentColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        DrawableCompat.setTint(drawable, Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
+        DrawableCompat.setTint(drawable, ATEUtil.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
         mFab.setImageDrawable(drawable);
     }
 }

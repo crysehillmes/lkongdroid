@@ -16,7 +16,7 @@ import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.thefinestartist.finestwebview.FinestWebView;
 
 import org.cryse.lkong.R;
@@ -157,7 +157,7 @@ public class AppNavigation {
             int statusBarColor = Config.primaryColorDark(context, ateKey);
             int primaryColor = Config.primaryColor(context, ateKey);
             int accentColor = Config.primaryColor(context, ateKey);
-            int iconColor = Util.isColorLight(primaryColor) ? Color.BLACK : Color.WHITE;
+            int iconColor = ATEUtil.isColorLight(primaryColor) ? Color.BLACK : Color.WHITE;
             int iconColorPressed = ThemeUtils.makeColorDarken(iconColor, 0.8f);
             int iconColorDisabled = ThemeUtils.makeColorDarken(iconColor, 0.6f);
             FinestWebView.Builder builder = new FinestWebView.Builder(context);

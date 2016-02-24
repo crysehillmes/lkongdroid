@@ -29,7 +29,7 @@
             android:layout_marginTop="16dp"
             android:text="placeholder"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
 
         <TextView
             android:id="@+id/recyclerview_item_timeline_textview_dateline"
@@ -40,7 +40,7 @@
             android:layout_marginRight="72dp"
             android:text="placeholder"
             android:textSize="@dimen/text_size_body1"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
 
         <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
             android:id="@+id/recyclerview_item_timeline_textview_message"
@@ -55,7 +55,7 @@
             android:maxLines="5"
             android:ellipsize="end"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
 
         <RelativeLayout
             android:id="@+id/secondary_message_container"
@@ -71,7 +71,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:alpha="0.5"
-                android:tag="bg_text_secondary" />
+                android:tag="background|secondary_text" />
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_timeline_secondary_message"
@@ -86,7 +86,7 @@
                 android:maxLines="1"
                 android:text="placeholder"
                 android:textSize="@dimen/text_size_subhead"
-                android:tag="text_secondary"/>
+                android:tag="text_color|secondary_text"/>
 
             <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
                 android:id="@+id/recyclerview_item_timeline_third_message"
@@ -100,7 +100,7 @@
                 android:text="placeholder"
                 android:maxLines="5"
                 android:textSize="@dimen/text_size_subhead"
-                android:tag="text_primary" />
+                android:tag="text_color|primary_text" />
 
         </RelativeLayout>
     </RelativeLayout>

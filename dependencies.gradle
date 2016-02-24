@@ -25,7 +25,7 @@ ext {
     crashlyticsVersion = '2.5.1'
     persistentsearchviewVersion = '1.0.3'
     pulltorefreshVersion = '3.2.3'
-    themeEngineVersion = '0.7.7'
+    themeEngineVersion = '1.0.0'
     textdrawableVersion = 'c32bc48d86'
     finestwebviewVersion = '1.1.6'
     realmVersion = '0.87.0'

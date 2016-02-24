@@ -32,8 +32,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 
-import com.afollestad.appthemeengine.util.Util;
-
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.account.UserAccountManager;
@@ -153,8 +151,6 @@ public class HomePageFragment extends AbstractFragment implements HomePageView {
 
             }
         });
-        int toolbarTextColor = Util.isColorLight(getPrimaryColor()) ? Color.BLACK : Color.WHITE;
-        mTabLayout.setSelectedTabIndicatorColor(toolbarTextColor);
         Adapter adapter = (Adapter) mViewPager.getAdapter();
         for(int i = 0; i < mTabLayout.getTabCount(); i++) {
             TabLayout.Tab tab = mTabLayout.getTabAt(i);

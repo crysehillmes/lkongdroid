@@ -23,7 +23,7 @@
         android:layout_marginTop="16dp"
         android:text="placeholder"
         android:textSize="@dimen/text_size_subhead"
-        android:tag="text_primary" />
+        android:tag="text_color|primary_text" />
 
     <TextView
         android:id="@+id/recyclerview_item_forum_textview_secondary"
@@ -33,5 +33,5 @@
         android:layout_marginLeft="72dp"
         android:text="placeholder"
         android:textSize="@dimen/text_size_body1"
-        android:tag="text_secondary" />
+        android:tag="text_color|secondary_text" />
 </RelativeLayout>

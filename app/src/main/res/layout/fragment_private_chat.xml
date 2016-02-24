@@ -42,7 +42,7 @@
             android:src="@drawable/ic_action_send"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/action_send_post"
-            android:tag="tint_text_primary"
+            android:tag="tint|primary_text"
             />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

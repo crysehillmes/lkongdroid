@@ -99,7 +99,7 @@ public class ForumListAdapter extends SimpleRecyclerViewAdapter<ForumModel> {
         public ViewHolder(View v, String ateKey) {
             super(v);
             ButterKnife.bind(this, v);
-            ATE.apply(itemView, ateKey);
+            //ATE.apply(itemView, ateKey);
         }
     }
 }

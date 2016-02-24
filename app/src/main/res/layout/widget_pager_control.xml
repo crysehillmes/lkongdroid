@@ -36,7 +36,7 @@
                 android:layout_weight="3"
                 android:background="?selectableItemBackground"
                 android:text="1 / 1"
-                android:tag="text_accent_color_dependent"/>
+                android:tag="text_color|accent_color_dependent"/>
 
             <ImageButton
                 android:id="@+id/widget_pager_control_button_forward"

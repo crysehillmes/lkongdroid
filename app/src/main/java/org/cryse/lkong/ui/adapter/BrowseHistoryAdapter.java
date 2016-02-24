@@ -81,7 +81,7 @@ public class BrowseHistoryAdapter extends SimpleRecyclerViewAdapter<BrowseHistor
                     mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 

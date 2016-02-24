@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:elevation="@dimen/toolbar_elevation"
-        android:tag="bg_primary_color">
+        android:tag="background|primary_color">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -28,7 +28,8 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:tag="tab_text|parent_dependent,tab_indicator|parent_dependent"/>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager

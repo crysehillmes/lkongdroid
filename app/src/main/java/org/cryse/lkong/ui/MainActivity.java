@@ -15,8 +15,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -33,6 +34,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 
 import org.cryse.changelog.ChangeLogUtils;
+import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.AppPermissions;
@@ -97,6 +99,27 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        // Default config
+        if (!ATE.config(this, "light_theme").isConfigured(BuildConfig.VERSION_CODE)) {
+            ATE.config(this, "light_theme")
+                    .activityTheme(R.style.AppTheme)
+                    .primaryColorRes(R.color.colorPrimaryLightDefault)
+                    .accentColorRes(R.color.colorAccentLightDefault)
+                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
+                    .coloredActionBar(true)
+                    .coloredNavigationBar(false)
+                    .commit();
+        }
+        if (!ATE.config(this, "dark_theme").isConfigured(BuildConfig.VERSION_CODE)) {
+            ATE.config(this, "dark_theme")
+                    .activityTheme(R.style.AppThemeDark)
+                    .primaryColorRes(R.color.colorPrimaryDarkDefault)
+                    .accentColorRes(R.color.colorAccentDarkDefault)
+                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
+                    .coloredActionBar(true)
+                    .coloredNavigationBar(true)
+                    .commit();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mCheckNoticeDuration = Prefs.getStringPrefs(
@@ -175,7 +198,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     return false;
                 })
                 .withCurrentProfileHiddenInList(true)
-                .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
+                .withTextColor(ATEUtil.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
         IDrawerItem[] drawerItems = new IDrawerItem[6];
         drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()

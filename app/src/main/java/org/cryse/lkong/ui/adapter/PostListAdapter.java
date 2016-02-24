@@ -185,7 +185,7 @@ public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
                     mOnItemButtonClickListener.onPostTextLongClick(view, getAdapterPosition());
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
             mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
         }
     }

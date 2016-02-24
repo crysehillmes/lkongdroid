@@ -91,8 +91,7 @@ public class LKongUrlDispatcher {
                 }
             } else if(url.contains("mod=redirect")) {
                 // 解析失败
-                int index = url.lastIndexOf("pid=");
-                String pid = url.substring(index + 4);
+                String pid = uri.getQueryParameter("pid");
                 if(mUrlCallback != null)
                     mUrlCallback.onThreadByPostId(Long.valueOf(pid));
             } else {

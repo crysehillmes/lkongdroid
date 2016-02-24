@@ -41,7 +41,7 @@ import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -237,7 +237,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
         mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
         mForumNameTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_forum_name);
-        ATE.apply(mThreadIntroHeaderView, mATEKey);
+        // ATE.apply(mThreadIntroHeaderView, mATEKey);
         ((CardView)mThreadIntroHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
 
         mWrapperAdapter.addHeader(mThreadIntroHeaderView);
@@ -939,7 +939,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mFab.setColorPressed(postControlColorDark);
         mFab.setColorRipple(postControlColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        int toolbarTextColor = Util.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
+        int toolbarTextColor = ATEUtil.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
         ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 

@@ -25,8 +25,8 @@
         android:gravity="center"
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
-        android:tag="text_primary"
         android:text="placeholder"
         android:textSize="@dimen/text_size_subhead"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:tag="text_color|primary_text"/>
 </RelativeLayout>

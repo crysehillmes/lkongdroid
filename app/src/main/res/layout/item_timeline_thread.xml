@@ -29,7 +29,7 @@
             android:layout_marginTop="16dp"
             android:text="placeholder"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
 
         <TextView
             android:id="@+id/recyclerview_item_timeline_textview_dateline"
@@ -40,7 +40,7 @@
             android:layout_marginRight="72dp"
             android:text="placeholder"
             android:textSize="@dimen/text_size_body1"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
 
         <org.cryse.lkong.utils.htmltextview.JellyBeanSpanFixTextView
             android:id="@+id/recyclerview_item_timeline_textview_message"
@@ -55,6 +55,6 @@
             android:maxLines="5"
             android:ellipsize="end"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_primary"/>
+            android:tag="text_color|primary_text"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
