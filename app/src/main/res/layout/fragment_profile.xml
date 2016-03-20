@@ -126,7 +126,7 @@
                 app:contentInsetStart="72dp"
                 app:layout_collapseMode="pin"
                 app:elevation="@dimen/toolbar_elevation"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="?toolbar_popup_theme"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

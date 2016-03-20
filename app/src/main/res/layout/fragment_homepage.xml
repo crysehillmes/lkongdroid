@@ -21,7 +21,7 @@
             app:contentInsetStart="72dp"
             app:contentInsetLeft="72dp"
             app:contentInsetEnd="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:popupTheme="?toolbar_popup_theme"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_scrollFlags="scroll|enterAlways" />
 

@@ -25,7 +25,7 @@
         android:layout_alignParentTop="true"
         android:elevation="@dimen/toolbar_elevation"
         android:minHeight="?actionBarSize"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:popupTheme="?toolbar_popup_theme"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <org.cryse.lkong.widget.FloatingActionButtonEx

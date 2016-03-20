@@ -226,7 +226,9 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
-                .withStatusBarColor(getPrimaryDarkColor())
+                //.withStatusBarColor(getPrimaryDarkColor())
+                .withFullscreen(true)
+                .withTranslucentStatusBar(true)
                 .withSliderBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey))
                 .addDrawerItems(
                         drawerItems
@@ -256,7 +258,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     @Override
                     public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof PrimaryDrawerItem)
-                            mCurrentSelection = iDrawerItem.getIdentifier();
+                            mCurrentSelection = (int)iDrawerItem.getIdentifier();
                         mPendingRunnable = () ->  onNavigationSelected(iDrawerItem);
                         return false;
                     }
@@ -314,7 +316,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
-        switch (drawerItem.getIdentifier()) {
+        switch ((int)drawerItem.getIdentifier()) {
             case ID_HOMEPAGE:
                 navigateToHomePageFragment();
                 break;
