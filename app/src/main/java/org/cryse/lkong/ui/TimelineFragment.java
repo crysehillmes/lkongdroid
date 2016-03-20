@@ -20,6 +20,7 @@ import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
+import org.cryse.widget.recyclerview.DividerItemDecoration;
 
 import java.util.List;
 
@@ -141,6 +142,7 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void onCollectionViewInitComplete() {
         super.onCollectionViewInitComplete();
+        mCollectionView.addItemDecoration(new DividerItemDecoration(getActivity()));
         mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

@@ -5,6 +5,7 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -125,7 +126,7 @@ public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
         @Bind(R.id.recyclerview_item_post_cardview_root_container)
-        CardView mRootCardView;
+        FrameLayout mRootCardView;
         @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
         @Bind(R.id.recyclerview_item_post_imageview_avatar)
@@ -186,7 +187,7 @@ public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
                 }
             });
             // ATE.apply(itemView, ateKey);
-            mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
+            //mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
         }
     }
 
