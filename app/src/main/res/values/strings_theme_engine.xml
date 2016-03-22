@@ -34,6 +34,18 @@
     <string name="not_available_below_m">Not available below 6.0 Marshmallow.</string>
     <string name="not_available_below_lollipop">Not available below 5.0 Lollipop.</string>
 
+    <string name="text_sizes">Text Sizes</string>
+    <string name="other_textsizes_note">Note: there are other text size configurations not included here for simplicity reasons.</string>
+    <string name="headline_textsize">Headline Text Size</string>
+    <string name="title_textsize">Title Text Size</string>
+    <string name="subheading_textsize">Subheading Text Size</string>
+    <string name="body_textsize">Body Text Size</string>
+    <string name="headline_textsize_desc">Apply a text size to all headline text views, %ddp</string>
+    <string name="title_textsize_desc">Apply a text size to all title text views, %ddp</string>
+    <string name="subheading_textsize_desc">Apply a text size to all subheading text views, %ddp</string>
+    <string name="body_textsize_desc">Apply a text size to all body text views, %ddp</string>
+    <string name="defaultValue">Default</string>
+
     <string-array name="light_status_mode_entries">
         <item>Off, status bar icons will be white</item>
         <item>On, status bar icons will be black</item>

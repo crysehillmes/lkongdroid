@@ -23,10 +23,8 @@ import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.afollestad.materialdialogs.prefs.MaterialListPreference;
 
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.lkong.ui.common.AbstractActivity;
-import org.cryse.utils.preference.BooleanPrefs;
-import org.cryse.utils.preference.Prefs;
+import org.cryse.lkong.ui.dialog.TextSizeDialog;
 
 /**
  * @author Aidan Follestad (afollestad)
@@ -38,6 +36,7 @@ public class ThemeSettingsActivity extends AbstractActivity
     @StyleRes
     @Override
     public int getActivityTheme() {
+        // Overrides what's set in the current ATE Config
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false) ?
                 R.style.AppThemeDark_ActionBar : R.style.AppTheme_ActionBar;
     }
@@ -51,6 +50,10 @@ public class ThemeSettingsActivity extends AbstractActivity
                 break;
             case R.string.accent_color:
                 config.accentColor(selectedColor);
+                // We've overridden the navigation view selected colors in the default config,
+                // which means we are responsible for keeping those colors up to date.
+                config.navigationViewSelectedIcon(selectedColor);
+                config.navigationViewSelectedText(selectedColor);
                 break;
             case R.string.primary_text_color:
                 config.textColorPrimary(selectedColor);
@@ -134,7 +137,8 @@ public class ThemeSettingsActivity extends AbstractActivity
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     // Marks both theme configs as changed so MainActivity restarts itself on return
-                    Config.markChanged(getActivity(), "light_theme", "dark_theme");
+                    Config.markChanged(getActivity(), "light_theme");
+                    Config.markChanged(getActivity(), "dark_theme");
                     // The dark_theme preference value gets saved by Android in the default PreferenceManager.
                     // It's used in getATEKey() of both the Activities.
                     getActivity().recreate();
@@ -207,19 +211,35 @@ public class ThemeSettingsActivity extends AbstractActivity
                 navBarPref.setEnabled(false);
                 navBarPref.setSummary(R.string.not_available_below_lollipop);
             }
-            final ATESwitchPreference primaryColorInPostControlPref = (ATESwitchPreference) findPreference("theme_primary_color_in_post_control");
-            BooleanPrefs primaryColorInPostControl = Prefs.getBooleanPrefs(
-                            PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL,
-                            PreferenceConstant.SHARED_PREFERENCE_USE_PRIMARY_COLOR_POST_CONTROL_VALUE
-                    );
-            primaryColorInPostControlPref.setChecked(primaryColorInPostControl.get());
-            primaryColorInPostControlPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        primaryColorInPostControl.set((Boolean) newValue);
-                        return true;
-                    }
-                });
+
+            final Preference.OnPreferenceClickListener textsizeClickListener = new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //noinspection ResourceType
+                    TextSizeDialog.show(getActivity(), preference.getKey(), mAteKey, preference.getTitleRes(), true);
+                    return false;
+                }
+            };
+
+            final Preference textsizeHeadline = findPreference("text_size|headline");
+            textsizeHeadline.setOnPreferenceClickListener(textsizeClickListener);
+            textsizeHeadline.setSummary(getString(R.string.headline_textsize_desc,
+                    TextSizeDialog.pxToSp(this, Config.textSizeForMode(getActivity(), mAteKey, Config.TEXTSIZE_HEADLINE))));
+
+            final Preference textsizeTitle = findPreference("text_size|title");
+            textsizeTitle.setOnPreferenceClickListener(textsizeClickListener);
+            textsizeTitle.setSummary(getString(R.string.title_textsize_desc,
+                    TextSizeDialog.pxToSp(this, Config.textSizeForMode(getActivity(), mAteKey, Config.TEXTSIZE_TITLE))));
+
+            final Preference textsizeSubheading = findPreference("text_size|subheading");
+            textsizeSubheading.setOnPreferenceClickListener(textsizeClickListener);
+            textsizeSubheading.setSummary(getString(R.string.subheading_textsize_desc,
+                    TextSizeDialog.pxToSp(this, Config.textSizeForMode(getActivity(), mAteKey, Config.TEXTSIZE_SUBHEADING))));
+
+            final Preference textsizeBody = findPreference("text_size|body");
+            textsizeBody.setOnPreferenceClickListener(textsizeClickListener);
+            textsizeBody.setSummary(getString(R.string.body_textsize_desc,
+                    TextSizeDialog.pxToSp(this, Config.textSizeForMode(getActivity(), mAteKey, Config.TEXTSIZE_BODY))));
         }
     }
 

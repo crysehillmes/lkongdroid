@@ -83,7 +83,6 @@ dependencies {
     compile libDependencies.realm
 
     compile libDependencies.finestwebview
-    compile libDependencies.flexibledivider
 
     compile(libDependencies.materialdrawer) {
         transitive = true

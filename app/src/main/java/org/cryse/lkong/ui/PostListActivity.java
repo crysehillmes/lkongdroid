@@ -113,7 +113,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
     StringPrefs mImageDownloadPolicy;
     StringPrefs mAvatarDownloadPolicy;
-    StringPrefs mReadFontSizePref;
     BooleanPrefs mUseInAppBrowser;
     BooleanPrefs mScrollByVolumeKey;
     BooleanPrefs mPrimaryColorInPostControl;
@@ -165,10 +164,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mAvatarDownloadPolicy = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
-        mReadFontSizePref = Prefs.getStringPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
-        );
         mImageDownloadPolicy = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE
@@ -1223,7 +1218,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mTextColorSecondary = Config.textColorSecondary(this, mATEKey);
         mTodayPrefix = getString(R.string.text_datetime_today);
         mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        float contentTextSize = Config.textSizeForMode(this, mATEKey, Config.TEXTSIZE_BODY);
         mContentTextPaint.setTextSize(contentTextSize);
         mContentTextPaint.setColor(mTextColorPrimary);
         mContentTextPaint.linkColor = getAccentColor();
