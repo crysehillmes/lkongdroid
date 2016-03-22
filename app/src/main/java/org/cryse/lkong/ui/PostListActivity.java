@@ -39,7 +39,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.DialogAction;
@@ -84,7 +83,6 @@ import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
 import org.cryse.widget.recyclerview.Bookends;
-import org.cryse.widget.recyclerview.DividerItemDecoration;
 import org.cryse.widget.recyclerview.PtrRecyclerView;
 
 import java.util.ArrayList;
@@ -217,8 +215,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setLayerType(View.LAYER_TYPE_NONE, null);
         mPostCollectionView.getRefreshableView().setDrawingCacheEnabled(false);
-        // mPostCollectionView.getRefreshableView().setItemViewCacheSize(20);
-        mPostCollectionView.getRefreshableView().addItemDecoration(new DividerItemDecoration(this));
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(

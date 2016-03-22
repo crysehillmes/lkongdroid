@@ -17,7 +17,6 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
-import org.cryse.widget.recyclerview.DividerItemDecoration;
 
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class MentionsFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = MentionsFragment.class.getName();
-    private static final String LOAD_IMAGE_TASK_TAG = "mentions_load_image_tag";
 
     @Inject
     TimelinePresenter mPresenter;
@@ -123,7 +121,6 @@ public class MentionsFragment extends SimpleCollectionFragment<
     @Override
     protected void onCollectionViewInitComplete() {
         super.onCollectionViewInitComplete();
-        mCollectionView.addItemDecoration(new DividerItemDecoration(getActivity()));
         mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

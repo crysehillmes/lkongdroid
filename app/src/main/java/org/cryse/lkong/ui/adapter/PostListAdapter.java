@@ -5,13 +5,9 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.PostModel;
@@ -126,7 +122,7 @@ public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
         @Bind(R.id.recyclerview_item_post_cardview_root_container)
-        FrameLayout mRootCardView;
+        CardView mRootCardView;
         @Bind(R.id.recyclerview_item_post_view_item)
         PostItemView mPostItemView;
         @Bind(R.id.recyclerview_item_post_imageview_avatar)

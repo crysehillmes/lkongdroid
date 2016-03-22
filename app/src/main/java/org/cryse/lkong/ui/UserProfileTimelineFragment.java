@@ -23,7 +23,6 @@ import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
-import org.cryse.widget.recyclerview.DividerItemDecoration;
 
 import java.util.List;
 
@@ -36,7 +35,6 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
     private static final String LOG_TAG = UserProfileTimelineFragment.class.getName();
     private static final String KEY_UID = "key_args_uid";
     private static final String KEY_USERNAME= "key_args_username";
-    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     private long mUid;
     private String mUserName;
 
@@ -190,7 +188,6 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void onCollectionViewInitComplete() {
         super.onCollectionViewInitComplete();
-        mCollectionView.addItemDecoration(new DividerItemDecoration(getActivity()));
         mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

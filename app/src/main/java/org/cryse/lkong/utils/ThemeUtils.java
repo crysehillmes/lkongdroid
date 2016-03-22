@@ -41,6 +41,14 @@ public class ThemeUtils {
         return Color.HSVToColor(hsv);
     }
 
+    public static int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
+    }
+
     public static void setTint(Drawable drawable, int color) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             DrawableCompat.setTint(drawable, color);

@@ -7,16 +7,19 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
+import com.afollestad.appthemeengine.customizers.ATEStatusBarCustomizer;
 import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -66,7 +69,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks{
+public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks ,
+        ATEStatusBarCustomizer {
     private static final String LOG_TAG = MainActivity.class.getName();
     private static final int ID_HOMEPAGE = 1001;
     private static final int ID_FAVORITES = 1003;
@@ -175,6 +179,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
+                .withTranslucentStatusBar(true)
                 .withHeaderBackground(new ColorDrawable(getAccentColor()));
         accountHeaderBuilder
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
@@ -227,8 +232,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
                 //.withStatusBarColor(getPrimaryDarkColor())
-                .withFullscreen(true)
-                .withTranslucentStatusBar(true)
                 .withSliderBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey))
                 .addDrawerItems(
                         drawerItems
@@ -571,5 +574,17 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     public void onPermissionsDenied(List<String> perms) {
         finish();
+    }
+
+    @Override
+    public int getStatusBarColor() {
+        if(mNaviagtionDrawer != null && mNaviagtionDrawer.getDrawerLayout() != null)
+            mNaviagtionDrawer.getDrawerLayout().setStatusBarBackgroundColor(getPrimaryDarkColor());
+        return ResourcesCompat.getColor(getResources(), R.color.scrim_inset_color, null);
+    }
+
+    @Override
+    public int getLightStatusBarMode() {
+        return Config.LIGHT_STATUS_BAR_AUTO;
     }
 }

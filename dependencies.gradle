@@ -29,6 +29,7 @@ ext {
     textdrawableVersion = 'c32bc48d86'
     finestwebviewVersion = '1.1.6'
     realmVersion = '0.87.0'
+    flexibledividerVersion = '1.2.9'
 
     libDependencies = [
             // Test
@@ -87,6 +88,7 @@ ext {
             tagsoup_osgi: "de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:$tagsoupOsgiVersion",
             crashlytics: "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar",
             persistentsearchview: "org.cryse.widget:persistentsearchview:$persistentsearchviewVersion@aar",
-            pulltorefresh: "com.navercorp.pulltorefresh:library:$pulltorefreshVersion@aar"
+            pulltorefresh: "com.navercorp.pulltorefresh:library:$pulltorefreshVersion@aar",
+            flexibledivider: "com.yqritc:recyclerview-flexibledivider:$flexibledividerVersion"
     ]
 }

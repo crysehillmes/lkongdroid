@@ -13,12 +13,10 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
@@ -203,7 +201,7 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
     public static class ViewHolder extends RecyclerViewHolder {
         // each data item is just a string in this case
         @Bind(R.id.recyclerview_item_timeline_cardview_root_container)
-        FrameLayout mRootCardView;
+        CardView mRootCardView;
         @Bind(R.id.recyclerview_item_timeline_textview_author_name)
         TextView mAuthorTextView;
         @Bind(R.id.recyclerview_item_timeline_textview_dateline)

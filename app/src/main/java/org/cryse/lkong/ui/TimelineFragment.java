@@ -20,7 +20,6 @@ import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
-import org.cryse.widget.recyclerview.DividerItemDecoration;
 
 import java.util.List;
 
@@ -31,7 +30,6 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
-    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     AppNavigation mNavigation = new AppNavigation();
 
     @Inject
@@ -142,7 +140,6 @@ public class TimelineFragment extends SimpleCollectionFragment<
     @Override
     protected void onCollectionViewInitComplete() {
         super.onCollectionViewInitComplete();
-        mCollectionView.addItemDecoration(new DividerItemDecoration(getActivity()));
         mCollectionView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
