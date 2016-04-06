@@ -207,6 +207,9 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mToolbar.setOnClickListener((view) -> {
+            mPostCollectionView.getRefreshableView().smoothScrollToPosition(0);
+        });
     }
 
     private void initRecyclerView() {
