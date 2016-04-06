@@ -125,6 +125,9 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            mToolbar.setOnClickListener(view -> {
+                mThreadCollectionView.getRecyclerView().smoothScrollToPosition(0);
+            });
         }
     }
 

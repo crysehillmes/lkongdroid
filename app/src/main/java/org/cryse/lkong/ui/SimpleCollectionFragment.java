@@ -76,7 +76,16 @@ public abstract class SimpleCollectionFragment<
         View contentView = inflater.inflate(getLayoutId(), null);
         ButterKnife.bind(this, contentView);
         initRecyclerView();
+        setUpToolbar();
         return contentView;
+    }
+
+    private void setUpToolbar() {
+        if(mToolbar != null) {
+            mToolbar.setOnClickListener((view) -> {
+                mCollectionView.getRecyclerView().smoothScrollToPosition(0);
+            });
+        }
     }
 
     private void initRecyclerView() {
