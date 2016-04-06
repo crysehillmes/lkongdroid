@@ -18,6 +18,14 @@
         app:ptrDrawableStart="@android:color/transparent"
         app:ptrDrawableEnd="@android:color/transparent"/>
 
+    <com.pluscubed.recyclerfastscroll.RecyclerFastScroller
+        android:id="@+id/activity_post_list_recyclerview_fastscroller"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="?actionBarSize"
+        android:layout_marginBottom="88dp"/>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

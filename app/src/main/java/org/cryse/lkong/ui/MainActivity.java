@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -585,6 +584,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     @Override
     public int getLightStatusBarMode() {
-        return Config.LIGHT_STATUS_BAR_AUTO;
+        return Config.lightStatusBarMode(LKongApplication.get(this), mATEKey);
     }
 }

@@ -44,6 +44,7 @@ import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -122,6 +123,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     Toolbar mToolbar;
     @Bind(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
+    @Bind(R.id.activity_post_list_recyclerview_fastscroller)
+    RecyclerFastScroller mFastScroller;
     @Bind(R.id.fab)
     FloatingActionButtonEx mFab;
     @Bind(R.id.activity_post_list_page_control)
@@ -222,7 +225,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         );
         mWrapperAdapter = new Bookends<>(mCollectionAdapter);
         mPostCollectionView.getRefreshableView().setAdapter(mWrapperAdapter);
-
+        mFastScroller.attachRecyclerView(mPostCollectionView.getRefreshableView());
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

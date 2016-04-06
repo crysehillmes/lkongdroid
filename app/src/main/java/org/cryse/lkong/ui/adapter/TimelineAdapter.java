@@ -239,7 +239,7 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
                 }
             });
             // ATE.apply(itemView, ateKey);
-            // mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(v.getContext(), ateKey));
+            mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(v.getContext(), ateKey));
         }
     }
 

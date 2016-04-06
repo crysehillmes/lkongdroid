@@ -1,12 +1,13 @@
 ext {
     junitVersion = '4.12'
-    supportLibraryVersion = '23.2.0'
+    supportLibraryVersion = '23.2.1'
     multidexVersion='1.0.0'
     gsonVersion = '2.4'
     rxVersion = '1.1.0'
     butterknifeVersion = '7.0.1'
-    materialDrawerVersion = '5.1.1'
-    materialDialogVersion = '0.8.5.6'
+    materialDrawerVersion = '5.1.6'
+    materialDialogVersion = '0.8.5.7'
+    fastScrollerVersion = '0.3.0'
     easyPermissionVersion = '0.1.0'
     okhttpVersion = '2.5.0'
     commonslang3Version = '3.4'
@@ -23,7 +24,7 @@ ext {
     subsamplingScaleImageViewVersion = '3.4.1'
     tagsoupOsgiVersion = '1.2.1'
     crashlyticsVersion = '2.5.1'
-    persistentsearchviewVersion = '1.0.3'
+    persistentsearchviewVersion = '1.0.4'
     pulltorefreshVersion = '3.2.3'
     themeEngineVersion = '1.0.1'
     textdrawableVersion = 'c32bc48d86'
@@ -72,6 +73,7 @@ ext {
             theme_engine: "com.github.afollestad:app-theme-engine:$themeEngineVersion@aar",
             textdrawable: "com.github.afollestad:TextDrawable:$textdrawableVersion",
             finestwebview: "com.thefinestartist:finestwebview:$finestwebviewVersion",
+            fastScroller: "com.github.pluscubed:recycler-fast-scroll:$fastScrollerVersion@aar",
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])

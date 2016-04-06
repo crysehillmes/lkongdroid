@@ -276,7 +276,7 @@
                                 android:gravity="center_vertical"
                                 tools:text="sss"
                                 android:textSize="@dimen/text_size_body2"
-                                android:tag="tint|secondary_text" />
+                                android:tag="text_color|secondary_text" />
                             <ImageView
                                 android:id="@+id/activity_profile_imageview_crystal"
                                 android:layout_width="wrap_content"
@@ -291,7 +291,7 @@
                                 android:gravity="center_vertical"
                                 tools:text="sss"
                                 android:textSize="@dimen/text_size_body2"
-                                android:tag="tint|secondary_text" />
+                                android:tag="text_color|secondary_text" />
                         </LinearLayout>
                     </RelativeLayout>
 
@@ -323,7 +323,7 @@
                             android:layout_alignParentRight="true"
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
-                            android:tag="tint|secondary_text" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
@@ -355,7 +355,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint|secondary_text" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
@@ -386,7 +386,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint|secondary_text" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
@@ -418,7 +418,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint|secondary_text" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
@@ -450,7 +450,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint|secondary_text" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
