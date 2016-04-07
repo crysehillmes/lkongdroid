@@ -29,7 +29,6 @@ import org.cryse.lkong.ui.NewThreadActivity;
 import org.cryse.lkong.ui.NotificationActivity;
 import org.cryse.lkong.ui.PostListActivity;
 import org.cryse.lkong.ui.PrivateChatActivity;
-import org.cryse.lkong.ui.SearchActivity;
 import org.cryse.lkong.ui.SettingsActivity;
 import org.cryse.lkong.ui.UserProfileActivity;
 import org.cryse.lkong.utils.DataContract;
@@ -46,11 +45,6 @@ public class AppNavigation {
 
     public void navigateToSettingsActivity(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
-        context.startActivity(intent);
-    }
-
-    public void navigateToSearchActivity(Context context) {
-        Intent intent = new Intent(context, SearchActivity.class);
         context.startActivity(intent);
     }
 

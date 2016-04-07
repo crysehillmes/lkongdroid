@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.malinskiy.superrecyclerview.OnMoreListener;
 
@@ -25,6 +26,7 @@ import org.cryse.lkong.utils.DataContract;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.SimpleCollectionView;
+import org.cryse.widget.recyclerview.Bookends;
 import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
@@ -59,7 +61,10 @@ public abstract class SimpleCollectionFragment<
     @Bind(R.id.simple_collection_recyclerview)
     SuperRecyclerView mCollectionView;
 
+    ProgressBar mMoreProgressBar;
+
     AdapterType mCollectionAdapter;
+    Bookends<AdapterType> mWrapperAdapter;
 
     List<ItemType> mItemList = new ArrayList<ItemType>();
 
@@ -95,8 +100,10 @@ public abstract class SimpleCollectionFragment<
         mCollectionView.getRecyclerView().setItemAnimator(getRecyclerViewItemAnimator());
         mCollectionView.setLayoutManager(getRecyclerViewLayoutManager());
         mCollectionAdapter = createAdapter(mItemList);
-        mCollectionView.setAdapter(mCollectionAdapter.adapter());
+        mWrapperAdapter = new Bookends<>(mCollectionAdapter);
+        mCollectionView.setAdapter(mWrapperAdapter);
         initHeaderView();
+        initFooterView();
         if(getRefreshListener() != null)
             mCollectionView.setRefreshListener(getRefreshListener());
         mCollectionView.setOnMoreListener(getOnMoreListener());
@@ -180,7 +187,7 @@ public abstract class SimpleCollectionFragment<
             isNoMore = false;
             mCollectionAdapter.replaceWith(items);
         }
-        if(mCollectionAdapter.getItemCount() > 0) {
+        if(mCollectionAdapter.getItemCount() > 1) {
             ItemType lastItem = mCollectionAdapter.getItem(mCollectionAdapter.getItemCount() - 1);
             mLastItemSortKey = lastItem.getSortKey();
         } else {
@@ -252,6 +259,13 @@ public abstract class SimpleCollectionFragment<
 
     }
 
+    protected void initFooterView() {
+        mMoreProgressBar = new ProgressBar(getActivity());
+        RecyclerView.LayoutParams moreProgressLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mMoreProgressBar.setLayoutParams(moreProgressLP);
+        mWrapperAdapter.addFooter(mMoreProgressBar);
+    }
+
     protected void onEvent(AbstractEvent event) {
 
     }
@@ -262,12 +276,20 @@ public abstract class SimpleCollectionFragment<
     }
 
     protected OnMoreListener getOnMoreListener() {
-        return (numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore && !isLoadingMore && mLastItemSortKey != 0) {
-                loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
-            } else {
-                mCollectionView.setLoadingMore(false);
-                mCollectionView.hideMoreProgress();
+        return new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+                if (!isNoMore && !isLoadingMore && mLastItemSortKey != 0) {
+                    loadData(mUserAccountManager.getAuthObject(), mLastItemSortKey, true);
+                } else {
+                    mCollectionView.setLoadingMore(false);
+                    mCollectionView.hideMoreProgress();
+                }
+            }
+
+            @Override
+            public void onChangeMoreVisibility(int visibility) {
+                mMoreProgressBar.setVisibility(visibility);
             }
         };
     }
