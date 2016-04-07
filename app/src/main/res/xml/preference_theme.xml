@@ -101,26 +101,26 @@
         android:title="@string/text_sizes"
         app:ateKey_prefCategory_textColor="?ate_key">
 
-        <com.afollestad.appthemeengine.prefs.ATEPreference
+        <!--com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|headline"
             android:persistent="false"
             android:summary="@string/headline_textsize_desc"
             android:title="@string/headline_textsize"
-            app:ateKey_pref="?ate_key" />
+            app:ateKey_pref="?ate_key" /-->
 
-        <com.afollestad.appthemeengine.prefs.ATEPreference
+        <!--com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|title"
             android:persistent="false"
             android:summary="@string/title_textsize_desc"
             android:title="@string/title_textsize"
-            app:ateKey_pref="?ate_key" />
+            app:ateKey_pref="?ate_key" /-->
 
-        <com.afollestad.appthemeengine.prefs.ATEPreference
+        <!--com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|subheading"
             android:persistent="false"
             android:summary="@string/subheading_textsize_desc"
             android:title="@string/subheading_textsize"
-            app:ateKey_pref="?ate_key" />
+            app:ateKey_pref="?ate_key" /-->
 
         <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|body"

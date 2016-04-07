@@ -15,7 +15,7 @@
         android:gravity="center"
         android:minHeight="196dp"
         android:tag="text_color|primary_text"
-        android:text="ATE"
+        android:text="@string/app_name"
         android:textSize="24sp"
         android:textStyle="bold"
         tools:background="#CC0000"
