@@ -1,14 +1,14 @@
 package org.cryse.lkong.logic.request;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.utils.GzipUtils;
+import org.cryse.utils.http.ClearableCookieJar;
 
-import java.io.IOException;
-import java.net.CookieManager;
+import okhttp3.CookieJar;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public abstract class AbstractHttpRequest<ResponseType> {
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
@@ -29,8 +29,8 @@ public abstract class AbstractHttpRequest<ResponseType> {
         this.mHttpDelegate = httpDelegate;
     }
 
-    protected CookieManager getCookieManager() {
-        return mHttpDelegate.getCookieManager();
+    protected ClearableCookieJar getCookieJar() {
+        return mHttpDelegate.getCookieJar();
     }
 
     protected OkHttpClient getOkHttpClient() {
@@ -59,7 +59,7 @@ public abstract class AbstractHttpRequest<ResponseType> {
     }
 
     protected void clearCookies() {
-        mHttpDelegate.getCookieManager().getCookieStore().removeAll();
+        mHttpDelegate.getCookieJar().getCookieStore().clear();
     }
 
     public ResponseType execute() throws Exception {
@@ -82,5 +82,16 @@ public abstract class AbstractHttpRequest<ResponseType> {
 
     protected String gzipToString(Response response) throws Exception {
         return GzipUtils.responseToString(response);
+    }
+
+    protected void checkException(Response response) {
+        if(response != null) {
+            int code = response.code();
+            if(code >= 400 && code < 500) {
+
+            } else if(code >= 500) {
+
+            }
+        }
     }
 }

@@ -1,45 +1,48 @@
 package org.cryse.lkong.account;
 
-import org.cryse.lkong.utils.CookieUtils;
+import org.cryse.utils.http.cookie.SerializableCookie;
 
-import java.net.HttpCookie;
-import java.net.URI;
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
 
 public class LKAuthObject {
     long mUserId;
     String mUserName;
-    URI mAuthURI;
-    URI mDzsbheyURI;
-    URI mIdentityURI;
-    HttpCookie mAuthHttpCookie;
-    HttpCookie mDzsbheyHttpCookie;
-    HttpCookie mIdentityHttpCookie;
+    HttpUrl mAuthUrl;
+    HttpUrl mDzsbheyUrl;
+    HttpUrl mIdentityUrl;
+    Cookie mAuthCookie;
+    Cookie mDzsbheyCookie;
+    Cookie mIdentityCookie;
 
     public LKAuthObject(long userId, String auth, String dzsbhey, String identity) {
         mUserId = userId;
-        mAuthURI = CookieUtils.deserializeHttpCookieForURI(auth);
-        mAuthHttpCookie = CookieUtils.deserializeHttpCookieForCookie(auth);
-        mDzsbheyURI = CookieUtils.deserializeHttpCookieForURI(dzsbhey);
-        mDzsbheyHttpCookie = CookieUtils.deserializeHttpCookieForCookie(dzsbhey);
-        mIdentityURI = CookieUtils.deserializeHttpCookieForURI(identity);
-        mIdentityHttpCookie = CookieUtils.deserializeHttpCookieForCookie(identity);
+        SerializableCookie serializableAuthCookie = SerializableCookie.decode(auth);
+        SerializableCookie serializableDzsbheyCookie = SerializableCookie.decode(dzsbhey);
+        SerializableCookie serializableIdentityCookie = SerializableCookie.decode(identity);
+        mAuthUrl = HttpUrl.parse(serializableAuthCookie.getUrl());
+        mAuthCookie = serializableAuthCookie.getCookie();
+        mDzsbheyUrl = HttpUrl.parse(serializableDzsbheyCookie.getUrl());
+        mDzsbheyCookie = serializableDzsbheyCookie.getCookie();
+        mIdentityUrl = HttpUrl.parse(serializableIdentityCookie.getUrl());
+        mIdentityCookie = serializableIdentityCookie.getCookie();
     }
 
     public LKAuthObject(
             long userId,
             String userName,
-            URI authURI,
-            HttpCookie authCookie,
-            URI dzsbheyURI,
-            HttpCookie dzsbheyCookie
+            HttpUrl authUrl,
+            Cookie authCookie,
+            HttpUrl dzsbheyUrl,
+            Cookie dzsbheyCookie
 
     ) {
         mUserId = userId;
         mUserName = userName;
-        mAuthURI = authURI;
-        mAuthHttpCookie = authCookie;
-        mDzsbheyURI = dzsbheyURI;
-        mDzsbheyHttpCookie = dzsbheyCookie;
+        mAuthUrl = authUrl;
+        mAuthCookie = authCookie;
+        mDzsbheyUrl = dzsbheyUrl;
+        mDzsbheyCookie = dzsbheyCookie;
     }
 
     public long getUserId() {
@@ -58,68 +61,72 @@ public class LKAuthObject {
         this.mUserName = mUserName;
     }
 
-    public URI getAuthURI() {
-        return mAuthURI;
+    public HttpUrl getAuthUrl() {
+        return mAuthUrl;
     }
 
-    public void setAuthURI(URI authURI) {
-        this.mAuthURI = authURI;
+    public void setAuthUrl(HttpUrl authUrl) {
+        this.mAuthUrl = authUrl;
     }
 
-    public URI getDzsbheyURI() {
-        return mDzsbheyURI;
+    public HttpUrl getDzsbheyUrl() {
+        return mDzsbheyUrl;
     }
 
-    public void setDzsbheyURI(URI dzsbheyURI) {
-        this.mDzsbheyURI = dzsbheyURI;
+    public void setDzsbheyUrl(HttpUrl dzsbheyUrl) {
+        this.mDzsbheyUrl = dzsbheyUrl;
     }
 
-    public URI getIdentityURI() {
-        return mIdentityURI;
+    public HttpUrl getIdentityUrl() {
+        return mIdentityUrl;
     }
 
-    public void setIdentityURI(URI identityURI) {
-        this.mIdentityURI = identityURI;
+    public void setIdentityUrl(HttpUrl identityUrl) {
+        this.mIdentityUrl = identityUrl;
     }
 
-    public HttpCookie getAuthHttpCookie() {
-        return mAuthHttpCookie;
+    public Cookie getAuthCookie() {
+        return mAuthCookie;
     }
 
-    public void setAuthHttpCookie(HttpCookie authHttpCookie) {
-        this.mAuthHttpCookie = authHttpCookie;
+    public void setAuthCookie(Cookie authCookie) {
+        this.mAuthCookie = authCookie;
     }
 
-    public HttpCookie getDzsbheyHttpCookie() {
-        return mDzsbheyHttpCookie;
+    public Cookie getDzsbheyCookie() {
+        return mDzsbheyCookie;
     }
 
-    public void setDzsbheyHttpCookie(HttpCookie dzsbheyHttpCookie) {
-        this.mDzsbheyHttpCookie = dzsbheyHttpCookie;
+    public void setDzsbheyCookie(Cookie dzsbheyCookie) {
+        this.mDzsbheyCookie = dzsbheyCookie;
     }
 
-    public HttpCookie getIdentityHttpCookie() {
-        return mIdentityHttpCookie;
+    public Cookie getIdentityCookie() {
+        return mIdentityCookie;
     }
 
-    public void setIdentityHttpCookie(HttpCookie identityHttpCookie) {
-        this.mIdentityHttpCookie = identityHttpCookie;
+    public void setIdentityCookie(Cookie identityCookie) {
+        this.mIdentityCookie = identityCookie;
     }
 
     public boolean hasExpired() {
-        return (mAuthHttpCookie != null && mAuthHttpCookie.hasExpired()) ||
-                (mDzsbheyHttpCookie != null && mDzsbheyHttpCookie.hasExpired());
+        return (mAuthCookie != null && hasExpired(mAuthCookie)) ||
+                (mDzsbheyCookie != null && hasExpired(mDzsbheyCookie));
     }
 
     public boolean isSignedIn() {
-        return (mAuthHttpCookie != null && !mAuthHttpCookie.hasExpired()) && (mDzsbheyHttpCookie != null && !mDzsbheyHttpCookie.hasExpired());
+        return (mAuthCookie != null && !hasExpired(mAuthCookie)) && (mDzsbheyCookie != null && !hasExpired(mDzsbheyCookie));
     }
 
     public boolean hasIdentityExpired() {
-        return (mIdentityHttpCookie != null && mIdentityHttpCookie.hasExpired());
+        return (mIdentityCookie != null && hasExpired(mIdentityCookie));
     }
 
     public boolean hasIdentity() {
-        return (mIdentityHttpCookie != null && !mIdentityHttpCookie.hasExpired());
+        return (mIdentityCookie != null && !hasExpired(mIdentityCookie));
+    }
+
+    private boolean hasExpired(Cookie cookie) {
+        return cookie.expiresAt() < System.currentTimeMillis();
     }
 }

@@ -5,6 +5,12 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.exception.SignInExpiredException;
 import org.cryse.lkong.account.LKAuthObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
+
 public abstract class AbstractAuthedHttpRequest<ResponseType> extends AbstractHttpRequest<ResponseType> {
     private LKAuthObject mAuthObject;
     public AbstractAuthedHttpRequest(LKAuthObject authObject) {
@@ -25,8 +31,12 @@ public abstract class AbstractAuthedHttpRequest<ResponseType> extends AbstractHt
 
     protected void applyAuthCookies() {
         clearCookies();
-        getCookieManager().getCookieStore().add(getAuthObject().getAuthURI(), getAuthObject().getAuthHttpCookie());
-        getCookieManager().getCookieStore().add(getAuthObject().getDzsbheyURI(), getAuthObject().getDzsbheyHttpCookie());
+        List<Cookie> cookies = new ArrayList<>(2);
+        cookies.add(getAuthObject().getAuthCookie());
+        cookies.add(getAuthObject().getDzsbheyCookie());
+
+        getCookieJar().saveFromResponse(HttpUrl.parse(getAuthObject().getAuthUrl().toString()), cookies);
+        // getCookieJar().getCookieStore().add(getAuthObject().getDzsbheyURI(), getAuthObject().getDzsbheyHttpCookie());
         // cookieManager.getCookieStore().add(authObject.getIdentityURI(), authObject.getIdentityHttpCookie());
     }
 

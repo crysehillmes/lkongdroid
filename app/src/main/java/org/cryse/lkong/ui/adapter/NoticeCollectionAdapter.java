@@ -56,7 +56,7 @@ public class NoticeCollectionAdapter extends SimpleRecyclerViewAdapter<NoticeMod
         public ViewHolder(View v, String ateKey) {
             super(v);
             ButterKnife.bind(this, v);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
             mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
         }
     }

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.amulyakhare.textdrawable.TextDrawable;
 
 import org.cryse.lkong.R;
@@ -32,7 +32,7 @@ public class HotThreadAdapter extends SimpleRecyclerViewAdapter<HotThreadModel> 
         super(context, mItemList);
         this.mATEKey = ateKey;
         this.mAccentColor = ThemeUtils.accentColor(mContext);
-        this.mAccentTextColor = Util.isColorLight(mAccentColor) ? Color.BLACK : Color.WHITE;
+        this.mAccentTextColor = ATEUtil.isColorLight(mAccentColor) ? Color.BLACK : Color.WHITE;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class HotThreadAdapter extends SimpleRecyclerViewAdapter<HotThreadModel> 
         public ViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 }

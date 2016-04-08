@@ -59,14 +59,6 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_forum_title">
         <com.afollestad.materialdialogs.prefs.MaterialListPreference
-            android:key="prefs_read_font_size"
-            android:defaultValue="16"
-            android:dialogTitle="@string/settings_item_font_size_dialog_title"
-            android:entries="@array/readview_font_size_entries"
-            android:entryValues="@array/readview_font_size_entries"
-            android:summary="@string/settings_item_font_size_summary"
-            android:title="@string/settings_item_font_size_title" />
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="prefs_image_download_policy"
             android:defaultValue="0"
             android:dialogTitle="@string/settings_item_image_download_policy_title"

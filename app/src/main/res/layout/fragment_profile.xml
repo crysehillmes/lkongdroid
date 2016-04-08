@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:tag="bg_primary_color">
+        android:tag="background|primary_color">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapseing_toolbar"
@@ -50,7 +50,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:textSize="24sp"
-                        android:tag="text_primary_color_dependent"/>
+                        android:tag="text_color|primary_color_dependent"/>
 
                     <TextView
                         android:id="@+id/activity_profile_textview_user_extra0"
@@ -83,7 +83,7 @@
                         android:background="?selectableItemBackground"
                         android:gravity="center"
                         android:textSize="20sp"
-                        android:tag="text_primary_color_dependent"/>
+                        android:tag="text_color|primary_color_dependent"/>
 
                     <TextView
                         android:id="@+id/activity_profile_textview_following_count"
@@ -93,7 +93,7 @@
                         android:background="?selectableItemBackground"
                         android:gravity="center"
                         android:textSize="20sp"
-                        android:tag="text_primary_color_dependent"/>
+                        android:tag="text_color|primary_color_dependent"/>
 
                     <TextView
                         android:id="@+id/activity_profile_textview_thread_count"
@@ -103,7 +103,7 @@
                         android:background="?selectableItemBackground"
                         android:gravity="center"
                         android:textSize="20sp"
-                        android:tag="text_primary_color_dependent"/>
+                        android:tag="text_color|primary_color_dependent"/>
 
                     <TextView
                         android:id="@+id/activity_profile_textview_post_count"
@@ -113,7 +113,7 @@
                         android:background="?selectableItemBackground"
                         android:gravity="center"
                         android:textSize="20sp"
-                        android:tag="text_primary_color_dependent" />
+                        android:tag="text_color|primary_color_dependent" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -126,7 +126,7 @@
                 app:contentInsetStart="72dp"
                 app:layout_collapseMode="pin"
                 app:elevation="@dimen/toolbar_elevation"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="?toolbar_popup_theme"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -153,7 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:tag="text_primary"
+                    android:tag="text_color|primary_text"
                     android:textSize="@dimen/text_size_subhead" />
 
 
@@ -188,7 +188,7 @@
                             android:gravity="center_vertical"
                             android:text="All Activities"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="wrap_content"
@@ -196,14 +196,14 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:src="@drawable/ic_chevron_right_black"
-                            android:tag="tint_text_secondary" />
+                            android:tag="tint|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:id="@+id/activity_profile_layout_digests"
@@ -220,7 +220,7 @@
                             android:gravity="center_vertical"
                             android:text="Digests"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="wrap_content"
@@ -228,14 +228,14 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:src="@drawable/ic_chevron_right_black"
-                            android:tag="tint_text_secondary" />
+                            android:tag="tint|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -251,7 +251,7 @@
                             android:gravity="center_vertical"
                             android:text="@string/text_user_wealth_title"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -265,7 +265,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/ic_coin"
-                                android:tag="tint_accent_color"/>
+                                android:tag="tint|accent_color"/>
                             <TextView
                                 android:id="@+id/activity_profile_textview_coin"
                                 android:layout_width="wrap_content"
@@ -276,13 +276,13 @@
                                 android:gravity="center_vertical"
                                 tools:text="sss"
                                 android:textSize="@dimen/text_size_body2"
-                                android:tag="tint_text_secondary" />
+                                android:tag="text_color|secondary_text" />
                             <ImageView
                                 android:id="@+id/activity_profile_imageview_crystal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/ic_diamond"
-                                android:tag="tint_accent_color"/>
+                                android:tag="tint|accent_color"/>
                             <TextView
                                 android:id="@+id/activity_profile_textview_crystal"
                                 android:layout_width="wrap_content"
@@ -291,7 +291,7 @@
                                 android:gravity="center_vertical"
                                 tools:text="sss"
                                 android:textSize="@dimen/text_size_body2"
-                                android:tag="tint_text_secondary" />
+                                android:tag="text_color|secondary_text" />
                         </LinearLayout>
                     </RelativeLayout>
 
@@ -299,7 +299,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -315,7 +315,7 @@
                             android:gravity="center_vertical"
                             android:text="@string/text_last_punch_time"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <TextView
                             android:id="@+id/activity_profile_textview_last_punch"
                             android:layout_width="wrap_content"
@@ -323,14 +323,14 @@
                             android:layout_alignParentRight="true"
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
-                            android:tag="tint_text_secondary" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -346,7 +346,7 @@
                             android:gravity="center_vertical"
                             android:text="@string/text_current_continuous_punch_days"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <TextView
                             android:id="@+id/activity_profile_textview_current_punch"
                             android:layout_width="wrap_content"
@@ -355,14 +355,14 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint_text_secondary" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -377,7 +377,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:text="@string/text_longest_continuous_punch_days"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <TextView
                             android:id="@+id/activity_profile_textview_longest_punch"
                             android:layout_width="wrap_content"
@@ -386,14 +386,14 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint_text_secondary" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -409,7 +409,7 @@
                             android:gravity="center_vertical"
                             android:text="@string/text_total_punch_days"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <TextView
                             android:id="@+id/activity_profile_textview_total_punch"
                             android:layout_width="wrap_content"
@@ -418,14 +418,14 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint_text_secondary" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:alpha="0.2"
-                        android:tag="bg_text_secondary" />
+                        android:tag="background|secondary_text" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -441,7 +441,7 @@
                             android:gravity="center_vertical"
                             android:text="@string/text_user_registration_time_title"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="text_primary" />
+                            android:tag="text_color|primary_text" />
                         <TextView
                             android:id="@+id/activity_profile_textview_registration_time"
                             android:layout_width="wrap_content"
@@ -450,7 +450,7 @@
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
                             android:textSize="@dimen/text_size_body2"
-                            android:tag="tint_text_secondary" />
+                            android:tag="text_color|secondary_text" />
                     </RelativeLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>

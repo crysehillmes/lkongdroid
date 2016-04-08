@@ -83,7 +83,7 @@ public class UsersAdapter extends SimpleRecyclerViewAdapter<SearchUserItem> {
                     mOnUserItemClickListener.onProfileAreaClick(view, getAdapterPosition(), 0);
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 

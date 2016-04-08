@@ -20,11 +20,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.bumptech.glide.Glide;
+import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
@@ -84,6 +86,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
     FloatingActionButtonEx mFab;
 
     View mHeaderView;
+    ProgressBar mMoreProgressBar;
     Spinner mListTypeSpinner;
     MenuItem mFollowForumMenuItem;
     MenuItem mChangeThemeMenuItem;
@@ -125,6 +128,9 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            mToolbar.setOnClickListener(view -> {
+                mThreadCollectionView.getRecyclerView().smoothScrollToPosition(0);
+            });
         }
     }
 
@@ -139,12 +145,20 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mThreadCollectionView.setAdapter(mWrapperAdapter);
 
         mThreadCollectionView.setRefreshListener(() -> getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mCurrentListType, false));
-        mThreadCollectionView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!isNoMore.get() && !isLoadingMore.get() && mLastItemSortKey != -1) {
-                getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mLastItemSortKey, mCurrentListType, true);
-            } else {
-                mThreadCollectionView.setLoadingMore(false);
-                mThreadCollectionView.hideMoreProgress();
+        mThreadCollectionView.setOnMoreListener(new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+                if (!isNoMore.get() && !isLoadingMore.get() && mLastItemSortKey != -1) {
+                    getPresenter().loadThreadList(mUserAccountManager.getAuthObject(), mForumId, mLastItemSortKey, mCurrentListType, true);
+                } else {
+                    mThreadCollectionView.setLoadingMore(false);
+                    mThreadCollectionView.hideMoreProgress();
+                }
+            }
+
+            @Override
+            public void onChangeMoreVisibility(int visibility) {
+                mMoreProgressBar.setVisibility(visibility);
             }
         });
         mCollectionAdapter.setOnThreadItemClickListener(new ThreadListAdapter.OnThreadItemClickListener() {
@@ -208,6 +222,11 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mHeaderView.setLayoutParams(headerLP);
         ((CardView)mHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
         mWrapperAdapter.addHeader(mHeaderView);
+
+        mMoreProgressBar = new ProgressBar(this);
+        RecyclerView.LayoutParams moreProgressLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mMoreProgressBar.setLayoutParams(moreProgressLP);
+        mWrapperAdapter.addFooter(mMoreProgressBar);
     }
 
     @Override
@@ -431,7 +450,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mFab.setColorPressed(accentColorDark);
         mFab.setColorRipple(accentColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        DrawableCompat.setTint(drawable, Util.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
+        DrawableCompat.setTint(drawable, ATEUtil.isColorLight(accentColor) ? Color.BLACK : Color.WHITE);
         mFab.setImageDrawable(drawable);
     }
 }

@@ -39,6 +39,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.bumptech.glide.Glide;
@@ -92,8 +93,6 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
 
     StringPrefs mPostTailText;
 
-    StringPrefs mReadFontSizePref;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.activity_new_thread_edittext_title)
@@ -136,13 +135,9 @@ public abstract class AbstractPostActivity extends AbstractSwipeBackActivity {
                 PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT,
                 PreferenceConstant.SHARED_PREFERENCE_POST_TAIL_TEXT_VALUE
         );
-        mReadFontSizePref = Prefs.getStringPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
-        );
         setSwipeBackEnable(false);
         setUpToolbar(mToolbar);
-        mContentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        mContentTextSize = Config.textSizeForMode(this, mATEKey, Config.TEXTSIZE_BODY);
         mContentEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContentTextSize);
         mTitleEditText.setVisibility(hasTitleField() ? View.VISIBLE : View.GONE);

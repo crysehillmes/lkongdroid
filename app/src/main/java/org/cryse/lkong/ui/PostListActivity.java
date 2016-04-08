@@ -39,12 +39,12 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
@@ -114,7 +114,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
 
     StringPrefs mImageDownloadPolicy;
     StringPrefs mAvatarDownloadPolicy;
-    StringPrefs mReadFontSizePref;
     BooleanPrefs mUseInAppBrowser;
     BooleanPrefs mScrollByVolumeKey;
     BooleanPrefs mPrimaryColorInPostControl;
@@ -124,6 +123,8 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
     Toolbar mToolbar;
     @Bind(R.id.activity_post_list_recyclerview)
     PtrRecyclerView mPostCollectionView;
+    @Bind(R.id.activity_post_list_recyclerview_fastscroller)
+    RecyclerFastScroller mFastScroller;
     @Bind(R.id.fab)
     FloatingActionButtonEx mFab;
     @Bind(R.id.activity_post_list_page_control)
@@ -166,10 +167,6 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mAvatarDownloadPolicy = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
-        mReadFontSizePref = Prefs.getStringPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT,
-                PreferenceConstant.SHARED_PREFERENCE_READ_FONT_VALUE
-        );
         mImageDownloadPolicy = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_IMAGE_DOWNLOAD_POLICY_VALUE
@@ -210,13 +207,15 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mToolbar.setOnClickListener((view) -> {
+            mPostCollectionView.getRefreshableView().smoothScrollToPosition(0);
+        });
     }
 
     private void initRecyclerView() {
         mPostCollectionView.setMode(PullToRefreshBase.Mode.BOTH);
         mPostCollectionView.getRefreshableView().setLayerType(View.LAYER_TYPE_NONE, null);
         mPostCollectionView.getRefreshableView().setDrawingCacheEnabled(false);
-        // mPostCollectionView.getRefreshableView().setItemViewCacheSize(20);
         mPostCollectionView.getRefreshableView().setItemAnimator(new DefaultItemAnimator());
         mPostCollectionView.getRefreshableView().setLayoutManager(new LinearLayoutManager(this));
         mCollectionAdapter = new PostListAdapter(
@@ -229,7 +228,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         );
         mWrapperAdapter = new Bookends<>(mCollectionAdapter);
         mPostCollectionView.getRefreshableView().setAdapter(mWrapperAdapter);
-
+        mFastScroller.attachRecyclerView(mPostCollectionView.getRefreshableView());
         mThreadIntroHeaderView = getLayoutInflater().inflate(R.layout.layout_post_intro_header, null);
         RecyclerView.LayoutParams threadIntroHeaderLP = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -237,7 +236,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mThreadTitleTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_title);
         mThreadDetailCountTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_detail_count);
         mForumNameTextView = (TextView) mThreadIntroHeaderView.findViewById(R.id.layout_post_intro_header_textview_forum_name);
-        ATE.apply(mThreadIntroHeaderView, mATEKey);
+        // ATE.apply(mThreadIntroHeaderView, mATEKey);
         ((CardView)mThreadIntroHeaderView).setCardBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey));
 
         mWrapperAdapter.addHeader(mThreadIntroHeaderView);
@@ -939,7 +938,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mFab.setColorPressed(postControlColorDark);
         mFab.setColorRipple(postControlColorRipple);
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_button_edit, null).mutate();
-        int toolbarTextColor = Util.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
+        int toolbarTextColor = ATEUtil.isColorLight(postControlColor) ? Color.BLACK : Color.WHITE;
         ThemeUtils.setTint(drawable, toolbarTextColor);
         mFab.setImageDrawable(drawable);
 
@@ -1225,7 +1224,7 @@ public class PostListActivity extends AbstractSwipeBackActivity implements PostL
         mTextColorSecondary = Config.textColorSecondary(this, mATEKey);
         mTodayPrefix = getString(R.string.text_datetime_today);
         mContentTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        float contentTextSize =  UIUtils.getFontSizeFromPreferenceValue(this, mReadFontSizePref.get());
+        float contentTextSize = Config.textSizeForMode(this, mATEKey, Config.TEXTSIZE_BODY);
         mContentTextPaint.setTextSize(contentTextSize);
         mContentTextPaint.setColor(mTextColorPrimary);
         mContentTextPaint.linkColor = getAccentColor();

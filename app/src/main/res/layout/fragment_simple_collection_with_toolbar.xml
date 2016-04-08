@@ -10,7 +10,7 @@
         android:layout_height="?actionBarSize"
         android:elevation="@dimen/toolbar_elevation"
         android:layout_gravity="top"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:popupTheme="?toolbar_popup_theme"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <com.malinskiy.superrecyclerview.SuperRecyclerView

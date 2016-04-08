@@ -321,7 +321,8 @@
     </string-array>
 
     <string name="donation_title">Donate</string>
-    <string name="donation_positive">Launch Alipay</string>
+    <string name="donation_positive">Copy Account and Launch Alipay</string>
+    <string name="donation_clipboard_toast">Account already copied to Clipboard</string>
     <string name="donation_content">I spend a lot of time on this app, if you want to buy me a coffee, you could donate to this Alipay account: tyk5555@hotmail.com</string>
 
     <string-array name="check_notice_duration_value_arrays">

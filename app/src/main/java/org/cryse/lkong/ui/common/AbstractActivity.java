@@ -13,6 +13,7 @@ import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.ATEActivity;
 import com.afollestad.appthemeengine.Config;
 
+import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
@@ -45,29 +46,6 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Default config
-        if (!ATE.config(this, "light_theme").isConfigured(1)) {
-            ATE.config(this, "light_theme")
-                    .activityTheme(R.style.AppTheme)
-                    .primaryColorRes(R.color.colorPrimaryLightDefault)
-                    .accentColorRes(R.color.colorAccentLightDefault)
-                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
-                    .coloredActionBar(true)
-                    .coloredNavigationBar(false)
-                    .usingMaterialDialogs(true)
-                    .commit();
-        }
-        if (!ATE.config(this, "dark_theme").isConfigured(1)) {
-            ATE.config(this, "dark_theme")
-                    .activityTheme(R.style.AppThemeDark)
-                    .primaryColorRes(R.color.colorPrimaryDarkDefault)
-                    .accentColorRes(R.color.colorAccentDarkDefault)
-                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
-                    .coloredActionBar(true)
-                    .coloredNavigationBar(true)
-                    .usingMaterialDialogs(true)
-                    .commit();
-        }
         mATEKey = getATEKey();
         super.onCreate(savedInstanceState);
 
@@ -94,7 +72,7 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
 
     @Nullable
     @Override
-    protected final String getATEKey() {
+    public final String getATEKey() {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false) ?
                 "dark_theme" : "light_theme";
     }

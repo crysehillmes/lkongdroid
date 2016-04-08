@@ -34,7 +34,7 @@
         android:src="@drawable/ic_button_rate"
         android:contentDescription="@string/button_share"
         android:background="?selectableItemBackground"
-        android:tag="tint_text_primary"/>
+        android:tag="tint|primary_text"/>
 
     <TextView
         android:id="@+id/recyclerview_item_post_textview_rate"
@@ -61,7 +61,7 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/button_reply"
         android:background="?selectableItemBackground"
-        android:tag="tint_text_primary" />
+        android:tag="tint|primary_text" />
 
     <ImageButton
         android:id="@+id/recyclerview_item_post_button_share"
@@ -74,7 +74,7 @@
         android:src="@drawable/ic_action_share"
         android:contentDescription="@string/button_share"
         android:background="?selectableItemBackground"
-        android:tag="tint_text_primary"/>
+        android:tag="tint|primary_text"/>
 
     <ImageButton
         android:id="@+id/recyclerview_item_post_button_edit"
@@ -88,5 +88,5 @@
         android:contentDescription="@string/button_edit"
         android:visibility="invisible"
         android:background="?selectableItemBackground"
-        android:tag="tint_text_primary"/>
+        android:tag="tint|primary_text"/>
 </android.support.v7.widget.CardView>

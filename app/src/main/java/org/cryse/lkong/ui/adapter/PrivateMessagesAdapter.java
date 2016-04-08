@@ -110,7 +110,7 @@ public class PrivateMessagesAdapter extends SimpleRecyclerViewAdapter<PrivateMes
         public PrivateMessageViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
             mMessageTextView.setMovementMethod(
                     LinkMovementMethod.getInstance()
             );

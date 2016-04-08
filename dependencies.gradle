@@ -1,14 +1,15 @@
 ext {
     junitVersion = '4.12'
-    supportLibraryVersion = '23.1.1'
+    supportLibraryVersion = '23.2.1'
     multidexVersion='1.0.0'
     gsonVersion = '2.4'
     rxVersion = '1.1.0'
     butterknifeVersion = '7.0.1'
-    materialDrawerVersion = '4.6.4'
-    materialDialogVersion = '0.8.5.3'
+    materialDrawerVersion = '5.1.6'
+    materialDialogVersion = '0.8.5.7'
+    fastScrollerVersion = '0.3.0'
     easyPermissionVersion = '0.1.0'
-    okhttpVersion = '2.5.0'
+    okhttpVersion = '3.2.0'
     commonslang3Version = '3.4'
     tikaVersion = '1.10'
     timberVersion = '3.1.0'
@@ -20,15 +21,16 @@ ext {
     glideVersion = '3.7.0'
     jsoupVersion = '1.8.3'
     fabVersion = '1.3.0'
-    subsamplingScaleImageViewVersion = '3.2.0'
+    subsamplingScaleImageViewVersion = '3.4.1'
     tagsoupOsgiVersion = '1.2.1'
     crashlyticsVersion = '2.5.1'
-    persistentsearchviewVersion = '1.0.3'
+    persistentsearchviewVersion = '1.0.4'
     pulltorefreshVersion = '3.2.3'
-    themeEngineVersion = '0.7.7'
+    themeEngineVersion = '1.0.1'
     textdrawableVersion = 'c32bc48d86'
     finestwebviewVersion = '1.1.6'
     realmVersion = '0.87.0'
+    flexibledividerVersion = '1.2.9'
 
     libDependencies = [
             // Test
@@ -53,7 +55,7 @@ ext {
             rxandroid: "io.reactivex:rxandroid:$rxVersion",
 
             // Network
-            okhttp: "com.squareup.okhttp:okhttp:$okhttpVersion",
+            okhttp: "com.squareup.okhttp3:okhttp:$okhttpVersion",
 
             // Database
             realm: "io.realm:realm-android:$realmVersion",
@@ -71,6 +73,7 @@ ext {
             theme_engine: "com.github.afollestad:app-theme-engine:$themeEngineVersion@aar",
             textdrawable: "com.github.afollestad:TextDrawable:$textdrawableVersion",
             finestwebview: "com.thefinestartist:finestwebview:$finestwebviewVersion",
+            fastScroller: "com.github.pluscubed:recycler-fast-scroll:$fastScrollerVersion@aar",
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -87,6 +90,7 @@ ext {
             tagsoup_osgi: "de.twentyeleven.skysail:org.ccil.cowan.tagsoup-osgi:$tagsoupOsgiVersion",
             crashlytics: "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar",
             persistentsearchview: "org.cryse.widget:persistentsearchview:$persistentsearchviewVersion@aar",
-            pulltorefresh: "com.navercorp.pulltorefresh:library:$pulltorefreshVersion@aar"
+            pulltorefresh: "com.navercorp.pulltorefresh:library:$pulltorefreshVersion@aar",
+            flexibledivider: "com.yqritc:recyclerview-flexibledivider:$flexibledividerVersion"
     ]
 }

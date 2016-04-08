@@ -288,7 +288,8 @@
     </string-array>
 
     <string name="donation_title">捐赠</string>
-    <string name="donation_positive">打开支付宝</string>
+    <string name="donation_positive">复制账户并打开支付宝</string>
+    <string name="donation_clipboard_toast">已复制到剪贴板</string>
     <string name="donation_content">这个应用花费了我不少心血，如果您想支持一下我的话，可以通过向这个支付宝账户：tyk5555@hotmail.com 转账来进行捐赠</string>
 
     <string name="settings_item_screen_rotation_title">屏幕旋转</string>

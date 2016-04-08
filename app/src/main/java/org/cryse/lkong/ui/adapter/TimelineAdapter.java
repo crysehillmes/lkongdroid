@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
@@ -239,7 +238,7 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
                     mOnTimelineModelItemClickListener.onItemTimelineClick(v1, getAdapterPosition());
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
             mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(v.getContext(), ateKey));
         }
     }

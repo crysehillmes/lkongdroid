@@ -27,7 +27,6 @@ public class MentionsFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = MentionsFragment.class.getName();
-    private static final String LOAD_IMAGE_TASK_TAG = "mentions_load_image_tag";
 
     @Inject
     TimelinePresenter mPresenter;

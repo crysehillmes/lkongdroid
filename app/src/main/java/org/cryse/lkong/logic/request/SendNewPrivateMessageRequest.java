@@ -1,9 +1,9 @@
 package org.cryse.lkong.logic.request;
 
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import org.cryse.lkong.logic.HttpDelegate;
 import org.cryse.lkong.logic.LKongWebConstants;
@@ -31,7 +31,7 @@ public class SendNewPrivateMessageRequest extends AbstractAuthedHttpRequest<Send
 
     @Override
     protected Request buildRequest() {
-        FormEncodingBuilder builder= new FormEncodingBuilder()
+        FormBody.Builder builder= new FormBody.Builder()
                 .add("message", mMessage)
                 .add("request", "pm_" + Long.toString(mTargetUserId));
         RequestBody formBody = builder.build();

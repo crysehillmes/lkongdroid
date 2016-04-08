@@ -49,4 +49,6 @@
     <dimen name="margin_huge">64dp</dimen>
 
     <dimen name="list_item_height">72dp</dimen>
+    <dimen name="content_inset">16dp</dimen>
+    <dimen name="content_inset_half">8dp</dimen>
 </resources>

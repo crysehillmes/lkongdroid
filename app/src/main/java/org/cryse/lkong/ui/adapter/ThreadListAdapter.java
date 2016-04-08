@@ -124,7 +124,7 @@ public class ThreadListAdapter extends SimpleRecyclerViewAdapter<ThreadModel> {
                     mOnThreadItemClickListener.onItemThreadClick(view, getAdapterPosition());
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 

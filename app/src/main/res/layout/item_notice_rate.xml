@@ -23,7 +23,7 @@
                 android:textSize="@dimen/text_size_subhead"
                 android:lineSpacingMultiplier="1.3"
                 android:text="placeholder"
-                android:tag="text_primary"/>
+                android:tag="text_color|primary_text" />
 
         </RelativeLayout>
 

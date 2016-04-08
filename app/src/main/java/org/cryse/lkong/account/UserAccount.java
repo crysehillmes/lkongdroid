@@ -3,20 +3,22 @@ package org.cryse.lkong.account;
 import android.accounts.Account;
 
 import org.cryse.lkong.utils.CookieUtils;
+import org.cryse.utils.http.cookie.SerializableCookie;
 
 import java.io.Serializable;
-import java.net.HttpCookie;
-import java.net.URI;
+
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
 
 public class UserAccount implements Serializable {
     private long userId;
     private String userName;
     private String userEmail;
     private String userAvatar;
-    private URI authURI;
-    private URI dzsbheyURI;
-    private HttpCookie authCookie;
-    private HttpCookie dzsbheyCookie;
+    private HttpUrl authUrl;
+    private HttpUrl dzsbheyUrl;
+    private Cookie authCookie;
+    private Cookie dzsbheyCookie;
     private Account mAccount;
 
     public UserAccount(Account account, long userId, String userName, String userEmail, String userAvatar, String serializedAuthCookie, String serializedDzsbheyCookie) {
@@ -61,43 +63,39 @@ public class UserAccount implements Serializable {
         this.userAvatar = userAvatar;
     }
 
-    public void setAuthCookie(URI uri, HttpCookie cookie) {
-        this.authURI = uri;
+    public void setAuthCookie(HttpUrl url, Cookie cookie) {
+        this.authUrl = url;
         this.authCookie = cookie;
     }
 
     public void setAuthCookie(String serialized) {
-        setAuthCookie(
-                CookieUtils.deserializeHttpCookieForURI(serialized),
-                CookieUtils.deserializeHttpCookieForCookie(serialized)
-        );
+        SerializableCookie cookie = SerializableCookie.decode(serialized);
+        setAuthCookie(HttpUrl.parse(cookie.getUrl()), cookie.getCookie());
     }
 
-    public URI getAuthURI() {
-        return authURI;
+    public HttpUrl getAuthUrl() {
+        return authUrl;
     }
 
-    public HttpCookie getAuthCookie() {
+    public Cookie getAuthCookie() {
         return authCookie;
     }
 
-    public void setDzsbheyCookie(URI uri, HttpCookie cookie) {
-        this.dzsbheyURI = uri;
+    public void setDzsbheyCookie(HttpUrl uri, Cookie cookie) {
+        this.dzsbheyUrl = uri;
         this.dzsbheyCookie = cookie;
     }
 
     public void setDzsbheyCookie(String serialized) {
-        setDzsbheyCookie(
-                CookieUtils.deserializeHttpCookieForURI(serialized),
-                CookieUtils.deserializeHttpCookieForCookie(serialized)
-        );
+        SerializableCookie cookie = SerializableCookie.decode(serialized);
+        setDzsbheyCookie(HttpUrl.parse(cookie.getUrl()), cookie.getCookie());
     }
 
-    public URI getDzsbheyURI() {
-        return dzsbheyURI;
+    public HttpUrl getDzsbheyUrl() {
+        return dzsbheyUrl;
     }
 
-    public HttpCookie getDzsbheyCookie() {
+    public Cookie getDzsbheyCookie() {
         return dzsbheyCookie;
     }
 

@@ -79,17 +79,6 @@
             android:name=".ui.PhotoViewPagerActivity"
             android:theme="@style/AppThemeDark.Translucent"/>
         <activity
-            android:name=".ui.SearchActivity"
-            android:label=""
-            android:theme="@style/AppTheme.Translucent">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
             android:name=".ui.UserProfileActivity"
             android:theme="@style/AppTheme.Translucent"
             android:label=""/>

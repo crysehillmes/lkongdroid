@@ -34,6 +34,18 @@
     <string name="not_available_below_m">Android 6.0 Marshmallow 以下无效</string>
     <string name="not_available_below_lollipop">Android 5.0 Lollipop 以下无效</string>
 
+    <string name="text_sizes">文字大小</string>
+    <string name="other_textsizes_note">备注：其他文字设置出于简便的原因不在这里提供了。</string>
+    <string name="headline_textsize">大标题字体大小</string>
+    <string name="title_textsize">标题字体大小</string>
+    <string name="subheading_textsize">子标题字体大小</string>
+    <string name="body_textsize">正文字体大小</string>
+    <string name="headline_textsize_desc">将字体大小应用到所有大标题, %ddp</string>
+    <string name="title_textsize_desc">将字体大小应用到所有标题, %ddp</string>
+    <string name="subheading_textsize_desc">将字体大小应用到所有子标题, %ddp</string>
+    <string name="body_textsize_desc">将字体大小应用到所有正文 %ddp</string>
+    <string name="defaultValue">默认</string>
+
     <string-array name="light_status_mode_entries">
         <item>关闭, 状态栏图标为白色</item>
         <item>开启, 状态栏图标为黑色</item>

@@ -50,7 +50,7 @@ public class SearchResultAdapter extends SimpleRecyclerViewAdapter<AbstractSearc
     }
 
     public SearchResultAdapter(Context context, String ateKey, int avatarLoadPolicy) {
-        super(context, new ArrayList<AbstractSearchResult>());
+        super(context, new ArrayList<>());
         this.mCircleTransform = new CircleTransform(context);
         this.mTodayPrefix = mContext.getString(R.string.text_datetime_today);
         this.mAvatarSize = UIUtils.getDefaultAvatarSize(context);
@@ -146,7 +146,7 @@ public class SearchResultAdapter extends SimpleRecyclerViewAdapter<AbstractSearc
         public SearchPostViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 
@@ -160,7 +160,7 @@ public class SearchResultAdapter extends SimpleRecyclerViewAdapter<AbstractSearc
         public SearchUserViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 
@@ -174,7 +174,7 @@ public class SearchResultAdapter extends SimpleRecyclerViewAdapter<AbstractSearc
         public SearchGroupViewHolder(View itemView, String ateKey) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
         }
     }
 }

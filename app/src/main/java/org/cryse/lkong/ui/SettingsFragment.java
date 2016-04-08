@@ -68,7 +68,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ATE.apply(this, mATEKey);
+        // ATE.apply(this, mATEKey);
     }
 
     @Nullable

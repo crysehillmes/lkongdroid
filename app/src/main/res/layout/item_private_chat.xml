@@ -30,7 +30,7 @@
             android:maxLines="1"
             android:text="placeholder"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_primary" />
+            android:tag="text_color|primary_text" />
         <TextView
             android:id="@+id/recyclerview_item_private_chat_textview_dateline"
             android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
             android:text="placeholder"
             android:gravity="end"
             android:textSize="@dimen/text_size_caption"
-            android:tag="text_secondary"/>
+            android:tag="text_color|secondary_text"/>
         <TextView
             android:id="@+id/recyclerview_item_private_chat_textview_message"
             android:layout_width="match_parent"
@@ -49,6 +49,6 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="@dimen/text_size_body1"
-            android:tag="text_secondary"/>
+            android:tag="text_color|secondary_text"/>
         </RelativeLayout>
 </RelativeLayout>

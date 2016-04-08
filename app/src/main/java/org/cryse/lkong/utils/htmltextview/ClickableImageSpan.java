@@ -1,5 +1,6 @@
 package org.cryse.lkong.utils.htmltextview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.utils.transformation.FitInTransformation;
 import org.cryse.lkong.utils.transformation.FitSizeTransformation;
 
@@ -147,9 +149,14 @@ public class ClickableImageSpan extends DynamicDrawableSpanWithoutSpacing implem
     @Override
     public void loadImage(ImageSpanContainer container, int newMaxWidth, int backgroundColor) {
         mMaxWidth = 256; //newMaxWidth;
-        mContainer = new WeakReference<ImageSpanContainer>(container);
+        mContainer = new WeakReference<>(container);
         mDrawable.setContainer(container);
         if(!mIsLoaded && mContext.get() != null) {
+            if(mContext.get() instanceof AbstractActivity) {
+                AbstractActivity activity = (AbstractActivity) mContext.get();
+                if(activity.isFinishing() || activity.isActivityDestroyed())
+                    return;
+            }
             Glide
                     .with(mContext.get())
                     .load(mSourceMiddle)

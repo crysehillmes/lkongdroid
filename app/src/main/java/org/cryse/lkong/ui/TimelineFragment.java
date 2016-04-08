@@ -30,7 +30,6 @@ public class TimelineFragment extends SimpleCollectionFragment<
         TimelineAdapter,
         TimelinePresenter> {
     private static final String LOG_TAG = TimelineFragment.class.getName();
-    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     AppNavigation mNavigation = new AppNavigation();
 
     @Inject

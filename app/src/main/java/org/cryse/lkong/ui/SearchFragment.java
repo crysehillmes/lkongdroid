@@ -3,11 +3,14 @@ package org.cryse.lkong.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
+import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.cryse.lkong.R;
@@ -27,6 +30,7 @@ import org.cryse.lkong.view.SearchForumView;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
+import org.cryse.widget.recyclerview.Bookends;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,7 +54,11 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
 
     @Bind(R.id.activity_search_recyclerview)
     SuperRecyclerView mSearchResultRecyclerView;
+
+    ProgressBar mMoreProgressBar;
+
     SearchResultAdapter mSearchResultAdapter;
+    Bookends<SearchResultAdapter> mWrapperAdapter;
     private OnSearchResultListener mOnSearchResultListener;
 
 
@@ -98,13 +106,23 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
     private void initRecyclerView() {
         mSearchResultAdapter = new SearchResultAdapter(getContext(), mATEKey, Integer.valueOf(mAvatarDownloadPolicy.get()));
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mSearchResultRecyclerView.setAdapter(mSearchResultAdapter);
-        mSearchResultRecyclerView.setOnMoreListener((numberOfItems, numberBeforeMore, currentItemPos) -> {
-            if (!mIsNoMore.get() && !mIsLoadingMore.get() && mNextTime.get() > 0) {
-                mPresenter.search(mUserAccountManager.getAuthObject(), mNextTime.get(), mQueryString, true);
-            } else {
-                mSearchResultRecyclerView.setLoadingMore(false);
-                mSearchResultRecyclerView.hideMoreProgress();
+        mWrapperAdapter = new Bookends<>(mSearchResultAdapter);
+        mSearchResultRecyclerView.setAdapter(mWrapperAdapter);
+        initFooterView();
+        mSearchResultRecyclerView.setOnMoreListener(new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+                if (!mIsNoMore.get() && !mIsLoadingMore.get() && mNextTime.get() > 0) {
+                    mPresenter.search(mUserAccountManager.getAuthObject(), mNextTime.get(), mQueryString, true);
+                } else {
+                    mSearchResultRecyclerView.setLoadingMore(false);
+                    mSearchResultRecyclerView.hideMoreProgress();
+                }
+            }
+
+            @Override
+            public void onChangeMoreVisibility(int visibility) {
+                mMoreProgressBar.setVisibility(visibility);
             }
         });
         mSearchResultAdapter.setOnItemClickListener((view, position, id) -> {
@@ -130,6 +148,13 @@ public class SearchFragment extends AbstractFragment implements SearchForumView 
                     break;
             }
         });
+    }
+
+    protected void initFooterView() {
+        mMoreProgressBar = new ProgressBar(getActivity());
+        RecyclerView.LayoutParams moreProgressLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mMoreProgressBar.setLayoutParams(moreProgressLP);
+        mWrapperAdapter.addFooter(mMoreProgressBar);
     }
 
     @Override

@@ -82,7 +82,7 @@ dependencies {
 
     compile libDependencies.realm
 
-  compile libDependencies.finestwebview
+    compile libDependencies.finestwebview
 
     compile(libDependencies.materialdrawer) {
         transitive = true
@@ -93,6 +93,10 @@ dependencies {
     }
 
     compile(libDependencies.materialdialog_commons) {
+        transitive = true
+    }
+
+    compile(libDependencies.fastScroller) {
         transitive = true
     }
 

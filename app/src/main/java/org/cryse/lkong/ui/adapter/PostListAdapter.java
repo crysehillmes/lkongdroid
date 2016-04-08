@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 
 import org.cryse.lkong.R;
@@ -185,7 +184,7 @@ public class PostListAdapter extends SimpleRecyclerViewAdapter<PostModel> {
                     mOnItemButtonClickListener.onPostTextLongClick(view, getAdapterPosition());
                 }
             });
-            ATE.apply(itemView, ateKey);
+            // ATE.apply(itemView, ateKey);
             mRootCardView.setCardBackgroundColor(Config.textColorPrimaryInverse(itemView.getContext(), ateKey));
         }
     }

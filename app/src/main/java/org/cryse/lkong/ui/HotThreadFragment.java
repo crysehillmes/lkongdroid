@@ -122,8 +122,18 @@ public class HotThreadFragment extends SimpleCollectionFragment<
 
     @Override
     protected OnMoreListener getOnMoreListener() {
-        return null;
-    }
+        return new OnMoreListener() {
+            @Override
+            public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+                mCollectionView.setLoadingMore(false);
+                mCollectionView.hideMoreProgress();
+            }
+
+            @Override
+            public void onChangeMoreVisibility(int visibility) {
+                mMoreProgressBar.setVisibility(visibility);
+            }
+        };    }
 
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {

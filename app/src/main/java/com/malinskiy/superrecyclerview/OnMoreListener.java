@@ -7,4 +7,6 @@ public interface OnMoreListener {
      * @param maxLastVisiblePosition for staggered grid this is max of all spans
      */
     void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition);
+
+    void onChangeMoreVisibility(int visibility);
 }

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
 import org.cryse.lkong.event.AccountRemovedEvent;
 import org.cryse.lkong.event.CurrentAccountChangedEvent;
@@ -16,6 +17,7 @@ import org.cryse.lkong.event.NewAccountEvent;
 import org.cryse.lkong.event.RxEventBus;
 import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.ui.MainActivity;
+import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.utils.preference.LongPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
@@ -42,6 +44,7 @@ public class UserAccountManager {
     Context mContext;
 
     LongPrefs mDefaultAccountUid;
+    IntegerPrefs mVersionCodePref;
 
     @Inject
     AccountManager mAccountManager;
@@ -52,6 +55,10 @@ public class UserAccountManager {
         mDefaultAccountUid = Prefs.getLongPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID,
                 PreferenceConstant.SHARED_PREFERENCE_DEFAULT_ACCOUNT_UID_VALUE
+        );
+        mVersionCodePref = Prefs.getIntPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
         );
     }
 
@@ -94,8 +101,15 @@ public class UserAccountManager {
             mUserAccounts.clear();
             Account[] accounts = mAccountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
             for(Account account : accounts) {
-                UserAccount userAccount = getUserAccountFromAccountManager(account, mAccountManager);
-                mUserAccounts.put(userAccount.getUserId(), userAccount);
+                if(mVersionCodePref.get() < 908) {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        mAccountManager.removeAccountExplicitly(account);
+                    else
+                        mAccountManager.removeAccount(account, null, null);
+                } else {
+                    UserAccount userAccount = getUserAccountFromAccountManager(account, mAccountManager);
+                    mUserAccounts.put(userAccount.getUserId(), userAccount);
+                }
                 // Log.d(LOG_TAG, String.format("USER[ \"name\": \"%s\", \"id\": \"%d\"]", userName, userId));
                 // Log.d(LOG_TAG, String.format("Auth: %s, Dzsbhey: %s", userAuth, userDZSBHEY));
             }
@@ -144,7 +158,7 @@ public class UserAccountManager {
     }
 
     public LKAuthObject getAuthObject() {
-        if((mAuthObject == null && mCurrentUserAccount != null) || mAuthObject.getAuthHttpCookie() == null) {
+        if((mAuthObject == null && mCurrentUserAccount != null) || mAuthObject.getAuthCookie() == null) {
             mAuthObject = getAuthObject(mCurrentUserAccount);
         } else if(mAuthObject == null) {
             setCurrentUserAccount(getFirst().getUserId());
@@ -209,9 +223,9 @@ public class UserAccountManager {
         return new LKAuthObject(
                 userAccount.getUserId(),
                 userAccount.getUserName(),
-                userAccount.getAuthURI(),
+                userAccount.getAuthUrl(),
                 userAccount.getAuthCookie(),
-                userAccount.getDzsbheyURI(),
+                userAccount.getDzsbheyUrl(),
                 userAccount.getDzsbheyCookie()
         );
     }

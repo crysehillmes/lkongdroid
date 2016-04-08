@@ -35,7 +35,6 @@ public class UserProfileTimelineFragment extends SimpleCollectionFragment<
     private static final String LOG_TAG = UserProfileTimelineFragment.class.getName();
     private static final String KEY_UID = "key_args_uid";
     private static final String KEY_USERNAME= "key_args_username";
-    private static final String LOAD_IMAGE_TASK_TAG = "timeline_load_image_tag";
     private long mUid;
     private String mUserName;
 

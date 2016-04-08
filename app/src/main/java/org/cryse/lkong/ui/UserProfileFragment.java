@@ -221,15 +221,21 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
     private void setClickListeners() {
         mUserFollowerCountTextView.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToFollowerFragment(mUid, mUserInfo.getUserName());
+            if(mUserInfo != null) {
+                activity.goToFollowerFragment(mUid, mUserInfo.getUserName());
+            }
         });
         mUserFollowingCountTextView.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToFollowingFragment(mUid, mUserInfo.getUserName());
+            if(mUserInfo != null) {
+                activity.goToFollowingFragment(mUid, mUserInfo.getUserName());
+            }
         });
         mUserThreadCountTextView.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToThreadFragment(mUid, mUserInfo.getUserName());
+            if (mUserInfo != null) {
+                activity.goToThreadFragment(mUid, mUserInfo.getUserName());
+            }
         });
         mUserPostCountTextView.setOnClickListener(view -> {
             /*UserProfileActivity activity = (UserProfileActivity) getActivity();
@@ -237,11 +243,15 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         });
         mAllActivitiesLayout.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToAllActivitiesFragment(mUid, mUserInfo.getUserName());
+            if (mUserInfo != null) {
+                activity.goToAllActivitiesFragment(mUid, mUserInfo.getUserName());
+            }
         });
         mDigestsLayout.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToDigestsFragment(mUid, mUserInfo.getUserName());
+            if (mUserInfo != null) {
+                activity.goToDigestsFragment(mUid, mUserInfo.getUserName());
+            }
         });
     }
 

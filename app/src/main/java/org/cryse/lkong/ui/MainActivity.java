@@ -11,12 +11,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
-import com.afollestad.appthemeengine.util.Util;
+import com.afollestad.appthemeengine.customizers.ATEStatusBarCustomizer;
+import com.afollestad.appthemeengine.util.ATEUtil;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -33,6 +36,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 
 import org.cryse.changelog.ChangeLogUtils;
+import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
 import org.cryse.lkong.application.AppPermissions;
@@ -64,7 +68,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks{
+public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks ,
+        ATEStatusBarCustomizer {
     private static final String LOG_TAG = MainActivity.class.getName();
     private static final int ID_HOMEPAGE = 1001;
     private static final int ID_FAVORITES = 1003;
@@ -97,6 +102,27 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         injectThis();
+        // Default config
+        if (!ATE.config(this, "light_theme").isConfigured(BuildConfig.VERSION_CODE)) {
+            ATE.config(this, "light_theme")
+                    .activityTheme(R.style.AppTheme)
+                    .primaryColorRes(R.color.colorPrimaryLightDefault)
+                    .accentColorRes(R.color.colorAccentLightDefault)
+                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
+                    .coloredActionBar(true)
+                    .coloredNavigationBar(false)
+                    .commit();
+        }
+        if (!ATE.config(this, "dark_theme").isConfigured(BuildConfig.VERSION_CODE)) {
+            ATE.config(this, "dark_theme")
+                    .activityTheme(R.style.AppThemeDark)
+                    .primaryColorRes(R.color.colorPrimaryDarkDefault)
+                    .accentColorRes(R.color.colorAccentDarkDefault)
+                    .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
+                    .coloredActionBar(true)
+                    .coloredNavigationBar(true)
+                    .commit();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mCheckNoticeDuration = Prefs.getStringPrefs(
@@ -152,6 +178,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         // Create the AccountHeader
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
+                .withTranslucentStatusBar(true)
                 .withHeaderBackground(new ColorDrawable(getAccentColor()));
         accountHeaderBuilder
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
@@ -175,7 +202,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     return false;
                 })
                 .withCurrentProfileHiddenInList(true)
-                .withTextColor(Util.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
+                .withTextColor(ATEUtil.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
         IDrawerItem[] drawerItems = new IDrawerItem[6];
         drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()
@@ -203,7 +230,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         mNaviagtionDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(mAccountHeader)
-                .withStatusBarColor(getPrimaryDarkColor())
+                //.withStatusBarColor(getPrimaryDarkColor())
                 .withSliderBackgroundColor(Config.textColorPrimaryInverse(this, mATEKey))
                 .addDrawerItems(
                         drawerItems
@@ -233,7 +260,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     @Override
                     public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
                         if (iDrawerItem instanceof PrimaryDrawerItem)
-                            mCurrentSelection = iDrawerItem.getIdentifier();
+                            mCurrentSelection = (int)iDrawerItem.getIdentifier();
                         mPendingRunnable = () ->  onNavigationSelected(iDrawerItem);
                         return false;
                     }
@@ -291,7 +318,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     }
 
     private void onNavigationSelected(IDrawerItem drawerItem) {
-        switch (drawerItem.getIdentifier()) {
+        switch ((int)drawerItem.getIdentifier()) {
             case ID_HOMEPAGE:
                 navigateToHomePageFragment();
                 break;
@@ -546,5 +573,17 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     public void onPermissionsDenied(List<String> perms) {
         finish();
+    }
+
+    @Override
+    public int getStatusBarColor() {
+        if(mNaviagtionDrawer != null && mNaviagtionDrawer.getDrawerLayout() != null)
+            mNaviagtionDrawer.getDrawerLayout().setStatusBarBackgroundColor(getPrimaryDarkColor());
+        return ResourcesCompat.getColor(getResources(), R.color.scrim_inset_color, null);
+    }
+
+    @Override
+    public int getLightStatusBarMode() {
+        return Config.lightStatusBarMode(LKongApplication.get(this), mATEKey);
     }
 }
