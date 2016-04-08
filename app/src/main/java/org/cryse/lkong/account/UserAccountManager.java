@@ -144,7 +144,7 @@ public class UserAccountManager {
     }
 
     public LKAuthObject getAuthObject() {
-        if((mAuthObject == null && mCurrentUserAccount != null) || mAuthObject.getAuthHttpCookie() == null) {
+        if((mAuthObject == null && mCurrentUserAccount != null) || mAuthObject.getAuthCookie() == null) {
             mAuthObject = getAuthObject(mCurrentUserAccount);
         } else if(mAuthObject == null) {
             setCurrentUserAccount(getFirst().getUserId());
@@ -209,9 +209,9 @@ public class UserAccountManager {
         return new LKAuthObject(
                 userAccount.getUserId(),
                 userAccount.getUserName(),
-                userAccount.getAuthURI(),
+                userAccount.getAuthUrl(),
                 userAccount.getAuthCookie(),
-                userAccount.getDzsbheyURI(),
+                userAccount.getDzsbheyUrl(),
                 userAccount.getDzsbheyCookie()
         );
     }

@@ -1,10 +1,11 @@
 package org.cryse.lkong.logic.request;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.logic.HttpDelegate;
@@ -32,7 +33,7 @@ public class NewReplyRequest extends AbstractAuthedHttpRequest<NewPostResult> {
 
     @Override
     protected Request buildRequest() throws Exception {
-        FormEncodingBuilder builder= new FormEncodingBuilder()
+        FormBody.Builder builder= new FormBody.Builder()
                 .add("type", "reply")
                 .add("tid", Long.toString(mTid))
                 .add("myrequestid", mPid == null ? String.format("thread_%d", mTid) : String.format("post_%d", mPid))

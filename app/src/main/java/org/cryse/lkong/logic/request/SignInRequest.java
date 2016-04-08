@@ -1,10 +1,13 @@
 package org.cryse.lkong.logic.request;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+
+import okhttp3.Cookie;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import org.cryse.lkong.account.LKongAuthenticateResult;
 import org.cryse.lkong.logic.HttpDelegate;
@@ -13,14 +16,15 @@ import org.cryse.lkong.logic.restservice.exception.NeedSignInException;
 import org.cryse.lkong.logic.restservice.model.LKUserInfo;
 import org.cryse.lkong.model.UserInfoModel;
 import org.cryse.lkong.model.converter.ModelConverter;
-import org.cryse.lkong.utils.CookieUtils;
 import org.cryse.lkong.utils.GsonUtils;
+import org.cryse.utils.http.cookie.CookieUtils;
+import org.cryse.utils.http.cookie.SerializableCookie;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 import timber.log.Timber;
 
@@ -42,7 +46,7 @@ public class SignInRequest extends AbstractHttpRequest<LKongAuthenticateResult> 
 
     @Override
     protected Request buildRequest() {
-        RequestBody formBody = new FormEncodingBuilder()
+        FormBody formBody = new FormBody.Builder()
                 .add("action", "login")
                 .add("email", mUserEmail)
                 .add("password", mUserPassword)
@@ -90,34 +94,35 @@ public class SignInRequest extends AbstractHttpRequest<LKongAuthenticateResult> 
     }
 
     private void readCookies(LKongAuthenticateResult result) {
-        URI authURI = null, dzsbheyURI = null, identityURI = null;
-        HttpCookie authHttpCookie = null, dzsbheyHttpCookie = null, identityHttpCookie = null;
+        HttpUrl authUrl = null, dzsbheyUrl = null, identityUrl = null;
+        Cookie authCookie = null, dzsbheyCookie = null, identityCookie = null;
 
-        List<URI> uris = getCookieManager().getCookieStore().getURIs();
-        for(URI uri : uris) {
-            List<HttpCookie> httpCookies = getCookieManager().getCookieStore().get(uri);
-            for(HttpCookie cookie : httpCookies) {
-                if(cookie.getName().compareToIgnoreCase("auth") == 0) {
-                    // auth cookie pair
-                    if(cookie.hasExpired())
-                        continue;
-                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
-                    authURI = uri;
-                    authHttpCookie = cookie;
-                } else if (cookie.getName().compareToIgnoreCase("dzsbhey") == 0) {
-                    // dzsbhey cookie pair
-                    if(cookie.hasExpired())
-                        continue;
-                    Timber.d(String.format("URI: %s, COOKIE: %s", uri, cookie.getName()), LOG_TAG);
-                    dzsbheyURI = uri;
-                    dzsbheyHttpCookie = cookie;
+            Collection<Map.Entry<String, Collection<Cookie>>> cookiesCollections = getCookieJar().getCookieStore().getAll();
+            for (Iterator<Map.Entry<String, Collection<Cookie>>> collectionIterator = cookiesCollections.iterator(); collectionIterator.hasNext();) {
+                Map.Entry<String, Collection<Cookie>> currentCollection = collectionIterator.next();
+                for (Iterator<Cookie> cookieIterator = currentCollection.getValue().iterator(); cookieIterator.hasNext();) {
+                    Cookie cookie = cookieIterator.next();
+                    if(cookie.name().compareToIgnoreCase("auth") == 0) {
+                        // auth cookie pair
+                        if(CookieUtils.hasExpired(cookie))
+                            continue;
+                        authUrl = HttpUrl.parse(currentCollection.getKey());
+                        authCookie = cookie;
+                        Timber.d(String.format("URI: %s, COOKIE: %s", currentCollection.getKey(), cookie.name()), LOG_TAG);
+                    } else if (cookie.name().compareToIgnoreCase("dzsbhey") == 0) {
+                        // dzsbhey cookie pair
+                        if(CookieUtils.hasExpired(cookie))
+                            continue;
+                        dzsbheyUrl = HttpUrl.parse(currentCollection.getKey());
+                        dzsbheyCookie = cookie;
+                        Timber.d(String.format("URI: %s, COOKIE: %s", currentCollection.getKey(), cookie.name()), LOG_TAG);
+                    }
                 }
             }
-        }
-        if(authURI != null && authHttpCookie != null &&
-                dzsbheyURI != null && dzsbheyHttpCookie != null) {
-            result.authCookie = CookieUtils.serializeHttpCookie(authURI, authHttpCookie);
-            result.dzsbheyCookie = CookieUtils.serializeHttpCookie(dzsbheyURI, dzsbheyHttpCookie);
+        if(authUrl != null && authCookie != null &&
+                dzsbheyUrl != null && dzsbheyCookie != null) {
+            result.authCookie = SerializableCookie.encode(authUrl.toString(), authCookie);
+            result.dzsbheyCookie = SerializableCookie.encode(dzsbheyUrl.toString(), dzsbheyCookie);
         } else {
             throw new NeedSignInException("Error");
         }

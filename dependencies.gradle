@@ -9,7 +9,7 @@ ext {
     materialDialogVersion = '0.8.5.7'
     fastScrollerVersion = '0.3.0'
     easyPermissionVersion = '0.1.0'
-    okhttpVersion = '2.5.0'
+    okhttpVersion = '3.2.0'
     commonslang3Version = '3.4'
     tikaVersion = '1.10'
     timberVersion = '3.1.0'
@@ -55,7 +55,7 @@ ext {
             rxandroid: "io.reactivex:rxandroid:$rxVersion",
 
             // Network
-            okhttp: "com.squareup.okhttp:okhttp:$okhttpVersion",
+            okhttp: "com.squareup.okhttp3:okhttp:$okhttpVersion",
 
             // Database
             realm: "io.realm:realm-android:$realmVersion",

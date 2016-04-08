@@ -1,11 +1,11 @@
 package org.cryse.lkong.logic.request;
 
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.logic.HttpDelegate;
 import org.json.JSONObject;
+
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AddOrRemoveFavoriteRequest extends AbstractAuthedHttpRequest<Boolean> {
     private long mTid;

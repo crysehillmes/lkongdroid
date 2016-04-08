@@ -1,10 +1,10 @@
 package org.cryse.lkong.logic.request;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.logic.HttpDelegate;
@@ -33,8 +33,8 @@ public class UploadImageRequest extends AbstractAuthedHttpRequest<UploadImageRes
     protected Request buildRequest() throws Exception {
         File fileToUpload = new File(mImagePath);
 
-        RequestBody formBody = new MultipartBuilder()
-                .type(MultipartBuilder.FORM)
+        RequestBody formBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
                 .addFormDataPart("file", mImagePath.substring(mImagePath.lastIndexOf("/")), RequestBody
                         .create(MediaType.parse(mMimeType), fileToUpload))
                 .build();

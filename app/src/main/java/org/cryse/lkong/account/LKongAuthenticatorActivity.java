@@ -191,6 +191,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                         data.putString(AccountConst.KEY_ACCOUNT_USER_AUTH, result.authCookie);
                         data.putString(AccountConst.KEY_ACCOUNT_USER_DZSBHEY, result.dzsbheyCookie);
                     } catch (Exception e) {
+                        Log.e("ERROR", e.getMessage(), e);
                         data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                     }
 

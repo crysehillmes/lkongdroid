@@ -1,53 +1,41 @@
 package org.cryse.lkong.logic;
 
-import com.squareup.okhttp.OkHttpClient;
+import org.cryse.utils.http.ClearableCookieJar;
+import org.cryse.utils.http.SimpleCookieJar;
 
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.HttpCookie;
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
+
 public class HttpDelegate {
-    private static final OkHttpClient sOkHttpClient = new OkHttpClient();
-    private static final CookieManager sCookieManager = new CookieManager();
+    private static final SimpleCookieJar sCookieJar;
+
+    private static final OkHttpClient sOkHttpClient;
 
     private OkHttpClient mOkHttpClient;
-    private CookieManager mCookieManager;
-    public static HttpDelegate get(OkHttpClient okHttpClient, CookieManager cookieManager) {
-        return new HttpDelegate(okHttpClient, cookieManager);
-    }
 
-    public static HttpDelegate createNew() {
-        return new HttpDelegate(new OkHttpClient(), new CookieManager());
+    static {
+        sCookieJar = new SimpleCookieJar();
+        sOkHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .cookieJar(sCookieJar)
+                .build();
     }
 
     public static HttpDelegate getDefault() {
-        return new HttpDelegate(sOkHttpClient, sCookieManager);
+        return new HttpDelegate(sOkHttpClient);
     }
 
-    protected HttpDelegate(OkHttpClient okHttpClient, CookieManager cookieManager) {
+    protected HttpDelegate(OkHttpClient okHttpClient) {
         this.mOkHttpClient = okHttpClient;
-        this.mCookieManager = cookieManager;
-        this.mOkHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
-        this.mOkHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
-        this.mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-        this.mOkHttpClient.setCookieHandler(mCookieManager);
     }
 
     public OkHttpClient getOkHttpClient() {
         return mOkHttpClient;
     }
 
-    public CookieManager getCookieManager() {
-        return mCookieManager;
-    }
-
-    private void applyCookie(URI uri, HttpCookie httpCookie) {
-        getCookieManager().getCookieStore().add(uri, httpCookie);
-    }
-
-    private void clearCookies() {
-        getCookieManager().getCookieStore().removeAll();
+    public ClearableCookieJar getCookieJar() {
+        return sCookieJar;
     }
 }

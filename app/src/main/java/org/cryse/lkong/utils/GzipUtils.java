@@ -2,12 +2,12 @@ package org.cryse.lkong.utils;
 
 import android.text.TextUtils;
 
-import com.squareup.okhttp.Response;
-
 import org.cryse.utils.MiniIOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.util.zip.GZIPInputStream;
+
+import okhttp3.Response;
 
 public class GzipUtils {
     public static String responseToString(Response response) throws Exception {
