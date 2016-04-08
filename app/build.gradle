@@ -4,6 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion appCompileSdkVersion
@@ -79,8 +80,6 @@ dependencies {
     compile libDependencies.butterknife
 
     compile libDependencies.timber
-
-    compile libDependencies.realm
 
     compile libDependencies.finestwebview
 

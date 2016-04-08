@@ -113,6 +113,7 @@ public class UserAccountManager {
                 // Log.d(LOG_TAG, String.format("USER[ \"name\": \"%s\", \"id\": \"%d\"]", userName, userId));
                 // Log.d(LOG_TAG, String.format("Auth: %s, Dzsbhey: %s", userAuth, userDZSBHEY));
             }
+
             UserAccount currentAccount = mUserAccounts.get(uid);
             if(currentAccount == null && getFirst() != null) {
                 setCurrentUserAccount(getFirst().getUserId());

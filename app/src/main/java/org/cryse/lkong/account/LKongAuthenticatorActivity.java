@@ -5,6 +5,7 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -21,11 +22,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
+import org.cryse.utils.preference.IntegerPrefs;
+import org.cryse.utils.preference.Prefs;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -62,6 +69,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private AccountManager mAccountManager;
     private String mAuthTokenType;
+    IntegerPrefs mVersionCodePref;
 
     @Bind(R.id.activity_sign_in_cardview)
     CardView mSignInCardView;
@@ -132,6 +140,11 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         if (mAuthTokenType == null)
             mAuthTokenType = AccountConst.AUTHTOKEN_TYPE_FULL_ACCESS;
 
+        mVersionCodePref = Prefs.getIntPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
+                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
+        );
+
         /*if (accountName != null) {
             ((TextView)findViewById(R.id.accountName)).setText(accountName);
         }
@@ -162,6 +175,46 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
             finishLogin(data);
         } else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        checkVersionCode();
+    }
+
+    public void checkVersionCode() {
+        Observable.create((Subscriber<? super Integer> subscriber) -> {
+            try {
+                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                if (versionCode > mVersionCodePref.get()) {
+                    mVersionCodePref.set(versionCode);
+                    subscriber.onNext(versionCode);
+                    return;
+                }
+                subscriber.onNext(0);
+                subscriber.onCompleted();
+            } catch (PackageManager.NameNotFoundException e) {
+                subscriber.onError(e);
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        versionCode -> {
+                            if (versionCode > 0) {
+                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
+
+                                new MaterialDialog.Builder(this)
+                                        .title(R.string.text_new_version_changes)
+                                        .content(reader.toSpannable(versionCode))
+                                        .show();
+                            }
+                        },
+                        error -> {
+                            Timber.d(error, error.getMessage(), LOG_TAG);
+                        },
+                        () -> {
+                        });
     }
 
     private void signIn() {
