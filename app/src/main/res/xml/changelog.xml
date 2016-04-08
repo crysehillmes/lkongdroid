@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
+        changeDate="2016年4月9日"
+        versionCode="908"
+        versionName="0.9.8">
+        <changelogtext>一些 Bug 修正以及及改进</changelogtext>
+    </changelogversion>
+    <changelogversion
         changeDate="2016年2月1日"
         versionCode="907"
         versionName="0.9.7">
