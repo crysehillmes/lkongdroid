@@ -226,6 +226,7 @@ public class ForumActivity extends AbstractSwipeBackActivity implements ForumVie
         mMoreProgressBar = new ProgressBar(this);
         RecyclerView.LayoutParams moreProgressLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mMoreProgressBar.setLayoutParams(moreProgressLP);
+        mMoreProgressBar.setVisibility(View.INVISIBLE);
         mWrapperAdapter.addFooter(mMoreProgressBar);
     }
 

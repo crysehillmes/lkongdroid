@@ -153,6 +153,7 @@
     <string name="text_share_post_title">分享回复</string>
     <string name="text_share_thread_title">分享回复主题</string>
     <string name="text_datetime_today">今天</string>
+    <string name="text_recyclerview_emptyview_text">这里什么都没有~刷新试试？</string>
     <string name="dialog_post_list_choose_page">跳转至</string>
     <string name="dialog_new_post_sending">正在发送…</string>
     <string name="dialog_choose_emoticon_title">选择表情：</string>

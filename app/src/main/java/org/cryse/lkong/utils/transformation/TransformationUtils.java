@@ -24,10 +24,9 @@ public class TransformationUtils {
 
         // TODO this could be acquired from the pool too
         Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);
-        Bitmap.Config config = getSafeConfig(source);
-        Bitmap result = pool.get(size, size, config);
+        Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
         if (result == null) {
-            result = Bitmap.createBitmap(size, size, config);
+            result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         }
 
         Canvas canvas = new Canvas(result);

@@ -102,7 +102,6 @@
 
 -keep class org.cryse.lkong.logic.restservice.** { *; }
 -keep class org.cryse.lkong.model.** { *; }
--keep class org.cryse.lkong.utils.SerializableHttpCookie { *; }
 
 -dontwarn org.cryse.lkong.**
 -keep class org.apache.tika.** { *; }
