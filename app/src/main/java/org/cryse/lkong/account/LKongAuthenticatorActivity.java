@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
@@ -84,8 +83,8 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     @Bind(R.id.sign_in_result_textview)
     TextView mResultTextView;
 
-    @Bind(R.id.fab_sign_up)
-    FloatingActionButton mSignInButton;
+    @Bind(R.id.button_sign_in)
+    Button mSignInButton;
     @Bind(R.id.button_sign_up)
     Button mSignUpButton;
 
