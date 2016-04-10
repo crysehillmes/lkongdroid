@@ -19,6 +19,7 @@ import com.malinskiy.superrecyclerview.swipe.SwipeDismissRecyclerViewTouchListen
 
 import org.cryse.lkong.R;
 import org.cryse.utils.FloatUtil;
+import org.cryse.widget.recyclerview.Bookends;
 
 public class SuperRecyclerView extends FrameLayout {
 
@@ -303,18 +304,36 @@ public class SuperRecyclerView extends FrameLayout {
                     // mMoreProgress.setVisibility(View.GONE);
                     isLoadingMore = false;
                     mPtrLayout.setRefreshing(false);
-                    if (mRecycler.getAdapter().getItemCount() == 0 && mEmptyId != 0) {
-                        mEmpty.setVisibility(View.VISIBLE);
-                    } else if (mEmptyId != 0) {
+                    if (isAdapterItemEmpty(adapter)) {
+                        mEmpty.setVisibility(mEmptyId != 0 ? View.VISIBLE : View.GONE);
+                    } else {
                         mEmpty.setVisibility(View.GONE);
                     }
                 }
             });
 
         if (mEmptyId != 0) {
-            mEmpty.setVisibility(null != adapter && adapter.getItemCount() > 0
+            if (adapter != null) {
+                if (isAdapterItemEmpty(adapter)) {
+                    mEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    mEmpty.setVisibility(View.GONE);
+                }
+            } else {
+                mEmpty.setVisibility(View.VISIBLE);
+            }
+            /*mEmpty.setVisibility(null != adapter && adapter.getItemCount() > 0
                     ? View.GONE
-                    : View.VISIBLE);
+                    : View.VISIBLE);*/
+        }
+    }
+
+    private boolean isAdapterItemEmpty(RecyclerView.Adapter adapter) {
+        if (adapter instanceof Bookends) {
+            Bookends bookends = (Bookends) adapter;
+            return bookends.getItemCount() - bookends.getHeaderCount() - bookends.getFooterCount() == 0;
+        } else {
+            return adapter.getItemCount() == 0;
         }
     }
 
@@ -383,10 +402,16 @@ public class SuperRecyclerView extends FrameLayout {
      */
     public void showRecycler() {
         hideProgress();
-        if (mRecycler.getAdapter().getItemCount() == 0 && mEmptyId != 0) {
-            mEmpty.setVisibility(View.VISIBLE);
-        } else if (mEmptyId != 0) {
-            mEmpty.setVisibility(View.GONE);
+        if (mEmptyId != 0) {
+            if (mRecycler.getAdapter() != null) {
+                if (isAdapterItemEmpty(mRecycler.getAdapter())) {
+                    mEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    mEmpty.setVisibility(View.GONE);
+                }
+            } else {
+                mEmpty.setVisibility(View.VISIBLE);
+            }
         }
         mRecycler.setVisibility(View.VISIBLE);
     }
