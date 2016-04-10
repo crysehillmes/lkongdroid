@@ -111,6 +111,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
                     .coloredActionBar(true)
                     .coloredNavigationBar(false)
+                    .textSizeSpForMode(16, Config.TEXTSIZE_BODY)
                     .commit();
         }
         if (!ATE.config(this, "dark_theme").isConfigured(BuildConfig.VERSION_CODE)) {
@@ -121,6 +122,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
                     .coloredActionBar(true)
                     .coloredNavigationBar(true)
+                    .textSizeSpForMode(16, Config.TEXTSIZE_BODY)
                     .commit();
         }
         super.onCreate(savedInstanceState);

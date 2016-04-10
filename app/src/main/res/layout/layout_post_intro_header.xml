@@ -22,7 +22,7 @@
             android:layout_marginRight="16dp"
             android:text="@string/placeholder_thread_title"
             android:textSize="18sp"
-            android:tag="text_color|primary_text" />
+            android:tag="text_color|primary_text,text_size|title" />
         <TextView
             android:id="@+id/layout_post_intro_header_textview_detail_count"
             android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textSize="@dimen/text_size_caption"
-            android:tag="text_color|secondary_text" />
+            android:tag="text_color|secondary_text,text_size|caption" />
         <TextView
             android:id="@+id/layout_post_intro_header_textview_forum_name"
             android:layout_width="wrap_content"
@@ -46,6 +46,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textSize="@dimen/text_size_caption"
-            android:tag="text_color|secondary_text"/>
+            android:tag="text_color|secondary_text,text_size|caption"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

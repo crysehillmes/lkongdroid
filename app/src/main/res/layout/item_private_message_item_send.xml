@@ -23,7 +23,8 @@
             android:textSize="@dimen/text_size_body1"
             android:textColor="@color/text_color_primary"
             android:textIsSelectable="true"
-            android:text="This is a new message."/>
+            android:text="This is a new message."
+            android:tag="text_color|primary_text,text_size|body"/>
         <TextView
             android:id="@+id/recyclerview_item_private_message_textview_dateline"
             android:layout_width="wrap_content"
@@ -37,6 +38,7 @@
             android:textSize="@dimen/text_size_tiny"
             android:textColor="@color/text_color_tint"
             android:textIsSelectable="true"
-            android:text="3 seconds ago"/>
+            android:text="3 seconds ago"
+            android:tag="text_color|secondary_text,text_size|caption"/>
     </RelativeLayout>
 </RelativeLayout>

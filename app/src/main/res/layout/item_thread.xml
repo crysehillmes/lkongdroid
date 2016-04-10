@@ -28,7 +28,7 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_color|primary_text"/>
+            android:tag="text_color|primary_text,text_size|subheading"/>
         <TextView
             android:id="@+id/recyclerview_item_thread_textview_notice1"
             android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
             android:text="25680"
             android:gravity="end"
             android:textSize="@dimen/text_size_caption"
-            android:tag="text_color|secondary_text"/>
+            android:tag="text_color|secondary_text,text_size|caption"/>
 
         <TextView
             android:id="@+id/recyclerview_item_thread_textview_secondary"
@@ -51,7 +51,7 @@
             android:maxLines="1"
             android:text="placeholder"
             android:textSize="@dimen/text_size_body1"
-            android:tag="text_color|primary_text" />
+            android:tag="text_color|secondary_text" />
         <TextView
             android:id="@+id/recyclerview_item_thread_textview_notice2"
             android:layout_width="wrap_content"

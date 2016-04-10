@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="wrap_content"
     android:background="?selectableItemBackground">
 
     <ImageView
@@ -23,7 +23,7 @@
         android:layout_marginTop="16dp"
         android:text="placeholder"
         android:textSize="@dimen/text_size_subhead"
-        android:tag="text_color|primary_text" />
+        android:tag="text_color|primary_text,text_size|subheading" />
 
     <TextView
         android:id="@+id/recyclerview_item_forum_textview_secondary"
@@ -33,5 +33,5 @@
         android:layout_marginLeft="72dp"
         android:text="placeholder"
         android:textSize="@dimen/text_size_body1"
-        android:tag="text_color|secondary_text" />
+        android:tag="text_color|secondary_text,text_size|body" />
 </RelativeLayout>
