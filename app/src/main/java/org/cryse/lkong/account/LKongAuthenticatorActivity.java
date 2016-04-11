@@ -68,7 +68,6 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private AccountManager mAccountManager;
     private String mAuthTokenType;
-    IntegerPrefs mVersionCodePref;
 
     @Bind(R.id.activity_sign_in_cardview)
     CardView mSignInCardView;
@@ -139,11 +138,6 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         if (mAuthTokenType == null)
             mAuthTokenType = AccountConst.AUTHTOKEN_TYPE_FULL_ACCESS;
 
-        mVersionCodePref = Prefs.getIntPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
-        );
-
         /*if (accountName != null) {
             ((TextView)findViewById(R.id.accountName)).setText(accountName);
         }
@@ -179,41 +173,6 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        checkVersionCode();
-    }
-
-    public void checkVersionCode() {
-        Observable.create((Subscriber<? super Integer> subscriber) -> {
-            try {
-                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-                if (versionCode > mVersionCodePref.get()) {
-                    mVersionCodePref.set(versionCode);
-                    subscriber.onNext(versionCode);
-                    return;
-                }
-                subscriber.onNext(0);
-                subscriber.onCompleted();
-            } catch (PackageManager.NameNotFoundException e) {
-                subscriber.onError(e);
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        versionCode -> {
-                            if (versionCode > 0) {
-                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
-
-                                new MaterialDialog.Builder(this)
-                                        .title(R.string.text_new_version_changes)
-                                        .content(reader.toSpannable(versionCode))
-                                        .show();
-                            }
-                        },
-                        error -> {
-                            Timber.d(error, error.getMessage(), LOG_TAG);
-                        },
-                        () -> {
-                        });
     }
 
     private void signIn() {

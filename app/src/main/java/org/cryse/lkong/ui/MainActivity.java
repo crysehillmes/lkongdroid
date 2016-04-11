@@ -83,7 +83,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Inject
     UserAccountManager mUserAccountManager;
     StringPrefs mCheckNoticeDuration;
-    IntegerPrefs mVersionCodePref;
 
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
@@ -131,10 +130,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         mCheckNoticeDuration = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION,
                 PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE
-        );
-        mVersionCodePref = Prefs.getIntPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
         );
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this, true);
@@ -307,7 +302,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        checkVersionCode();
     }
 
     @Override
@@ -479,40 +473,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     public Drawer getNavigationDrawer() {
         return mNaviagtionDrawer;
-    }
-
-    public void checkVersionCode() {
-        Observable.create((Subscriber<? super Integer> subscriber) -> {
-            try {
-                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-                if (versionCode > mVersionCodePref.get()) {
-                    mVersionCodePref.set(versionCode);
-                    subscriber.onNext(versionCode);
-                    return;
-                }
-                subscriber.onNext(0);
-                subscriber.onCompleted();
-            } catch (PackageManager.NameNotFoundException e) {
-                subscriber.onError(e);
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        versionCode -> {
-                            if (versionCode > 0) {
-                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
-
-                                new MaterialDialog.Builder(this)
-                                        .title(R.string.text_new_version_changes)
-                                        .content(reader.toSpannable(versionCode))
-                                        .show();
-                            }
-                        },
-                        error -> {
-                            Timber.d(error, error.getMessage(), LOG_TAG);
-                        },
-                        () -> {
-                        });
     }
 
     public boolean popEntireFragmentBackStack() {

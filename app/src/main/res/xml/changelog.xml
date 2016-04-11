@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
     <changelogversion
-        changeDate="2016年4月9日"
-        versionCode="908"
-        versionName="0.9.8">
-        <changelogtext>一些 Bug 修正以及及改进</changelogtext>
+        changeDate="2016年4月12日"
+        versionCode="909"
+        versionName="0.9.9">
+        <changelogtext>更完整的文字设置</changelogtext>
+        <changelogtext>快速回到顶部，帖子列表快速滚动条</changelogtext>
+        <changelogbug>一些 Bug 修正以及及改进</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="2016年2月1日"
@@ -13,8 +15,8 @@
         <changelogtext>新功能：拉黑用户</changelogtext>
         <changelogtext>改进：应用内浏览器</changelogtext>
         <changelogtext>改进：设置中控制屏幕旋转</changelogtext>
-        <changelogtext>修复：无法关注板块的问题</changelogtext>
-        <changelogtext>修复：其他一些错误</changelogtext>
+        <changelogbug>修复：无法关注板块的问题</changelogbug>
+        <changelogbug>修复：其他一些错误</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="2016年1月24日"
@@ -26,8 +28,8 @@
         <changelogtext>改进：可以查看帖子中 @ 用户的资料了</changelogtext>
         <changelogtext>改进：调整了用户资料界面</changelogtext>
         <changelogtext>改进：其他一些内容</changelogtext>
-        <changelogtext>修复：信息流表情尺寸，以及转义字符的问题</changelogtext>
-        <changelogtext>修复：无法访问私密位面的问题</changelogtext>
+        <changelogbug>修复：信息流表情尺寸，以及转义字符的问题</changelogbug>
+        <changelogbug>修复：无法访问私密位面的问题</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="2015年10月31日"
