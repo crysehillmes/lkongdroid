@@ -2,9 +2,6 @@ package org.cryse.lkong.application;
 
 import android.app.Application;
 import android.content.Context;
-/*import android.support.multidex.MultiDex;*/
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -30,6 +27,7 @@ import org.cryse.utils.preference.Prefs;
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
+
 import timber.log.Timber;
 
 @Singleton
@@ -63,7 +61,8 @@ public class LKongApplication extends Application {
         initComponents();
         LKongDatabase2.init(this);
         userAccountComponent().inject(mUserAccountManager);
-        mUserAccountManager.init();
+        mUserAccountManager.init(this);
+        Log.e("ABC", "LKongApplication checkVersionCode() done.");
     }
 
     private void initComponents() {

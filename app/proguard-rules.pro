@@ -102,6 +102,7 @@
 
 -keep class org.cryse.lkong.logic.restservice.** { *; }
 -keep class org.cryse.lkong.model.** { *; }
+-keep class org.cryse.utils.http.cookie.** { *; }
 
 -dontwarn org.cryse.lkong.**
 -keep class org.apache.tika.** { *; }
@@ -154,3 +155,6 @@ public *;
 -keep @io.realm.internal.Keep class * { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+
+
+-keep class com.afollestad.appthemeengine.** { *; }
