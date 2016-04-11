@@ -99,4 +99,14 @@ public class HtmlCleaner {
         HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
         return htmlToPlainText.getPlainText(document);
     }
+
+    public static String htmlToPlainReplaceImg(String html, String replaceTo) {
+        Document document = Jsoup.parseBodyFragment(html);
+        for (Element element : document.select("i")) {
+            element.after(replaceTo);
+            element.remove();
+        }
+        HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
+        return htmlToPlainText.getPlainText(document);
+    }
 }

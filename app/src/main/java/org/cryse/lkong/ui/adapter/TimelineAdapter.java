@@ -27,10 +27,7 @@ import org.cryse.lkong.ui.listener.OnItemTimelineClickListener;
 import org.cryse.lkong.utils.ImageLoader;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
-import org.cryse.lkong.utils.SimpleImageGetter;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.utils.htmltextview.HtmlTagHandler;
-import org.cryse.lkong.utils.htmltextview.HtmlTextUtils;
 import org.cryse.widget.recyclerview.SimpleRecyclerViewAdapter;
 import org.cryse.widget.recyclerview.RecyclerViewHolder;
 
@@ -46,7 +43,6 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
     private final String mTodayPrefix;
     private final int mAvatarSize;
     private CircleTransform mCircleTransform;
-    private SimpleImageGetter mImageGetter;
     private int mAvatarLoadPolicy;
     private int mTextColorSecondary;
     private String mATEKey;
@@ -60,11 +56,6 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
         this.mAvatarLoadPolicy = avatarLoadPolicy;
         this.mATEKey = ateKey;
         this.mTextColorSecondary = Config.textColorPrimary(context, mATEKey);
-
-        this.mImageGetter = new SimpleImageGetter(mContext, ImageLoader.IMAGE_LOAD_ALWAYS)
-                .setEmoticonSize((int)UIUtils.getSpDimensionPixelSize(mContext, R.dimen.text_size_body1)*2)
-                .setPlaceHolder(R.drawable.placeholder_loading)
-                .setError(R.drawable.placeholder_error);
     }
 
     @Override
@@ -126,9 +117,8 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
         mainPrefixSpannable.append('\n');
         mainContent = item.getMessage();
 
-        Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, mImageGetter, new HtmlTagHandler());
         SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
-        mainSpannable.append(mainPrefixSpannable).append(spannedText);
+        mainSpannable.append(mainPrefixSpannable).append(mainContent);
         holder.mMessageTextView.setText(mainSpannable);
 
         holder.mAuthorTextView.setText(item.getUserName());
@@ -162,7 +152,7 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
                 }
                 holder.mSecondaryMessageTextView.setText(spanText);
 
-                holder.mThirdMessageTextView.setText(HtmlTextUtils.htmlToSpanned(item.getReplyQuote().getPosterMessage(), mImageGetter, new HtmlTagHandler()));
+                holder.mThirdMessageTextView.setText(item.getReplyQuote().getPosterMessage());
                 mainContent = item.getReplyQuote().getMessage();
             } else { // else if(!item.isThread()) {
                 // 回复某一主题
@@ -180,9 +170,8 @@ public class TimelineAdapter extends SimpleRecyclerViewAdapter<TimelineModel> {
                 mainContent = item.getMessage();
             }
 
-            Spanned spannedText = HtmlTextUtils.htmlToSpanned(mainContent, mImageGetter, new HtmlTagHandler());
             SpannableStringBuilder mainSpannable = new SpannableStringBuilder();
-            mainSpannable.append(mainPrefixSpannable).append(spannedText);
+            mainSpannable.append(mainPrefixSpannable).append(mainContent);
             holder.mMessageTextView.setText(mainSpannable);
 
             holder.mAuthorTextView.setText(item.getUserName());
