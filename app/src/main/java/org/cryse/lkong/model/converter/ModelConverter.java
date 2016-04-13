@@ -279,7 +279,7 @@ public class ModelConverter {
                             nextMessageSibling = nextMessageSibling.nextSibling();
                         }
                     }
-                    replyQuote.setMessage(messageBuilder.toString());
+                    replyQuote.setMessage(HtmlCleaner.htmlToPlainReplaceImg(messageBuilder.toString(), SIMPLE_EMOJI_TEXT));
                 }
                 model.setReplyQuote(replyQuote);
             }
