@@ -5,16 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
-import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.prefs.ATESwitchPreference;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.changelog.ChangeLogUtils;
@@ -223,7 +221,7 @@ public class SettingsFragment extends PreferenceFragment {
                 mUserAccountManager.getCurrentUserAccount().getAccount(),
                 SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE
         );
-        CheckBoxPreference autoSyncPreference = (CheckBoxPreference) findPreference(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION);
+        ATESwitchPreference autoSyncPreference = (ATESwitchPreference) findPreference(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION);
         getPreferenceManager().getSharedPreferences().edit().putBoolean(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION, isCheckNoticeAutoSync);
         autoSyncPreference.setChecked(isCheckNoticeAutoSync);
     }

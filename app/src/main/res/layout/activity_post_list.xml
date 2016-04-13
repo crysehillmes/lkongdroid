@@ -59,6 +59,5 @@
         android:layout_height="56dp"
         android:layout_centerInParent="true"
         android:padding="8dp"
-        android:background="@drawable/loading_progress_bg"
         android:visibility="invisible"/>
 </RelativeLayout>
