@@ -81,6 +81,12 @@
 -dontwarn android.support.**
 # Warnings to be removed. Otherwise maven plugin stops, but not dangerous
 
+# support design
+-dontwarn android.support.design.**
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep public class android.support.design.R$* { *; }
+
 # gson
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
