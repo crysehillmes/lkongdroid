@@ -337,7 +337,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             case ID_FAQ:
                 mNavigation.openUrl(
                         MainActivity.this,
-                        "https://lkongdroid-static.cryse.org/faq.html",
+                        "http://lkongdroid-static.cryse.org/faq.html",
                         true,
                         false,
                         false,

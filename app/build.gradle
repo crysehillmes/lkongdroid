@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
-/*apply plugin: 'com.google.gms.google-services'*/
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'realm-android'
 
@@ -110,7 +109,7 @@ dependencies {
     }
 
     // compile fileTree(dir: 'libs', include: ['*.jar'])
-    /*compile libDependencies.play_services_analytics*/
+    compile libDependencies.play_services_analytics
     compile libDependencies.umeng_analytics
     retrolambdaConfig libDependencies.retorlambda
     compile libDependencies.dagger
@@ -172,3 +171,6 @@ if (propFile.canRead()){
     android.buildTypes.debug.signingConfig = null
     android.buildTypes.release.signingConfig = null
 }
+
+
+apply plugin: 'com.google.gms.google-services'
