@@ -20,6 +20,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ScreenOrientationSettingsChangedEvent;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
@@ -103,6 +104,9 @@ public class SettingsFragment extends PreferenceFragment {
                     break;
                 case PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY:
                     setAvatarPolicySummary();
+                    break;
+                case PreferenceConstant.SHARED_PREFERENCE_SCREEN_ROTATION:
+                    mEventBus.sendEvent(new ScreenOrientationSettingsChangedEvent());
                     break;
                 case PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION:
                     Boolean newIsAutoSync = sharedPreferences.getBoolean(key, true);
