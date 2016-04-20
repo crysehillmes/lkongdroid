@@ -45,8 +45,8 @@ public class AnalyticsUtils {
         if(args.length > 0) {
             String name = (String)args[0];
             MobclickAgent.onResume(context);
-            /*sTracker.setScreenName("FragmentActivity: " + name);
-            sTracker.send(new HitBuilders.ScreenViewBuilder().build());*/
+            sTracker.setScreenName("FragmentActivity: " + name);
+            sTracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
     }
 

@@ -216,7 +216,7 @@ public class ModelConverter {
 
     private static final String SMALL_EMOJI_TEXT = "~bq(\\d+)~";
     private static final String SMALL_EMOJI_IMG = "<img src=\"http://img.lkong.cn/bq/em$1.gif\" class=\"smallbq\">";
-
+    private static final String SIMPLE_EMOJI_TEXT = " [表情] ";
 
     public static List<TimelineModel> toTimelineModel(LKTimelineData timelineData) {
         List<TimelineModel> timelineModels = new ArrayList<>(timelineData.getData().size());
@@ -239,7 +239,8 @@ public class ModelConverter {
                 model.setThreadAuthor(item.getT_author());
                 model.setThreadAuthorId(item.getT_authorid());
             }
-            model.setMessage(item.getMessage().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
+
+            model.setMessage(HtmlCleaner.htmlToPlainReplaceImg(item.getMessage().replaceAll(SMALL_EMOJI_TEXT, SIMPLE_EMOJI_TEXT/*SMALL_EMOJI_IMG*/), SIMPLE_EMOJI_TEXT));
             model.setSubject(item.getSubject());
             model.setSortKey(item.getSortkey());
             model.setSortKeyDate(new Date(item.getSortkey() * 1000l));
@@ -263,7 +264,7 @@ public class ModelConverter {
                             nextTargetContentSibling = nextTargetContentSibling.nextSibling();
                         }
                     }
-                    replyQuote.setPosterMessage(targetContentBuilder.toString().replaceAll(SMALL_EMOJI_TEXT, SMALL_EMOJI_IMG));
+                    replyQuote.setPosterMessage(HtmlCleaner.htmlToPlainReplaceImg(targetContentBuilder.toString().replaceAll(SMALL_EMOJI_TEXT, SIMPLE_EMOJI_TEXT/*SMALL_EMOJI_IMG*/), SIMPLE_EMOJI_TEXT));
                 }
                 Elements divElements = document.select("div");
                 if(divElements.size() > 0) {
@@ -278,7 +279,7 @@ public class ModelConverter {
                             nextMessageSibling = nextMessageSibling.nextSibling();
                         }
                     }
-                    replyQuote.setMessage(messageBuilder.toString());
+                    replyQuote.setMessage(HtmlCleaner.htmlToPlainReplaceImg(messageBuilder.toString(), SIMPLE_EMOJI_TEXT));
                 }
                 model.setReplyQuote(replyQuote);
             }

@@ -51,6 +51,7 @@ import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.ChangelogUtils;
 import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
@@ -75,14 +76,14 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     private static final int ID_FAVORITES = 1003;
     private static final int ID_BROWSE_HISTORY = 1004;
     private static final int ID_FEEDBACK = 1101;
-    private static final int ID_SETTINGS = 1102;
+    private static final int ID_FAQ = 1102;
+    private static final int ID_SETTINGS = 1103;
     private static final int ID_ADD_ACCOUNT = -3001;
     private static final int ID_MANAGE_ACCOUNT = -3002;
     AppNavigation mNavigation = new AppNavigation();
     @Inject
     UserAccountManager mUserAccountManager;
     StringPrefs mCheckNoticeDuration;
-    IntegerPrefs mVersionCodePref;
 
     AccountHeader mAccountHeader;
     Drawer mNaviagtionDrawer;
@@ -111,6 +112,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
                     .coloredActionBar(true)
                     .coloredNavigationBar(false)
+                    .textSizeSpForMode(16, Config.TEXTSIZE_BODY)
                     .commit();
         }
         if (!ATE.config(this, "dark_theme").isConfigured(BuildConfig.VERSION_CODE)) {
@@ -121,6 +123,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                     .lightToolbarMode(Config.LIGHT_TOOLBAR_AUTO)
                     .coloredActionBar(true)
                     .coloredNavigationBar(true)
+                    .textSizeSpForMode(16, Config.TEXTSIZE_BODY)
                     .commit();
         }
         super.onCreate(savedInstanceState);
@@ -128,10 +131,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
         mCheckNoticeDuration = Prefs.getStringPrefs(
                 PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION,
                 PreferenceConstant.SHARED_PREFERENCE_CHECK_NOTIFICATION_DURATION_VALUE
-        );
-        mVersionCodePref = Prefs.getIntPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
         );
         if(!mUserAccountManager.isSignedIn()) {
             mNavigation.navigateToSignInActivity(this, true);
@@ -204,7 +203,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withCurrentProfileHiddenInList(true)
                 .withTextColor(ATEUtil.isColorLight(getAccentColor()) ? Color.BLACK : Color.WHITE);
         mAccountHeader = accountHeaderBuilder.build();
-        IDrawerItem[] drawerItems = new IDrawerItem[6];
+        IDrawerItem[] drawerItems = new IDrawerItem[7];
         drawerItems[0] = applyColorToDrawerItem(new PrimaryDrawerItem()
                 .withName(R.string.drawer_item_homepage)
                 .withIcon(R.drawable.ic_drawer_homepage)
@@ -223,6 +222,10 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 .withIdentifier(ID_FEEDBACK)
                 .withSelectable(false));
         drawerItems[5] = applyColorToDrawerItem(new SecondaryDrawerItem()
+                .withName(R.string.drawer_item_faq)
+                .withIdentifier(ID_FAQ)
+                .withSelectable(false));
+        drawerItems[6] = applyColorToDrawerItem(new SecondaryDrawerItem()
                 .withName(R.string.drawer_item_settings)
                 .withIdentifier(ID_SETTINGS)
                 .withSelectable(false));
@@ -300,7 +303,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        checkVersionCode();
+        ChangelogUtils.checkVersionCode(this);
     }
 
     @Override
@@ -330,6 +333,18 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 break;
             case ID_FEEDBACK:
                 mNavigation.openActivityForPostListByThreadId(this, 1153838l);
+                break;
+            case ID_FAQ:
+                mNavigation.openUrl(
+                        MainActivity.this,
+                        "http://lkongdroid-static.cryse.org/faq.html",
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                );
                 break;
             case ID_SETTINGS:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);
@@ -460,40 +475,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     public Drawer getNavigationDrawer() {
         return mNaviagtionDrawer;
-    }
-
-    public void checkVersionCode() {
-        Observable.create((Subscriber<? super Integer> subscriber) -> {
-            try {
-                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-                if (versionCode > mVersionCodePref.get()) {
-                    mVersionCodePref.set(versionCode);
-                    subscriber.onNext(versionCode);
-                    return;
-                }
-                subscriber.onNext(0);
-                subscriber.onCompleted();
-            } catch (PackageManager.NameNotFoundException e) {
-                subscriber.onError(e);
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        versionCode -> {
-                            if (versionCode > 0) {
-                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
-
-                                new MaterialDialog.Builder(this)
-                                        .title(R.string.text_new_version_changes)
-                                        .content(reader.toSpannable(versionCode))
-                                        .show();
-                            }
-                        },
-                        error -> {
-                            Timber.d(error, error.getMessage(), LOG_TAG);
-                        },
-                        () -> {
-                        });
     }
 
     public boolean popEntireFragmentBackStack() {

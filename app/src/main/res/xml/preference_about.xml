@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/settings_category_author_title">
-        <Preference
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_author_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:summary="@string/settings_item_author_name_value"
-            android:title="@string/settings_item_author_name_title">
+            android:title="@string/settings_item_author_name_title"
+            app:ateKey_pref="?ate_key">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://plus.google.com/+CryseHillmes" />
-        </Preference>
-        <Preference
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:summary="@string/settings_item_email_address_value"
-            android:title="@string/settings_item_email_address_title">
+            android:title="@string/settings_item_email_address_title"
+            app:ateKey_pref="?ate_key">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="mailto:tyk5555@hotmail.com" />
-        </Preference>
-        <Preference
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:summary="@string/settings_item_author_blog_site_value"
-            android:title="@string/settings_item_author_blog_site">
+            android:title="@string/settings_item_author_blog_site"
+            app:ateKey_pref="?ate_key">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="http://www.cryse.org" />
-        </Preference>
-    </PreferenceCategory>
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
 </PreferenceScreen>

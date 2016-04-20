@@ -115,12 +115,12 @@
             android:title="@string/title_textsize"
             app:ateKey_pref="?ate_key" /-->
 
-        <!--com.afollestad.appthemeengine.prefs.ATEPreference
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|subheading"
             android:persistent="false"
             android:summary="@string/subheading_textsize_desc"
             android:title="@string/subheading_textsize"
-            app:ateKey_pref="?ate_key" /-->
+            app:ateKey_pref="?ate_key" />
 
         <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="text_size|body"

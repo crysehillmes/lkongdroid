@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion appCompileSdkVersion
@@ -80,8 +80,6 @@ dependencies {
 
     compile libDependencies.timber
 
-    compile libDependencies.realm
-
     compile libDependencies.finestwebview
 
     compile(libDependencies.materialdrawer) {
@@ -100,9 +98,7 @@ dependencies {
         transitive = true
     }
 
-    compile(libDependencies.theme_engine) {
-        transitive = true
-    }
+    compile project(':app-theme-engine')
 
     compile(libDependencies.textdrawable) {
         transitive = true
@@ -175,3 +171,6 @@ if (propFile.canRead()){
     android.buildTypes.debug.signingConfig = null
     android.buildTypes.release.signingConfig = null
 }
+
+
+apply plugin: 'com.google.gms.google-services'

@@ -81,6 +81,12 @@
 -dontwarn android.support.**
 # Warnings to be removed. Otherwise maven plugin stops, but not dangerous
 
+# support design
+-dontwarn android.support.design.**
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep public class android.support.design.R$* { *; }
+
 # gson
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
@@ -102,7 +108,7 @@
 
 -keep class org.cryse.lkong.logic.restservice.** { *; }
 -keep class org.cryse.lkong.model.** { *; }
--keep class org.cryse.lkong.utils.SerializableHttpCookie { *; }
+-keep class org.cryse.utils.http.cookie.** { *; }
 
 -dontwarn org.cryse.lkong.**
 -keep class org.apache.tika.** { *; }
@@ -155,3 +161,6 @@ public *;
 -keep @io.realm.internal.Keep class * { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+
+
+-keep class com.afollestad.appthemeengine.** { *; }

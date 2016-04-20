@@ -5,10 +5,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
@@ -21,11 +21,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
+import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.lkong.utils.ChangelogUtils;
 import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
+import org.cryse.utils.preference.IntegerPrefs;
+import org.cryse.utils.preference.Prefs;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -76,8 +83,8 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     @Bind(R.id.sign_in_result_textview)
     TextView mResultTextView;
 
-    @Bind(R.id.fab_sign_up)
-    FloatingActionButton mSignInButton;
+    @Bind(R.id.button_sign_in)
+    Button mSignInButton;
     @Bind(R.id.button_sign_up)
     Button mSignUpButton;
 
@@ -162,6 +169,12 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
             finishLogin(data);
         } else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        ChangelogUtils.checkVersionCode(this);
     }
 
     private void signIn() {

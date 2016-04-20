@@ -47,6 +47,7 @@
     <string name="drawer_item_notice_rate">评分</string>
     <string name="drawer_item_private_messages">私信</string>
     <string name="drawer_item_settings">设置</string>
+    <string name="drawer_item_faq">常见问题</string>
     <string name="drawer_item_account_add">添加账户</string>
     <string name="drawer_item_manage_account">管理账户</string>
     <string name="drawer_item_theme_settings">主题设置</string>
@@ -153,6 +154,7 @@
     <string name="text_share_post_title">分享回复</string>
     <string name="text_share_thread_title">分享回复主题</string>
     <string name="text_datetime_today">今天</string>
+    <string name="text_recyclerview_emptyview_text">这里什么都没有~刷新试试？</string>
     <string name="dialog_post_list_choose_page">跳转至</string>
     <string name="dialog_new_post_sending">正在发送…</string>
     <string name="dialog_choose_emoticon_title">选择表情：</string>

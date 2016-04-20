@@ -1,115 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/settings_item_account_settings_title">
-        <Preference
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_item_account_settings_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_goto_account_settings"
             android:summary="@string/settings_item_account_settings_summany"
-            android:title="@string/settings_item_account_settings_title">
-        </Preference>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_dispaly_title">
-        <Preference
+            android:title="@string/settings_item_account_settings_title"
+            app:ateKey_pref="?ate_key">
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_dispaly_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_theme"
             android:title="@string/settings_item_theme_color_title"
-            android:summary="@string/settings_item_theme_color_summary"/>
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            android:summary="@string/settings_item_theme_color_summary"
+            app:ateKey_pref="?ate_key"/>
+
+        <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:key="prefs_screen_rotation"
             android:defaultValue="0"
+            android:title="@string/settings_item_screen_rotation_title"
+            android:summary="@string/settings_item_screen_rotation_summary"
             android:dialogTitle="@string/settings_item_screen_rotation_title"
             android:entries="@array/custom_rotation_title_arrays"
             android:entryValues="@array/custom_rotation_value_arrays"
-            android:title="@string/settings_item_screen_rotation_title"
-            android:summary="@string/settings_item_screen_rotation_summary"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_notification">
-        <CheckBoxPreference
+            android:persistent="true"
+            app:ateKey_pref_list="?ate_key" />
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_notification"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_enable_background_notification"
             android:defaultValue="true"
+            android:persistent="true"
             android:title="@string/settings_item_enable_background_notification_title"
             android:summary="@string/settings_item_enable_background_notification_summary"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            app:ateKey_pref_switch="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:key="prefs_check_notification_duration"
             android:defaultValue="1800"
+            android:title="@string/settings_item_check_notification_duration_title"
+            android:summary="@string/settings_item_check_notification_duration_summary"
             android:dialogTitle="@string/settings_item_check_notification_duration_title"
             android:entries="@array/check_notice_duration_arrays"
             android:entryValues="@array/check_notice_duration_value_arrays"
-            android:title="@string/settings_item_check_notification_duration_title"
-            android:summary="@string/settings_item_check_notification_duration_summary"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_navigation">
-        <CheckBoxPreference
+            android:persistent="true"
+            app:ateKey_pref_list="?ate_key" />
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_navigation"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_use_forums_first"
+            android:defaultValue="false"
+            android:persistent="true"
             android:title="@string/settings_item_use_forums_first_title"
             android:summary="@string/settings_item_use_forums_first_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-        <CheckBoxPreference
+            app:ateKey_pref_switch="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_timeline_only_thread"
+            android:defaultValue="false"
+            android:persistent="true"
             android:title="@string/settings_item_timeline_only_thread_title"
             android:summary="@string/settings_item_timeline_only_thread_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-        <CheckBoxPreference
+            app:ateKey_pref_switch="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_use_in_app_browser"
+            android:defaultValue="true"
+            android:persistent="true"
             android:title="@string/settings_item_use_in_app_browser_title"
             android:summary="@string/settings_item_use_in_app_browser_summary"
-            android:defaultValue="true"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_forum_title">
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            app:ateKey_pref_switch="?ate_key" />
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_forum_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:key="prefs_image_download_policy"
             android:defaultValue="0"
+            android:title="@string/settings_item_image_download_policy_title"
             android:dialogTitle="@string/settings_item_image_download_policy_title"
             android:entries="@array/image_download_policy_arrays"
             android:entryValues="@array/image_download_policy_values_arrays"
-            android:title="@string/settings_item_image_download_policy_title" />
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+            android:persistent="true"
+            app:ateKey_pref_list="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:key="prefs_avatar_download_policy"
             android:defaultValue="0"
+            android:title="@string/settings_item_avatar_download_policy_title"
             android:dialogTitle="@string/settings_item_avatar_download_policy_title"
             android:entries="@array/image_download_policy_arrays"
             android:entryValues="@array/image_download_policy_values_arrays"
-            android:title="@string/settings_item_avatar_download_policy_title" />
-        <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+            android:persistent="true"
+            app:ateKey_pref_list="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATEEditTextPreference
             android:key="prefs_post_extra_tail_text"
             android:title="@string/settings_item_post_extra_tail_text_title"
             android:summary="@string/settings_item_post_extra_tail_text_summary"
-            android:defaultValue="@string/settings_item_post_extra_tail_text_default"/>
-        <CheckBoxPreference
+            android:defaultValue="@string/settings_item_post_extra_tail_text_default"
+            app:ateKey_pref_editText="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_scroll_by_volume_key"
             android:defaultValue="false"
+            android:persistent="true"
             android:title="@string/settings_item_scroll_by_volume_key_title"
             android:summary="@string/settings_item_scroll_by_volume_key_summary"
-            android:widgetLayout="@layout/layout_switch_preference_compat"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_other_title">
-        <Preference
+            app:ateKey_pref_switch="?ate_key" />
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_category_other_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_feedback"
             android:summary="@string/settings_item_feedback_value"
-            android:title="@string/settings_item_feedback_title">
-        </Preference>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_item_about_title">
-        <Preference
+            android:title="@string/settings_item_feedback_title"
+            app:ateKey_pref="?ate_key">
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
+
+    <com.afollestad.appthemeengine.prefs.ATEPreferenceCategory
+        android:title="@string/settings_item_about_title"
+        app:ateKey_prefCategory_textColor="?ate_key">
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_about_donate"
-            android:title="@string/donation_title"/>
-        <Preference
+            android:title="@string/donation_title"
+            app:ateKey_pref="?ate_key"/>
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_about_changelog"
             android:summary="@string/settings_item_change_log_summary"
-            android:title="@string/settings_item_change_log_title"/>
-        <Preference
+            android:title="@string/settings_item_change_log_title"
+            app:ateKey_pref="?ate_key"/>
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
             android:key="prefs_about_version"
             android:summary=""
-            android:title="@string/settings_item_version"/>
-        <Preference
-            android:title="@string/settings_category_author_title">
+            android:title="@string/settings_item_version"
+            app:ateKey_pref="?ate_key"/>
+
+        <com.afollestad.appthemeengine.prefs.ATEPreference
+            android:title="@string/settings_category_author_title"
+            app:ateKey_pref="?ate_key">
             <intent
                 android:targetPackage="org.cryse.lkong"
                 android:targetClass="org.cryse.lkong.ui.SettingsActivity" >
                 <extra android:name="type" android:value="about" />
             </intent>
-        </Preference>
-    </PreferenceCategory>
+        </com.afollestad.appthemeengine.prefs.ATEPreference>
+
+    </com.afollestad.appthemeengine.prefs.ATEPreferenceCategory>
 </PreferenceScreen>

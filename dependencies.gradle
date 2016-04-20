@@ -2,18 +2,17 @@ ext {
     junitVersion = '4.12'
     supportLibraryVersion = '23.2.1'
     multidexVersion='1.0.0'
-    gsonVersion = '2.4'
+    gsonVersion = '2.6.2'
     rxVersion = '1.1.0'
     butterknifeVersion = '7.0.1'
-    materialDrawerVersion = '5.1.6'
-    materialDialogVersion = '0.8.5.7'
+    materialDrawerVersion = '5.2.0'
+    materialDialogVersion = '0.8.5.8'
     fastScrollerVersion = '0.3.0'
     easyPermissionVersion = '0.1.0'
     okhttpVersion = '3.2.0'
     commonslang3Version = '3.4'
-    tikaVersion = '1.10'
     timberVersion = '3.1.0'
-    playServiceVersion = '8.3.0'
+    playServiceVersion = '8.4.0'
     umengAnalyticsVersion = '5.6.4'
     retroLambdaVersion = '2.1.0'
     daggerVersion = '2.0.1'
@@ -29,8 +28,6 @@ ext {
     themeEngineVersion = '1.0.1'
     textdrawableVersion = 'c32bc48d86'
     finestwebviewVersion = '1.1.6'
-    realmVersion = '0.87.0'
-    flexibledividerVersion = '1.2.9'
 
     libDependencies = [
             // Test
@@ -58,7 +55,6 @@ ext {
             okhttp: "com.squareup.okhttp3:okhttp:$okhttpVersion",
 
             // Database
-            realm: "io.realm:realm-android:$realmVersion",
 
             // Log
             timber: "com.jakewharton.timber:timber:$timberVersion",
@@ -91,6 +87,5 @@ ext {
             crashlytics: "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar",
             persistentsearchview: "org.cryse.widget:persistentsearchview:$persistentsearchviewVersion@aar",
             pulltorefresh: "com.navercorp.pulltorefresh:library:$pulltorefreshVersion@aar",
-            flexibledivider: "com.yqritc:recyclerview-flexibledivider:$flexibledividerVersion"
     ]
 }

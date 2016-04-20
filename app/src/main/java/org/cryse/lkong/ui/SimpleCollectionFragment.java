@@ -263,6 +263,7 @@ public abstract class SimpleCollectionFragment<
         mMoreProgressBar = new ProgressBar(getActivity());
         RecyclerView.LayoutParams moreProgressLP = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mMoreProgressBar.setLayoutParams(moreProgressLP);
+        mMoreProgressBar.setVisibility(View.INVISIBLE);
         mWrapperAdapter.addFooter(mMoreProgressBar);
     }
 

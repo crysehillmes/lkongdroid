@@ -5,16 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
-import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.prefs.ATESwitchPreference;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.cryse.changelog.ChangeLogUtils;
@@ -22,6 +20,7 @@ import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ScreenOrientationSettingsChangedEvent;
 import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
@@ -105,6 +104,9 @@ public class SettingsFragment extends PreferenceFragment {
                     break;
                 case PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY:
                     setAvatarPolicySummary();
+                    break;
+                case PreferenceConstant.SHARED_PREFERENCE_SCREEN_ROTATION:
+                    mEventBus.sendEvent(new ScreenOrientationSettingsChangedEvent());
                     break;
                 case PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION:
                     Boolean newIsAutoSync = sharedPreferences.getBoolean(key, true);
@@ -223,7 +225,7 @@ public class SettingsFragment extends PreferenceFragment {
                 mUserAccountManager.getCurrentUserAccount().getAccount(),
                 SyncUtils.SYNC_AUTHORITY_CHECK_NOTICE
         );
-        CheckBoxPreference autoSyncPreference = (CheckBoxPreference) findPreference(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION);
+        ATESwitchPreference autoSyncPreference = (ATESwitchPreference) findPreference(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION);
         getPreferenceManager().getSharedPreferences().edit().putBoolean(PreferenceConstant.SHARED_PREFERENCE_ENABLE_BACKGROUND_NOTIFICATION, isCheckNoticeAutoSync);
         autoSyncPreference.setChecked(isCheckNoticeAutoSync);
     }

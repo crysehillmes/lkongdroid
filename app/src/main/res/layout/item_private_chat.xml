@@ -30,7 +30,7 @@
             android:maxLines="1"
             android:text="placeholder"
             android:textSize="@dimen/text_size_subhead"
-            android:tag="text_color|primary_text" />
+            android:tag="text_color|primary_text,text_size|subheading" />
         <TextView
             android:id="@+id/recyclerview_item_private_chat_textview_dateline"
             android:layout_width="wrap_content"
@@ -49,6 +49,6 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="@dimen/text_size_body1"
-            android:tag="text_color|secondary_text"/>
+            android:tag="text_color|secondary_text,text_size|body"/>
         </RelativeLayout>
 </RelativeLayout>

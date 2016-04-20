@@ -145,6 +145,19 @@ public class AppNavigation {
     }
 
     public void openUrl(Activity context, String url, boolean inAppBrowser) {
+        openUrl(context, url, inAppBrowser, true, true, true, true, true);
+    }
+
+    public void openUrl(
+            Activity context,
+            String url,
+            boolean inAppBrowser,
+            boolean showUrl,
+            boolean showMenuCopyLink,
+            boolean showMenuOpenWith,
+            boolean showMenuRefresh,
+            boolean showMenuShareVia
+    ) {
         if(inAppBrowser) {
             String ateKey = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dark_theme", false) ?
                     "dark_theme" : "light_theme";
@@ -156,6 +169,11 @@ public class AppNavigation {
             int iconColorDisabled = ThemeUtils.makeColorDarken(iconColor, 0.6f);
             FinestWebView.Builder builder = new FinestWebView.Builder(context);
             builder
+                    .showUrl(showUrl)
+                    .showMenuCopyLink(showMenuCopyLink)
+                    .showMenuOpenWith(showMenuOpenWith)
+                    .showMenuRefresh(showMenuRefresh)
+                    .showMenuShareVia(showMenuShareVia)
                     .statusBarColor(statusBarColor)
                     .toolbarColor(primaryColor)
                     .toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS)

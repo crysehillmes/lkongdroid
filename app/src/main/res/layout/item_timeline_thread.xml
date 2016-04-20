@@ -54,7 +54,6 @@
             android:text="placeholder"
             android:maxLines="5"
             android:ellipsize="end"
-            android:textSize="@dimen/text_size_subhead"
-            android:tag="text_color|primary_text"/>
+            android:tag="text_color|primary_text,text_size|body"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
