@@ -1,10 +1,12 @@
 package org.cryse.lkong.ui;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +43,7 @@ import org.cryse.lkong.ui.common.AbstractFragment;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
 import org.cryse.lkong.utils.SubscriptionUtils;
+import org.cryse.lkong.utils.ThemeUtils;
 import org.cryse.lkong.utils.TimeFormatUtils;
 import org.cryse.lkong.utils.transformation.CircleTransform;
 import org.cryse.lkong.utils.DataContract;
@@ -210,6 +213,16 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
         ActionBar actionBar = getAppCompatActivity().getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            Drawable drawable = ResourcesCompat.getDrawable(
+                    getResources(),
+                    R.drawable.ic_arrow_backward,
+                    null
+            );
+            ThemeUtils.setTint(
+                    drawable,
+                    Config.textColorPrimaryInverse(getActivity(), mATEKey)
+            );
+            actionBar.setHomeAsUpIndicator(drawable);
         }
     }
 

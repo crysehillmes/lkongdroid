@@ -106,6 +106,10 @@ public class HtmlCleaner {
             element.after(replaceTo);
             element.remove();
         }
+        for (Element element : document.select("img")) {
+            element.after(replaceTo);
+            element.remove();
+        }
         HtmlToPlainText htmlToPlainText = new HtmlToPlainText();
         return htmlToPlainText.getPlainText(document);
     }

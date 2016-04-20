@@ -84,8 +84,8 @@
             android:label=""/>
         <activity
             android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
+            android:screenOrientation="locked"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="sensor"
             android:theme="@style/FinestWebViewTheme.Light" />
         <activity
             android:name=".account.LKongAuthenticatorActivity"

@@ -51,6 +51,7 @@ import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.ChangelogUtils;
 import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
@@ -302,6 +303,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        ChangelogUtils.checkVersionCode(this);
     }
 
     @Override
@@ -335,7 +337,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             case ID_FAQ:
                 mNavigation.openUrl(
                         MainActivity.this,
-                        "https://lkongdroid-static.cryse.org/faq.html",
+                        "http://lkongdroid-static.cryse.org/faq.html",
                         true,
                         false,
                         false,

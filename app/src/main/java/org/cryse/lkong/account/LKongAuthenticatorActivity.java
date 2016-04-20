@@ -26,6 +26,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.PreferenceConstant;
+import org.cryse.lkong.utils.ChangelogUtils;
 import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
@@ -173,6 +174,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        ChangelogUtils.checkVersionCode(this);
     }
 
     private void signIn() {

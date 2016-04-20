@@ -2,17 +2,11 @@ package org.cryse.lkong.application;
 
 import android.app.Application;
 import android.content.Context;
-/*import android.support.multidex.MultiDex;*/
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
 import com.umeng.update.UmengUpdateAgent;
 
-import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccountManager;
@@ -28,16 +22,12 @@ import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.data.LKongDatabase2;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.utils.preference.Prefs;
 
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 import timber.log.Timber;
 
 @Singleton
@@ -48,7 +38,6 @@ public class LKongApplication extends Application {
     private UserAccountComponent mUserAccountComponent;
     private SendServiceComponet mSendServiceComponet;
     private UserAccountManager mUserAccountManager;
-    private IntegerPrefs mVersionCodePref;
 
     /*@Override
     protected void attachBaseContext(Context base) {
@@ -72,8 +61,8 @@ public class LKongApplication extends Application {
         initComponents();
         LKongDatabase2.init(this);
         userAccountComponent().inject(mUserAccountManager);
-        mUserAccountManager.init();
-        checkVersionCode();
+        mUserAccountManager.init(this);
+        Log.e("ABC", "LKongApplication checkVersionCode() done.");
     }
 
     private void initComponents() {
@@ -96,44 +85,6 @@ public class LKongApplication extends Application {
                 .contextModule(new ContextModule(this))
                 .lKongModule(new LKongModule())
                 .build();
-    }
-
-    public void checkVersionCode() {
-        mVersionCodePref = Prefs.getIntPrefs(
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE,
-                PreferenceConstant.SHARED_PREFERENCE_VERSION_CODE_VALUE
-        );
-        Observable.create((Subscriber<? super Integer> subscriber) -> {
-            try {
-                int versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-                if (versionCode > mVersionCodePref.get()) {
-                    mVersionCodePref.set(versionCode);
-                    subscriber.onNext(versionCode);
-                    return;
-                }
-                subscriber.onNext(0);
-                subscriber.onCompleted();
-            } catch (PackageManager.NameNotFoundException e) {
-                subscriber.onError(e);
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        versionCode -> {
-                            if (versionCode > 0) {
-                                ChangeLogUtils reader = new ChangeLogUtils(this, R.xml.changelog);
-
-                                new MaterialDialog.Builder(this)
-                                        .title(R.string.text_new_version_changes)
-                                        .content(reader.toSpannable(versionCode))
-                                        .show();
-                            }
-                        },
-                        error -> {
-                            Timber.d(error, error.getMessage(), LKongApplication.class.getName());
-                        },
-                        () -> {
-                        });
     }
 
     public static LKongApplication get(Context context) {

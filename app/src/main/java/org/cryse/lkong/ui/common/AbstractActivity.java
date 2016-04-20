@@ -17,6 +17,7 @@ import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.event.RxEventBus;
+import org.cryse.lkong.event.ScreenOrientationSettingsChangedEvent;
 import org.cryse.lkong.utils.SubscriptionUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarSupport;
@@ -182,7 +183,9 @@ public abstract class AbstractActivity extends ATEActivity implements SnackbarSu
 
 
     protected void onEvent(AbstractEvent event) {
-
+        if(event instanceof ScreenOrientationSettingsChangedEvent) {
+            checkRotation();
+        }
     }
 
     protected RxEventBus getEventBus() {

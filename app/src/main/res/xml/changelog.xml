@@ -6,7 +6,8 @@
         versionName="0.9.9">
         <changelogtext>更完整的文字设置</changelogtext>
         <changelogtext>快速回到顶部，帖子列表快速滚动条</changelogtext>
-        <changelogbug>一些 Bug 修正以及及改进</changelogbug>
+        <changelogtext>一些细节调整</changelogtext>
+        <changelogbug>一些 Bug 修正</changelogbug>
     </changelogversion>
     <changelogversion
         changeDate="2016年2月1日"

@@ -6,6 +6,7 @@ import android.accounts.OnAccountsUpdateListener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -62,7 +63,7 @@ public class UserAccountManager {
         );
     }
 
-    public void init() {
+    public void init(Context context) {
         refresh();
         mAccountManager.addOnAccountsUpdatedListener(new OnAccountsUpdateListener() {
             @Override
@@ -92,7 +93,8 @@ public class UserAccountManager {
                     }
                 }
             }
-        }, null, true);
+        }, new Handler(context.getMainLooper()), true);
+        Log.e("ABC", "UserAccountManager init() done.");
     }
 
     public void refresh() {
