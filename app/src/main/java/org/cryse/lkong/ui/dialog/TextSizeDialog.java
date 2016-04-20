@@ -56,7 +56,7 @@ public class TextSizeDialog extends DialogFragment implements MaterialDialog.Sin
 
     public static int pxToSp(Fragment context, int px) {
         float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int) (px / scaledDensity);
+        return (int) (px / scaledDensity + 0.5);
     }
 
     @SuppressWarnings("ResourceType")
