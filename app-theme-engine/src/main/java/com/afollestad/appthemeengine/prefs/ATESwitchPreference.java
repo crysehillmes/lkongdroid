@@ -75,11 +75,15 @@ public class ATESwitchPreference extends SwitchPreference {
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);
-        mSwitch = (ATESwitch) view.findViewById(R.id.switchWidget);
-        mSwitch.setChecked(isChecked());
-        mSwitch.setKey(mKey);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            mSwitch.setBackground(null);
+        View switchView = view.findViewById(R.id.ate_switchWidget);
+        if(switchView != null && switchView instanceof ATESwitch) {
+            mSwitch = (ATESwitch) switchView;
+            mSwitch.setChecked(isChecked());
+            mSwitch.setKey(mKey);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                mSwitch.setBackground(null);
+
+        }
 
         ATE.themeView(view, mKey);
     }
