@@ -83,6 +83,14 @@
             app:ateKey_pref_switch="?ate_key" />
 
         <com.afollestad.appthemeengine.prefs.ATESwitchPreference
+            android:key="prefs_forum_list_grid"
+            android:defaultValue="false"
+            android:persistent="true"
+            android:title="@string/settings_item_forum_list_grid_title"
+            android:summary="@string/settings_item_forum_list_grid_summary"
+            app:ateKey_pref_switch="?ate_key" />
+
+        <com.afollestad.appthemeengine.prefs.ATESwitchPreference
             android:key="prefs_use_in_app_browser"
             android:defaultValue="true"
             android:persistent="true"

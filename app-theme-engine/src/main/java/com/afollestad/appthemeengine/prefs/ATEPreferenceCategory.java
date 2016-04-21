@@ -41,9 +41,14 @@ public class ATEPreferenceCategory extends PreferenceCategory {
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);
-        TextView mTitle = (TextView) view.findViewById(android.R.id.title);
-        mTitle.setTag(String.format("%s|body,%s|accent_color",
-                TextSizeTagProcessor.PREFIX, TextColorTagProcessor.PREFIX));
-        ATE.themeView(mTitle, mAteKey);
+        View textView = view.findViewById(android.R.id.title);
+        if(textView != null && textView instanceof TextView) {
+            TextView mTitle = (TextView) textView;
+            mTitle.setTag(String.format("%s|body,%s|accent_color",
+                    TextSizeTagProcessor.PREFIX, TextColorTagProcessor.PREFIX));
+
+        }
+
+        ATE.themeView(view, mAteKey);
     }
 }

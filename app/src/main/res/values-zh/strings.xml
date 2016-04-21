@@ -241,6 +241,8 @@
     <string name="settings_item_use_forums_first_summary">在第一页显示板块列表而不是信息流(重启应用生效)</string>
     <string name="settings_item_timeline_only_thread_title">信息流只显示主题</string>
     <string name="settings_item_timeline_only_thread_summary">信息流（时间线）只显示主题</string>
+    <string name="settings_item_forum_list_grid_title">网格显示板块列表</string>
+    <string name="settings_item_forum_list_grid_summary">板块列表将以网格方式显示（不显示详细信息, 重启应用生效）</string>
     <string name="settings_item_scroll_by_volume_key_title">音量控制键滚动</string>
     <string name="settings_item_scroll_by_volume_key_summary">在帖子页面中通过音量键控制滚动</string>
     <string name="settings_item_enable_background_notification_title">开启消息通知</string>

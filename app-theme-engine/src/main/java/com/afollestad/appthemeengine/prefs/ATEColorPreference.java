@@ -67,13 +67,16 @@ public class ATEColorPreference extends Preference {
 
     private void invalidateColor() {
         if (mView != null) {
-            BorderCircleView circle = (BorderCircleView) mView.findViewById(R.id.circle);
-            if (this.color != 0) {
-                circle.setVisibility(View.VISIBLE);
-                circle.setBackgroundColor(color);
-                circle.setBorderColor(border);
-            } else {
-                circle.setVisibility(View.GONE);
+            View circleView = mView.findViewById(R.id.ate_circle);
+            if(circleView != null && circleView instanceof BorderCircleView) {
+                BorderCircleView circle = (BorderCircleView) circleView;
+                if (this.color != 0) {
+                    circle.setVisibility(View.VISIBLE);
+                    circle.setBackgroundColor(color);
+                    circle.setBorderColor(border);
+                } else {
+                    circle.setVisibility(View.GONE);
+                }
             }
         }
     }

@@ -75,9 +75,12 @@ public class ATECheckBoxPreference extends CheckBoxPreference {
     protected void onBindView(View view) {
         super.onBindView(view);
 
-        CheckBox checkbox = (CheckBox) view.findViewById(android.R.id.checkbox);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            checkbox.setBackground(null);
+        View checkboxView = view.findViewById(android.R.id.checkbox);
+        if(checkboxView != null && checkboxView instanceof CheckBox) {
+            CheckBox checkbox = (CheckBox)checkboxView;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                checkbox.setBackground(null);
+            }
         }
 
         ATE.themeView(view, mKey);

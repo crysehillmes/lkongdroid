@@ -36,6 +36,9 @@
 # duplicate the contents of this file and remove the include of this
 # file from your project's proguard.config path property.
 -keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service

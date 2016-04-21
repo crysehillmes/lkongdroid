@@ -230,7 +230,7 @@
     <string name="settings_item_avatar_download_policy_title">Avatar download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
     <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post</string>
-    <string name="settings_item_post_extra_tail_text_default">Post By LKongDroid App</string>
+    <string name="settings_item_post_extra_tail_text_default">LKongDroid App</string>
 
     <!-- About -->
     <string name="settings_about_activity_title">About</string>
@@ -252,9 +252,11 @@
     <string name="settings_item_use_in_app_browser_title">In-App Browser on Links</string>
     <string name="settings_item_use_in_app_browser_summary">Use in-app browser instead of jumping to browser app</string>
     <string name="settings_item_use_forums_first_title">Forums page first</string>
-    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Require restart app)</string>
+    <string name="settings_item_use_forums_first_summary">Use forum list as first page(Requires restart app)</string>
     <string name="settings_item_timeline_only_thread_title">Only thread in Timeline</string>
     <string name="settings_item_timeline_only_thread_summary">Only show thread in timeline</string>
+    <string name="settings_item_forum_list_grid_title">Show forum list in grid</string>
+    <string name="settings_item_forum_list_grid_summary">Show forum list in grid (without detail, require restart app).</string>
 
     <string name="settings_item_scroll_by_volume_key_title">Volume rocker scrolling</string>
     <string name="settings_item_scroll_by_volume_key_summary">Enable scrolling with the volume buttons</string>
