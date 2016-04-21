@@ -2,6 +2,7 @@ package org.cryse.lkong.ui;
 
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +13,7 @@ import com.malinskiy.superrecyclerview.OnMoreListener;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
+import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.ForumModel;
 import org.cryse.lkong.presenter.ForumsPresenter;
@@ -20,6 +22,8 @@ import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.view.ForumsView;
+import org.cryse.utils.preference.BooleanPrefs;
+import org.cryse.utils.preference.Prefs;
 
 import java.util.List;
 
@@ -36,6 +40,8 @@ public class ForumsFragment extends SimpleCollectionFragment<
     @Inject
     ForumsPresenter mPresenter;
 
+    private BooleanPrefs mShowInGridPrefs;
+
     public static ForumsFragment newInstance(Bundle args) {
         ForumsFragment fragment = new ForumsFragment();
         if(args != null)
@@ -48,6 +54,10 @@ public class ForumsFragment extends SimpleCollectionFragment<
         injectThis();
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
+        mShowInGridPrefs = Prefs.getBooleanPrefs(
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_IN_GRID,
+                PreferenceConstant.SHARED_PREFERENCE_FORUMS_IN_GRID_VALUE
+        );
     }
 
     @Override
@@ -92,7 +102,9 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected ForumListAdapter createAdapter(List<ForumModel> itemList) {
-        return new ForumListAdapter(this, mATEKey, mItemList);
+        ForumListAdapter adapter =  new ForumListAdapter(this, mATEKey, mItemList);
+        adapter.setShowInGrid(mShowInGridPrefs.get());
+        return adapter;
     }
 
     @Override
@@ -132,7 +144,12 @@ public class ForumsFragment extends SimpleCollectionFragment<
 
     @Override
     protected RecyclerView.LayoutManager getRecyclerViewLayoutManager() {
-        return new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.forumlist_detail_column_count));
+        return new GridLayoutManager(
+                getActivity(),
+                getResources().getInteger(
+                        mShowInGridPrefs.get() ? R.integer.forumlist_column_count : R.integer.forumlist_detail_column_count
+                )
+        );
     }
 
     @Override
