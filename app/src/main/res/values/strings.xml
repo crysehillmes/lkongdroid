@@ -230,7 +230,7 @@
     <string name="settings_item_avatar_download_policy_title">Avatar download policy</string>
     <string name="settings_item_post_extra_tail_text_title">Post tail text</string>
     <string name="settings_item_post_extra_tail_text_summary">Set tail for your every post</string>
-    <string name="settings_item_post_extra_tail_text_default">Post By LKongDroid App</string>
+    <string name="settings_item_post_extra_tail_text_default">LKongDroid App</string>
 
     <!-- About -->
     <string name="settings_about_activity_title">About</string>
