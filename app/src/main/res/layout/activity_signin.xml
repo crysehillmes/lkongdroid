@@ -102,4 +102,14 @@
         android:textSize="@dimen/text_size_title"
         android:textColor="#FFFFFF"
         android:visibility="invisible"/>
+    <Button
+        android:id="@+id/button_faq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:text="@string/drawer_item_faq"
+        android:background="?selectableItemBackgroundBorderless"
+        android:textSize="@dimen/text_size_title"
+        android:textColor="#FFFFFF"/>
 </android.support.design.widget.CoordinatorLayout>

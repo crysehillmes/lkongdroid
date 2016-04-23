@@ -1,19 +1,23 @@
 package org.cryse.utils.http.cookie;
 
-import android.util.Log;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import okhttp3.Cookie;
 
-public class SerializableCookie implements Serializable {
+public class SerializableCookie {
     private static final String TAG = SerializableCookie.class
             .getSimpleName();
+
+    private static final String KEY_URL = "url";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_VALUE = "value";
+    private static final String KEY_PERSISTENT = "persistent";
+    private static final String KEY_DOMAIN = "domain";
+    private static final String KEY_PATH = "path";
+    private static final String KEY_SECURE = "secure";
+    private static final String KEY_HTTPONLY = "httpOnly";
+    private static final String KEY_HOSTONLY = "hostOnly";
 
     private transient Cookie mCookie;
     private transient String mUrl;
@@ -23,16 +27,18 @@ public class SerializableCookie implements Serializable {
         serializableCookie.mUrl = url;
         serializableCookie.mCookie = cookie;
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(os);
-            outputStream.writeObject(serializableCookie);
-        } catch (IOException e) {
-            Log.d(TAG, "IOException in encodeCookie", e);
-            return null;
-        }
+        JsonObject object = new JsonObject();
+        object.addProperty(KEY_URL, url);
+        object.addProperty(KEY_NAME, cookie.name());
+        object.addProperty(KEY_VALUE, cookie.value());
+        object.addProperty(KEY_PERSISTENT, cookie.persistent() ? cookie.expiresAt() : NON_VALID_EXPIRES_AT);
+        object.addProperty(KEY_DOMAIN, cookie.domain());
+        object.addProperty(KEY_PATH, cookie.path());
+        object.addProperty(KEY_SECURE, cookie.secure());
+        object.addProperty(KEY_HTTPONLY, cookie.httpOnly());
+        object.addProperty(KEY_HOSTONLY, cookie.hostOnly());
 
-        return byteArrayToHexString(os.toByteArray());
+        return byteArrayToHexString(object.toString().getBytes());
     }
 
     /**
@@ -57,19 +63,40 @@ public class SerializableCookie implements Serializable {
 
     public static SerializableCookie decode(String encodedCookie) {
         byte[] bytes = hexStringToByteArray(encodedCookie);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-                bytes);
-        SerializableCookie cookie = null;
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(
-                    byteArrayInputStream);
-            cookie = ((SerializableCookie) objectInputStream.readObject());
-        } catch (IOException e) {
-            Log.d(TAG, "IOException in decodeCookie", e);
-        } catch (ClassNotFoundException e) {
-            Log.d(TAG, "ClassNotFoundException in decodeCookie", e);
+        String jsonString = new String(bytes);
+
+        JsonParser parser = new JsonParser();
+        JsonObject object = (JsonObject) parser.parse(jsonString);
+        String url = object.get(KEY_URL).getAsString();
+
+        Cookie.Builder builder = new Cookie.Builder();
+
+        builder.name(object.get(KEY_NAME).getAsString());
+
+        builder.value(object.get(KEY_VALUE).getAsString());
+
+        long expiresAt = object.get(KEY_PERSISTENT).getAsLong();
+        if (expiresAt != NON_VALID_EXPIRES_AT) {
+            builder.expiresAt(expiresAt);
         }
-        return cookie;
+
+        final String domain = object.get(KEY_DOMAIN).getAsString();
+        builder.domain(domain);
+
+        builder.path(object.get(KEY_PATH).getAsString());
+
+        if (object.get(KEY_SECURE).getAsBoolean())
+            builder.secure();
+
+        if (object.get(KEY_HTTPONLY).getAsBoolean())
+            builder.httpOnly();
+
+        if (object.get(KEY_HOSTONLY).getAsBoolean())
+            builder.hostOnlyDomain(domain);
+
+        Cookie cookie = builder.build();
+
+        return new SerializableCookie(url, cookie);
     }
 
     /**
@@ -90,48 +117,13 @@ public class SerializableCookie implements Serializable {
 
     private static long NON_VALID_EXPIRES_AT = -1l;
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeUTF(mUrl);
-        out.writeObject(mCookie.name());
-        out.writeObject(mCookie.value());
-        out.writeLong(mCookie.persistent() ? mCookie.expiresAt() : NON_VALID_EXPIRES_AT);
-        out.writeObject(mCookie.domain());
-        out.writeObject(mCookie.path());
-        out.writeBoolean(mCookie.secure());
-        out.writeBoolean(mCookie.httpOnly());
-        out.writeBoolean(mCookie.hostOnly());
+    public SerializableCookie() {
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        mUrl = in.readUTF();
-        Cookie.Builder builder = new Cookie.Builder();
-
-        builder.name((String) in.readObject());
-
-        builder.value((String) in.readObject());
-
-        long expiresAt = in.readLong();
-        if (expiresAt != NON_VALID_EXPIRES_AT) {
-            builder.expiresAt(expiresAt);
-        }
-
-        final String domain = (String) in.readObject();
-        builder.domain(domain);
-
-        builder.path((String) in.readObject());
-
-        if (in.readBoolean())
-            builder.secure();
-
-        if (in.readBoolean())
-            builder.httpOnly();
-
-        if (in.readBoolean())
-            builder.hostOnlyDomain(domain);
-
-        mCookie = builder.build();
+    public SerializableCookie(String url, Cookie cookie) {
+        this.mUrl = url;
+        this.mCookie = cookie;
     }
-
 
     public Cookie getCookie() {
         return mCookie;

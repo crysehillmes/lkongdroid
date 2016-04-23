@@ -60,10 +60,14 @@ public class EditPostRequest extends AbstractAuthedHttpRequest<EditPostResult> {
         String responseBody = gzipToString(response);
         JSONObject jsonObject = new JSONObject(responseBody);
         EditPostResult editPostResult = new EditPostResult();
-        editPostResult.setTid(jsonObject.getLong("tid"));
-        editPostResult.setSuccess(jsonObject.getBoolean("success"));
-        if (jsonObject.has("errorMessage"))
-            editPostResult.setErrorMessage(jsonObject.getString("errorMessage"));
+        if (jsonObject.has("error"))
+            editPostResult.setErrorMessage(jsonObject.getString("error"));
+        else {
+            if(jsonObject.has("tid"))
+                editPostResult.setTid(jsonObject.getLong("tid"));
+            if(jsonObject.has("success"))
+                editPostResult.setSuccess(jsonObject.getBoolean("success"));
+        }
 
         return editPostResult;
     }

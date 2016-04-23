@@ -2,7 +2,6 @@ package org.cryse.lkong.ui;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,7 +19,6 @@ import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEStatusBarCustomizer;
 import com.afollestad.appthemeengine.util.ATEUtil;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -35,7 +33,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 
-import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
 import org.cryse.lkong.account.UserAccount;
@@ -51,8 +48,7 @@ import org.cryse.lkong.sync.SyncUtils;
 import org.cryse.lkong.ui.common.AbstractActivity;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.AnalyticsUtils;
-import org.cryse.lkong.utils.ChangelogUtils;
-import org.cryse.utils.preference.IntegerPrefs;
+import org.cryse.lkong.utils.UpgradeUtils;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
@@ -63,11 +59,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Inject;
 
 import pub.devrel.easypermissions.EasyPermissions;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks ,
         ATEStatusBarCustomizer {
@@ -136,6 +127,8 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
             mNavigation.navigateToSignInActivity(this, true);
             closeActivityWithTransition();
             return;
+        } else {
+            UpgradeUtils.showChangelog(this);
         }
         /*setDrawerLayoutBackground(isNightMode());
         getDrawerLayout().setStatusBarBackgroundColor(getThemeEngine().getPrimaryDarkColor(this));
@@ -303,7 +296,6 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        ChangelogUtils.checkVersionCode(this);
     }
 
     @Override
@@ -335,16 +327,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
                 mNavigation.openActivityForPostListByThreadId(this, 1153838l);
                 break;
             case ID_FAQ:
-                mNavigation.openUrl(
-                        MainActivity.this,
-                        "http://lkongdroid-static.cryse.org/faq.html",
-                        true,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false
-                );
+                mNavigation.openActivityForFAQ(this);
                 break;
             case ID_SETTINGS:
                 mNavigation.navigateToSettingsActivity(MainActivity.this);

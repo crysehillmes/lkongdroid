@@ -35,7 +35,6 @@ import org.cryse.lkong.account.UserAccountManager;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.logic.ThreadListType;
 import org.cryse.lkong.model.ThreadModel;
-import org.cryse.lkong.model.converter.ModelConverter;
 import org.cryse.lkong.presenter.ForumPresenter;
 import org.cryse.lkong.ui.adapter.ThreadListAdapter;
 import org.cryse.lkong.ui.common.AbstractSwipeBackActivity;
