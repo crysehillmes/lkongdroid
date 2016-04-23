@@ -57,13 +57,14 @@ public class LKongApplication extends Application {
             UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
             UmengUpdateAgent.update(this);
         }
+        UserAccountManager.startHandlerThread();
         UpgradeUtils.checkVersionCode(this);
         mUserAccountManager = new UserAccountManager();
         NetworkPolicyManager.checkNetworkState(this);
         initComponents();
         LKongDatabase2.init(this);
         userAccountComponent().inject(mUserAccountManager);
-        mUserAccountManager.init(this);
+        mUserAccountManager.init();
         Log.e("ABC", "LKongApplication checkVersionCode() done.");
     }
 
