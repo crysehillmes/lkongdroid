@@ -41,6 +41,7 @@ public class UpgradeUtils {
             int oldVersion = versionCodePref.get();
             versionCodePref.set(versionCode);
             onUpgrade(context, oldVersion, versionCode);
+            sShouldShowChangelog = true;
         }
     }
 

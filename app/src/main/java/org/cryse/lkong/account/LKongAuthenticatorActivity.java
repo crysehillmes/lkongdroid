@@ -226,10 +226,11 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                             error -> {
                                 Timber.e(error, "LKongAuthenticatorActivity::SignIn() onError().", LOG_TAG);
                                 showSnackbar(
-                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST,
+                                        ToastErrorConstant.TOAST_FAILURE_SIGNIN,
                                         SimpleSnackbarType.ERROR,
                                         SimpleSnackbarType.LENGTH_SHORT
                                 );
+                                setLoading(false);
                             },
                             () -> {
                                 Timber.d("LKongAuthenticatorActivity::SignIn() onComplete().", LOG_TAG);
