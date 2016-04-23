@@ -89,7 +89,8 @@
             android:theme="@style/FinestWebViewTheme.Light" />
         <activity
             android:name=".account.LKongAuthenticatorActivity"
-            android:theme="@style/AppTheme.NoTranslucent"/>
+            android:theme="@style/AppTheme.NoTranslucent"
+            android:launchMode="singleInstance"/>
         <service android:name=".service.SendPostService"/>
         <service android:name=".account.LKongAuthenticateService">
             <intent-filter>

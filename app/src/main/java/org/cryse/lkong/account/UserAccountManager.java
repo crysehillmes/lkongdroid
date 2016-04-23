@@ -2,13 +2,17 @@ package org.cryse.lkong.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
+import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.application.qualifier.ApplicationContext;
@@ -23,6 +27,7 @@ import org.cryse.utils.preference.LongPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,11 +49,15 @@ public class UserAccountManager {
     @ApplicationContext
     Context mContext;
 
+
     LongPrefs mDefaultAccountUid;
     IntegerPrefs mVersionCodePref;
 
     @Inject
     AccountManager mAccountManager;
+
+    static HandlerThread sHandlerThread;
+    static Handler sHandler;
 
     private static final String mLKongAccountType = "org.cryse.lkong";
 
@@ -63,57 +72,92 @@ public class UserAccountManager {
         );
     }
 
-    public void init(Context context) {
-        refresh();
+    public static void startHandlerThread() {
+        sHandlerThread = new HandlerThread("UserAccountManager_thread");
+        sHandlerThread.start();
+        sHandler = new Handler(sHandlerThread.getLooper());
+    }
+
+    public void init() {
+        update();
         mAccountManager.addOnAccountsUpdatedListener(new OnAccountsUpdateListener() {
             @Override
             public void onAccountsUpdated(Account[] accounts) {
-                if(accounts !=null ) {
-                    List<Account> lkongAccount = new ArrayList<Account>();
-                    for (Account account : accounts) {
-                        if(account.type.equals(mLKongAccountType)) {
-                            lkongAccount.add(account);
+                synchronized (this) {
+                    if(accounts !=null ) {
+                        List<Account> lkongAccount = new ArrayList<Account>();
+                        for (Account account : accounts) {
+                            if(account.type.equals(mLKongAccountType)) {
+                                lkongAccount.add(account);
+                            }
                         }
-                    }
-                    if(mUserAccounts.size() != lkongAccount.size()) {
-                        Log.d(LOG_TAG, "ACCOUNT COUNT CHANGED!");
-                    }
-                    if(mUserAccounts.size() == 0 && lkongAccount.size() != 0) {
-                        refresh();
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                        mEventBus.sendEvent(new CurrentAccountChangedEvent());
-                    } else if(lkongAccount.size() > mUserAccounts.size()){
-                        refresh();
-                        mEventBus.sendEvent(new NewAccountEvent());
-                    } else if(lkongAccount.size() < mUserAccounts.size() && mUserAccounts.size() > 0) {
-                        refresh();
-                        mEventBus.sendEvent(new AccountRemovedEvent());
+                        sHandler.post(() -> {
+                            // Do nothing here
+                            int i = 518 * 1992;
+                        });
+                        //Toast.makeText(context, String.format("onAccountsUpdated: account count = %d, mUserAccount count = %d", lkongAccount.size(), mUserAccounts.size()), Toast.LENGTH_SHORT).show();
+                        if(mUserAccounts.size() != lkongAccount.size()) {
+                            Timber.d("ACCOUNT COUNT CHANGED!", LOG_TAG);
+                        }
+                        if(mUserAccounts.size() == 0 && lkongAccount.size() != 0) {
+                            // New Account, and there is no exist user
+                            update();
+                            Intent intent = new Intent(mContext, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intent);
+                            mEventBus.sendEvent(new CurrentAccountChangedEvent());
+                        } else if(lkongAccount.size() > mUserAccounts.size()) {
+                            // New Account, but exists some other users
+                            update();
+                            mEventBus.sendEvent(new NewAccountEvent());
+                        } else if(lkongAccount.size() < mUserAccounts.size() && mUserAccounts.size() > 0) {
+                            // Account removed
+                            update();
+                            mEventBus.sendEvent(new AccountRemovedEvent());
+                        } else {
+                            update();
+                        }
                     }
                 }
             }
-        }, new Handler(context.getMainLooper()), true);
-        Log.e("ABC", "UserAccountManager init() done.");
+        }, sHandler, true);
+        Timber.d("UserAccountManager init() done.", LOG_TAG);
     }
 
-    public void refresh() {
+    public static boolean removeAllAccounts(Context context) {
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] accounts = accountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
+        int count = accounts.length;
+        int[] successCount = new int[2];
+        for(Account account : accounts) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                boolean result = accountManager.removeAccountExplicitly(account);
+                successCount[0] += result ? 1 : 0;
+            } else {
+                accountManager.removeAccount(account, new AccountManagerCallback<Boolean>() {
+                    @Override
+                    public void run(AccountManagerFuture<Boolean> future) {
+                        try {
+                            boolean result = future.getResult();
+                            successCount[0] += result ? 1 : 0;
+                        } catch (OperationCanceledException | IOException | AuthenticatorException ignored) {
+                        } finally {
+                        }
+                    }
+                }, sHandler);
+            }
+        }
+        return count == successCount[0];
+    }
+
+    public synchronized void update() {
         long uid = mDefaultAccountUid.get();
         try {
             mUserAccounts.clear();
             Account[] accounts = mAccountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
             for(Account account : accounts) {
-                if(mVersionCodePref.get() < 908) {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                        mAccountManager.removeAccountExplicitly(account);
-                    else
-                        mAccountManager.removeAccount(account, null, null);
-                } else {
-                    UserAccount userAccount = getUserAccountFromAccountManager(account, mAccountManager);
-                    mUserAccounts.put(userAccount.getUserId(), userAccount);
-                }
-                // Log.d(LOG_TAG, String.format("USER[ \"name\": \"%s\", \"id\": \"%d\"]", userName, userId));
-                // Log.d(LOG_TAG, String.format("Auth: %s, Dzsbhey: %s", userAuth, userDZSBHEY));
+                UserAccount userAccount = getUserAccountFromAccountManager(account, mAccountManager);
+                mUserAccounts.put(userAccount.getUserId(), userAccount);
             }
 
             UserAccount currentAccount = mUserAccounts.get(uid);
@@ -171,9 +215,10 @@ public class UserAccountManager {
     }
 
     public boolean isSignedIn() {
-        if(mUserAccounts.size() > 0)
-            return true;
-        return false;
+        update();
+        Account[] accounts = mAccountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
+        // Toast.makeText(activity, String.format("onAccountsUpdated222:  mUserAccount count = %d, accounts count = %d", mUserAccounts.size(), accounts.length), Toast.LENGTH_SHORT).show();
+        return mUserAccounts.size() > 0;
     }
 
     public List<UserAccount> getUserAccounts() {
@@ -250,6 +295,8 @@ public class UserAccountManager {
         String userAvatar = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AVATAR);
         String userAuth = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_AUTH);
         String userDzsbhey = accountManager.getUserData(account, AccountConst.KEY_ACCOUNT_USER_DZSBHEY);
+        if(TextUtils.isEmpty(userAuth))
+            throw new IllegalArgumentException("userAuth is empty!");
         return new UserAccount(
                 account,
                 userId,

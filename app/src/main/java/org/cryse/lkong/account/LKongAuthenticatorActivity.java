@@ -5,14 +5,12 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,18 +19,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import org.cryse.changelog.ChangeLogUtils;
 import org.cryse.lkong.R;
-import org.cryse.lkong.application.PreferenceConstant;
-import org.cryse.lkong.utils.ChangelogUtils;
+import org.cryse.lkong.ui.navigation.AppNavigation;
+import org.cryse.lkong.utils.UpgradeUtils;
 import org.cryse.lkong.utils.snackbar.ToastErrorConstant;
 import org.cryse.lkong.utils.UIUtils;
 import org.cryse.lkong.utils.snackbar.SimpleSnackbarType;
 import org.cryse.lkong.utils.snackbar.SnackbarUtils;
-import org.cryse.utils.preference.IntegerPrefs;
-import org.cryse.utils.preference.Prefs;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -87,6 +80,9 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     Button mSignInButton;
     @Bind(R.id.button_sign_up)
     Button mSignUpButton;
+    @Bind(R.id.button_faq)
+    Button mFAQButton;
+
 
     private View mSnackbarRootView;
 
@@ -130,7 +126,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
             mStartMainActivity = intent.getBooleanExtra(START_MAIN_ACTIVITY, false);
         }
         mSignInButton.setOnClickListener(view -> signIn());
-
+        mFAQButton.setOnClickListener(view -> AppNavigation.openActivityForFAQ(this));
 
         mAccountManager = AccountManager.get(getBaseContext());
 
@@ -139,6 +135,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
         if (mAuthTokenType == null)
             mAuthTokenType = AccountConst.AUTHTOKEN_TYPE_FULL_ACCESS;
 
+        UpgradeUtils.showChangelog(this);
         /*if (accountName != null) {
             ((TextView)findViewById(R.id.accountName)).setText(accountName);
         }
@@ -174,7 +171,6 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        ChangelogUtils.checkVersionCode(this);
     }
 
     private void signIn() {
@@ -184,7 +180,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                 @Override
                 public void call(Subscriber<? super Intent> subscriber) {
 
-                    Log.d(LOG_TAG, "> Started authenticating");
+                    Timber.d("> Started authenticating", LOG_TAG);
                     String userName = mEmailText.toString();
                     String userPassword = mPasswordText.toString();
                     String authtoken = null;
@@ -204,7 +200,7 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                         data.putString(AccountConst.KEY_ACCOUNT_USER_AUTH, result.authCookie);
                         data.putString(AccountConst.KEY_ACCOUNT_USER_DZSBHEY, result.dzsbheyCookie);
                     } catch (Exception e) {
-                        Log.e("ERROR", e.getMessage(), e);
+                        Timber.e(e, e.getMessage(), LOG_TAG);
                         data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                     }
 
@@ -230,10 +226,11 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
                             error -> {
                                 Timber.e(error, "LKongAuthenticatorActivity::SignIn() onError().", LOG_TAG);
                                 showSnackbar(
-                                        ToastErrorConstant.TOAST_FAILURE_RATE_POST,
+                                        ToastErrorConstant.TOAST_FAILURE_SIGNIN,
                                         SimpleSnackbarType.ERROR,
                                         SimpleSnackbarType.LENGTH_SHORT
                                 );
+                                setLoading(false);
                             },
                             () -> {
                                 Timber.d("LKongAuthenticatorActivity::SignIn() onComplete().", LOG_TAG);
@@ -262,14 +259,14 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private void finishLogin(Intent intent) {
-        Log.d(LOG_TAG, "> finishLogin");
+        Timber.d("> finishLogin", LOG_TAG);
 
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 
         if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-            Log.d(LOG_TAG, "> finishLogin > addAccountExplicitly");
+            Timber.d("> finishLogin > addAccountExplicitly", LOG_TAG);
             String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authtokenType = mAuthTokenType;
 
@@ -282,10 +279,26 @@ public class LKongAuthenticatorActivity extends AccountAuthenticatorActivity {
 
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
-            mAccountManager.addAccountExplicitly(account, accountPassword, userData);
+            Account[] accounts = mAccountManager.getAccountsByType(AccountConst.ACCOUNT_TYPE);
+            boolean isExist = false;
+            for(Account existAccount : accounts) {
+                if(existAccount.name.compareTo(account.name) == 0) {
+                    mAccountManager.setUserData(account, AccountConst.KEY_ACCOUNT_USER_ID, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_ID));
+                    mAccountManager.setUserData(account, AccountConst.KEY_ACCOUNT_USER_NAME, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_NAME));
+                    mAccountManager.setUserData(account, AccountConst.KEY_ACCOUNT_USER_AVATAR, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_AVATAR));
+                    mAccountManager.setUserData(account, AccountConst.KEY_ACCOUNT_USER_AUTH, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_AUTH));
+                    mAccountManager.setUserData(account, AccountConst.KEY_ACCOUNT_USER_DZSBHEY, intent.getStringExtra(AccountConst.KEY_ACCOUNT_USER_DZSBHEY));
+                    // Toast.makeText(this, "Already exist!", Toast.LENGTH_SHORT).show();
+                    isExist = true;
+
+                    break;
+                }
+            }
+            if(!isExist)
+                mAccountManager.addAccountExplicitly(account, accountPassword, userData);
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
         } else {
-            Log.d(LOG_TAG, "> finishLogin > setPassword");
+            Timber.d("> finishLogin > setPassword", LOG_TAG);
             mAccountManager.setPassword(account, accountPassword);
         }
 

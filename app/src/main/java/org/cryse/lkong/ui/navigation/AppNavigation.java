@@ -144,11 +144,25 @@ public class AppNavigation {
         context.startActivity(intent);
     }
 
-    public void openUrl(Activity context, String url, boolean inAppBrowser) {
+    public static void openActivityForFAQ(Activity context) {
+        openUrl(
+                context,
+                "http://lkongdroid-static.cryse.org/faq.html",
+                true,
+                false,
+                false,
+                false,
+                false,
+                false
+        );
+    }
+
+
+    public static void openUrl(Activity context, String url, boolean inAppBrowser) {
         openUrl(context, url, inAppBrowser, true, true, true, true, true);
     }
 
-    public void openUrl(
+    public static void openUrl(
             Activity context,
             String url,
             boolean inAppBrowser,

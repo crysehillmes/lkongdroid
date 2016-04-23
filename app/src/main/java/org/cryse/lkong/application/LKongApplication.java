@@ -22,6 +22,7 @@ import org.cryse.lkong.application.modules.ContextModule;
 import org.cryse.lkong.application.modules.LKongModule;
 import org.cryse.lkong.data.LKongDatabase2;
 import org.cryse.lkong.utils.AnalyticsUtils;
+import org.cryse.lkong.utils.UpgradeUtils;
 import org.cryse.utils.preference.Prefs;
 
 import javax.inject.Singleton;
@@ -56,12 +57,14 @@ public class LKongApplication extends Application {
             UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
             UmengUpdateAgent.update(this);
         }
+        UserAccountManager.startHandlerThread();
+        UpgradeUtils.checkVersionCode(this);
         mUserAccountManager = new UserAccountManager();
         NetworkPolicyManager.checkNetworkState(this);
         initComponents();
         LKongDatabase2.init(this);
         userAccountComponent().inject(mUserAccountManager);
-        mUserAccountManager.init(this);
+        mUserAccountManager.init();
         Log.e("ABC", "LKongApplication checkVersionCode() done.");
     }
 
