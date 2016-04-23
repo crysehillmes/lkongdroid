@@ -251,8 +251,10 @@ public class UserProfileFragment extends AbstractFragment implements /*RevealBac
             }
         });
         mUserPostCountTextView.setOnClickListener(view -> {
-            /*UserProfileActivity activity = (UserProfileActivity) getActivity();
-            activity.goToFollowerFragment(mUid);*/
+            UserProfileActivity activity = (UserProfileActivity) getActivity();
+            if (mUserInfo != null) {
+                activity.goToAllActivitiesFragment(mUid, mUserInfo.getUserName());
+            }
         });
         mAllActivitiesLayout.setOnClickListener(view -> {
             UserProfileActivity activity = (UserProfileActivity) getActivity();
