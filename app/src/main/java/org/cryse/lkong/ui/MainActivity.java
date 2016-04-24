@@ -63,6 +63,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AbstractActivity implements EasyPermissions.PermissionCallbacks ,
         ATEStatusBarCustomizer {
     private static final String LOG_TAG = MainActivity.class.getName();
+    public static AtomicBoolean Running = new AtomicBoolean(false);
     private static final int ID_HOMEPAGE = 1001;
     private static final int ID_FAVORITES = 1003;
     private static final int ID_BROWSE_HISTORY = 1004;
@@ -93,6 +94,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Running.set(true);
         injectThis();
         // Default config
         if (!ATE.config(this, "light_theme").isConfigured(BuildConfig.VERSION_CODE)) {
@@ -346,6 +348,7 @@ public class MainActivity extends AbstractActivity implements EasyPermissions.Pe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Running.set(false);
     }
 
     @Override

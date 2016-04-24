@@ -102,9 +102,11 @@ public class UserAccountManager {
                         if(mUserAccounts.size() == 0 && lkongAccount.size() != 0) {
                             // New Account, and there is no exist user
                             update();
-                            Intent intent = new Intent(mContext, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(intent);
+                            if(MainActivity.Running.get() == false) {
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(intent);
+                            }
                             mEventBus.sendEvent(new CurrentAccountChangedEvent());
                         } else if(lkongAccount.size() > mUserAccounts.size()) {
                             // New Account, but exists some other users
