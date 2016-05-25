@@ -100,10 +100,6 @@ dependencies {
 
     compile project(':app-theme-engine')
 
-    compile(libDependencies.textdrawable) {
-        transitive = true
-    }
-
     compile (libDependencies.pulltorefresh) {
         exclude module: 'support-v4'
     }
