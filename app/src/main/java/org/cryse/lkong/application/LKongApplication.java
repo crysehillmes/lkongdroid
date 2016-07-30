@@ -5,7 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.umeng.update.UmengUpdateAgent;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.cryse.lkong.BuildConfig;
 import org.cryse.lkong.R;
@@ -53,9 +53,12 @@ public class LKongApplication extends Application {
         Prefs.with(this).useDefault().init();
         AnalyticsUtils.init(this, getString(R.string.UMENG_APPKEY_VALUE));
         Fabric.with(this, new Crashlytics());
+        if(BuildConfig.DEBUG) {
+            CrashReport.initCrashReport(getApplicationContext(), getString(R.string.bugly_app_id), false);
+        }
         if(BuildConfig.InAppUpdate) {
-            UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
-            UmengUpdateAgent.update(this);
+            /*UmengUpdateAgent.setAppkey(getString(R.string.UMENG_APPKEY_VALUE));
+            UmengUpdateAgent.update(this);*/
         }
         UserAccountManager.startHandlerThread();
         UpgradeUtils.checkVersionCode(this);

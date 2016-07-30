@@ -52,8 +52,9 @@ app/crashlytics.properties
 app/signing.properties
 *.keystore
 
-# UMeng
-umeng_properties.xml
+# Extra config files
+umeng-properties.xml
+bugly-properties.xml
 google-services.json
 
 # Capture files

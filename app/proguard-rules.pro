@@ -167,3 +167,6 @@ public *;
 
 
 -keep class com.afollestad.appthemeengine.** { *; }
+
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}

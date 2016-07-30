@@ -13,7 +13,8 @@ ext {
     commonslang3Version = '3.4'
     timberVersion = '3.1.0'
     playServiceVersion = '8.4.0'
-    umengAnalyticsVersion = '5.6.4'
+    buglyVersion = '2.2.0'
+    umengAnalyticsVersion = '6.0.1'
     retroLambdaVersion = '2.1.0'
     daggerVersion = '2.0.1'
     jsr250ApiVersion = '1.0'
@@ -73,7 +74,9 @@ ext {
 
             play_services_analytics: "com.google.android.gms:play-services-analytics:$playServiceVersion",
             // compile fileTree(dir: 'libs', include: ['*.jar'])
+            bugly: "com.tencent.bugly:crashreport:$buglyVersion",
             umeng_analytics: "com.umeng.analytics:analytics:$umengAnalyticsVersion",
+
             retorlambda: "net.orfjackal.retrolambda:retrolambda:$retroLambdaVersion",
             dagger: "com.google.dagger:dagger:$daggerVersion",
             dagger_compiler: "com.google.dagger:dagger-compiler:$daggerVersion",

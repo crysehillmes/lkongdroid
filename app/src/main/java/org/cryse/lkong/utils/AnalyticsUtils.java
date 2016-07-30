@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.umeng.analytics.AnalyticsConfig;
 import com.umeng.analytics.MobclickAgent;
 
 import org.cryse.lkong.R;
@@ -15,9 +14,9 @@ public class AnalyticsUtils {
     private static Tracker sTracker;
 
     public static void init(Context context, String appKey) {
-        AnalyticsConfig.setAppkey(context, appKey);
+        MobclickAgent.UMAnalyticsConfig umengConfig = new MobclickAgent.UMAnalyticsConfig(context, appKey, context.getString(R.string.UMENG_CHANNEL_VALUE), MobclickAgent.EScenarioType.E_UM_NORMAL, false);
+        MobclickAgent.startWithConfigure(umengConfig);
         MobclickAgent.openActivityDurationTrack(false);
-        AnalyticsConfig.enableEncrypt(true);
         if (sTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
             // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
