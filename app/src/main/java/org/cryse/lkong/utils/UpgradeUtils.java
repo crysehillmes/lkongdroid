@@ -14,6 +14,8 @@ import org.cryse.utils.preference.IntegerPrefs;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import timber.log.Timber;
 
 public class UpgradeUtils {
@@ -60,6 +62,11 @@ public class UpgradeUtils {
             if(BuildConfig.DEBUG) {
                 Timber.d(removeAccountsResult ? "All old accounts removed." : "Not all old accounts removed.", "ACCOUNT_MANAGER");
             }
+        }
+        if(oldVersion < 912) {
+            RealmConfiguration.Builder configBuilder = new RealmConfiguration.Builder(context);
+            RealmConfiguration realmConfiguration = configBuilder.build();
+            Realm.deleteRealm(realmConfiguration);
         }
     }
 }
