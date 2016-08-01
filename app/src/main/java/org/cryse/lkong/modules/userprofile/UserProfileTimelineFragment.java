@@ -1,17 +1,22 @@
-package org.cryse.lkong.ui;
+package org.cryse.lkong.modules.userprofile;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
-import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.modules.simplecollection.SimpleCollectionFragment;
-import org.cryse.lkong.modules.timeline.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.utils.UIUtils;
@@ -23,20 +28,26 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class MentionsFragment extends SimpleCollectionFragment<
+public class UserProfileTimelineFragment extends SimpleCollectionFragment<
         TimelineModel,
         TimelineAdapter,
-        TimelinePresenter> {
-    private static final String LOG_TAG = MentionsFragment.class.getName();
+        UserProfileTimelinePresenter> {
+    private static final String LOG_TAG = UserProfileTimelineFragment.class.getName();
+    private static final String KEY_UID = "key_args_uid";
+    private static final String KEY_USERNAME= "key_args_username";
+    private long mUid;
+    private String mUserName;
 
     @Inject
-    TimelinePresenter mPresenter;
+    UserProfileTimelinePresenter mPresenter;
     StringPrefs mAvatarDownloadPolicy;
 
-    public static MentionsFragment newInstance(Bundle args) {
-        MentionsFragment fragment = new MentionsFragment();
-        if(args != null)
-            fragment.setArguments(args);
+    public static UserProfileTimelineFragment newInstance(long uid, String userName) {
+        Bundle args = new Bundle();
+        args.putLong(KEY_UID, uid);
+        args.putString(KEY_USERNAME, userName);
+        UserProfileTimelineFragment fragment = new UserProfileTimelineFragment();
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -44,13 +55,69 @@ public class MentionsFragment extends SimpleCollectionFragment<
     public void onCreate(Bundle savedInstanceState) {
         injectThis();
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
+        if(getArguments() != null && getArguments().containsKey(KEY_UID)) {
+            mUid = getArguments().getLong(KEY_UID);
+            mUserName = getArguments().getString(KEY_USERNAME);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View contentView = super.onCreateView(inflater, container, savedInstanceState);
+        setUpToolbar(mToolbar);
+        return contentView;
+    }
+
+    protected void setUpToolbar(Toolbar toolbar) {
+        getAppCompatActivity().setSupportActionBar(toolbar);
+        ActionBar actionBar = getAppCompatActivity().getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setTitle();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getSwipeBackActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void restoreFromState(Bundle savedInstanceState) {
+        if(savedInstanceState.containsKey(KEY_UID)
+                && savedInstanceState.containsKey(KEY_USERNAME)
+                ) {
+            this.mUid = savedInstanceState.getLong(KEY_UID);
+            this.mUserName = savedInstanceState.getString(KEY_USERNAME);
+            setTitle();
+        }
+    }
+
+    private void setTitle() {
+        getAppCompatActivity().setTitle(getString(R.string.format_all_activities_of, mUserName));
     }
 
     @Override
     protected void injectThis() {
         LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -60,11 +127,11 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_simple_collection;
+        return R.layout.fragment_simple_collection_with_toolbar;
     }
 
     @Override
-    protected TimelinePresenter getPresenter() {
+    protected UserProfileTimelinePresenter getPresenter() {
         return mPresenter;
     }
 
@@ -79,9 +146,8 @@ public class MentionsFragment extends SimpleCollectionFragment<
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
             public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position;
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+                if (position >= 0 && position < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(position);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -91,7 +157,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemTimelineClick(View view, int adapterPosition) {
-                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                if (adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
                     TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
@@ -102,7 +168,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadMentions(authObject, start, isLoadingMore);
+        getPresenter().loadUserTimeline(authObject, mUid, start, isLoadingMore);
     }
 
     @Override
@@ -110,8 +176,8 @@ public class MentionsFragment extends SimpleCollectionFragment<
     }
 
     @Override
-    protected void onEvent(AbstractEvent event) {
-        super.onEvent(event);
+    protected SwipeRefreshLayout.OnRefreshListener getRefreshListener() {
+        return null;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.cryse.lkong.ui;
+package org.cryse.lkong.modules.timeline;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -9,12 +9,14 @@ import com.bumptech.glide.Glide;
 import org.cryse.lkong.R;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
+import org.cryse.lkong.event.CurrentAccountChangedEvent;
 import org.cryse.lkong.model.TimelineModel;
 import org.cryse.lkong.modules.simplecollection.SimpleCollectionFragment;
-import org.cryse.lkong.modules.timeline.TimelinePresenter;
 import org.cryse.lkong.ui.adapter.TimelineAdapter;
 import org.cryse.lkong.account.LKAuthObject;
+import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
+import org.cryse.utils.preference.BooleanPrefs;
 import org.cryse.lkong.application.PreferenceConstant;
 import org.cryse.utils.preference.Prefs;
 import org.cryse.utils.preference.StringPrefs;
@@ -23,18 +25,22 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class MentionsFragment extends SimpleCollectionFragment<
+public class TimelineFragment extends SimpleCollectionFragment<
         TimelineModel,
         TimelineAdapter,
         TimelinePresenter> {
-    private static final String LOG_TAG = MentionsFragment.class.getName();
+    private static final String LOG_TAG = TimelineFragment.class.getName();
+    AppNavigation mNavigation = new AppNavigation();
 
     @Inject
     TimelinePresenter mPresenter;
+
+    BooleanPrefs mTimelineOnlyThread;
+
     StringPrefs mAvatarDownloadPolicy;
 
-    public static MentionsFragment newInstance(Bundle args) {
-        MentionsFragment fragment = new MentionsFragment();
+    public static TimelineFragment newInstance(Bundle args) {
+        TimelineFragment fragment = new TimelineFragment();
         if(args != null)
             fragment.setArguments(args);
         return fragment;
@@ -46,11 +52,19 @@ public class MentionsFragment extends SimpleCollectionFragment<
         super.onCreate(savedInstanceState);
         mAvatarDownloadPolicy = Prefs.getStringPrefs(PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY,
                 PreferenceConstant.SHARED_PREFERENCE_AVATAR_DOWNLOAD_POLICY_VALUE);
+        mTimelineOnlyThread = Prefs.getBooleanPrefs(PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD,
+                PreferenceConstant.SHARED_PREFERENCE_TIMELINE_ONLY_SHOW_THREAD_VALUE);
+        setHasOptionsMenu(false);
     }
 
     @Override
     protected void injectThis() {
         LKongApplication.get(getActivity()).lKongPresenterComponent().inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -78,10 +92,9 @@ public class MentionsFragment extends SimpleCollectionFragment<
         );
         adapter.setOnTimelineModelItemClickListener(new TimelineAdapter.OnTimelineModelItemClickListener() {
             @Override
-            public void onProfileAreaClick(View view, int position, long uid) {
-                int itemIndex = position;
-                if(itemIndex >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
-                    TimelineModel model = mCollectionAdapter.getItem(itemIndex);
+            public void onProfileAreaClick(View view, int adapterPosition, long uid) {
+                if (adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                    TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     int[] startingLocation = new int[2];
                     view.getLocationOnScreen(startingLocation);
                     startingLocation[0] += view.getWidth() / 2;
@@ -91,7 +104,8 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
             @Override
             public void onItemTimelineClick(View view, int adapterPosition) {
-                if(adapterPosition >= 0 && adapterPosition < mCollectionAdapter.getItemCount()) {
+                int itemIndex = adapterPosition;
+                if (adapterPosition >= 0 && itemIndex < mCollectionAdapter.getItemCount()) {
                     TimelineModel model = mCollectionAdapter.getItem(adapterPosition);
                     mNavigation.openActivityForPostListByTimelineModel(getActivity(), model);
                 }
@@ -102,7 +116,7 @@ public class MentionsFragment extends SimpleCollectionFragment<
 
     @Override
     protected void loadData(LKAuthObject authObject, long start, boolean isLoadingMore, Object... extraArgs) {
-        getPresenter().loadMentions(authObject, start, isLoadingMore);
+        getPresenter().loadTimeline(authObject, start, isLoadingMore, mTimelineOnlyThread.get());
     }
 
     @Override
@@ -112,12 +126,16 @@ public class MentionsFragment extends SimpleCollectionFragment<
     @Override
     protected void onEvent(AbstractEvent event) {
         super.onEvent(event);
+        if (event instanceof CurrentAccountChangedEvent) {
+            loadData(mUserAccountManager.getAuthObject(), 0, false);
+        }
     }
 
     @Override
     protected UIUtils.InsetsValue getRecyclerViewInsets() {
         return null;
     }
+
 
     @Override
     protected void onCollectionViewInitComplete() {
