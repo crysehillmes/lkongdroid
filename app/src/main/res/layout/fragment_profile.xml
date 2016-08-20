@@ -186,7 +186,7 @@
                             android:layout_height="wrap_content"
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
-                            android:text="All Activities"
+                            android:text="@string/text_user_all_activities_title"
                             android:textSize="@dimen/text_size_body2"
                             android:tag="text_color|primary_text" />
                         <ImageView
@@ -218,7 +218,7 @@
                             android:layout_height="wrap_content"
                             android:minHeight="48dp"
                             android:gravity="center_vertical"
-                            android:text="Digests"
+                            android:text="@string/text_user_digest_title"
                             android:textSize="@dimen/text_size_body2"
                             android:tag="text_color|primary_text" />
                         <ImageView

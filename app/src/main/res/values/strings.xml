@@ -152,6 +152,8 @@
     <string name="text_dragon_crystal">Dragon Crystal</string>
     <string name="text_active_points">Active Points</string>
     <string name="text_user_introduction_title">Introduction</string>
+    <string name="text_user_all_activities_title">All Activities</string>
+    <string name="text_user_digest_title">Digests</string>
     <string name="text_user_wealth_title">Wealth</string>
     <string name="text_user_punch_info_title">Punch</string>
     <string name="text_user_registration_time_title">Registration</string>
