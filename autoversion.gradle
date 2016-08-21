@@ -32,7 +32,7 @@ def getBranchPrefix = { ->
 
 def getLatestRelateReleaseTag = { ->
     def commonMergeBaseCommit = 'git merge-base HEAD master'.execute().text.trim()
-    def releaseTagDescribe = ('git describe --tags --abbrev=0 --contains ' + commonMergeBaseCommit).execute().text.trim()
+    def releaseTagDescribe = ('git describe --tags --abbrev=0 ').execute().text.trim()
     def endIndex = releaseTagDescribe.indexOf("^")
     if(endIndex > 0)
         return releaseTagDescribe.substring(0, endIndex)
