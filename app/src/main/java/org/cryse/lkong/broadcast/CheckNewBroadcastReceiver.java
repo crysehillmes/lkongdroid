@@ -10,7 +10,7 @@ import android.support.v7.app.NotificationCompat;
 
 import org.cryse.lkong.R;
 import org.cryse.lkong.model.NoticeCountModel;
-import org.cryse.lkong.ui.NotificationActivity;
+import org.cryse.lkong.modules.notice.NotificationActivity;
 import org.cryse.lkong.utils.DataContract;
 
 public class CheckNewBroadcastReceiver extends BroadcastReceiver {

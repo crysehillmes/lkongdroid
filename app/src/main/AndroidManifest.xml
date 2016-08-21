@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
 
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
@@ -51,10 +52,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ForumActivity"
+            android:name=".modules.forum.ForumActivity"
             android:theme="@style/AppTheme.Translucent"/>
         <activity
-            android:name=".ui.PostListActivity"
+            android:name=".modules.postlist.PostListActivity"
             android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.NewPostActivity"
@@ -70,16 +71,16 @@
             android:label="@string/drawer_item_theme_settings"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".ui.NotificationActivity"
+            android:name=".modules.notice.NotificationActivity"
             android:theme="@style/AppTheme.Translucent"/>
         <activity
-            android:name=".ui.PrivateChatActivity"
+            android:name=".modules.privatemessage.PrivateChatActivity"
             android:theme="@style/AppTheme.Translucent"/>
         <activity
             android:name=".ui.PhotoViewPagerActivity"
             android:theme="@style/AppThemeDark.Translucent"/>
         <activity
-            android:name=".ui.UserProfileActivity"
+            android:name=".modules.userprofile.UserProfileActivity"
             android:theme="@style/AppTheme.Translucent"
             android:label=""/>
         <activity
@@ -128,15 +129,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
-        <service
-            android:name="com.umeng.update.net.DownloadingService"
-            android:process=":DownloadingService" >
-        </service>
-        <activity
-            android:name="com.umeng.update.UpdateDialogActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-        </activity>
-        <meta-data android:value="@string/track_channel_name" android:name="UMENG_CHANNEL"/>
+        <!--<meta-data android:value="@string/track_channel_name" android:name="UMENG_CHANNEL"/>-->
         <meta-data android:name="org.cryse.lkong.application.config.GlideConfiguration"
             android:value="GlideModule"/>
     </application>

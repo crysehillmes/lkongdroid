@@ -15,11 +15,13 @@ import org.cryse.lkong.account.LKAuthObject;
 import org.cryse.lkong.application.LKongApplication;
 import org.cryse.lkong.event.AbstractEvent;
 import org.cryse.lkong.model.HotThreadModel;
-import org.cryse.lkong.presenter.HotThreadPresenter;
+import org.cryse.lkong.modules.forums.ForumsFragment;
+import org.cryse.lkong.modules.simplecollection.SimpleCollectionFragment;
+import org.cryse.lkong.modules.hotthread.HotThreadPresenter;
 import org.cryse.lkong.ui.adapter.HotThreadAdapter;
 import org.cryse.lkong.ui.navigation.AppNavigation;
 import org.cryse.lkong.utils.UIUtils;
-import org.cryse.lkong.view.SimpleCollectionView;
+import org.cryse.lkong.modules.simplecollection.SimpleCollectionView;
 
 import java.util.List;
 
