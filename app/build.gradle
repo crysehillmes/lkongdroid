@@ -1,9 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'realm-android'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion appCompileSdkVersion
@@ -15,6 +10,9 @@ android {
         targetSdkVersion appTargetSdkVersion
         versionCode appVersionCode
         versionName appVersionName
+        jackOptions {
+            enabled true
+        }
     }
 
     dexOptions { jumboMode = true }
@@ -37,7 +35,7 @@ android {
         }
         release {
             minifyEnabled true
-            shrinkResources true
+            // shrinkResources true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -63,83 +61,57 @@ android {
 }
 
 dependencies {
-    // compile libDependencies.multidex
-    compile libDependencies.support_v13
-    compile libDependencies.design
-    compile libDependencies.appcompat
-    compile libDependencies.recyclerview
-    compile libDependencies.cardview
+    compile libDependencies['support-v13']
+    compile libDependencies['design']
+    compile libDependencies['appcompat-v7']
+    compile libDependencies['recyclerview-v7']
+    compile libDependencies['cardview-v7']
 
-    compile libDependencies.easypermission
-    compile libDependencies.gson
-    compile libDependencies.okhttp
+    compile libDependencies['easypermissions']
+    compile libDependencies['gson']
+    compile libDependencies['okhttp']
 
-    compile libDependencies.rxjava
-    compile libDependencies.rxandroid
-    compile libDependencies.butterknife
+    compile libDependencies['rxjava']
+    compile libDependencies['rxandroid']
+    compile libDependencies['butterknife']
 
-    compile libDependencies.timber
+    compile libDependencies['timber']
 
-    compile libDependencies.finestwebview
+    compile libDependencies['finestwebview']
 
-    compile(libDependencies.materialdrawer) {
+    compile(libDependencies['materialdrawer']) {
         transitive = true
     }
 
-    compile(libDependencies.materialdialog) {
+    compile(libDependencies['materialdialog-core']) {
         transitive = true
     }
 
-    compile(libDependencies.materialdialog_commons) {
+    compile(libDependencies['materialdialog-commons']) {
         transitive = true
     }
 
-    compile(libDependencies.fastScroller) {
+    compile(libDependencies['recycler-fast-scroll']) {
         transitive = true
     }
 
     compile project(':app-theme-engine')
 
-    compile (libDependencies.pulltorefresh) {
+    compile (libDependencies['pulltorefresh']) {
         exclude module: 'support-v4'
     }
 
-    // compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile libDependencies.play_services_analytics
-    compile libDependencies.bugly
-    compile libDependencies.umeng_analytics
-    retrolambdaConfig libDependencies.retorlambda
-    compile libDependencies.dagger
-    apt libDependencies.dagger_compiler
-    provided libDependencies.jsr250_api
+    compile libDependencies['dagger']
+    annotationProcessor libDependencies['dagger-compiler']
+    provided libDependencies['jsr250-api']
 
-    compile libDependencies.glide
-    compile libDependencies.jsoup
-    compile libDependencies.fab
-    compile libDependencies.subsampling_scale_image_view
-    provided libDependencies.tagsoup_osgi
-    compile(libDependencies.crashlytics) {
-        transitive = true;
-    }
-    compile libDependencies.persistentsearchview
+    compile libDependencies['glide']
+    compile libDependencies['jsoup']
+    compile libDependencies['floatingactionbutton']
+    compile libDependencies['subsampling-scale-image-view']
+    provided libDependencies['tagsoup-osgi']
+    compile libDependencies['persistentsearchview']
 
-}
-
-retrolambda {
-    jdk System.getenv('JAVA8_HOME')
-    oldJdk System.getenv('JAVA7_HOME')
-    javaVersion JavaVersion.VERSION_1_7
-    defaultMethods false
-    incremental true
-}
-
-dexcount {
-    includeClasses = false
-    includeFieldCount = true
-    includeTotalMethodCount = false
-    printAsTree = false
-    orderByMethodCount = false
-    verbose = false
 }
 
 def Properties props = new Properties()
@@ -167,6 +139,3 @@ if (propFile.canRead()){
     android.buildTypes.debug.signingConfig = null
     android.buildTypes.release.signingConfig = null
 }
-
-
-apply plugin: 'com.google.gms.google-services'
