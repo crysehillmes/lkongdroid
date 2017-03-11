@@ -95,8 +95,6 @@ dependencies {
         transitive = true
     }
 
-    compile project(':app-theme-engine')
-
     compile (libDependencies['pulltorefresh']) {
         exclude module: 'support-v4'
     }
